@@ -1,0 +1,75 @@
+#-----------------------------------------------------------------------------
+#
+# MIDASCPPConfig.cmake - CMake configuration file for external projects.
+#
+# This file is configured by MIDASCPP and used by the UseMIDASCPP.cmake 
+# module to load MIDASCPP's settings for an external project.
+
+# The MIDASCPP version number.
+SET(MIDASCPP_VERSION_MAJOR "@MIDASCPP_VERSION_MAJOR@")
+SET(MIDASCPP_VERSION_MINOR "@MIDASCPP_VERSION_MINOR@")
+SET(MIDASCPP_VERSION_PATCH "@MIDASCPP_VERSION_PATCH@")
+
+# The libraries.
+SET(MIDASCPP_LIBRARIES "@MIDASCPP_LIBRARIES@")
+
+# The CMake macros dir.
+SET(MIDASCPP_CMAKE_DIR "@MIDASCPP_CMAKE_DIR_CONFIG@")
+
+# The configuration options.
+SET(MIDASCPP_BUILD_SHARED_LIBS "@BUILD_SHARED_LIBS@")
+
+# The C and C++ flags added to the cmake-configured flags.
+SET(MIDASCPP_REQUIRED_C_FLAGS 
+  "@MIDASCPP_REQUIRED_C_FLAGS@")
+SET(MIDASCPP_REQUIRED_CXX_FLAGS 
+  "@MIDASCPP_REQUIRED_CXX_FLAGS@")
+SET(MIDASCPP_REQUIRED_EXE_LINKER_FLAGS 
+  "@MIDASCPP_REQUIRED_EXE_LINKER_FLAGS@")
+SET(MIDASCPP_REQUIRED_SHARED_LINKER_FLAGS 
+  "@MIDASCPP_REQUIRED_SHARED_LINKER_FLAGS@")
+SET(MIDASCPP_REQUIRED_MODULE_LINKER_FLAGS 
+  "@MIDASCPP_REQUIRED_MODULE_LINKER_FLAGS@")
+
+# The "use" file.
+SET(MIDASCPP_USE_FILE "@MIDASCPP_USE_FILE_CONFIG@")
+
+# The build settings file.
+SET(MIDASCPP_BUILD_SETTINGS_FILE "@MIDASCPP_BUILD_SETTINGS_FILE_CONFIG@")
+
+# The library directories.
+SET(MIDASCPP_LIBRARY_DIRS "@MIDASCPP_LIBRARY_DIRS_CONFIG@")
+
+# The runtime directories.
+# Note that if MIDASCPP_CONFIGURATION_TYPES is set (see below) then
+# these directories will be the parent directories under which there will
+# be a directory of runtime binaries for each configuration type.
+SET(MIDASCPP_RUNTIME_DIRS "@MIDASCPP_RUNTIME_DIRS_CONFIG@")
+
+# The location of .bmm files
+SET(MIDASCPP_APPLICATIONS_DIRS "@MIDASCPP_APPLICATIONS_DIRS_CONFIG@")
+
+# The include directories.
+SET(MIDASCPP_INCLUDE_DIRS "@MIDASCPP_INCLUDE_DIRS_CONFIG@")
+
+# The library dependencies file.
+IF(NOT MIDASCPP_NO_LIBRARY_DEPENDS AND
+    EXISTS "@MIDASCPP_LIBRARY_DEPENDS_FILE@")
+  INCLUDE("@MIDASCPP_LIBRARY_DEPENDS_FILE@")
+ENDIF(NOT MIDASCPP_NO_LIBRARY_DEPENDS AND
+  EXISTS "@MIDASCPP_LIBRARY_DEPENDS_FILE@")
+
+# An install tree always provides one build configuration.
+# A build tree may provide either one or multiple build
+# configurations depending on the CMake generator used. Since
+# this project can be used either from a build tree or an install tree it
+# is useful for outside projects to know the configurations available.
+# If this MIDASCPPConfig.cmake is in an install tree
+# MIDASCPP_CONFIGURATION_TYPES will be empty and MIDASCPP_BUILD_TYPE
+# will be set to the value of CMAKE_BUILD_TYPE used to build
+# MIDASCPP. If MIDASCPPConfig.cmake is in a build tree
+# then MIDASCPP_CONFIGURATION_TYPES and MIDASCPP_BUILD_TYPE will
+# have values matching CMAKE_CONFIGURATION_TYPES and CMAKE_BUILD_TYPE
+# for that build tree (only one will ever be set).
+SET(MIDASCPP_CONFIGURATION_TYPES @MIDASCPP_CONFIGURATION_TYPES_CONFIG@)
+SET(MIDASCPP_BUILD_TYPE @MIDASCPP_BUILD_TYPE_CONFIG@)
