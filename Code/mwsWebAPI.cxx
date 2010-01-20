@@ -63,7 +63,15 @@ WebAPI* WebAPI::Instance()
 /** Execute the command */
 bool WebAPI::Execute(const char* url)
 {  
-  bool success = m_RestAPI->Execute(url);
+  std::stringstream fullUrl;
+  
+  fullUrl << url;
+  if(!m_APIToken.empty())
+    {  
+    fullUrl << "&token=" << m_APIToken;
+    }
+
+  bool success = m_RestAPI->Execute(fullUrl.str().c_str());
 
   if(success && m_RestXMLParser->GetErrorCode() == 0)
     {
