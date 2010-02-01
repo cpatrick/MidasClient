@@ -4,10 +4,16 @@
 #include <mwsCommunity.h>
 #include <mdoCommunity.h>
 #include <mwsCollection.h>
+#include <mdoCollection.h>
 #include <mwsBitstream.h>
 #include <mwsItem.h>
+#include <mdoItem.h>
 #include "midasSynchronizer.h"
 #include "midasCLI.h"
+
+#define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
+#define CHANGE_DIR kwsys::SystemTools::ChangeDirectory
+#define MKDIR kwsys::SystemTools::MakeDirectory
 
 midasSynchronizer::midasSynchronizer(midasCLI* cli)
 {
@@ -111,10 +117,12 @@ int midasSynchronizer::Pull()
     return -1;
     }
  
+  std::string name;
   switch(this->PullType)
     {
     case TYPE_BITSTREAM:
-      return this->PullBitstream();
+      name = this->GetBitstreamName();
+      return this->PullBitstream(name);
     case TYPE_COLLECTION:
       return this->PullCollection();
     case TYPE_COMMUNITY:
@@ -127,7 +135,7 @@ int midasSynchronizer::Pull()
 }
 
 //-------------------------------------------------------------------
-int midasSynchronizer::PullBitstream()
+int midasSynchronizer::PullBitstream(std::string filename)
 {
   mws::WebAPI remote;
   mds::SQLiteDatabase local;
@@ -140,7 +148,7 @@ int midasSynchronizer::PullBitstream()
   remote.SetServerUrl(this->ServerURL.c_str());
   std::string* progressData = new std::string;
   remote.GetRestAPI()->SetProgressCallback(DownloadProgress, progressData);
-  remote.DownloadFile(fields.str().c_str(), "C:\\testFile.jpg");
+  remote.DownloadFile(fields.str().c_str(), filename.c_str());
   delete progressData;
   
   //std::stringstream query;
@@ -155,6 +163,39 @@ int midasSynchronizer::PullBitstream()
 //-------------------------------------------------------------------
 int midasSynchronizer::PullCollection()
 {
+  mws::Collection remote;
+  mdo::Collection* collection = new mdo::Collection;
+  collection->SetId(atoi(this->GetResourceHandle().c_str()));
+  remote.SetWebAPI(&this->WebAPI);
+  remote.SetObject(collection);
+
+  if(!remote.Fetch())
+    {
+    std::cerr << "Unable to fetch the collection via the Web API" << std::endl;
+    return -1;
+    }
+  
+  if(!kwsys::SystemTools::FileIsDirectory(collection->GetName().c_str()))
+    {
+    MKDIR(collection->GetName().c_str());
+    }
+
+  if(this->Recursive)
+    {
+    std::string temp = WORKING_DIR();
+    CHANGE_DIR(collection->GetName().c_str());
+    for(std::vector<mdo::Item*>::const_iterator i = 
+        collection->GetItems().begin();
+        i != collection->GetItems().end(); ++i)
+      {
+      std::stringstream s;
+      s << (*i)->GetId();
+      this->SetResourceHandle(s.str());
+      this->PullItem();
+      }
+    CHANGE_DIR(temp.c_str());
+    }
+  delete collection;
   return 0;
 }
 
@@ -182,7 +223,6 @@ mdo::Community* FindInTree(mdo::Community* root, int id)
 //-------------------------------------------------------------------
 int midasSynchronizer::PullCommunity()
 {
-  std::stringstream fields;
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
   community->SetId(atoi(this->ResourceHandle.c_str()));
@@ -211,7 +251,7 @@ int midasSynchronizer::PullCommunity()
     path.push_back(current);
     }
 
-  std::string topLevelDir = kwsys::SystemTools::GetCurrentWorkingDirectory();
+  std::string topLevelDir = WORKING_DIR();
   //reverse from root to selected community, writing directories
   for(std::vector<mdo::Community*>::reverse_iterator i = path.rbegin();
     i != path.rend(); ++i)
@@ -219,18 +259,25 @@ int midasSynchronizer::PullCommunity()
     const char* name = (*i)->GetName().c_str();
     if(!kwsys::SystemTools::FileIsDirectory(name))
       {
-      kwsys::SystemTools::MakeDirectory(name);
+      MKDIR(name);
       }
-    kwsys::SystemTools::ChangeDirectory(name);
+    CHANGE_DIR(name);
     }
 
   if(!kwsys::SystemTools::FileIsDirectory(community->GetName().c_str()))
-      {
-      kwsys::SystemTools::MakeDirectory(community->GetName().c_str());
-      }
+    {
+    MKDIR(community->GetName().c_str());
+    }
+  
+  if(this->Recursive)
+    {
+    CHANGE_DIR(community->GetName().c_str());
+    //Pull the everything under this community.
+    RecurseCommunities(community);
+    }
 
   //revert working dir to top level
-  kwsys::SystemTools::ChangeDirectory(topLevelDir.c_str());
+  CHANGE_DIR(topLevelDir.c_str());
   delete community;
 
   //TODO check against local database
@@ -241,9 +288,78 @@ int midasSynchronizer::PullCommunity()
   return 0;
 }
 
+/**
+ * Function to recursively pull all collections
+ * underneath the given community, including in subcommunities.
+ */
+void midasSynchronizer::RecurseCommunities(mdo::Community* community)
+{
+  for(std::vector<mdo::Collection*>::const_iterator i = 
+      community->GetCollections().begin();
+      i != community->GetCollections().end(); ++i)
+    {
+    std::stringstream s;
+    s << (*i)->GetId();
+    this->SetResourceHandle(s.str());
+    this->PullCollection();
+    }
+  for(std::vector<mdo::Community*>::const_iterator i =
+      community->GetCommunities().begin();
+      i != community->GetCommunities().end(); ++i)
+    {
+    std::string temp = WORKING_DIR();
+    CHANGE_DIR((*i)->GetName().c_str());
+    this->RecurseCommunities(*i);
+    CHANGE_DIR(temp.c_str());
+    }
+}
+
+//-------------------------------------------------------------------
+std::string midasSynchronizer::GetBitstreamName()
+{
+  //TODO implement - this should call midas.bitstream.get
+  //with id=this->ResourceHandle and return the name of the
+  //corresponding bitstream
+  std::string s;
+  return s;
+}
+
 //-------------------------------------------------------------------
 int midasSynchronizer::PullItem()
 {
+  mws::Item remote;
+  mdo::Item* item = new mdo::Item;
+  item->SetId(atoi(this->GetResourceHandle().c_str()));
+  remote.SetWebAPI(&this->WebAPI);
+  remote.SetObject(item);
+
+  if(!remote.Fetch())
+    {
+    std::cerr << "Unable to fetch the collection via the Web API" << std::endl;
+    return -1;
+    }
+  
+  if(!kwsys::SystemTools::FileIsDirectory(item->GetTitle().c_str()))
+    {
+    MKDIR(item->GetTitle().c_str());
+    }
+
+  if(this->Recursive)
+    {
+    std::string temp = WORKING_DIR();
+    CHANGE_DIR(item->GetTitle().c_str());
+    for(std::vector<mdo::Bitstream*>::const_iterator i = 
+        item->GetBitstreams().begin();
+        i != item->GetBitstreams().end(); ++i)
+      {
+      std::stringstream s;
+      s << (*i)->GetId();
+      this->SetResourceHandle(s.str());
+      this->PullBitstream((*i)->GetName());
+      }
+    CHANGE_DIR(temp.c_str());
+    }
+  delete item;
   return 0;
 }
 

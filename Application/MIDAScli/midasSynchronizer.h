@@ -3,6 +3,7 @@
 
 #include "midasStandardIncludes.h"
 #include <mwsWebAPI.h>
+#include <mdoCommunity.h>
 
 // For resource_uuid.resource_type_id
 #define MIDAS_RESOURCE_BITSTREAM  0
@@ -56,10 +57,13 @@ class midasSynchronizer
     int Push();
     int Pull();
 
-    int PullBitstream();
+    std::string GetBitstreamName();
+    int PullBitstream(std::string name);
     int PullCollection();
     int PullCommunity();
     int PullItem();
+
+    void RecurseCommunities(mdo::Community* community);
 
     SynchOperation Operation;
     ResourceType PullType;
