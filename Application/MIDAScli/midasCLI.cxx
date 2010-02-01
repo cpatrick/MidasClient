@@ -35,36 +35,32 @@ int midasCLI::Perform(std::vector<std::string> args)
 
   for(unsigned i = 0; i < args.size(); i++)
     {
-    if(args[i] == "clone" && i < args.size() - 1)
+    if(args[i] == "clone")
       {
-      i++;
-      this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_CLONE);
-      this->Synchronizer->SetServerURL(args[i]);
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      this->ParseClone(postOpArgs);
+      break;
       }
-    else if(args[i] == "push" && i < args.size() - 2)
+    else if(args[i] == "push")
       {
-      i++;
-      this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
-      this->Synchronizer->SetServerURL(args[i]);
-      i++;
-      this->Synchronizer->SetResourceId(args[i]);
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      this->ParsePush(postOpArgs);
+      break;
       }
-    else if(args[i] == "pull" && i < args.size() - 2)
+    else if(args[i] == "pull")
       {
-      i++;
-      this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PULL);
-      this->Synchronizer->SetServerURL(args[i]);
-      i++;
-      this->Synchronizer->SetResourceId(args[i]);
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      this->ParsePull(postOpArgs);
+      break;
       }
-    else if(args[i] == "--database" && i < args.size() - 1)
+    else if(args[i] == "--database" && i + 1 < args.size())
       {
       i++;
       this->DatabaseLocation = args[i];
       }
     else if(args[i] == "--help")
       {
-      if(i < args.size() - 2)
+      if(i + 2 < args.size())
         {
         i++;
         this->PrintCommandHelp(args[i]);
@@ -84,6 +80,70 @@ int midasCLI::Perform(std::vector<std::string> args)
   return this->Synchronizer->Perform();
 }
 
+void midasCLI::ParseClone(std::vector<std::string> args)
+{
+/*  i++;
+  this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_CLONE);
+  this->Synchronizer->SetServerURL(args[i]);*/
+}
+
+//-------------------------------------------------------------------
+void midasCLI::ParsePull(std::vector<std::string> args)
+{
+  this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PULL);
+
+  unsigned i;
+  for(i = 0; i < args.size(); i++)
+    {
+    if(args[i] == "-r")
+      {
+      this->Synchronizer->SetRecursive(true);
+      }
+    else if(args[i] == "-c")
+      {
+      this->Synchronizer->SetPullType(midasSynchronizer::TYPE_COLLECTION);
+      }
+    else if(args[i] == "-C")
+      {
+      this->Synchronizer->SetPullType(midasSynchronizer::TYPE_COMMUNITY);
+      }
+    else if(args[i] == "-i")
+      {
+      this->Synchronizer->SetPullType(midasSynchronizer::TYPE_ITEM);
+      }
+    else if(args[i] == "-b")
+      {
+      this->Synchronizer->SetPullType(midasSynchronizer::TYPE_COLLECTION);
+      }
+    else
+      {
+      break;
+      }
+    }
+
+  if(i + 1 < args.size() &&
+    this->Synchronizer->GetPullType() != midasSynchronizer::TYPE_NONE)
+    {
+    this->Synchronizer->SetServerURL(args[i]);
+    i++;
+    this->Synchronizer->SetResourceHandle(args[i]);
+    }
+  else
+    {
+    this->PrintCommandHelp("pull");
+    }
+}
+
+//-------------------------------------------------------------------
+void midasCLI::ParsePush(std::vector<std::string> args)
+{
+/*  i++;
+  this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
+  this->Synchronizer->SetServerURL(args[i]);
+  i++;
+  this->Synchronizer->SetResourceHandle(args[i]);*/
+}
+
 //-------------------------------------------------------------------
 void midasCLI::PrintUsage()
 {
@@ -100,5 +160,16 @@ void midasCLI::PrintUsage()
 //-------------------------------------------------------------------
 void midasCLI::PrintCommandHelp(std::string command)
 {
-//TODO document the cli for each command (push, pull, clone)
+  if(command == "pull")
+    {
+    std::cout << "Usage: MIDAScli ... pull [COMMAND-OPTIONS] URL "
+      "RESOURCE_ID" << std::endl << "Where COMMAND-OPTIONS can be: "
+      << std::endl << " -r         Copy recursively."
+      << std::endl << " -C         For pulling a community."
+      << std::endl << " -c         For pulling a collection."
+      << std::endl << " -i         For pulling an item."
+      << std::endl << " -b         For pulling a bitstream."
+      << std::endl <<"Exactly one type must be specified (-b, -i, -c, -C)."
+      << std::endl;
+    }
 }

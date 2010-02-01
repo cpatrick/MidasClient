@@ -46,13 +46,6 @@ CREATE TABLE cart2eperson (
   eperson_id integer NOT NULL
 );
 
-CREATE TABLE resource_uuid (
-    resource_type smallint,
-    resource_id integer,
-    uuid character varying(512) PRIMARY KEY,
-    location smallint DEFAULT 0
-);
-
 CREATE INDEX cart2eperson_cartid_idx ON cart2eperson (cart_id);
 CREATE INDEX cart2eperson_epersonid_idx ON cart2eperson (eperson_id);
 
@@ -140,7 +133,8 @@ CREATE TABLE bitstream (
     description text,
     user_format_description text,
     source character varying(256),
-    internal_id character varying(256),
+    internal_id character varying(512),
+    location smallint DEFAULT 0,
     deleted boolean,
     store_number integer,
     sequence_id integer
@@ -210,6 +204,7 @@ CREATE TABLE checksum_results (
 CREATE TABLE collection (
     collection_id integer NOT NULL,
     name character varying(128),
+    location character varying(512),
     short_description character varying(512),
     introductory_text text,
     logo_bitstream_id integer,
@@ -340,6 +335,7 @@ CREATE TABLE communities2item (
 CREATE TABLE community (
     community_id integer NOT NULL,
     name character varying(128),
+    location character varying(512),
     short_description character varying(512),
     introductory_text text,
     logo_bitstream_id integer,
@@ -520,6 +516,12 @@ CREATE TABLE group2groupcache (
     child_id integer
 );
 
+CREATE TABLE resource_uuid (
+    resource_type_id integer,
+    resource_id integer,
+    uuid character varying(512) PRIMARY KEY
+);
+
 --
 -- Name: handle; Type: TABLE; Schema: public; Owner: midas; Tablespace:
 --
@@ -556,6 +558,7 @@ CREATE TABLE historystate (
 
 CREATE TABLE item (
     item_id integer NOT NULL,
+    location character varying(512),
     submitter_id integer,
     in_archive boolean,
     withdrawn boolean,

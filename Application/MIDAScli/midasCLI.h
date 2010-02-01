@@ -17,6 +17,10 @@ class midasCLI
   protected:
     void PrintUsage();
     void PrintCommandHelp(std::string command);
+
+    void ParsePull(std::vector<std::string> args);
+    void ParsePush(std::vector<std::string> args);
+    void ParseClone(std::vector<std::string> args);
   
     //the path to the local database file
     std::string DatabaseLocation;
