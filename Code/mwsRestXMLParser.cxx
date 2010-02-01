@@ -116,8 +116,6 @@ void RestXMLParser::StartElement(const char * name,const char **atts)
   m_CurrentTag += "/";
   m_CurrentTag += name;
   
-  std::cout << "TAG = " << m_CurrentTag.c_str() << std::endl;
-  
   // If it's an error message
   std::string val = "";
   if(!m_CurrentTag.compare("/rsp/err"))

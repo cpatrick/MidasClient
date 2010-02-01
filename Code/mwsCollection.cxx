@@ -112,11 +112,11 @@ bool Collection::Fetch()
     {
     std::cerr << "Collection::Fetch() : Collection id not set" << std::endl;
     return false;
-    } 
+    }
        
   CollectionXMLParser parser;
   parser.SetCollection(m_Collection);
-  parser.AddTag("/rsp/title",m_Collection->GetName());
+  parser.AddTag("/rsp/name",m_Collection->GetName());
   parser.AddTag("/rsp/description",m_Collection->GetDescription());
   
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);

@@ -64,7 +64,7 @@ std::string Item::GenerateAssetstoreFilename(const char* assetstore)
   std::stringstream randomchars;
   for(unsigned int i=0;i<40;i++)
     {
-    randomchars << rand() % 9;
+    randomchars << rand() % 10;
     }
   
   std::string filename = randomchars.str();
@@ -103,7 +103,7 @@ std::string Item::GenerateAssetstoreFilename(const char* assetstore)
     {
     kwsys::SystemTools::MakeDirectory(directory.c_str());
     } 
-  directory  += "/";
+  directory += "/";
   directory += filename;
 
   return directory;
