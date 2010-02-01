@@ -184,7 +184,7 @@ int midasSynchronizer::PullCollection()
     std::cerr << "Unable to fetch the collection via the Web API" << std::endl;
     return -1;
     }
-  
+
   if(!kwsys::SystemTools::FileIsDirectory(collection->GetName().c_str()))
     {
     MKDIR(collection->GetName().c_str());
@@ -318,6 +318,7 @@ void midasSynchronizer::RecurseCommunities(mdo::Community* community)
       i != community->GetCommunities().end(); ++i)
     {
     std::string temp = WORKING_DIR();
+    MKDIR((*i)->GetName().c_str());
     CHANGE_DIR((*i)->GetName().c_str());
     this->RecurseCommunities(*i);
     CHANGE_DIR(temp.c_str());
@@ -331,6 +332,13 @@ std::string midasSynchronizer::GetBitstreamName()
   //with id=this->ResourceHandle and return the name of the
   //corresponding bitstream
   std::string s;
+  mws::WebAPI webAPI;
+  webAPI.SetServerUrl(this->ServerURL.c_str());
+
+  std::stringstream fields;
+  fields << "midas.bitstream.get?id=" << this->GetResourceHandle();
+  webAPI.Execute(fields.str().c_str());
+
   return s;
 }
 
