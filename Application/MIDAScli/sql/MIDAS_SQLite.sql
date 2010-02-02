@@ -519,7 +519,6 @@ CREATE TABLE group2groupcache (
 CREATE TABLE resource_uuid (
     resource_type_id integer,
     resource_id integer,
-    last_modified timestamp with time zone DEFAULT DATETIME('NOW'),
     uuid character varying(512) PRIMARY KEY
 );
 

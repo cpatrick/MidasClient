@@ -115,13 +115,12 @@ int midasSynchronizer::Clone()
 int DownloadProgress(void *clientp, double dltotal, double dlnow, 
                      double ultotal, double ulnow)
 {
-  if(dltotal == 0)
+  if(dltotal != 0)
     {
-    return 0;
+    std::string* out = reinterpret_cast<std::string*>(clientp);
+    int percent = (int)((dlnow * 100.0)/dltotal);
+    std::cout << " " << std::setw(4) << percent << "% " << *out << std::endl;
     }
-  std::string* out = reinterpret_cast<std::string*>(clientp);
-  int percent = (int)((dlnow * 100.0)/dltotal);
-  std::cout << " " << std::setw(4) << percent << "% " << *out << std::endl;
   return 0;
 }
 
