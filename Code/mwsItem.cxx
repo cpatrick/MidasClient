@@ -63,7 +63,7 @@ public:
       } 
      else if(!m_CurrentTag.compare("/rsp/bitstreams/data/size"))
       {
-      m_Bitstream->SetSize(atoi(m_CurrentValue.c_str()));
+      m_Bitstream->SetSize(m_CurrentValue.c_str());
       }   
     RestXMLParser::EndElement(name);
     }

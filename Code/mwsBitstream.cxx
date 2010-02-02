@@ -9,6 +9,7 @@
 
 =========================================================================*/
 #include "mwsBitstream.h"
+#include "mdoBitstream.h"
 #include <sstream>
 #include <iostream>
 #include "mwsRestXMLParser.h"
@@ -31,7 +32,6 @@ public:
   virtual void StartElement(const char * name,const char **atts)
     {
     RestXMLParser::StartElement(name,atts);
-    std::cout << "StartElement: " << name << std::endl;
     }
 
   /// Callback function -- called from XML parser when ending tag
@@ -39,7 +39,6 @@ public:
   virtual void EndElement(const char *name)
     {
     RestXMLParser::EndElement(name);
-    std::cout << "EndElement: " << name << std::endl;
     }
     
   /// Callback function -- called from XML parser with the character data
@@ -47,15 +46,14 @@ public:
   virtual void CharacterDataHandler(const char *inData, int inLength)
     {
      RestXMLParser::CharacterDataHandler(inData,inLength);
-    //std::cout << "CharacterDataHandler: " << inData << std::endl;
     }
   
   /** Set the bitstream object */
-  void SetBitstream(Bitstream* item) {m_Bitstream = item;}
+  void SetBitstream(mdo::Bitstream* item) {m_Bitstream = item;}
   
 protected:
 
-  Bitstream* m_Bitstream;
+  mdo::Bitstream* m_Bitstream;
   
 };
 
@@ -74,6 +72,32 @@ Bitstream::~Bitstream()
 /** Fetch the object */
 bool Bitstream::Fetch()
 {
+  if(!m_Bitstream)
+    {
+    std::cerr << "Bitstream::Fecth : Bitstream not set" << std::endl;
+    return false;
+    }
+    
+  if(m_Bitstream->GetId() == 0)
+    {
+    std::cerr << "Bitstream::Fetch : BitstreamId not set" << std::endl;
+    return false;
+    }
+
+  BitstreamXMLParser parser;
+  parser.SetBitstream(m_Bitstream);
+  parser.AddTag("/rsp/name",m_Bitstream->GetName());
+  parser.AddTag("/rsp/size",m_Bitstream->GetSize());
+  
+  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+  
+  std::stringstream url;
+  url << "midas.bitstream.get?id=" << m_Bitstream->GetId();
+  if(!m_WebAPI->Execute(url.str().c_str()))
+    {
+    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    return false;
+    }
   return true;
 }
 

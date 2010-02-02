@@ -34,11 +34,11 @@ public:
 
   // Set/Get the name of bitstream
   void SetName(const char* name) { m_Name = name; }
-  const std::string GetName() {return m_Name;}
+  std::string & GetName() {return m_Name;}
   
   // Set/Get the size of bitstream
-  void SetSize(unsigned long size) { m_Size = size; }
-  unsigned long GetSize() {return m_Size;}
+  void SetSize(std::string size) { m_Size = size; }
+  std::string & GetSize() {return m_Size;}
   
   // Display all the tags and their respective names and values.
   void Print(std::ostream &os, int indent=-1);
@@ -47,7 +47,7 @@ protected:
 
   unsigned int   m_Id;
   std::string    m_Name;
-  unsigned long  m_Size;
+  std::string    m_Size;
 };
 
 } //end namespace

@@ -18,7 +18,7 @@ namespace mdo{
 Bitstream::Bitstream()
 {
   m_Id = 0;
-  m_Size = 0;
+  m_Size = "0";
   m_Name = "";
 }
   
