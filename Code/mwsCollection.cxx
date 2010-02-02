@@ -51,15 +51,8 @@ public:
     if(!m_CurrentTag.compare("/rsp/items/data"))
       {
       m_Collection->AddItem(m_Item);
+      m_Item->SetId(atoi(m_CurrentValue.c_str()));
       }
-    else if(!m_CurrentTag.compare("/rsp/items/data/title"))
-      {
-      m_Collection->SetName(m_CurrentValue.c_str());
-      }
-    else if(!m_CurrentTag.compare("/rsp/items/data/id"))
-      {
-      m_Collection->SetId(atoi(m_CurrentValue.c_str()));
-      } 
     RestXMLParser::EndElement(name);
     }
     
