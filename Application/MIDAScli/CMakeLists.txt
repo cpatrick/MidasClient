@@ -8,6 +8,8 @@ midasCLI.cxx
 midasStandardIncludes.h
 midasSynchronizer.h
 midasSynchronizer.cxx
+midasUUID.h
+midasUUID.cxx
 )
 
 ADD_EXECUTABLE(MIDAScli ${MIDAScli_SRCS})
