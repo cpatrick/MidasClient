@@ -153,10 +153,12 @@ int midasSynchronizer::Pull()
 //-------------------------------------------------------------------
 int midasSynchronizer::PullBitstream(std::string filename)
 {
+  if(filename == "")
+    {
+    return -1;
+    }
   mws::WebAPI remote;
   mds::SQLiteDatabase local;
-//TODO figure out (via uuid lookup table) what type of resource we are getting so we know which web service API to call.
-//TODO implement web service to lookup resource_uuid information based on uuid.
 
   std::stringstream fields;
   fields << "midas.bitstream.download?id=" << this->GetResourceHandle();
@@ -225,7 +227,7 @@ int midasSynchronizer::PullCollection()
 mdo::Community* FindInTree(mdo::Community* root, int id)
 {
   for(std::vector<mdo::Community*>::const_iterator i =
-    root->GetCommunities().begin(); i != root->GetCommunities().end(); ++i)
+      root->GetCommunities().begin(); i != root->GetCommunities().end(); ++i)
     {
     if((*i)->GetId() == id)
       {
@@ -274,7 +276,7 @@ int midasSynchronizer::PullCommunity()
   std::string topLevelDir = WORKING_DIR();
   //reverse from root to selected community, writing directories
   for(std::vector<mdo::Community*>::reverse_iterator i = path.rbegin();
-    i != path.rend(); ++i)
+      i != path.rend(); ++i)
     {
     const char* name = (*i)->GetName().c_str();
     if(!kwsys::SystemTools::FileIsDirectory(name))
@@ -338,18 +340,23 @@ void midasSynchronizer::RecurseCommunities(mdo::Community* community)
 //-------------------------------------------------------------------
 std::string midasSynchronizer::GetBitstreamName()
 {
-  //TODO implement - this should call midas.bitstream.get
-  //with id=this->ResourceHandle and return the name of the
-  //corresponding bitstream
-  std::string s;
-  mws::WebAPI webAPI;
-  webAPI.SetServerUrl(this->ServerURL.c_str());
+  mws::Bitstream remote;
+  mdo::Bitstream* bitstream = new mdo::Bitstream;
+  bitstream->SetId(atoi(this->ResourceHandle.c_str()));
+  remote.SetWebAPI(&this->WebAPI);
+  remote.SetObject(bitstream);
+  
+  if(!remote.Fetch())
+    {
+    std::cerr << "Unable to get bitstream via the web API." << std::endl;
+    }
 
-  std::stringstream fields;
-  fields << "midas.bitstream.get?id=" << this->GetResourceHandle();
-  webAPI.Execute(fields.str().c_str());
-
-  return s;
+  if(bitstream->GetName() == "")
+    {
+    std::cerr << "Bitstream " << this->ResourceHandle << " does not exist."
+      << std::endl;
+    }
+  return bitstream->GetName();
 }
 
 //-------------------------------------------------------------------

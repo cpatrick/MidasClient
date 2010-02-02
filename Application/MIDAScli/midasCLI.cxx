@@ -93,6 +93,7 @@ int midasCLI::Perform(std::vector<std::string> args)
 
 void midasCLI::ParseClone(std::vector<std::string> args)
 {
+  std::cout << "Clone not yet implemented.\n";
 /*  i++;
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_CLONE);
   this->Synchronizer->SetServerURL(args[i]);*/
@@ -124,7 +125,7 @@ void midasCLI::ParsePull(std::vector<std::string> args)
       }
     else if(args[i] == "-b")
       {
-      this->Synchronizer->SetPullType(midasSynchronizer::TYPE_COLLECTION);
+      this->Synchronizer->SetPullType(midasSynchronizer::TYPE_BITSTREAM);
       }
     else
       {
@@ -148,6 +149,7 @@ void midasCLI::ParsePull(std::vector<std::string> args)
 //-------------------------------------------------------------------
 void midasCLI::ParsePush(std::vector<std::string> args)
 {
+  std::cout << "Push not yet implemented.\n";
 /*  i++;
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
   this->Synchronizer->SetServerURL(args[i]);
