@@ -115,7 +115,13 @@ int midasSynchronizer::Clone()
 int DownloadProgress(void *clientp, double dltotal, double dlnow, 
                      double ultotal, double ulnow)
 {
-  std::cout << "PROGRESS: " << dlnow << " / " << dltotal << std::endl;
+  if(dltotal == 0)
+    {
+    return 0;
+    }
+  std::string* out = reinterpret_cast<std::string*>(clientp);
+  int percent = (int)((dlnow * 100.0)/dltotal);
+  std::cout << " " << std::setw(4) << percent << "% " << *out << std::endl;
   return 0;
 }
 
@@ -157,8 +163,12 @@ int midasSynchronizer::PullBitstream(std::string filename)
   //TODO call remote.login() based on config options (profiles?)
   remote.SetServerUrl(this->ServerURL.c_str());
   std::string* progressData = new std::string;
+  progressData->append(filename);
   remote.GetRestAPI()->SetProgressCallback(DownloadProgress, progressData);
   remote.DownloadFile(fields.str().c_str(), filename.c_str());
+
+  std::cout << "Finished downloading " << WORKING_DIR() 
+    << "/" << filename << std::endl;
   delete progressData;
   
   //std::stringstream query;
@@ -353,7 +363,7 @@ int midasSynchronizer::PullItem()
 
   if(!remote.Fetch())
     {
-    std::cerr << "Unable to fetch the collection via the Web API" << std::endl;
+    std::cerr << "Unable to fetch the item via the Web API" << std::endl;
     return -1;
     }
   
