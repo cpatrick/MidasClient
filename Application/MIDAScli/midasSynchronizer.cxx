@@ -19,6 +19,7 @@
 #include <mwsItem.h>
 #include <mdoItem.h>
 #include "midasSynchronizer.h"
+#include "midasProgressReporter.h"
 #include "midasCLI.h"
 
 #define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
@@ -115,12 +116,9 @@ int midasSynchronizer::Clone()
 int DownloadProgress(void *clientp, double dltotal, double dlnow, 
                      double ultotal, double ulnow)
 {
-  if(dltotal != 0)
-    {
-    std::string* out = reinterpret_cast<std::string*>(clientp);
-    int percent = (int)((dlnow * 100.0)/dltotal);
-    std::cout << " " << std::setw(4) << percent << "% " << *out << std::endl;
-    }
+  midasProgressReporter* out
+    = reinterpret_cast<midasProgressReporter*>(clientp);
+  out->UpdateProgress(dlnow, dltotal);
   return 0;
 }
 
@@ -163,14 +161,13 @@ int midasSynchronizer::PullBitstream(std::string filename)
   fields << "midas.bitstream.download?id=" << this->GetResourceHandle();
   //TODO call remote.login() based on config options (profiles?)
   remote.SetServerUrl(this->ServerURL.c_str());
-  std::string* progressData = new std::string;
-  progressData->append(filename);
-  remote.GetRestAPI()->SetProgressCallback(DownloadProgress, progressData);
+  midasProgressReporter* progress = new midasProgressReporter(30);
+  std::cout << std::setw(32) << filename << "  ";
+  remote.GetRestAPI()->SetProgressCallback(DownloadProgress, progress);
   remote.DownloadFile(fields.str().c_str(), filename.c_str());
 
-  std::cout << "Finished downloading " << WORKING_DIR() 
-    << "/" << filename << std::endl;
-  delete progressData;
+  std::cout << " Done" << std::endl;
+  delete progress;
   
   //std::stringstream query;
   //query << "
