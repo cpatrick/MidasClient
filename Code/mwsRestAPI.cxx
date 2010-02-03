@@ -85,7 +85,7 @@ bool RestAPI::SetCurlOptions(const char* url,
   curl_easy_setopt(m_cURL, CURLOPT_SSL_VERIFYHOST, 1);
   curl_easy_setopt(m_cURL, CURLOPT_SSL_VERIFYPEER, false);
   curl_easy_setopt(m_cURL, CURLOPT_URL, url);
-  curl_easy_setopt(m_cURL, CURLOPT_COOKIEJAR,"MIDASCookie.txt");
+
   if(m_Verbose)
     {
     curl_easy_setopt(m_cURL, CURLOPT_VERBOSE, 1); 
