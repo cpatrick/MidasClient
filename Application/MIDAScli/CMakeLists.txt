@@ -17,7 +17,17 @@ midasUUID.cxx
 ADD_EXECUTABLE(MIDAScli ${MIDAScli_SRCS})
 TARGET_LINK_LIBRARIES(MIDAScli MIDAS)
 
-# Copy SQLite database definitions to bin dir
-CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/Application/MIDAScli/sql/MIDAS_SQLite.sql
-               ${CMAKE_BINARY_DIR}/sql/MIDAS_SQLite.sql
-               COPYONLY)
+SET(midas_db "${CMAKE_BINARY_DIR}/midas.db")
+
+# Add target to build the database from definitions at build time
+ADD_CUSTOM_COMMAND (
+  OUTPUT ${midas_db}
+  DEPENDS "${CMAKE_SOURCE_DIR}/Application/MIDAScli/sql/MIDAS_SQLite.sql"
+  COMMAND sqlite3 -init "${CMAKE_SOURCE_DIR}/Application/MIDAScli/sql/MIDAS_SQLite.sql" ${midas_db}
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+  COMMENT "Creating SQLite database..."
+)
+ADD_CUSTOM_TARGET (
+  sqlite_db ALL
+  DEPENDS sqlite3 ${midas_db}
+)
