@@ -13,6 +13,116 @@
 -- PURPOSE.  See the above copyright notices for more information.
 -------------------------------------------------------------------------------
 
+-- Delete all old tables if they exist
+-- This text is a result of the query:
+-- SELECT 'DROP TABLE IF EXISTS ' || name || ';' FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';
+DROP TABLE IF EXISTS version;
+DROP TABLE IF EXISTS cart;
+DROP TABLE IF EXISTS cart2eperson;
+DROP TABLE IF EXISTS cart2item;
+DROP TABLE IF EXISTS cartgroup;
+DROP TABLE IF EXISTS cartgroup2cart;
+DROP TABLE IF EXISTS cart2cart;
+DROP TABLE IF EXISTS modality;
+DROP TABLE IF EXISTS midas_itemstats;
+DROP TABLE IF EXISTS midas_resourcelog;
+DROP TABLE IF EXISTS bitstream;
+DROP TABLE IF EXISTS bitstreamformatregistry;
+DROP TABLE IF EXISTS bundle;
+DROP TABLE IF EXISTS bundle2bitstream;
+DROP TABLE IF EXISTS checksum_history;
+DROP TABLE IF EXISTS checksum_results;
+DROP TABLE IF EXISTS collection;
+DROP TABLE IF EXISTS collection2item;
+DROP TABLE IF EXISTS itemsbyauthor;
+DROP TABLE IF EXISTS itemsbydate;
+DROP TABLE IF EXISTS itemsbydateaccessioned;
+DROP TABLE IF EXISTS itemsbysubject;
+DROP TABLE IF EXISTS itemsbytitle;
+DROP TABLE IF EXISTS communities2item;
+DROP TABLE IF EXISTS community;
+DROP TABLE IF EXISTS community2collection;
+DROP TABLE IF EXISTS community2community;
+DROP TABLE IF EXISTS metadatafieldregistry;
+DROP TABLE IF EXISTS metadatavalue;
+DROP TABLE IF EXISTS eperson;
+DROP TABLE IF EXISTS epersongroup;
+DROP TABLE IF EXISTS epersongroup2eperson;
+DROP TABLE IF EXISTS epersongroup2workspaceitem;
+DROP TABLE IF EXISTS fileextension;
+DROP TABLE IF EXISTS group2group;
+DROP TABLE IF EXISTS group2groupcache;
+DROP TABLE IF EXISTS resource_uuid;
+DROP TABLE IF EXISTS handle;
+DROP TABLE IF EXISTS history;
+DROP TABLE IF EXISTS historystate;
+DROP TABLE IF EXISTS item;
+DROP TABLE IF EXISTS item2bundle;
+DROP TABLE IF EXISTS metadataschemaregistry;
+DROP TABLE IF EXISTS midas_bitstream;
+DROP TABLE IF EXISTS midas_collectionsubmit;
+DROP TABLE IF EXISTS midas_searchsshfs;
+DROP TABLE IF EXISTS midas_sshfs;
+DROP TABLE IF EXISTS midas_statistics;
+DROP TABLE IF EXISTS midas_userquota;
+DROP TABLE IF EXISTS most_recent_checksum;
+DROP TABLE IF EXISTS registrationdata;
+DROP TABLE IF EXISTS resourcepolicy;
+DROP TABLE IF EXISTS subscription;
+DROP TABLE IF EXISTS tasklistitem;
+DROP TABLE IF EXISTS workflowitem;
+DROP TABLE IF EXISTS workspaceitem;
+DROP TABLE IF EXISTS midas_epersonapi;
+DROP TABLE IF EXISTS midas_apitoken;
+DROP TABLE IF EXISTS mde_resource;
+DROP TABLE IF EXISTS mde_image;
+DROP TABLE IF EXISTS mde_medicalimage;
+DROP TABLE IF EXISTS mde_device;
+DROP TABLE IF EXISTS mde_device2medicalimage;
+DROP TABLE IF EXISTS mde_institution;
+DROP TABLE IF EXISTS mde_institution2medicalimage;
+DROP TABLE IF EXISTS mde_project;
+DROP TABLE IF EXISTS mde_project2medicalimage;
+DROP TABLE IF EXISTS mde_color;
+DROP TABLE IF EXISTS mde_document;
+DROP TABLE IF EXISTS mde_keyword;
+DROP TABLE IF EXISTS mde_picture;
+DROP TABLE IF EXISTS mde_subject;
+DROP TABLE IF EXISTS mde_subject2medicalimage;
+DROP TABLE IF EXISTS thumbnail;
+DROP TABLE IF EXISTS mderesource2thumbnail;
+DROP TABLE IF EXISTS bitstream2thumbnail;
+DROP TABLE IF EXISTS bitstream2resource;
+DROP TABLE IF EXISTS workflow;
+DROP TABLE IF EXISTS workflow_history;
+DROP TABLE IF EXISTS workflow_history_step;
+DROP TABLE IF EXISTS workflow_step;
+DROP TABLE IF EXISTS workflow_step2field;
+DROP TABLE IF EXISTS workflow_dependency;
+DROP TABLE IF EXISTS workflow_field;
+DROP TABLE IF EXISTS community2collection_main;
+DROP TABLE IF EXISTS community2community_main;
+DROP TABLE IF EXISTS filecache;
+DROP TABLE IF EXISTS filecache_statistics;
+DROP TABLE IF EXISTS filecache_statistics_details;
+DROP TABLE IF EXISTS item2item;
+
+-- Delete all old views if they exist
+-- This text is a result of the query:
+-- SELECT 'DROP VIEW IF EXISTS ' || name || ';' FROM sqlite_master WHERE type='view' AND name NOT LIKE 'sqlite_%';
+DROP VIEW IF EXISTS collectionitemsbyauthor;
+DROP VIEW IF EXISTS collectionitemsbydate;
+DROP VIEW IF EXISTS collectionitemsbydateaccession;
+DROP VIEW IF EXISTS collectionitemsbysubject;
+DROP VIEW IF EXISTS collectionitemsbytitle;
+DROP VIEW IF EXISTS community2item;
+DROP VIEW IF EXISTS communityitemsbyauthor;
+DROP VIEW IF EXISTS communityitemsbydate;
+DROP VIEW IF EXISTS communityitemsbydateaccession;
+DROP VIEW IF EXISTS communityitemsbysubject;
+DROP VIEW IF EXISTS communityitemsbytitle;
+DROP VIEW IF EXISTS dcvalue;
+
 --
 -- Name: bitstream; Type: TABLE; Schema: public; Owner: midas; Tablespace:
 --
