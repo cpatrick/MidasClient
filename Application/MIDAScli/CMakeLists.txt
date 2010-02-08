@@ -5,9 +5,11 @@ SET(MIDAScli_SRCS
 main.cxx
 midasCLI.h
 midasCLI.cxx
+midasProgressReporter.h
+midasDatabaseProxy.h
+midasDatabaseProxy.cxx
 midasDotProgressReporter.h
 midasDotProgressReporter.cxx
-midasProgressReporter.h
 midasStandardIncludes.h
 midasSynchronizer.h
 midasSynchronizer.cxx

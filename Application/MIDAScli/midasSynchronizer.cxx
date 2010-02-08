@@ -9,7 +9,6 @@
 
 =========================================================================*/
 
-#include <mdsSQLiteDatabase.h>
 #include <mwsWebAPI.h>
 #include <mwsCommunity.h>
 #include <mdoCommunity.h>
@@ -17,9 +16,11 @@
 #include <mdoCollection.h>
 #include <mwsBitstream.h>
 #include <mwsItem.h>
+#include <mwsRestXMLParser.h>
 #include <mdoItem.h>
 #include "midasSynchronizer.h"
 #include "midasProgressReporter.h"
+#include "midasDatabaseProxy.h"
 #include "midasCLI.h"
 
 #define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
@@ -34,10 +35,26 @@ midasSynchronizer::midasSynchronizer(midasCLI* cli)
   this->PullType = TYPE_NONE;
   this->ServerURL = "";
   this->Progress = NULL;
+  this->Database = "";
+  this->DatabaseProxy = NULL;
 }
 
 midasSynchronizer::~midasSynchronizer()
 {
+  if(this->DatabaseProxy)
+    {
+    delete this->DatabaseProxy;
+    }
+}
+
+void midasSynchronizer::SetDatabase(std::string path)
+{
+  this->Database = path;
+  if(this->DatabaseProxy)
+    {
+    delete this->DatabaseProxy;
+    }
+  this->DatabaseProxy = new midasDatabaseProxy(path);
 }
 
 void midasSynchronizer::SetProgressReporter(midasProgressReporter* progress)
@@ -169,32 +186,36 @@ int midasSynchronizer::Pull()
 //-------------------------------------------------------------------
 int midasSynchronizer::PullBitstream(std::string filename)
 {
+  //TODO find out if we even need to download by checking UUID in local database and following it to the file.
+  //if the uuid and the file it points to exist, we return 0.
+  std::string uuid = this->GetUUID(MIDAS_RESOURCE_BITSTREAM);
+
   if(filename == "")
     {
     return -1;
     }
   mws::WebAPI remote;
-  mds::SQLiteDatabase local;
 
   std::stringstream fields;
   fields << "midas.bitstream.download?id=" << this->GetResourceHandle();
   //TODO call remote.login() based on config options (profiles?)
   remote.SetServerUrl(this->ServerURL.c_str());
   
-  std::cout << std::setw(32) << filename << "  ";
   if(this->Progress)
     {
     remote.GetRestAPI()->SetProgressCallback(DownloadProgress, this->Progress);
+    this->Progress->SetMessage(filename);
     this->Progress->ResetProgress();
     }
   remote.DownloadFile(fields.str().c_str(), filename.c_str());
   
-  //std::stringstream query;
-  //query << "
-
-  local.Open(this->CLI->GetDatabaseLocation().c_str());
-  //db.ExecuteQuery(query.str().c_str());
-  local.Close();
+  this->DatabaseProxy->Open();
+  int id = this->DatabaseProxy->InsertBitstream(
+    WORKING_DIR() + "/" + filename, filename);
+  this->DatabaseProxy->InsertResourceRecord(
+    MIDAS_RESOURCE_BITSTREAM, id, WORKING_DIR() + "/" + filename, uuid);
+  this->DatabaseProxy->Close();
+  
   return 0;
 }
 
@@ -310,19 +331,19 @@ int midasSynchronizer::PullCommunity()
   if(this->Recursive)
     {
     CHANGE_DIR(community->GetName().c_str());
-    //Pull the everything under this community.
-    RecurseCommunities(community);
+    // Pull everything under this community.
+    this->RecurseCommunities(community);
     }
 
-  //revert working dir to top level
+  // Revert working dir to top level
   CHANGE_DIR(topLevelDir.c_str());
   delete community;
 
   //TODO check against local database
-  mds::SQLiteDatabase local;
-  local.Open(this->CLI->GetDatabaseLocation().c_str());
+  //mds::SQLiteDatabase local;
+  //local.Open(this->CLI->GetDatabaseLocation().c_str());
   //db.ExecuteQuery(query.str().c_str());
-  local.Close();
+  //local.Close();
   return 0;
 }
 
@@ -351,6 +372,21 @@ void midasSynchronizer::RecurseCommunities(mdo::Community* community)
     this->RecurseCommunities(*i);
     CHANGE_DIR(temp.c_str());
     }
+}
+
+//-------------------------------------------------------------------
+std::string midasSynchronizer::GetUUID(int type)
+{
+  mws::WebAPI remote;
+  std::stringstream fields;
+  fields << "midas.uuid.get?id=" << this->GetResourceHandle()
+    << "&type=" << type;
+  remote.SetServerUrl(this->ServerURL.c_str());
+  std::string uuid;
+  remote.GetRestXMLParser()->AddTag("/rsp/uuid", uuid);
+  remote.Execute(fields.str().c_str());
+  
+  return uuid;
 }
 
 //-------------------------------------------------------------------

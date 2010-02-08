@@ -17,6 +17,10 @@ midasDotProgressReporter::midasDotProgressReporter(int length)
   this->maxLength = length;
 }
 
+midasDotProgressReporter::~midasDotProgressReporter()
+{
+}
+
 void midasDotProgressReporter::UpdateProgress(double current, double max)
 {
   if (max == 0 || this->Done) return;
@@ -42,6 +46,11 @@ void midasDotProgressReporter::PrintBar()
     }
 
   this->oldLength = this->currLength;
+}
+
+void midasDotProgressReporter::SetMessage(std::string message)
+{
+  std::cout << std::setw(32) << message << "  ";
 }
 
 void midasDotProgressReporter::ResetProgress()

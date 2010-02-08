@@ -14,9 +14,9 @@
 
 midasCLI::midasCLI()
 {
-  this->DatabaseLocation =
-    kwsys::SystemTools::GetCurrentWorkingDirectory() + "/midas.db";
   this->Synchronizer = new midasSynchronizer(this);
+  this->Synchronizer->SetDatabase(
+    kwsys::SystemTools::GetCurrentWorkingDirectory() + "/midas.db");
   this->Synchronizer->SetProgressReporter(
     reinterpret_cast<midasProgressReporter*>(
     new midasDotProgressReporter(30)));
@@ -26,18 +26,6 @@ midasCLI::~midasCLI()
 {
   this->Synchronizer->DeleteProgressReporter();
   delete this->Synchronizer;
-}
-
-//-------------------------------------------------------------------
-std::string midasCLI::GetDatabaseLocation()
-{
-  return this->DatabaseLocation;
-}
-
-//-------------------------------------------------------------------
-void midasCLI::SetDatabaseLocation(std::string path)
-{
-  this->DatabaseLocation = path;
 }
 
 //-------------------------------------------------------------------
@@ -72,7 +60,7 @@ int midasCLI::Perform(std::vector<std::string> args)
     else if(args[i] == "--database" && i + 1 < args.size())
       {
       i++;
-      this->DatabaseLocation = args[i];
+      this->Synchronizer->SetDatabase(args[i]);
       }
     else if(args[i] == "--help")
       {

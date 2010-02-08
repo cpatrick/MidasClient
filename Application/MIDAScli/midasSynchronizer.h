@@ -14,16 +14,9 @@
 
 #include "midasStandardIncludes.h"
 #include "midasProgressReporter.h"
+#include "midasDatabaseProxy.h"
 #include <mwsWebAPI.h>
 #include <mdoCommunity.h>
-
-// For resource_uuid.resource_type_id
-#define MIDAS_RESOURCE_BITSTREAM  0
-#define MIDAS_RESOURCE_BUNDLE     1
-#define MIDAS_RESOURCE_ITEM       2
-#define MIDAS_RESOURCE_COLLECTION 3
-#define MIDAS_RESOURCE_COMMUNITY  4
-#define MIDAS_RESOURCE_PROJECT    5
 
 class midasCLI;
 
@@ -54,6 +47,9 @@ class midasSynchronizer
     void SetPullType(ResourceType type);
     ResourceType GetPullType();
 
+    void SetDatabase(std::string path);
+    std::string GetDatabase();
+
     void SetServerURL(std::string url);
     std::string GetServerURL();
 
@@ -74,6 +70,7 @@ class midasSynchronizer
     int Pull();
 
     std::string GetBitstreamName();
+    std::string GetUUID(int type);
     int PullBitstream(std::string name);
     int PullCollection();
     int PullCommunity();
@@ -91,6 +88,9 @@ class midasSynchronizer
     midasCLI* CLI;
     mws::WebAPI WebAPI;
     midasProgressReporter* Progress;
+    
+    std::string Database;
+    midasDatabaseProxy* DatabaseProxy;
 };
 
 #endif
