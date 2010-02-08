@@ -24,11 +24,10 @@ midasDatabaseProxy::~midasDatabaseProxy()
 }
 
 //-------------------------------------------------------------------------
-std::string midasDatabaseProxy::GetResourceLocation(int type, int id)
+std::string midasDatabaseProxy::GetResourceLocation(std::string uuid)
 {
   std::stringstream query;
-  query << "SELECT path FROM resource_uuid WHERE resource_type_id='"
-    << type << "' AND resource_id='" << id << "')";
+  query << "SELECT path FROM resource_uuid WHERE uuid='" << uuid << "'";
 
   this->Database->ExecuteQuery(query.str().c_str());
   std::string result;
@@ -65,14 +64,20 @@ void midasDatabaseProxy::InsertResourceRecord(int type, int id,
 //-------------------------------------------------------------------------
 bool midasDatabaseProxy::ResourceExists(std::string uuid)
 {
-  return true;
+  std::stringstream query;
+  query << "SELECT FROM resource_uuid WHERE uuid='" << uuid << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
+  
+  return this->Database->GetNextRow();
 }
 
+//-------------------------------------------------------------------------
 bool midasDatabaseProxy::Open()
 {
   return this->Database->Open(this->DatabasePath.c_str());
 }
 
+//-------------------------------------------------------------------------
 bool midasDatabaseProxy::Close()
 {
   return this->Database->Close();

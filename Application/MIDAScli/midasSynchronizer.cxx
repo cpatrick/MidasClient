@@ -186,14 +186,22 @@ int midasSynchronizer::Pull()
 //-------------------------------------------------------------------
 int midasSynchronizer::PullBitstream(std::string filename)
 {
-  //TODO find out if we even need to download by checking UUID in local database and following it to the file.
-  //if the uuid and the file it points to exist, we return 0.
-  std::string uuid = this->GetUUID(MIDAS_RESOURCE_BITSTREAM);
-
   if(filename == "")
     {
     return -1;
     }
+  this->DatabaseProxy->Open();
+  std::string uuid = this->GetUUID(MIDAS_RESOURCE_BITSTREAM);
+  std::string path = this->DatabaseProxy->GetResourceLocation(uuid);
+
+  //TODO check md5 sum of file at location against server's checksum?
+  if(path != "" && kwsys::SystemTools::FileExists(path.c_str(), true))
+    {
+    //we already have this bitstream, no need to download again
+    this->DatabaseProxy->Close();
+    return 0;
+    }
+
   mws::WebAPI remote;
 
   std::stringstream fields;
@@ -209,7 +217,6 @@ int midasSynchronizer::PullBitstream(std::string filename)
     }
   remote.DownloadFile(fields.str().c_str(), filename.c_str());
   
-  this->DatabaseProxy->Open();
   int id = this->DatabaseProxy->InsertBitstream(
     WORKING_DIR() + "/" + filename, filename);
   this->DatabaseProxy->InsertResourceRecord(

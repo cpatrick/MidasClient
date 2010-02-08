@@ -27,7 +27,7 @@ public:
   /**
    * Get the absolute path to the given resource
    */
-  std::string GetResourceLocation(int type, int id);
+  std::string GetResourceLocation(std::string uuid);
 
   int InsertBitstream(std::string path, std::string name);
   int InsertCollection();
