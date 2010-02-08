@@ -234,7 +234,7 @@ CREATE TABLE midas_resourcelog(
 );
 
 CREATE TABLE bitstream (
-    bitstream_id integer NOT NULL,
+    bitstream_id integer PRIMARY KEY AUTOINCREMENT,
     bitstream_format_id integer,
     name character varying(256),
     size_bytes bigint,
@@ -312,7 +312,7 @@ CREATE TABLE checksum_results (
 --
 
 CREATE TABLE collection (
-    collection_id integer NOT NULL,
+    collection_id integer PRIMARY KEY AUTOINCREMENT,
     name character varying(128),
     location character varying(512),
     short_description character varying(512),
@@ -335,7 +335,7 @@ CREATE TABLE collection (
 --
 
 CREATE TABLE collection2item (
-    id integer NOT NULL,
+    id integer PRIMARY KEY AUTOINCREMENT,
     collection_id integer,
     item_id integer
 );
@@ -443,7 +443,7 @@ CREATE TABLE communities2item (
 --
 
 CREATE TABLE community (
-    community_id integer NOT NULL,
+    community_id integer PRIMARY KEY AUTOINCREMENT,
     name character varying(128),
     location character varying(512),
     short_description character varying(512),
@@ -629,7 +629,8 @@ CREATE TABLE group2groupcache (
 CREATE TABLE resource_uuid (
     resource_type_id integer,
     resource_id integer,
-    uuid character varying(512) PRIMARY KEY
+    path character varying(512),
+    uuid character varying(60) PRIMARY KEY
 );
 
 --
@@ -667,7 +668,7 @@ CREATE TABLE historystate (
 --
 
 CREATE TABLE item (
-    item_id integer NOT NULL,
+    item_id integer PRIMARY KEY AUTOINCREMENT,
     location character varying(512),
     submitter_id integer,
     in_archive boolean,
