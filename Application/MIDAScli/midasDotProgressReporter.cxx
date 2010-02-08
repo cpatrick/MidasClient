@@ -9,30 +9,30 @@
 
 =========================================================================*/
 
-#include "midasProgressReporter.h"
+#include "midasDotProgressReporter.h"
 
-midasProgressReporter::midasProgressReporter(int length)
+midasDotProgressReporter::midasDotProgressReporter(int length)
 {
-  this->oldLength = 0;
-  this->currLength = 0;
+  this->ResetProgress();
   this->maxLength = length;
 }
 
-midasProgressReporter::~midasProgressReporter()
+void midasDotProgressReporter::UpdateProgress(double current, double max)
 {
-}
-
-void midasProgressReporter::UpdateProgress(double current, double max)
-{
-  if (max == 0) return;
+  if (max == 0 || this->Done) return;
   double fraction = current / max;
 
   this->currLength = (int)(fraction * (double)maxLength);
   
   this->PrintBar();
+  if(current == max)
+    {
+    this->Done = true;
+    std::cout << " Done" << std::endl;
+    }
 }
 
-void midasProgressReporter::PrintBar()
+void midasDotProgressReporter::PrintBar()
 {
   int toWrite = this->currLength - this->oldLength;
 
@@ -42,4 +42,11 @@ void midasProgressReporter::PrintBar()
     }
 
   this->oldLength = this->currLength;
+}
+
+void midasDotProgressReporter::ResetProgress()
+{
+  this->Done = false;
+  this->oldLength = 0;
+  this->currLength = 0;
 }

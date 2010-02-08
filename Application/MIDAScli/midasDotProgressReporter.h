@@ -9,22 +9,33 @@
 
 =========================================================================*/
 
-#ifndef MIDASPROGRESSREPORTER_H
-#define MIDASPROGRESSREPORTER_H
+#ifndef MIDASDOTPROGRESSREPORTER_H
+#define MIDASDOTPROGRESSREPORTER_H
 
 #include "midasStandardIncludes.h"
+#include "midasProgressReporter.h"
+
+// The default length of the progress bar
+#define DEFAULT_LENGTH 25
 
 /**
  * Abstract class for updating progress
  */
-class midasProgressReporter
+class midasDotProgressReporter : midasProgressReporter
 {
   public:
-    midasProgressReporter() {}
-    ~midasProgressReporter() {}
+    midasDotProgressReporter(int length = DEFAULT_LENGTH);
+    ~midasDotProgressReporter();
 
-    virtual void UpdateProgress(double current, double max) = 0;
-    virtual void ResetProgress() = 0;
+    void UpdateProgress(double current, double max);
+    void ResetProgress();
+  protected:
+    void PrintBar();
+
+    bool Done;
+    int currLength;
+    int oldLength;
+    int maxLength;
 };
 
 #endif

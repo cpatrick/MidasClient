@@ -13,6 +13,7 @@
 #define MIDASSYNCHRONIZER_H
 
 #include "midasStandardIncludes.h"
+#include "midasProgressReporter.h"
 #include <mwsWebAPI.h>
 #include <mdoCommunity.h>
 
@@ -56,6 +57,10 @@ class midasSynchronizer
     void SetServerURL(std::string url);
     std::string GetServerURL();
 
+    void SetProgressReporter(midasProgressReporter* progress);
+    midasProgressReporter* GetProgressReporter();
+    void DeleteProgressReporter();
+
     void SetResourceHandle(std::string handle);
     std::string GetResourceHandle();
 
@@ -85,6 +90,7 @@ class midasSynchronizer
     bool Recursive;
     midasCLI* CLI;
     mws::WebAPI WebAPI;
+    midasProgressReporter* Progress;
 };
 
 #endif

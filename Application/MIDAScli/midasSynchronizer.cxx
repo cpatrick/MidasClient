@@ -33,10 +33,29 @@ midasSynchronizer::midasSynchronizer(midasCLI* cli)
   this->Operation = OPERATION_NONE;
   this->PullType = TYPE_NONE;
   this->ServerURL = "";
+  this->Progress = NULL;
 }
 
 midasSynchronizer::~midasSynchronizer()
 {
+}
+
+void midasSynchronizer::SetProgressReporter(midasProgressReporter* progress)
+{
+  this->Progress = progress;
+}
+
+midasProgressReporter* midasSynchronizer::GetProgressReporter()
+{
+  return this->Progress;
+}
+
+void midasSynchronizer::DeleteProgressReporter()
+{
+  if(this->Progress)
+    {
+    delete this->Progress;
+    }
 }
 
 void midasSynchronizer::SetRecursive(bool recursive)
@@ -161,13 +180,14 @@ int midasSynchronizer::PullBitstream(std::string filename)
   fields << "midas.bitstream.download?id=" << this->GetResourceHandle();
   //TODO call remote.login() based on config options (profiles?)
   remote.SetServerUrl(this->ServerURL.c_str());
-  midasProgressReporter* progress = new midasProgressReporter(30);
+  
   std::cout << std::setw(32) << filename << "  ";
-  remote.GetRestAPI()->SetProgressCallback(DownloadProgress, progress);
+  if(this->Progress)
+    {
+    remote.GetRestAPI()->SetProgressCallback(DownloadProgress, this->Progress);
+    this->Progress->ResetProgress();
+    }
   remote.DownloadFile(fields.str().c_str(), filename.c_str());
-
-  std::cout << " Done" << std::endl;
-  delete progress;
   
   //std::stringstream query;
   //query << "

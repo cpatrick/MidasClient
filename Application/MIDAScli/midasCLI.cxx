@@ -10,17 +10,21 @@
 =========================================================================*/
 
 #include "midasCLI.h"
+#include "midasDotProgressReporter.h"
 
 midasCLI::midasCLI()
 {
   this->DatabaseLocation =
     kwsys::SystemTools::GetCurrentWorkingDirectory() + "/midas.db";
   this->Synchronizer = new midasSynchronizer(this);
+  this->Synchronizer->SetProgressReporter(
+    reinterpret_cast<midasProgressReporter*>(
+    new midasDotProgressReporter(30)));
 }
 
 midasCLI::~midasCLI()
 {
-  delete this->Synchronizer;
+  this->Synchronizer->DeleteProgressReporter();
 }
 
 //-------------------------------------------------------------------
