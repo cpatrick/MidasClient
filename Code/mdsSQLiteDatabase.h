@@ -40,6 +40,7 @@ public:
   
   /** Run Set query and execute in one command */
   bool ExecuteQuery(const char* query);
+  int GetLastInsertId();
 
   /** Get number of columns */
   unsigned int GetNumberOfFields();

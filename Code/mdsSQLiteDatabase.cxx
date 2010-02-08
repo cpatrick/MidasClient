@@ -137,6 +137,13 @@ bool SQLiteDatabase::ExecuteQuery(const char* query)
     }
   return success;
 } 
+
+/** Get the autoincremented id of the last insert */
+int SQLiteDatabase::GetLastInsertId()
+{
+  this->ExecuteQuery("SELECT last_insert_rowid()");
+  return this->GetNextRow() ? this->GetValueAsInt(0) : -1;
+}
   
 /** Get number of columns */
 const char* SQLiteDatabase::GetFieldName(unsigned int column)
