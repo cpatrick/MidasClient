@@ -42,7 +42,7 @@ public:
   /**
    * Add a child/parent relationship to the database
    */
-  void AddChild(int parentType, int parentId, int childType, int childId);
+  bool AddChild(int parentType, int parentId, int childType, int childId);
 
   /** 
    * Add a resource record to the database

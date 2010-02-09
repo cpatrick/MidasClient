@@ -23,6 +23,52 @@ midasDatabaseProxy::~midasDatabaseProxy()
 }
 
 //-------------------------------------------------------------------------
+bool midasDatabaseProxy::AddChild(int parentType, int parentId,
+                                  int childType, int childId)
+{
+  std::stringstream query;
+  query << "INSERT INTO ";
+  std::string parent, child;
+
+  switch(parentType)
+    {
+    case MIDAS_RESOURCE_COLLECTION:
+      parent = "collection";
+      break;
+    case MIDAS_RESOURCE_COMMUNITY:
+      parent = "community";
+      break;
+    case MIDAS_RESOURCE_ITEM:
+      parent = "item";
+      break;
+    default:
+      return false;
+    }
+
+  switch(childType)
+    {
+    case MIDAS_RESOURCE_BITSTREAM:
+      child = "bitstream";
+      break;
+    case MIDAS_RESOURCE_COLLECTION:
+      child = "collection";
+      break;
+    case MIDAS_RESOURCE_COMMUNITY:
+      child = "community";
+      break;
+    case MIDAS_RESOURCE_ITEM:
+      child = "item";
+      break;
+    default:
+      return false;
+    }
+
+  query << parent << "2" << child << " (" << parent << "_id, " << child
+    << "_id) VALUES ('" << parentId << "', '" << childId << "')";
+  return this->Database->ExecuteQuery(query.str().c_str());
+}
+
+//-------------------------------------------------------------------------
 std::string midasDatabaseProxy::GetResourceLocation(std::string uuid)
 {
   std::stringstream query;
@@ -48,6 +94,7 @@ int midasDatabaseProxy::InsertBitstream(std::string path, std::string name)
   return this->Database->GetLastInsertId();
 }
 
+//-------------------------------------------------------------------------
 int midasDatabaseProxy::InsertCollection(std::string name)
 {
   std::stringstream query;
@@ -56,6 +103,7 @@ int midasDatabaseProxy::InsertCollection(std::string name)
   return this->Database->GetLastInsertId();
 }
 
+//-------------------------------------------------------------------------
 int midasDatabaseProxy::InsertCommunity(std::string name)
 {
   std::stringstream query;
@@ -64,6 +112,7 @@ int midasDatabaseProxy::InsertCommunity(std::string name)
   return this->Database->GetLastInsertId();
 }
 
+//-------------------------------------------------------------------------
 int midasDatabaseProxy::InsertItem(std::string name)
 {
   std::stringstream query;
