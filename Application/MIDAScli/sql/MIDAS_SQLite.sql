@@ -456,7 +456,7 @@ CREATE TABLE community (
 --
 
 CREATE TABLE community2collection (
-    id integer NOT NULL,
+    id integer PRIMARY KEY AUTOINCREMENT,
     community_id integer,
     collection_id integer
 );
@@ -466,7 +466,7 @@ CREATE TABLE community2collection (
 --
 
 CREATE TABLE community2community (
-    id integer NOT NULL,
+    id integer PRIMARY KEY AUTOINCREMENT,
     parent_comm_id integer,
     child_comm_id integer
 );
@@ -680,9 +680,19 @@ CREATE TABLE item (
 --
 
 CREATE TABLE item2bundle (
-    id integer NOT NULL,
+    id integer PRIMARY KEY AUTOINCREMENT,
     item_id integer,
     bundle_id integer
+);
+
+--
+-- Name: item2bundle; Type: TABLE; Schema: public; Owner: midas; Tablespace:
+--
+
+CREATE TABLE item2bitstream (
+    id integer PRIMARY KEY AUTOINCREMENT,
+    item_id integer,
+    bitstream_id integer
 );
 
 --
