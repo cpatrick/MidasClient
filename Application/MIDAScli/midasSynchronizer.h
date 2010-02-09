@@ -28,6 +28,7 @@ class midasSynchronizer
 
     enum SynchOperation {
       OPERATION_NONE = 0,
+      OPERATION_CLEAN,
       OPERATION_CLONE,
       OPERATION_PULL,
       OPERATION_PUSH
@@ -68,6 +69,7 @@ class midasSynchronizer
     int Clone();
     int Push();
     int Pull();
+    int Clean();
 
     std::string GetBitstreamName();
     std::string GetUUID(int type);
@@ -83,7 +85,7 @@ class midasSynchronizer
     std::string ServerURL;
     std::string ResourceHandle;
     
-    // pull entire subtree of items that are pulled?
+    // pull entire subtree of resources that are pulled?
     bool Recursive;
     midasCLI* CLI;
     mws::WebAPI WebAPI;

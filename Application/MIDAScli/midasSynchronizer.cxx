@@ -131,6 +131,8 @@ int midasSynchronizer::Perform()
 {
   switch(this->Operation)
     {
+    case OPERATION_CLEAN:
+      return this->Clean();
     case OPERATION_CLONE:
       return this->Clone();
     case OPERATION_PULL:
@@ -140,6 +142,15 @@ int midasSynchronizer::Perform()
     default:
       return -1;
     }
+}
+
+//-------------------------------------------------------------------
+int midasSynchronizer::Clean()
+{
+  this->DatabaseProxy->Open();
+  this->DatabaseProxy->Clean();
+  this->DatabaseProxy->Close();
+  return 0;
 }
 
 //-------------------------------------------------------------------

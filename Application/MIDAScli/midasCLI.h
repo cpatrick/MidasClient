@@ -12,7 +12,6 @@
 #ifndef MIDASCLI_H
 #define MIDASCLI_H
 
-#include <kwsys/SystemTools.hxx>
 #include "midasSynchronizer.h"
 
 class midasCLI
@@ -26,6 +25,7 @@ class midasCLI
     void PrintUsage();
     void PrintCommandHelp(std::string command);
 
+    void ParseClean(std::vector<std::string> args);
     void ParsePull(std::vector<std::string> args);
     void ParsePush(std::vector<std::string> args);
     void ParseClone(std::vector<std::string> args);

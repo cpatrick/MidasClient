@@ -39,7 +39,13 @@ int midasCLI::Perform(std::vector<std::string> args)
 
   for(unsigned i = 0; i < args.size(); i++)
     {
-    if(args[i] == "clone")
+    if(args[i] == "clean")
+      {
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      this->ParseClean(postOpArgs);
+      break;
+      }
+    else if(args[i] == "clone")
       {
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       this->ParseClone(postOpArgs);
@@ -82,6 +88,11 @@ int midasCLI::Perform(std::vector<std::string> args)
       }
     }
   return this->Synchronizer->Perform();
+}
+
+void midasCLI::ParseClean(std::vector<std::string> args)
+{
+  this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_CLEAN);
 }
 
 void midasCLI::ParseClone(std::vector<std::string> args)
@@ -163,6 +174,8 @@ void midasCLI::PrintUsage()
   std::cout << "MIDAS Command Line Interface" << std::endl
     << "Usage: MIDAScli [--database DATABASE_LOCATION] COMMAND [ARGS]"
     << std::endl << std::endl << "Where COMMAND is one of the following:"
+    << std::endl << " add        Add a file into the local repository."
+    << std::endl << " clean      Clean the local repository."
     << std::endl << " clone      Copy an entire MIDAS database locally."
     << std::endl << " pull       Copy part of a MIDAS database locally."
     << std::endl << " push       Copy local objects to a MIDAS server."
@@ -188,5 +201,9 @@ void midasCLI::PrintCommandHelp(std::string command)
   else if(command == "clone")
     {
     std::cout << "Usage: MIDAScli ... clone URL" << std::endl;
+    }
+  else if(command == "clean")
+    {
+    std::cout << "Usage: MIDAScli ... clean" << std::endl;
     }
 }

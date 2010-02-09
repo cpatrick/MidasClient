@@ -17,6 +17,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include <kwsys/SystemTools.hxx>
+
 // For resource_uuid.resource_type_id
 #define MIDAS_RESOURCE_BITSTREAM  0
 #define MIDAS_RESOURCE_BUNDLE     1
