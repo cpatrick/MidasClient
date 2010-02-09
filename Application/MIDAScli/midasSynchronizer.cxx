@@ -450,23 +450,28 @@ int midasSynchronizer::PullItem()
     return -1;
     }
   
-  if(!kwsys::SystemTools::FileIsDirectory(item->GetTitle().c_str()))
+  std::stringstream altTitle;
+  altTitle << "item" << item->GetId();
+  std::string title = item->GetTitle() == "" ? altTitle.str() :
+    item->GetTitle();
+
+  if(!kwsys::SystemTools::FileIsDirectory(title.c_str()))
     {
-    MKDIR(item->GetTitle().c_str());
+    MKDIR(title.c_str());
     }
 
   if(!this->DatabaseProxy->ResourceExists(uuid))
     {
     int id = this->DatabaseProxy->InsertItem(item->GetTitle());
     this->DatabaseProxy->InsertResourceRecord(MIDAS_RESOURCE_ITEM, 
-      id, WORKING_DIR() + "/" + item->GetTitle(), uuid);
+      id, WORKING_DIR() + "/" + title, uuid);
     }
   this->DatabaseProxy->Close();
 
   if(this->Recursive)
     {
     std::string temp = WORKING_DIR();
-    CHANGE_DIR(item->GetTitle().c_str());
+    CHANGE_DIR(title.c_str());
     for(std::vector<mdo::Bitstream*>::const_iterator i = 
         item->GetBitstreams().begin();
         i != item->GetBitstreams().end(); ++i)
