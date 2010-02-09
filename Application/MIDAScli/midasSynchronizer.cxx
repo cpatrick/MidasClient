@@ -145,6 +145,20 @@ int midasSynchronizer::Perform()
 //-------------------------------------------------------------------
 int midasSynchronizer::Clone()
 {
+  mws::Community remote;
+  mdo::Community* community = new mdo::Community;
+  remote.SetWebAPI(&this->WebAPI);
+  remote.SetObject(community);
+  
+  if(!remote.FetchTree())
+    {
+    std::cerr << "Unable to fetch resource tree via the Web API" << std::endl;
+    return -1;
+    }
+
+  this->RecurseCommunities(community);
+  delete community;
+
   return 0;
 }
 
@@ -229,6 +243,9 @@ int midasSynchronizer::PullBitstream(std::string filename)
 //-------------------------------------------------------------------
 int midasSynchronizer::PullCollection()
 {
+  this->DatabaseProxy->Open();
+  std::string uuid = this->GetUUID(MIDAS_RESOURCE_COLLECTION);
+
   mws::Collection remote;
   mdo::Collection* collection = new mdo::Collection;
   collection->SetId(atoi(this->GetResourceHandle().c_str()));
@@ -238,8 +255,17 @@ int midasSynchronizer::PullCollection()
   if(!remote.Fetch())
     {
     std::cerr << "Unable to fetch the collection via the Web API" << std::endl;
+    this->DatabaseProxy->Close();
     return -1;
     }
+
+  if(!this->DatabaseProxy->ResourceExists(uuid))
+    {
+    int id = this->DatabaseProxy->InsertCollection(collection->GetName());
+    this->DatabaseProxy->InsertResourceRecord(MIDAS_RESOURCE_COLLECTION,
+      id, WORKING_DIR() + "/" + collection->GetName(), uuid);
+    }
+  this->DatabaseProxy->Close();
 
   if(!kwsys::SystemTools::FileIsDirectory(collection->GetName().c_str()))
     {
@@ -261,6 +287,7 @@ int midasSynchronizer::PullCollection()
       }
     CHANGE_DIR(temp.c_str());
     }
+
   delete collection;
   return 0;
 }
@@ -289,6 +316,9 @@ mdo::Community* FindInTree(mdo::Community* root, int id)
 //-------------------------------------------------------------------
 int midasSynchronizer::PullCommunity()
 {
+  this->DatabaseProxy->Open();
+  std::string uuid = this->GetUUID(MIDAS_RESOURCE_COMMUNITY);
+
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
   community->SetId(atoi(this->ResourceHandle.c_str()));
@@ -298,6 +328,7 @@ int midasSynchronizer::PullCommunity()
   if(!remote.FetchTree())
     {
     std::cerr << "Unable to fetch the community via the Web API" << std::endl;
+    this->DatabaseProxy->Close();
     return -1;
     }
   community = FindInTree(community, atoi(this->ResourceHandle.c_str()));
@@ -305,35 +336,24 @@ int midasSynchronizer::PullCommunity()
     {
     std::cerr << "Error: Community " << this->ResourceHandle 
       << " does not exist." << std::endl;
+    this->DatabaseProxy->Close();
     return -1;
     }
 
-  // Go up the tree to the root, building the path
-  std::vector<mdo::Community*> path;
-  mdo::Community* current = community;
-  while(current->GetParent() != NULL)
-    {
-    current = current->GetParent();
-    path.push_back(current);
-    }
-
   std::string topLevelDir = WORKING_DIR();
-  //reverse from root to selected community, writing directories
-  for(std::vector<mdo::Community*>::reverse_iterator i = path.rbegin();
-      i != path.rend(); ++i)
-    {
-    const char* name = (*i)->GetName().c_str();
-    if(!kwsys::SystemTools::FileIsDirectory(name))
-      {
-      MKDIR(name);
-      }
-    CHANGE_DIR(name);
-    }
 
   if(!kwsys::SystemTools::FileIsDirectory(community->GetName().c_str()))
     {
     MKDIR(community->GetName().c_str());
     }
+
+  if(!this->DatabaseProxy->ResourceExists(uuid))
+    {
+    int id = this->DatabaseProxy->InsertCommunity(community->GetName());
+    this->DatabaseProxy->InsertResourceRecord(MIDAS_RESOURCE_COMMUNITY, 
+      id, WORKING_DIR() + "/" + community->GetName(), uuid);
+    }
+  this->DatabaseProxy->Close();
   
   if(this->Recursive)
     {
@@ -345,12 +365,6 @@ int midasSynchronizer::PullCommunity()
   // Revert working dir to top level
   CHANGE_DIR(topLevelDir.c_str());
   delete community;
-
-  //TODO check against local database
-  //mds::SQLiteDatabase local;
-  //local.Open(this->CLI->GetDatabaseLocation().c_str());
-  //db.ExecuteQuery(query.str().c_str());
-  //local.Close();
   return 0;
 }
 
@@ -373,11 +387,10 @@ void midasSynchronizer::RecurseCommunities(mdo::Community* community)
       community->GetCommunities().begin();
       i != community->GetCommunities().end(); ++i)
     {
-    std::string temp = WORKING_DIR();
-    MKDIR((*i)->GetName().c_str());
-    CHANGE_DIR((*i)->GetName().c_str());
-    this->RecurseCommunities(*i);
-    CHANGE_DIR(temp.c_str());
+    std::stringstream s;
+    s << (*i)->GetId();
+    this->SetResourceHandle(s.str());
+    this->PullCommunity();
     }
 }
 
@@ -421,6 +434,9 @@ std::string midasSynchronizer::GetBitstreamName()
 //-------------------------------------------------------------------
 int midasSynchronizer::PullItem()
 {
+  this->DatabaseProxy->Open();
+  std::string uuid = this->GetUUID(MIDAS_RESOURCE_ITEM);
+
   mws::Item remote;
   mdo::Item* item = new mdo::Item;
   item->SetId(atoi(this->GetResourceHandle().c_str()));
@@ -430,6 +446,7 @@ int midasSynchronizer::PullItem()
   if(!remote.Fetch())
     {
     std::cerr << "Unable to fetch the item via the Web API" << std::endl;
+    this->DatabaseProxy->Close();
     return -1;
     }
   
@@ -437,6 +454,14 @@ int midasSynchronizer::PullItem()
     {
     MKDIR(item->GetTitle().c_str());
     }
+
+  if(!this->DatabaseProxy->ResourceExists(uuid))
+    {
+    int id = this->DatabaseProxy->InsertItem(item->GetTitle());
+    this->DatabaseProxy->InsertResourceRecord(MIDAS_RESOURCE_ITEM, 
+      id, WORKING_DIR() + "/" + item->GetTitle(), uuid);
+    }
+  this->DatabaseProxy->Close();
 
   if(this->Recursive)
     {
@@ -453,6 +478,7 @@ int midasSynchronizer::PullItem()
       }
     CHANGE_DIR(temp.c_str());
     }
+
   delete item;
   return 0;
 }

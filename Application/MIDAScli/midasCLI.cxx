@@ -86,10 +86,17 @@ int midasCLI::Perform(std::vector<std::string> args)
 
 void midasCLI::ParseClone(std::vector<std::string> args)
 {
-  std::cout << "Clone not yet implemented.\n";
-/*  i++;
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_CLONE);
-  this->Synchronizer->SetServerURL(args[i]);*/
+  this->Synchronizer->SetRecursive(true);
+  
+  if(args.size())
+    {
+    this->Synchronizer->SetServerURL(args[0]);
+    }
+  else
+    {
+    this->PrintCommandHelp("clone");
+    }
 }
 
 //-------------------------------------------------------------------
@@ -177,5 +184,9 @@ void midasCLI::PrintCommandHelp(std::string command)
       << std::endl << " -b         For pulling a bitstream."
       << std::endl <<"Exactly one type must be specified (-b, -i, -c, -C)."
       << std::endl;
+    }
+  else if(command == "clone")
+    {
+    std::cout << "Usage: MIDAScli ... clone URL" << std::endl;
     }
 }

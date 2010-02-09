@@ -25,14 +25,24 @@ public:
   bool Close();
 
   /**
+   * Clean entries in the database
+   */
+  void Clean();
+
+  /**
    * Get the absolute path to the given resource
    */
   std::string GetResourceLocation(std::string uuid);
 
   int InsertBitstream(std::string path, std::string name);
-  int InsertCollection();
-  int InsertCommunity();
-  int InsertItem();
+  int InsertCollection(std::string name);
+  int InsertCommunity(std::string name);
+  int InsertItem(std::string name);
+
+  /**
+   * Add a child/parent relationship to the database
+   */
+  void AddChild(int parentType, int parentId, int childType, int childId);
 
   /** 
    * Add a resource record to the database

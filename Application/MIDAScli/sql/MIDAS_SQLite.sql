@@ -314,7 +314,6 @@ CREATE TABLE checksum_results (
 CREATE TABLE collection (
     collection_id integer PRIMARY KEY AUTOINCREMENT,
     name character varying(128),
-    location character varying(512),
     short_description character varying(512),
     introductory_text text,
     logo_bitstream_id integer,
@@ -445,7 +444,6 @@ CREATE TABLE communities2item (
 CREATE TABLE community (
     community_id integer PRIMARY KEY AUTOINCREMENT,
     name character varying(128),
-    location character varying(512),
     short_description character varying(512),
     introductory_text text,
     logo_bitstream_id integer,
@@ -669,7 +667,7 @@ CREATE TABLE historystate (
 
 CREATE TABLE item (
     item_id integer PRIMARY KEY AUTOINCREMENT,
-    location character varying(512),
+    title character varying(128),
     submitter_id integer,
     in_archive boolean,
     withdrawn boolean,

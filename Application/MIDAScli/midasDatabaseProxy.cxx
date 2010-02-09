@@ -49,6 +49,30 @@ int midasDatabaseProxy::InsertBitstream(std::string path, std::string name)
   return this->Database->GetLastInsertId();
 }
 
+int midasDatabaseProxy::InsertCollection(std::string name)
+{
+  std::stringstream query;
+  query << "INSERT INTO collection (name) VALUES ('" << name << "')";
+  this->Database->ExecuteQuery(query.str().c_str());
+  return this->Database->GetLastInsertId();
+}
+
+int midasDatabaseProxy::InsertCommunity(std::string name)
+{
+  std::stringstream query;
+  query << "INSERT INTO community (name) VALUES ('" << name << "')";
+  this->Database->ExecuteQuery(query.str().c_str());
+  return this->Database->GetLastInsertId();
+}
+
+int midasDatabaseProxy::InsertItem(std::string name)
+{
+  std::stringstream query;
+  query << "INSERT INTO item (name) VALUES ('" << name << "')";
+  this->Database->ExecuteQuery(query.str().c_str());
+  return this->Database->GetLastInsertId();
+}
+
 //-------------------------------------------------------------------------
 void midasDatabaseProxy::InsertResourceRecord(int type, int id,
                                               std::string path,
@@ -81,4 +105,10 @@ bool midasDatabaseProxy::Open()
 bool midasDatabaseProxy::Close()
 {
   return this->Database->Close();
+}
+
+//-------------------------------------------------------------------------
+void midasDatabaseProxy::Clean()
+{
+  //TODO clean all entries from the database
 }
