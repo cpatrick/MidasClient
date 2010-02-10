@@ -58,6 +58,7 @@ DROP TABLE IF EXISTS history;
 DROP TABLE IF EXISTS historystate;
 DROP TABLE IF EXISTS item;
 DROP TABLE IF EXISTS item2bundle;
+DROP TABLE IF EXISTS item2bitstream;
 DROP TABLE IF EXISTS metadataschemaregistry;
 DROP TABLE IF EXISTS midas_bitstream;
 DROP TABLE IF EXISTS midas_collectionsubmit;
