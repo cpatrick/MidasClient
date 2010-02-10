@@ -14,7 +14,7 @@
 
 midasCLI::midasCLI()
 {
-  this->Synchronizer = new midasSynchronizer(this);
+  this->Synchronizer = new midasSynchronizer();
   this->Synchronizer->SetDatabase(
     kwsys::SystemTools::GetCurrentWorkingDirectory() + "/midas.db");
   this->Synchronizer->SetProgressReporter(

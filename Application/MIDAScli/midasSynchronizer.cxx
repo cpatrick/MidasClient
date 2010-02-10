@@ -21,7 +21,6 @@
 #include "midasSynchronizer.h"
 #include "midasProgressReporter.h"
 #include "midasDatabaseProxy.h"
-#include "midasCLI.h"
 
 #define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
 #define CHANGE_DIR kwsys::SystemTools::ChangeDirectory
@@ -29,9 +28,8 @@
 
 #define NO_PARENT -1
 
-midasSynchronizer::midasSynchronizer(midasCLI* cli)
+midasSynchronizer::midasSynchronizer()
 {
-  this->CLI = cli;
   this->Recursive = false;
   this->Operation = OPERATION_NONE;
   this->PullType = TYPE_NONE;

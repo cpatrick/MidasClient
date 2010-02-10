@@ -18,12 +18,10 @@
 #include <mwsWebAPI.h>
 #include <mdoCommunity.h>
 
-class midasCLI;
-
 class midasSynchronizer
 {
   public:
-    midasSynchronizer(midasCLI* cli);
+    midasSynchronizer();
     ~midasSynchronizer();
 
     enum SynchOperation {
@@ -89,7 +87,6 @@ class midasSynchronizer
     
     // pull entire subtree of resources that are pulled?
     bool Recursive;
-    midasCLI* CLI;
     mws::WebAPI WebAPI;
     midasProgressReporter* Progress;
     
