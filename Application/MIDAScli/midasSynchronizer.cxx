@@ -133,6 +133,8 @@ int midasSynchronizer::Perform()
 {
   switch(this->Operation)
     {
+    case OPERATION_ADD:
+      return this->Add();
     case OPERATION_CLEAN:
       return this->Clean();
     case OPERATION_CLONE:
@@ -144,6 +146,12 @@ int midasSynchronizer::Perform()
     default:
       return -1;
     }
+}
+
+//-------------------------------------------------------------------
+int midasSynchronizer::Add()
+{
+  return 0;
 }
 
 //-------------------------------------------------------------------

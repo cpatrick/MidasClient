@@ -25,10 +25,11 @@ class midasCLI
     void PrintUsage();
     void PrintCommandHelp(std::string command);
 
-    void ParseClean(std::vector<std::string> args);
-    void ParsePull(std::vector<std::string> args);
-    void ParsePush(std::vector<std::string> args);
-    void ParseClone(std::vector<std::string> args);
+    bool ParseAdd(std::vector<std::string> args);
+    bool ParseClean(std::vector<std::string> args);
+    bool ParsePull(std::vector<std::string> args);
+    bool ParsePush(std::vector<std::string> args);
+    bool ParseClone(std::vector<std::string> args);
 
     //the synchronizer object which performs the action
     midasSynchronizer* Synchronizer;

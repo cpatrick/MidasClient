@@ -28,6 +28,7 @@ class midasSynchronizer
 
     enum SynchOperation {
       OPERATION_NONE = 0,
+      OPERATION_ADD,
       OPERATION_CLEAN,
       OPERATION_CLONE,
       OPERATION_PULL,
@@ -66,6 +67,7 @@ class midasSynchronizer
 
     int Perform();
   protected:
+    int Add();
     int Clone();
     int Push();
     int Pull();

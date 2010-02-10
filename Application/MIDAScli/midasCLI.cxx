@@ -37,30 +37,38 @@ int midasCLI::Perform(std::vector<std::string> args)
     return -1;
     }
 
+  bool ok = false;
+
   for(unsigned i = 0; i < args.size(); i++)
     {
-    if(args[i] == "clean")
+    if(args[i] == "add")
       {
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
-      this->ParseClean(postOpArgs);
+      ok = this->ParseAdd(postOpArgs);
+      break;
+      }
+    else if(args[i] == "clean")
+      {
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      ok = this->ParseClean(postOpArgs);
       break;
       }
     else if(args[i] == "clone")
       {
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
-      this->ParseClone(postOpArgs);
+      ok = this->ParseClone(postOpArgs);
       break;
       }
     else if(args[i] == "push")
       {
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
-      this->ParsePush(postOpArgs);
+      ok = this->ParsePush(postOpArgs);
       break;
       }
     else if(args[i] == "pull")
       {
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
-      this->ParsePull(postOpArgs);
+      ok = this->ParsePull(postOpArgs);
       break;
       }
     else if(args[i] == "--database" && i + 1 < args.size())
@@ -87,15 +95,48 @@ int midasCLI::Perform(std::vector<std::string> args)
       return -1;
       }
     }
-  return this->Synchronizer->Perform();
+  return ok ? this->Synchronizer->Perform() : -1;
 }
 
-void midasCLI::ParseClean(std::vector<std::string> args)
+//-------------------------------------------------------------------
+bool midasCLI::ParseAdd(std::vector<std::string> args)
+{
+  this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_ADD);
+  
+  unsigned i;
+  for(i = 0; i < args.size(); i++)
+    {
+    if(args[i] == "-r")
+      {
+      this->Synchronizer->SetRecursive(true);
+      }
+    else
+      {
+      break;
+      }
+    }
+
+  if(args.size())
+    {
+    this->Synchronizer->SetResourceHandle(args[i]);
+    return true;
+    }
+  else
+    {
+    this->PrintCommandHelp("add");
+    return false;
+    }
+}
+
+//-------------------------------------------------------------------
+bool midasCLI::ParseClean(std::vector<std::string> args)
 {
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_CLEAN);
+  return true;
 }
 
-void midasCLI::ParseClone(std::vector<std::string> args)
+//-------------------------------------------------------------------
+bool midasCLI::ParseClone(std::vector<std::string> args)
 {
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_CLONE);
   this->Synchronizer->SetRecursive(true);
@@ -103,15 +144,17 @@ void midasCLI::ParseClone(std::vector<std::string> args)
   if(args.size())
     {
     this->Synchronizer->SetServerURL(args[0]);
+    return true;
     }
   else
     {
     this->PrintCommandHelp("clone");
+    return false;
     }
 }
 
 //-------------------------------------------------------------------
-void midasCLI::ParsePull(std::vector<std::string> args)
+bool midasCLI::ParsePull(std::vector<std::string> args)
 {
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PULL);
 
@@ -150,17 +193,20 @@ void midasCLI::ParsePull(std::vector<std::string> args)
     this->Synchronizer->SetServerURL(args[i]);
     i++;
     this->Synchronizer->SetResourceHandle(args[i]);
+    return true;
     }
   else
     {
     this->PrintCommandHelp("pull");
+    return false;
     }
 }
 
 //-------------------------------------------------------------------
-void midasCLI::ParsePush(std::vector<std::string> args)
+bool midasCLI::ParsePush(std::vector<std::string> args)
 {
   std::cout << "Push not yet implemented.\n";
+  return false;
 /*  i++;
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
   this->Synchronizer->SetServerURL(args[i]);
@@ -178,7 +224,7 @@ void midasCLI::PrintUsage()
     << std::endl << " clean      Clean the local repository."
     << std::endl << " clone      Copy an entire MIDAS database locally."
     << std::endl << " pull       Copy part of a MIDAS database locally."
-    << std::endl << " push       Copy local objects to a MIDAS server."
+    << std::endl << " push       Copy local resources to a MIDAS server."
     << std::endl << std::endl << "Use MIDAScli --help COMMAND for "
     "help with individual commands." << std::endl;
 }
@@ -188,8 +234,8 @@ void midasCLI::PrintCommandHelp(std::string command)
 {
   if(command == "pull")
     {
-    std::cout << "Usage: MIDAScli ... pull [COMMAND-OPTIONS] URL "
-      "RESOURCE_ID" << std::endl << "Where COMMAND-OPTIONS can be: "
+    std::cout << "Usage: MIDAScli ... pull [COMMAND_OPTIONS] URL "
+      "RESOURCE_ID" << std::endl << "Where COMMAND_OPTIONS can be: "
       << std::endl << " -r         Copy recursively."
       << std::endl << " -C         For pulling a community."
       << std::endl << " -c         For pulling a collection."
@@ -205,5 +251,14 @@ void midasCLI::PrintCommandHelp(std::string command)
   else if(command == "clean")
     {
     std::cout << "Usage: MIDAScli ... clean" << std::endl;
+    }
+  else if(command == "add")
+    {
+    std::cout << "Usage: MIDAScli ... add [COMMAND_OPTIONS] PATH "
+      << std::endl << "Where COMMAND_OPTIONS can be: "
+      << std::endl << " -r         Add all subdirs/files recursively."
+      << std::endl << std::endl 
+      << "And PATH is a relative or absolute path to the dir/file to add."
+      << std::endl;
     }
 }
