@@ -21,6 +21,7 @@
 #include "midasSynchronizer.h"
 #include "midasProgressReporter.h"
 #include "midasDatabaseProxy.h"
+#include "midasUUID.h"
 
 #define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
 #define CHANGE_DIR kwsys::SystemTools::ChangeDirectory
@@ -32,7 +33,7 @@ midasSynchronizer::midasSynchronizer()
 {
   this->Recursive = false;
   this->Operation = OPERATION_NONE;
-  this->PullType = TYPE_NONE;
+  this->Type = TYPE_NONE;
   this->ServerURL = "";
   this->Progress = NULL;
   this->Database = "";
@@ -95,14 +96,14 @@ midasSynchronizer::SynchOperation midasSynchronizer::GetOperation()
   return this->Operation;
 }
 
-void midasSynchronizer::SetPullType(midasSynchronizer::ResourceType type)
+void midasSynchronizer::SetResourceType(midasSynchronizer::ResourceType type)
 {
-  this->PullType = type;
+  this->Type = type;
 }
 
-midasSynchronizer::ResourceType midasSynchronizer::GetPullType()
+midasSynchronizer::ResourceType midasSynchronizer::GetResourceType()
 {
-  return this->PullType;
+  return this->Type;
 }
 
 void midasSynchronizer::SetResourceHandle(std::string handle)
@@ -149,6 +150,30 @@ int midasSynchronizer::Perform()
 //-------------------------------------------------------------------
 int midasSynchronizer::Add()
 {
+  std::string uuid = midasUUID::GenerateUUID();
+  std::string path = 
+    kwsys::SystemTools::FileExists(this->ResourceHandle.c_str()) ?
+    this->ResourceHandle : WORKING_DIR() + "/" + this->ResourceHandle;
+
+  if(!kwsys::SystemTools::FileExists(path.c_str()))
+    {
+    std::cerr << "Error: \"" << this->ResourceHandle << "\" does not refer"
+      " to a valid absolute or relative path." << std::endl;
+    return -1;
+    }
+  this->DatabaseProxy->Open();
+  path = kwsys::SystemTools::GetFilenamePath(path);
+  std::string name = kwsys::SystemTools::GetFilenameName(path);
+  std::string parentDir = 
+    kwsys::SystemTools::GetParentDirectory(path.c_str());
+  std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
+
+  int id = this->DatabaseProxy->AddResource(this->Type, uuid, 
+    this->ResourceHandle, name, parentUuid);
+  
+  //TODO propagate last modified stamp up the local tree.
+  
+  this->DatabaseProxy->Close();
   return 0;
 }
 
@@ -194,13 +219,13 @@ int DownloadProgress(void *clientp, double dltotal, double dlnow,
 //-------------------------------------------------------------------
 int midasSynchronizer::Pull()
 {
-  if(this->PullType == TYPE_NONE || this->ServerURL == "")
+  if(this->Type == TYPE_NONE || this->ServerURL == "")
     {
     return -1;
     }
  
   std::string name;
-  switch(this->PullType)
+  switch(this->Type)
     {
     case TYPE_BITSTREAM:
       name = this->GetBitstreamName();

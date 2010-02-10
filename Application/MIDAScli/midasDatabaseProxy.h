@@ -41,6 +41,8 @@ public:
    */
   int AddResource(int type, std::string uuid, std::string path,
     std::string name, int parentType, int parentId);
+  int AddResource(int type, std::string uuid, std::string path,
+    std::string name, std::string parentUuid);
 
   /**
    * Returns whether or not a resource with the given uuid exists
@@ -48,12 +50,17 @@ public:
   bool ResourceExists(std::string uuid);
 
   int GetIdForUuid(std::string uuid);
-protected:
+  void GetTypeAndIdForUuid(std::string uuid, int& type, int& id);
+
   /**
    * Add a child/parent relationship to the database
    */
   bool AddChild(int parentType, int parentId, int childType, int childId);
+  bool AddChild(std::string parentUuid, int childType, int childId);
 
+  std::string GetUuidFromPath(std::string path);
+  std::string GetUuid(int type, int id);
+protected:
   /** 
    * Add a resource record to the database
    */

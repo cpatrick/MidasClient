@@ -106,9 +106,21 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
   unsigned i;
   for(i = 0; i < args.size(); i++)
     {
-    if(args[i] == "-r")
+    if(args[i] == "-c")
       {
-      this->Synchronizer->SetRecursive(true);
+      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_COLLECTION);
+      }
+    else if(args[i] == "-C")
+      {
+      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_COMMUNITY);
+      }
+    else if(args[i] == "-i")
+      {
+      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_ITEM);
+      }
+    else if(args[i] == "-b")
+      {
+      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_BITSTREAM);
       }
     else
       {
@@ -116,7 +128,8 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
       }
     }
 
-  if(args.size())
+  if(args.size() &&
+     this->Synchronizer->GetResourceType() != midasSynchronizer::TYPE_NONE)
     {
     this->Synchronizer->SetResourceHandle(args[i]);
     return true;
@@ -167,19 +180,19 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
       }
     else if(args[i] == "-c")
       {
-      this->Synchronizer->SetPullType(midasSynchronizer::TYPE_COLLECTION);
+      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_COLLECTION);
       }
     else if(args[i] == "-C")
       {
-      this->Synchronizer->SetPullType(midasSynchronizer::TYPE_COMMUNITY);
+      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_COMMUNITY);
       }
     else if(args[i] == "-i")
       {
-      this->Synchronizer->SetPullType(midasSynchronizer::TYPE_ITEM);
+      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_ITEM);
       }
     else if(args[i] == "-b")
       {
-      this->Synchronizer->SetPullType(midasSynchronizer::TYPE_BITSTREAM);
+      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_BITSTREAM);
       }
     else
       {
@@ -188,7 +201,7 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
     }
 
   if(i + 1 < args.size() &&
-    this->Synchronizer->GetPullType() != midasSynchronizer::TYPE_NONE)
+    this->Synchronizer->GetResourceType() != midasSynchronizer::TYPE_NONE)
     {
     this->Synchronizer->SetServerURL(args[i]);
     i++;
@@ -256,8 +269,12 @@ void midasCLI::PrintCommandHelp(std::string command)
     {
     std::cout << "Usage: MIDAScli ... add [COMMAND_OPTIONS] PATH "
       << std::endl << "Where COMMAND_OPTIONS can be: "
-      << std::endl << " -r         Add all subdirs/files recursively."
-      << std::endl << std::endl 
+      << std::endl << " -C         For adding a community."
+      << std::endl << " -c         For adding a collection."
+      << std::endl << " -i         For adding an item."
+      << std::endl << " -b         For adding a bitstream."
+      << std::endl <<"Exactly one type must be specified (-b, -i, -c, -C)."
+      << std::endl
       << "And PATH is a relative or absolute path to the dir/file to add."
       << std::endl;
     }

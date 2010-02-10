@@ -44,8 +44,8 @@ class midasSynchronizer
     void SetOperation(SynchOperation op);
     SynchOperation GetOperation();
 
-    void SetPullType(ResourceType type);
-    ResourceType GetPullType();
+    void SetResourceType(ResourceType type);
+    ResourceType GetResourceType();
 
     void SetDatabase(std::string path);
     std::string GetDatabase();
@@ -81,7 +81,7 @@ class midasSynchronizer
     void RecurseCommunities(int parentId, mdo::Community* community);
 
     SynchOperation Operation;
-    ResourceType PullType;
+    ResourceType Type;
     std::string ServerURL;
     std::string ResourceHandle;
     
