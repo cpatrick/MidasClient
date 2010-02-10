@@ -23,12 +23,63 @@ midasDatabaseProxy::~midasDatabaseProxy()
 }
 
 //-------------------------------------------------------------------------
+int midasDatabaseProxy::AddResource(int type, std::string uuid,
+  std::string path, std::string name, int parentType, int parentId)
+{
+  if(!this->ResourceExists(uuid))
+    {
+    int id = -1;
+    switch(type)
+      {
+      case MIDAS_RESOURCE_BITSTREAM:
+        id = this->InsertBitstream(path, name);
+        break;
+      case MIDAS_RESOURCE_COLLECTION:
+        id = this->InsertCollection(name);
+        break;
+      case MIDAS_RESOURCE_COMMUNITY:
+        id = this->InsertCommunity(name);
+        break;
+      case MIDAS_RESOURCE_ITEM:
+        id = this->InsertItem(name);
+        break;
+      default:
+        break;
+      }
+    if(id > 0)
+      {
+      this->InsertResourceRecord(type, id, path, uuid);
+      if(parentId > 0)
+        {
+        this->AddChild(parentType, parentId, type, id);
+        }
+      }
+    return id;
+    }
+  else
+    {
+    return this->GetIdForUuid(uuid);
+    }
+}
+
+//-------------------------------------------------------------------------
+int midasDatabaseProxy::GetIdForUuid(std::string uuid)
+{
+  std::stringstream query;
+  query << "SELECT resource_id FROM resource_uuid WHERE uuid='"
+    << uuid << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  return this->Database->GetNextRow() ? this->Database->GetValueAsInt(0) : -1;
+}
+
+//-------------------------------------------------------------------------
 bool midasDatabaseProxy::AddChild(int parentType, int parentId,
                                   int childType, int childId)
 {
   std::stringstream query;
   query << "INSERT INTO ";
-  std::string parent, child;
+  std::string parent, child, parentCol, childCol;
 
   switch(parentType)
     {
@@ -63,7 +114,18 @@ bool midasDatabaseProxy::AddChild(int parentType, int parentId,
       return false;
     }
 
-  query << parent << "2" << child << " (" << parent << "_id, " << child
+  //special case for community2community
+  if(parent == "community" && child == "community")
+    {
+    parentCol = "parent_comm";
+    childCol = "child_comm";
+    }
+  else
+    {
+    parentCol = parent;
+    childCol = child;
+    }
+  query << parent << "2" << child << " (" << parentCol << "_id, " << childCol
     << "_id) VALUES ('" << parentId << "', '" << childId << "')";
   return this->Database->ExecuteQuery(query.str().c_str());
 }
@@ -116,7 +178,7 @@ int midasDatabaseProxy::InsertCommunity(std::string name)
 int midasDatabaseProxy::InsertItem(std::string name)
 {
   std::stringstream query;
-  query << "INSERT INTO item (name) VALUES ('" << name << "')";
+  query << "INSERT INTO item (title) VALUES ('" << name << "')";
   this->Database->ExecuteQuery(query.str().c_str());
   return this->Database->GetLastInsertId();
 }
@@ -184,4 +246,8 @@ void midasDatabaseProxy::Clean()
   this->Database->ExecuteQuery("DELETE FROM collection");
   this->Database->ExecuteQuery("DELETE FROM community");
   this->Database->ExecuteQuery("DELETE FROM item");
+  this->Database->ExecuteQuery("DELETE FROM community2community");
+  this->Database->ExecuteQuery("DELETE FROM community2collection");
+  this->Database->ExecuteQuery("DELETE FROM collection2item");
+  this->Database->ExecuteQuery("DELETE FROM item2bitstream");
 }

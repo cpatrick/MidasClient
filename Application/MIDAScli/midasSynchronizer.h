@@ -73,12 +73,12 @@ class midasSynchronizer
 
     std::string GetBitstreamName();
     std::string GetUUID(int type);
-    int PullBitstream(std::string name);
-    int PullCollection();
-    int PullCommunity();
-    int PullItem();
+    int PullBitstream(int parentId, std::string name);
+    int PullCollection(int parentId);
+    int PullCommunity(int parentId);
+    int PullItem(int parentId);
 
-    void RecurseCommunities(mdo::Community* community);
+    void RecurseCommunities(int parentId, mdo::Community* community);
 
     SynchOperation Operation;
     ResourceType PullType;

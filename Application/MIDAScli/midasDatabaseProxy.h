@@ -34,11 +34,21 @@ public:
    */
   std::string GetResourceLocation(std::string uuid);
 
-  int InsertBitstream(std::string path, std::string name);
-  int InsertCollection(std::string name);
-  int InsertCommunity(std::string name);
-  int InsertItem(std::string name);
+  /**
+   * Creates a new resource and uuid record, and its
+   * corresponding parent/child entry, iff it doesn't exist.
+   * If it does exist, returns its id.
+   */
+  int AddResource(int type, std::string uuid, std::string path,
+    std::string name, int parentType, int parentId);
 
+  /**
+   * Returns whether or not a resource with the given uuid exists
+   */
+  bool ResourceExists(std::string uuid);
+
+  int GetIdForUuid(std::string uuid);
+protected:
   /**
    * Add a child/parent relationship to the database
    */
@@ -50,11 +60,11 @@ public:
   void InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid);
 
-  /**
-   * Returns whether or not a resource with the given uuid exists
-   */
-  bool ResourceExists(std::string uuid);
-protected:
+  int InsertBitstream(std::string path, std::string name);
+  int InsertCollection(std::string name);
+  int InsertCommunity(std::string name);
+  int InsertItem(std::string name);
+
   mds::SQLiteDatabase* Database;
   std::string DatabasePath;
 };

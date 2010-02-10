@@ -27,6 +27,8 @@
 #define CHANGE_DIR kwsys::SystemTools::ChangeDirectory
 #define MKDIR kwsys::SystemTools::MakeDirectory
 
+#define NO_PARENT -1
+
 midasSynchronizer::midasSynchronizer(midasCLI* cli)
 {
   this->CLI = cli;
@@ -167,7 +169,7 @@ int midasSynchronizer::Clone()
     return -1;
     }
 
-  this->RecurseCommunities(community);
+  this->RecurseCommunities(NO_PARENT, community);
   delete community;
 
   return 0;
@@ -196,20 +198,20 @@ int midasSynchronizer::Pull()
     {
     case TYPE_BITSTREAM:
       name = this->GetBitstreamName();
-      return this->PullBitstream(name);
+      return this->PullBitstream(NO_PARENT, name);
     case TYPE_COLLECTION:
-      return this->PullCollection();
+      return this->PullCollection(NO_PARENT);
     case TYPE_COMMUNITY:
-      return this->PullCommunity();
+      return this->PullCommunity(NO_PARENT);
     case TYPE_ITEM:
-      return this->PullItem();
+      return this->PullItem(NO_PARENT);
     default:
       return -1;
     }
 }
 
 //-------------------------------------------------------------------
-int midasSynchronizer::PullBitstream(std::string filename)
+int midasSynchronizer::PullBitstream(int parentId, std::string filename)
 {
   if(filename == "")
     {
@@ -241,18 +243,17 @@ int midasSynchronizer::PullBitstream(std::string filename)
     this->Progress->ResetProgress();
     }
   remote.DownloadFile(fields.str().c_str(), filename.c_str());
-  
-  int id = this->DatabaseProxy->InsertBitstream(
-    WORKING_DIR() + "/" + filename, filename);
-  this->DatabaseProxy->InsertResourceRecord(
-    MIDAS_RESOURCE_BITSTREAM, id, WORKING_DIR() + "/" + filename, uuid);
+
+  this->DatabaseProxy->AddResource(MIDAS_RESOURCE_BITSTREAM,
+    uuid, WORKING_DIR() + "/" + filename, filename, MIDAS_RESOURCE_ITEM,
+    parentId);
   this->DatabaseProxy->Close();
   
   return 0;
 }
 
 //-------------------------------------------------------------------
-int midasSynchronizer::PullCollection()
+int midasSynchronizer::PullCollection(int parentId)
 {
   this->DatabaseProxy->Open();
   std::string uuid = this->GetUUID(MIDAS_RESOURCE_COLLECTION);
@@ -270,12 +271,10 @@ int midasSynchronizer::PullCollection()
     return -1;
     }
 
-  if(!this->DatabaseProxy->ResourceExists(uuid))
-    {
-    int id = this->DatabaseProxy->InsertCollection(collection->GetName());
-    this->DatabaseProxy->InsertResourceRecord(MIDAS_RESOURCE_COLLECTION,
-      id, WORKING_DIR() + "/" + collection->GetName(), uuid);
-    }
+  int id = this->DatabaseProxy->AddResource(MIDAS_RESOURCE_COLLECTION,
+    uuid, WORKING_DIR() + "/" + collection->GetName(), collection->GetName(),
+    MIDAS_RESOURCE_COMMUNITY, parentId);
+  
   this->DatabaseProxy->Close();
 
   if(!kwsys::SystemTools::FileIsDirectory(collection->GetName().c_str()))
@@ -294,7 +293,7 @@ int midasSynchronizer::PullCollection()
       std::stringstream s;
       s << (*i)->GetId();
       this->SetResourceHandle(s.str());
-      this->PullItem();
+      this->PullItem(id);
       }
     CHANGE_DIR(temp.c_str());
     }
@@ -325,7 +324,7 @@ mdo::Community* FindInTree(mdo::Community* root, int id)
 }
 
 //-------------------------------------------------------------------
-int midasSynchronizer::PullCommunity()
+int midasSynchronizer::PullCommunity(int parentId)
 {
   this->DatabaseProxy->Open();
   std::string uuid = this->GetUUID(MIDAS_RESOURCE_COMMUNITY);
@@ -358,19 +357,16 @@ int midasSynchronizer::PullCommunity()
     MKDIR(community->GetName().c_str());
     }
 
-  if(!this->DatabaseProxy->ResourceExists(uuid))
-    {
-    int id = this->DatabaseProxy->InsertCommunity(community->GetName());
-    this->DatabaseProxy->InsertResourceRecord(MIDAS_RESOURCE_COMMUNITY, 
-      id, WORKING_DIR() + "/" + community->GetName(), uuid);
-    }
+  int id = this->DatabaseProxy->AddResource(MIDAS_RESOURCE_COMMUNITY,
+    uuid, WORKING_DIR() + "/" + community->GetName(), community->GetName(),
+    MIDAS_RESOURCE_COMMUNITY, parentId);
   this->DatabaseProxy->Close();
   
   if(this->Recursive)
     {
     CHANGE_DIR(community->GetName().c_str());
     // Pull everything under this community.
-    this->RecurseCommunities(community);
+    this->RecurseCommunities(id, community);
     }
 
   // Revert working dir to top level
@@ -383,7 +379,8 @@ int midasSynchronizer::PullCommunity()
  * Function to recursively pull all collections
  * underneath the given community, including in subcommunities.
  */
-void midasSynchronizer::RecurseCommunities(mdo::Community* community)
+void midasSynchronizer::RecurseCommunities(int parentId, 
+                                           mdo::Community* community)
 {
   for(std::vector<mdo::Collection*>::const_iterator i = 
       community->GetCollections().begin();
@@ -392,7 +389,7 @@ void midasSynchronizer::RecurseCommunities(mdo::Community* community)
     std::stringstream s;
     s << (*i)->GetId();
     this->SetResourceHandle(s.str());
-    this->PullCollection();
+    this->PullCollection(parentId);
     }
   for(std::vector<mdo::Community*>::const_iterator i =
       community->GetCommunities().begin();
@@ -401,7 +398,7 @@ void midasSynchronizer::RecurseCommunities(mdo::Community* community)
     std::stringstream s;
     s << (*i)->GetId();
     this->SetResourceHandle(s.str());
-    this->PullCommunity();
+    this->PullCommunity(parentId);
     }
 }
 
@@ -443,7 +440,7 @@ std::string midasSynchronizer::GetBitstreamName()
 }
 
 //-------------------------------------------------------------------
-int midasSynchronizer::PullItem()
+int midasSynchronizer::PullItem(int parentId)
 {
   this->DatabaseProxy->Open();
   std::string uuid = this->GetUUID(MIDAS_RESOURCE_ITEM);
@@ -471,12 +468,9 @@ int midasSynchronizer::PullItem()
     MKDIR(title.c_str());
     }
 
-  if(!this->DatabaseProxy->ResourceExists(uuid))
-    {
-    int id = this->DatabaseProxy->InsertItem(item->GetTitle());
-    this->DatabaseProxy->InsertResourceRecord(MIDAS_RESOURCE_ITEM, 
-      id, WORKING_DIR() + "/" + title, uuid);
-    }
+  int id = this->DatabaseProxy->AddResource(MIDAS_RESOURCE_ITEM,
+    uuid, WORKING_DIR() + "/" + title, item->GetTitle(),
+    MIDAS_RESOURCE_COLLECTION, parentId);
   this->DatabaseProxy->Close();
 
   if(this->Recursive)
@@ -490,7 +484,7 @@ int midasSynchronizer::PullItem()
       std::stringstream s;
       s << (*i)->GetId();
       this->SetResourceHandle(s.str());
-      this->PullBitstream((*i)->GetName());
+      this->PullBitstream(id, (*i)->GetName());
       }
     CHANGE_DIR(temp.c_str());
     }
