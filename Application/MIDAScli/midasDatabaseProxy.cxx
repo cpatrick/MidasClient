@@ -31,6 +31,31 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
 }
 
 //-------------------------------------------------------------------------
+void midasDatabaseProxy::MarkDirtyResource(std::string uuid, int dirtyAction)
+{
+  // Clear old dirty flags so that we don't have duplicates
+  std::stringstream query;
+  query << "DELETE FROM dirty_resource WHERE uuid='" << uuid << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
+  query.str(std::string());
+
+  query << "INSERT INTO dirty_resource (uuid, action) VALUES ('" << uuid
+    << "', '" << dirtyAction << "')";
+  this->Database->ExecuteQuery(query.str().c_str());
+}
+
+//-------------------------------------------------------------------------
+int midasDatabaseProxy::IsResourceDirty(std::string uuid)
+{
+  std::stringstream query;
+  query << "SELECT action FROM dirty_resource WHERE uuid='"
+    << uuid << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  return this->Database->GetNextRow() ? this->Database->GetValueAsInt(0) : 0;
+}
+
+//-------------------------------------------------------------------------
 int midasDatabaseProxy::AddResource(int type, std::string uuid,
   std::string path, std::string name, std::string parentUuid)
 {
@@ -302,6 +327,7 @@ void midasDatabaseProxy::Clean()
     }
 
   this->Database->ExecuteQuery("DELETE FROM resource_uuid");
+  this->Database->ExecuteQuery("DELETE FROM dirty_resource");
   this->Database->ExecuteQuery("DELETE FROM bitstream");
   this->Database->ExecuteQuery("DELETE FROM collection");
   this->Database->ExecuteQuery("DELETE FROM community");

@@ -27,5 +27,11 @@
 #define MIDAS_RESOURCE_COMMUNITY  4
 #define MIDAS_RESOURCE_PROJECT    5
 #define MIDAS_RESOURCE_ERROR     -1
+#define MIDAS_RESOURCE_NONE      -2
+
+// For marking local resources dirty
+#define MIDAS_DIRTY_MODIFIED 1
+#define MIDAS_DIRTY_ADDED    2
+#define MIDAS_DIRTY_REMOVED  3
 
 #endif

@@ -60,6 +60,9 @@ public:
 
   std::string GetUuidFromPath(std::string path);
   std::string GetUuid(int type, int id);
+
+  void MarkDirtyResource(std::string uuid, int dirtyAction);
+  int IsResourceDirty(std::string uuid);
 protected:
   /** 
    * Add a resource record to the database
