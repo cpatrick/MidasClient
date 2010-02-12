@@ -108,19 +108,19 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
     {
     if(args[i] == "-c")
       {
-      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_COLLECTION);
+      this->Synchronizer->SetResourceType(midasResourceType::COLLECTION);
       }
     else if(args[i] == "-C")
       {
-      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_COMMUNITY);
+      this->Synchronizer->SetResourceType(midasResourceType::COMMUNITY);
       }
     else if(args[i] == "-i")
       {
-      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_ITEM);
+      this->Synchronizer->SetResourceType(midasResourceType::ITEM);
       }
     else if(args[i] == "-b")
       {
-      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_BITSTREAM);
+      this->Synchronizer->SetResourceType(midasResourceType::BITSTREAM);
       }
     else
       {
@@ -129,7 +129,7 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
     }
 
   if(args.size() &&
-     this->Synchronizer->GetResourceType() != MIDAS_RESOURCE_NONE)
+     this->Synchronizer->GetResourceType() != midasResourceType::NONE)
     {
     this->Synchronizer->SetResourceHandle(args[i]);
     return true;
@@ -180,19 +180,19 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
       }
     else if(args[i] == "-c")
       {
-      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_COLLECTION);
+      this->Synchronizer->SetResourceType(midasResourceType::COLLECTION);
       }
     else if(args[i] == "-C")
       {
-      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_COMMUNITY);
+      this->Synchronizer->SetResourceType(midasResourceType::COMMUNITY);
       }
     else if(args[i] == "-i")
       {
-      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_ITEM);
+      this->Synchronizer->SetResourceType(midasResourceType::ITEM);
       }
     else if(args[i] == "-b")
       {
-      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_BITSTREAM);
+      this->Synchronizer->SetResourceType(midasResourceType::BITSTREAM);
       }
     else
       {
@@ -201,7 +201,7 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
     }
 
   if(i + 1 < args.size() &&
-    this->Synchronizer->GetResourceType() != MIDAS_RESOURCE_NONE)
+    this->Synchronizer->GetResourceType() != midasResourceType::NONE)
     {
     this->Synchronizer->SetServerURL(args[i]);
     i++;

@@ -33,7 +33,7 @@ midasSynchronizer::midasSynchronizer()
 {
   this->Recursive = false;
   this->Operation = OPERATION_NONE;
-  this->ResourceType = MIDAS_RESOURCE_NONE;
+  this->ResourceType = midasResourceType::NONE;
   this->ServerURL = "";
   this->Progress = NULL;
   this->Database = "";
@@ -161,7 +161,7 @@ int midasSynchronizer::Add()
     return -1;
     }
   if(kwsys::SystemTools::FileIsDirectory(path.c_str()) &&
-     this->ResourceType == MIDAS_RESOURCE_BITSTREAM)
+     this->ResourceType == midasResourceType::BITSTREAM)
     {
     std::cerr << "Error: \"" << path << "\" is a directory. A bitstream "
       "refers to a file, not a directory." << std::endl;
@@ -186,7 +186,7 @@ int midasSynchronizer::Add()
 
   int id = this->DatabaseProxy->AddResource(this->ResourceType, uuid, 
     path, name, parentUuid);
-  this->DatabaseProxy->MarkDirtyResource(uuid, MIDAS_DIRTY_ADDED);
+  this->DatabaseProxy->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
   
   //TODO propagate last modified stamp up the local tree. (perhaps in MarkDirtyResource())
   
@@ -236,7 +236,7 @@ int DownloadProgress(void *clientp, double dltotal, double dlnow,
 //-------------------------------------------------------------------
 int midasSynchronizer::Pull()
 {
-  if(this->ResourceType == MIDAS_RESOURCE_NONE || this->ServerURL == "")
+  if(this->ResourceType == midasResourceType::NONE || this->ServerURL == "")
     {
     return -1;
     }
@@ -244,14 +244,14 @@ int midasSynchronizer::Pull()
   std::string name;
   switch(this->ResourceType)
     {
-    case MIDAS_RESOURCE_BITSTREAM:
+    case midasResourceType::BITSTREAM:
       name = this->GetBitstreamName();
       return this->PullBitstream(NO_PARENT, name);
-    case MIDAS_RESOURCE_COLLECTION:
+    case midasResourceType::COLLECTION:
       return this->PullCollection(NO_PARENT);
-    case MIDAS_RESOURCE_COMMUNITY:
+    case midasResourceType::COMMUNITY:
       return this->PullCommunity(NO_PARENT);
-    case MIDAS_RESOURCE_ITEM:
+    case midasResourceType::ITEM:
       return this->PullItem(NO_PARENT);
     default:
       return -1;
@@ -266,7 +266,7 @@ int midasSynchronizer::PullBitstream(int parentId, std::string filename)
     return -1;
     }
   this->DatabaseProxy->Open();
-  std::string uuid = this->GetUUID(MIDAS_RESOURCE_BITSTREAM);
+  std::string uuid = this->GetUUID(midasResourceType::BITSTREAM);
   std::string path = this->DatabaseProxy->GetResourceLocation(uuid);
 
   //TODO check md5 sum of file at location against server's checksum?
@@ -292,8 +292,8 @@ int midasSynchronizer::PullBitstream(int parentId, std::string filename)
     }
   remote.DownloadFile(fields.str().c_str(), filename.c_str());
 
-  this->DatabaseProxy->AddResource(MIDAS_RESOURCE_BITSTREAM,
-    uuid, WORKING_DIR() + "/" + filename, filename, MIDAS_RESOURCE_ITEM,
+  this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
+    uuid, WORKING_DIR() + "/" + filename, filename, midasResourceType::ITEM,
     parentId);
   this->DatabaseProxy->Close();
   
@@ -304,7 +304,7 @@ int midasSynchronizer::PullBitstream(int parentId, std::string filename)
 int midasSynchronizer::PullCollection(int parentId)
 {
   this->DatabaseProxy->Open();
-  std::string uuid = this->GetUUID(MIDAS_RESOURCE_COLLECTION);
+  std::string uuid = this->GetUUID(midasResourceType::COLLECTION);
 
   mws::Collection remote;
   mdo::Collection* collection = new mdo::Collection;
@@ -319,9 +319,9 @@ int midasSynchronizer::PullCollection(int parentId)
     return -1;
     }
 
-  int id = this->DatabaseProxy->AddResource(MIDAS_RESOURCE_COLLECTION,
+  int id = this->DatabaseProxy->AddResource(midasResourceType::COLLECTION,
     uuid, WORKING_DIR() + "/" + collection->GetName(), collection->GetName(),
-    MIDAS_RESOURCE_COMMUNITY, parentId);
+    midasResourceType::COMMUNITY, parentId);
   
   this->DatabaseProxy->Close();
 
@@ -375,7 +375,7 @@ mdo::Community* FindInTree(mdo::Community* root, int id)
 int midasSynchronizer::PullCommunity(int parentId)
 {
   this->DatabaseProxy->Open();
-  std::string uuid = this->GetUUID(MIDAS_RESOURCE_COMMUNITY);
+  std::string uuid = this->GetUUID(midasResourceType::COMMUNITY);
 
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
@@ -405,9 +405,9 @@ int midasSynchronizer::PullCommunity(int parentId)
     MKDIR(community->GetName().c_str());
     }
 
-  int id = this->DatabaseProxy->AddResource(MIDAS_RESOURCE_COMMUNITY,
+  int id = this->DatabaseProxy->AddResource(midasResourceType::COMMUNITY,
     uuid, WORKING_DIR() + "/" + community->GetName(), community->GetName(),
-    MIDAS_RESOURCE_COMMUNITY, parentId);
+    midasResourceType::COMMUNITY, parentId);
   this->DatabaseProxy->Close();
   
   if(this->Recursive)
@@ -491,7 +491,7 @@ std::string midasSynchronizer::GetBitstreamName()
 int midasSynchronizer::PullItem(int parentId)
 {
   this->DatabaseProxy->Open();
-  std::string uuid = this->GetUUID(MIDAS_RESOURCE_ITEM);
+  std::string uuid = this->GetUUID(midasResourceType::ITEM);
 
   mws::Item remote;
   mdo::Item* item = new mdo::Item;
@@ -516,9 +516,9 @@ int midasSynchronizer::PullItem(int parentId)
     MKDIR(title.c_str());
     }
 
-  int id = this->DatabaseProxy->AddResource(MIDAS_RESOURCE_ITEM,
+  int id = this->DatabaseProxy->AddResource(midasResourceType::ITEM,
     uuid, WORKING_DIR() + "/" + title, item->GetTitle(),
-    MIDAS_RESOURCE_COLLECTION, parentId);
+    midasResourceType::COLLECTION, parentId);
   this->DatabaseProxy->Close();
 
   if(this->Recursive)

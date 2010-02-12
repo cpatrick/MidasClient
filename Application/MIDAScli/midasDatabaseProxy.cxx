@@ -64,16 +64,16 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
     int id = -1;
     switch(type)
       {
-      case MIDAS_RESOURCE_BITSTREAM:
+      case midasResourceType::BITSTREAM:
         id = this->InsertBitstream(path, name);
         break;
-      case MIDAS_RESOURCE_COLLECTION:
+      case midasResourceType::COLLECTION:
         id = this->InsertCollection(name);
         break;
-      case MIDAS_RESOURCE_COMMUNITY:
+      case midasResourceType::COMMUNITY:
         id = this->InsertCommunity(name);
         break;
-      case MIDAS_RESOURCE_ITEM:
+      case midasResourceType::ITEM:
         id = this->InsertItem(name);
         break;
       default:
@@ -145,7 +145,7 @@ void midasDatabaseProxy::GetTypeAndIdForUuid(std::string uuid,
     }
   else
     {
-    type = MIDAS_RESOURCE_ERROR;
+    type = midasResourceType::TYPE_ERROR;
     }
 }
 
@@ -168,13 +168,13 @@ bool midasDatabaseProxy::AddChild(int parentType, int parentId,
 
   switch(parentType)
     {
-    case MIDAS_RESOURCE_COLLECTION:
+    case midasResourceType::COLLECTION:
       parent = "collection";
       break;
-    case MIDAS_RESOURCE_COMMUNITY:
+    case midasResourceType::COMMUNITY:
       parent = "community";
       break;
-    case MIDAS_RESOURCE_ITEM:
+    case midasResourceType::ITEM:
       parent = "item";
       break;
     default:
@@ -183,16 +183,16 @@ bool midasDatabaseProxy::AddChild(int parentType, int parentId,
 
   switch(childType)
     {
-    case MIDAS_RESOURCE_BITSTREAM:
+    case midasResourceType::BITSTREAM:
       child = "bitstream";
       break;
-    case MIDAS_RESOURCE_COLLECTION:
+    case midasResourceType::COLLECTION:
       child = "collection";
       break;
-    case MIDAS_RESOURCE_COMMUNITY:
+    case midasResourceType::COMMUNITY:
       child = "community";
       break;
-    case MIDAS_RESOURCE_ITEM:
+    case midasResourceType::ITEM:
       child = "item";
       break;
     default:
