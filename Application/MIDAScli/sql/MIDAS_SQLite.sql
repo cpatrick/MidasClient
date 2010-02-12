@@ -632,6 +632,13 @@ CREATE TABLE resource_uuid (
     uuid character varying(60) PRIMARY KEY
 );
 
+-- A list of resources flagged as dirty
+-- action is the action that marked the resource dirty (modified, added, or removed)
+CREATE TABLE dirty_resource (
+    uuid character varying(60) PRIMARY KEY,
+    action smallint
+);
+
 --
 -- Name: handle; Type: TABLE; Schema: public; Owner: midas; Tablespace:
 --
