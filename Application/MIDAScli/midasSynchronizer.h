@@ -33,19 +33,11 @@ class midasSynchronizer
       OPERATION_PUSH
       };
 
-    enum ResourceType {
-      TYPE_BITSTREAM,
-      TYPE_ITEM,
-      TYPE_COLLECTION,
-      TYPE_COMMUNITY,
-      TYPE_NONE
-      };
-
     void SetOperation(SynchOperation op);
     SynchOperation GetOperation();
 
-    void SetResourceType(ResourceType type);
-    ResourceType GetResourceType();
+    void SetResourceType(int type);
+    int GetResourceType();
 
     void SetDatabase(std::string path);
     std::string GetDatabase();
@@ -81,7 +73,7 @@ class midasSynchronizer
     void RecurseCommunities(int parentId, mdo::Community* community);
 
     SynchOperation Operation;
-    ResourceType Type;
+    int ResourceType;
     std::string ServerURL;
     std::string ResourceHandle;
     

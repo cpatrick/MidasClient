@@ -108,19 +108,19 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
     {
     if(args[i] == "-c")
       {
-      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_COLLECTION);
+      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_COLLECTION);
       }
     else if(args[i] == "-C")
       {
-      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_COMMUNITY);
+      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_COMMUNITY);
       }
     else if(args[i] == "-i")
       {
-      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_ITEM);
+      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_ITEM);
       }
     else if(args[i] == "-b")
       {
-      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_BITSTREAM);
+      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_BITSTREAM);
       }
     else
       {
@@ -129,7 +129,7 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
     }
 
   if(args.size() &&
-     this->Synchronizer->GetResourceType() != midasSynchronizer::TYPE_NONE)
+     this->Synchronizer->GetResourceType() != MIDAS_RESOURCE_NONE)
     {
     this->Synchronizer->SetResourceHandle(args[i]);
     return true;
@@ -180,19 +180,19 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
       }
     else if(args[i] == "-c")
       {
-      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_COLLECTION);
+      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_COLLECTION);
       }
     else if(args[i] == "-C")
       {
-      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_COMMUNITY);
+      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_COMMUNITY);
       }
     else if(args[i] == "-i")
       {
-      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_ITEM);
+      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_ITEM);
       }
     else if(args[i] == "-b")
       {
-      this->Synchronizer->SetResourceType(midasSynchronizer::TYPE_BITSTREAM);
+      this->Synchronizer->SetResourceType(MIDAS_RESOURCE_BITSTREAM);
       }
     else
       {
@@ -201,7 +201,7 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
     }
 
   if(i + 1 < args.size() &&
-    this->Synchronizer->GetResourceType() != midasSynchronizer::TYPE_NONE)
+    this->Synchronizer->GetResourceType() != MIDAS_RESOURCE_NONE)
     {
     this->Synchronizer->SetServerURL(args[i]);
     i++;
@@ -256,6 +256,10 @@ void midasCLI::PrintCommandHelp(std::string command)
       << std::endl << " -b         For pulling a bitstream."
       << std::endl <<"Exactly one type must be specified (-b, -i, -c, -C)."
       << std::endl;
+    }
+  else if(command == "push")
+    {
+    std::cout << "Usage: MIDAScli ... push URL " << std::endl;
     }
   else if(command == "clone")
     {
