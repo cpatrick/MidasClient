@@ -12,7 +12,7 @@
 #include "midasUUID.h"
 #include <time.h>
 
-#define UUID_LENGTH 40
+#define UUID_LENGTH 45
 
 std::string midasUUID::GenerateUUID()
 {
@@ -21,7 +21,8 @@ std::string midasUUID::GenerateUUID()
   std::stringstream randomchars;
   for(unsigned int i = 0; i < UUID_LENGTH; i++)
     {
-    randomchars << rand() % 10;
+    int nextDigit = rand() % 16;
+    randomchars << std::hex << nextDigit;
     }
   return randomchars.str();
 }
