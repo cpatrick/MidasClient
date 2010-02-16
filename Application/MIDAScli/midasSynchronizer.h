@@ -65,10 +65,15 @@ class midasSynchronizer
 
     std::string GetBitstreamName();
     std::string GetUUID(int type);
-    int PullBitstream(int parentId, std::string name);
-    int PullCollection(int parentId);
-    int PullCommunity(int parentId);
-    int PullItem(int parentId);
+    bool PullBitstream(int parentId, std::string name);
+    bool PullCollection(int parentId);
+    bool PullCommunity(int parentId);
+    bool PullItem(int parentId);
+
+    bool PushBitstream(int id);
+    bool PushCollection(int id);
+    bool PushCommunity(int id);
+    bool PushItem(int id);
 
     void RecurseCommunities(int parentId, mdo::Community* community);
 

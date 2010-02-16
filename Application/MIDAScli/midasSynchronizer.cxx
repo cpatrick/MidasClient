@@ -246,24 +246,24 @@ int midasSynchronizer::Pull()
     {
     case midasResourceType::BITSTREAM:
       name = this->GetBitstreamName();
-      return this->PullBitstream(NO_PARENT, name);
+      return this->PullBitstream(NO_PARENT, name) ? 0 : -1;
     case midasResourceType::COLLECTION:
-      return this->PullCollection(NO_PARENT);
+      return this->PullCollection(NO_PARENT) ? 0 : -1;
     case midasResourceType::COMMUNITY:
-      return this->PullCommunity(NO_PARENT);
+      return this->PullCommunity(NO_PARENT) ? 0 : -1;
     case midasResourceType::ITEM:
-      return this->PullItem(NO_PARENT);
+      return this->PullItem(NO_PARENT) ? 0 : -1;
     default:
       return -1;
     }
 }
 
 //-------------------------------------------------------------------
-int midasSynchronizer::PullBitstream(int parentId, std::string filename)
+bool midasSynchronizer::PullBitstream(int parentId, std::string filename)
 {
   if(filename == "")
     {
-    return -1;
+    return false;
     }
   this->DatabaseProxy->Open();
   std::string uuid = this->GetUUID(midasResourceType::BITSTREAM);
@@ -274,7 +274,7 @@ int midasSynchronizer::PullBitstream(int parentId, std::string filename)
     {
     //we already have this bitstream, no need to download again
     this->DatabaseProxy->Close();
-    return 0;
+    return true;
     }
 
   mws::WebAPI remote;
@@ -297,11 +297,11 @@ int midasSynchronizer::PullBitstream(int parentId, std::string filename)
     parentId);
   this->DatabaseProxy->Close();
   
-  return 0;
+  return true;
 }
 
 //-------------------------------------------------------------------
-int midasSynchronizer::PullCollection(int parentId)
+bool midasSynchronizer::PullCollection(int parentId)
 {
   this->DatabaseProxy->Open();
   std::string uuid = this->GetUUID(midasResourceType::COLLECTION);
@@ -316,7 +316,7 @@ int midasSynchronizer::PullCollection(int parentId)
     {
     std::cerr << "Unable to fetch the collection via the Web API" << std::endl;
     this->DatabaseProxy->Close();
-    return -1;
+    return false;
     }
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::COLLECTION,
@@ -347,7 +347,7 @@ int midasSynchronizer::PullCollection(int parentId)
     }
 
   delete collection;
-  return 0;
+  return true;
 }
 
 /**
@@ -372,7 +372,7 @@ mdo::Community* FindInTree(mdo::Community* root, int id)
 }
 
 //-------------------------------------------------------------------
-int midasSynchronizer::PullCommunity(int parentId)
+bool midasSynchronizer::PullCommunity(int parentId)
 {
   this->DatabaseProxy->Open();
   std::string uuid = this->GetUUID(midasResourceType::COMMUNITY);
@@ -387,7 +387,7 @@ int midasSynchronizer::PullCommunity(int parentId)
     {
     std::cerr << "Unable to fetch the community via the Web API" << std::endl;
     this->DatabaseProxy->Close();
-    return -1;
+    return false;
     }
   community = FindInTree(community, atoi(this->ResourceHandle.c_str()));
   if(!community)
@@ -395,7 +395,7 @@ int midasSynchronizer::PullCommunity(int parentId)
     std::cerr << "Error: Community " << this->ResourceHandle 
       << " does not exist." << std::endl;
     this->DatabaseProxy->Close();
-    return -1;
+    return false;
     }
 
   std::string topLevelDir = WORKING_DIR();
@@ -420,7 +420,7 @@ int midasSynchronizer::PullCommunity(int parentId)
   // Revert working dir to top level
   CHANGE_DIR(topLevelDir.c_str());
   delete community;
-  return 0;
+  return true;
 }
 
 /**
@@ -488,7 +488,7 @@ std::string midasSynchronizer::GetBitstreamName()
 }
 
 //-------------------------------------------------------------------
-int midasSynchronizer::PullItem(int parentId)
+bool midasSynchronizer::PullItem(int parentId)
 {
   this->DatabaseProxy->Open();
   std::string uuid = this->GetUUID(midasResourceType::ITEM);
@@ -503,7 +503,7 @@ int midasSynchronizer::PullItem(int parentId)
     {
     std::cerr << "Unable to fetch the item via the Web API" << std::endl;
     this->DatabaseProxy->Close();
-    return -1;
+    return false;
     }
   
   std::stringstream altTitle;
@@ -538,11 +538,66 @@ int midasSynchronizer::PullItem(int parentId)
     }
 
   delete item;
-  return 0;
+  return true;
 }
 
 //-------------------------------------------------------------------
 int midasSynchronizer::Push()
 {
-  return 0;
+  this->DatabaseProxy->Open();
+  this->DatabaseProxy->GetDatabase()->ExecuteQuery(
+    "SELECT uuid FROM dirty_resource");
+
+  bool success = true;
+
+  while(this->DatabaseProxy->GetDatabase()->GetNextRow())
+    {
+    int id, type;
+    this->DatabaseProxy->GetTypeAndIdForUuid(
+      this->DatabaseProxy->GetDatabase()->GetValueAsString(0), type, id);
+
+    switch(type)
+      {
+      case midasResourceType::BITSTREAM:
+        success &= this->PushBitstream(id);
+        break;
+      case midasResourceType::COLLECTION:
+        success &= this->PushCollection(id);
+        break;
+      case midasResourceType::COMMUNITY:
+        success &= this->PushCommunity(id);
+        break;
+      case midasResourceType::ITEM:
+        success &= this->PushBitstream(id);
+        break;
+      default:
+        return -1;
+      }
+    }
+  this->DatabaseProxy->Close();
+  return success ? 0 : -1;
+}
+
+//-------------------------------------------------------------------
+bool midasSynchronizer::PushBitstream(int id)
+{
+  return true;
+}
+
+//-------------------------------------------------------------------
+bool midasSynchronizer::PushCollection(int id)
+{
+  return true;
+}
+
+//-------------------------------------------------------------------
+bool midasSynchronizer::PushCommunity(int id)
+{
+  return true;
+}
+
+//-------------------------------------------------------------------
+bool midasSynchronizer::PushItem(int id)
+{
+  return true;
 }
