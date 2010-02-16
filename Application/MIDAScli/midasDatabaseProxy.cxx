@@ -22,6 +22,11 @@ midasDatabaseProxy::~midasDatabaseProxy()
   delete this->Database;
 }
 
+mds::SQLiteDatabase* midasDatabaseProxy::GetDatabase()
+{
+  return this->Database;
+}
+
 //-------------------------------------------------------------------------
 int midasDatabaseProxy::AddResource(int type, std::string uuid,
   std::string path, std::string name, int parentType, int parentId)

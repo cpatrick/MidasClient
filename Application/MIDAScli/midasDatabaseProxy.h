@@ -21,6 +21,8 @@ public:
   midasDatabaseProxy(std::string database);
   ~midasDatabaseProxy();
 
+  mds::SQLiteDatabase* GetDatabase();
+
   bool Open();
   bool Close();
 
