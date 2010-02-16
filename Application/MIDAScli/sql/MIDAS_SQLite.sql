@@ -23,6 +23,7 @@ DROP TABLE IF EXISTS cart2item;
 DROP TABLE IF EXISTS cartgroup;
 DROP TABLE IF EXISTS cartgroup2cart;
 DROP TABLE IF EXISTS cart2cart;
+DROP TABLE IF EXISTS dirty_resource;
 DROP TABLE IF EXISTS modality;
 DROP TABLE IF EXISTS midas_itemstats;
 DROP TABLE IF EXISTS midas_resourcelog;
