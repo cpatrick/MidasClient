@@ -218,13 +218,17 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
 //-------------------------------------------------------------------
 bool midasCLI::ParsePush(std::vector<std::string> args)
 {
-  std::cout << "Push not yet implemented.\n";
-  return false;
-/*  i++;
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
-  this->Synchronizer->SetServerURL(args[i]);
-  i++;
-  this->Synchronizer->SetResourceHandle(args[i]);*/
+  if(!args.size())
+    {
+    this->PrintCommandHelp("push");
+    return false;
+    }
+  else
+    {
+    this->Synchronizer->SetServerURL(args[0]);
+    return true;
+    }
 }
 
 //-------------------------------------------------------------------

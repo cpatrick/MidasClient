@@ -36,31 +36,6 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
 }
 
 //-------------------------------------------------------------------------
-void midasDatabaseProxy::MarkDirtyResource(std::string uuid, int dirtyAction)
-{
-  // Clear old dirty flags so that we don't have duplicates
-  std::stringstream query;
-  query << "DELETE FROM dirty_resource WHERE uuid='" << uuid << "'";
-  this->Database->ExecuteQuery(query.str().c_str());
-  query.str(std::string());
-
-  query << "INSERT INTO dirty_resource (uuid, action) VALUES ('" << uuid
-    << "', '" << dirtyAction << "')";
-  this->Database->ExecuteQuery(query.str().c_str());
-}
-
-//-------------------------------------------------------------------------
-int midasDatabaseProxy::IsResourceDirty(std::string uuid)
-{
-  std::stringstream query;
-  query << "SELECT action FROM dirty_resource WHERE uuid='"
-    << uuid << "'";
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  return this->Database->GetNextRow() ? this->Database->GetValueAsInt(0) : 0;
-}
-
-//-------------------------------------------------------------------------
 int midasDatabaseProxy::AddResource(int type, std::string uuid,
   std::string path, std::string name, std::string parentUuid)
 {
@@ -98,6 +73,96 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
     {
     return this->GetIdForUuid(uuid);
     }
+}
+
+//-------------------------------------------------------------------------
+void midasDatabaseProxy::MarkDirtyResource(std::string uuid, int dirtyAction)
+{
+  // Clear old dirty flags so that we don't have duplicates
+  this->ClearDirtyResource(uuid);
+
+  std::stringstream query;
+  query << "INSERT INTO dirty_resource (uuid, action) VALUES ('" << uuid
+    << "', '" << dirtyAction << "')";
+  this->Database->ExecuteQuery(query.str().c_str());
+}
+
+//-------------------------------------------------------------------------
+void midasDatabaseProxy::ClearDirtyResource(std::string uuid)
+{
+  std::stringstream query;
+  query << "DELETE FROM dirty_resource WHERE uuid='" << uuid << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
+}
+
+//-------------------------------------------------------------------------
+int midasDatabaseProxy::IsResourceDirty(std::string uuid)
+{
+  std::stringstream query;
+  query << "SELECT action FROM dirty_resource WHERE uuid='"
+    << uuid << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  return this->Database->GetNextRow() ? this->Database->GetValueAsInt(0) : 0;
+}
+
+//-------------------------------------------------------------------------
+std::string midasDatabaseProxy::GetName(int type, int id)
+{
+  std::stringstream query;
+  
+  switch(type)
+    {
+    case midasResourceType::BITSTREAM:
+      query << "SELECT name FROM bitstream WHERE bitstream_id='" << id << "'";
+      break;
+    case midasResourceType::COMMUNITY:
+      query << "SELECT name FROM community WHERE community_id='" << id << "'";
+      break;
+    case midasResourceType::COLLECTION:
+      query << "SELECT name FROM collection WHERE collection_id='"
+        << id << "'";
+      break;
+    case midasResourceType::ITEM:
+      query << "SELECT title FROM item WHERE item_id='" << id << "'";
+      break;
+    default:
+      return "";
+    }
+  this->Database->ExecuteQuery(query.str().c_str());
+  return (this->Database->GetNextRow() ? 
+    this->Database->GetValueAsString(0) : "");
+}
+
+//-------------------------------------------------------------------------
+int midasDatabaseProxy::GetParentId(int type, int id)
+{
+  std::stringstream query;
+  
+  switch(type)
+    {
+    case midasResourceType::BITSTREAM:
+      query << "SELECT item_id FROM item2bitstream WHERE bitstream_id='"
+        << id << "'";
+      break;
+    case midasResourceType::COMMUNITY:
+      query << "SELECT parent_comm_id FROM community2community WHERE "
+        "child_comm_id='" << id << "'";
+      break;
+    case midasResourceType::COLLECTION:
+      query << "SELECT community_id FROM community2collection WHERE "
+        "collection_id='" << id << "'";
+      break;
+    case midasResourceType::ITEM:
+      query << "SELECT collection_id FROM collection2item WHERE item_id='"
+        << id << "'";
+      break;
+    default:
+      return -1;
+    }
+  this->Database->ExecuteQuery(query.str().c_str());
+  return (this->Database->GetNextRow() ? 
+    this->Database->GetValueAsInt(0) : -1);
 }
 
 //-------------------------------------------------------------------------

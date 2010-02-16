@@ -35,6 +35,9 @@ public:
    * Get the absolute path to the given resource
    */
   std::string GetResourceLocation(std::string uuid);
+  std::string GetName(int type, int id);
+
+  int GetParentId(int type, int id);
 
   /**
    * Creates a new resource and uuid record, and its
@@ -64,6 +67,7 @@ public:
   std::string GetUuid(int type, int id);
 
   void MarkDirtyResource(std::string uuid, int dirtyAction);
+  void ClearDirtyResource(std::string uuid);
   int IsResourceDirty(std::string uuid);
 protected:
   /** 

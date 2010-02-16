@@ -593,7 +593,48 @@ bool midasSynchronizer::PushCollection(int id)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PushCommunity(int id)
 {
-  return true;
+  std::string uuid = this->DatabaseProxy->GetUuid(
+    midasResourceType::COMMUNITY, id);
+  std::string name = this->DatabaseProxy->GetName(
+    midasResourceType::COMMUNITY, id);
+
+  //1. Get client-side parent id/type
+  int parentId = this->DatabaseProxy->GetParentId(
+    midasResourceType::COMMUNITY, id);
+
+  std::stringstream fields;
+  std::string server_parentId;
+  mws::WebAPI remote;
+  remote.SetServerUrl(this->ServerURL.c_str());
+  
+  if(parentId != -1)
+    {
+    //2. Get uuid from parent id/type
+    std::string parentUuid = this->DatabaseProxy->GetUuid(
+      midasResourceType::COMMUNITY, parentId);
+
+    //3. Get server-side id of parent from the uuid
+    fields << "midas.resource.get?uuid=" << parentUuid;
+    remote.GetRestXMLParser()->AddTag("/rsp/id", server_parentId);
+    remote.Execute(fields.str().c_str());
+    fields.str(std::string());
+    }
+
+  //4. Create new community on server
+  fields << "uuid=" << uuid << "&name=" << name;
+  
+  if(parentId != -1)
+    {
+    fields << "&parentid=" << server_parentId;
+    }
+  //TODO remote.SetPostFields(fields.str().c_str());
+  bool success = remote.Execute("midas.community.create");
+  if(success)
+    {
+    //5. Clear dirty flag on the resource
+    this->DatabaseProxy->ClearDirtyResource(uuid);
+    }
+  return success;
 }
 
 //-------------------------------------------------------------------
