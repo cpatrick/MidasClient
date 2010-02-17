@@ -16,6 +16,7 @@
 -- Delete all old tables if they exist
 -- This text is a result of the query:
 -- SELECT 'DROP TABLE IF EXISTS ' || name || ';' FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';
+DROP TABLE IF EXISTS auth_profile;
 DROP TABLE IF EXISTS version;
 DROP TABLE IF EXISTS cart;
 DROP TABLE IF EXISTS cart2eperson;
@@ -125,11 +126,18 @@ DROP VIEW IF EXISTS communityitemsbysubject;
 DROP VIEW IF EXISTS communityitemsbytitle;
 DROP VIEW IF EXISTS dcvalue;
 
+CREATE TABLE auth_profile (
+  profile_name character varying(64) PRIMARY KEY,
+  eperson varchar(64),
+  apikey character varying(40),
+  app_name character varying(256),
+);
+
 --
 -- Name: bitstream; Type: TABLE; Schema: public; Owner: midas; Tablespace:
 --
 
-CREATE TABLE version(
+CREATE TABLE version (
     name text,
     major integer,
     minor integer,

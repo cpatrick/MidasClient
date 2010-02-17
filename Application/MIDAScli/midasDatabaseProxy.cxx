@@ -76,6 +76,41 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
 }
 
 //-------------------------------------------------------------------------
+bool midasDatabaseProxy::GetAuthProfile(std::string name, std::string& user,
+                                        std::string& appName,
+                                        std::string& apiKey)
+{
+  std::stringstream query;
+  query << "SELECT eperson, apikey, app_name FROM auth_profile WHERE "
+    "profile_name='" << name << "'";
+
+  this->Database->ExecuteQuery(query.str().c_str());
+  if(this->Database->GetNextRow())
+    {
+    user = this->Database->GetValueAsString(0);
+    apiKey = this->Database->GetValueAsString(1);
+    appName = this->Database->GetValueAsString(2);
+    return true;
+    }
+  else
+    {
+    return false;
+    }
+}
+
+//-------------------------------------------------------------------------
+bool midasDatabaseProxy::AddAuthProfile(std::string user, std::string appName,
+                                        std::string apiKey, std::string name)
+{
+  std::stringstream query;
+  query << "INSERT INTO auth_profile (profile_name, eperson, apikey, "
+    "app_name) VALUES ('" << name << "', '" << user << "', '" << apiKey <<
+    "', '" << appName << "')";
+
+  return this->Database->ExecuteQuery(query.str().c_str());
+}
+
+//-------------------------------------------------------------------------
 void midasDatabaseProxy::MarkDirtyResource(std::string uuid, int dirtyAction)
 {
   // Clear old dirty flags so that we don't have duplicates

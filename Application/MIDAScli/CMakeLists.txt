@@ -3,18 +3,20 @@ cmake_minimum_required(VERSION 2.6)
 
 SET(MIDAScli_SRCS
 main.cxx
-midasCLI.h
+midasAuthenticator.cxx
+midasAuthenticator.h
 midasCLI.cxx
+midasCLI.h
 midasProgressReporter.h
-midasDatabaseProxy.h
 midasDatabaseProxy.cxx
-midasDotProgressReporter.h
+midasDatabaseProxy.h
 midasDotProgressReporter.cxx
+midasDotProgressReporter.h
 midasStandardIncludes.h
-midasSynchronizer.h
 midasSynchronizer.cxx
-midasUUID.h
+midasSynchronizer.h
 midasUUID.cxx
+midasUUID.h
 )
 
 ADD_EXECUTABLE(MIDAScli ${MIDAScli_SRCS})

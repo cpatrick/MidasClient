@@ -49,6 +49,11 @@ public:
   int AddResource(int type, std::string uuid, std::string path,
     std::string name, std::string parentUuid);
 
+  bool AddAuthProfile(std::string user, std::string appName,
+    std::string apiKey, std::string profileName);
+  bool GetAuthProfile(std::string name, std::string& user,
+    std::string& appName, std::string& apiKey);
+
   /**
    * Returns whether or not a resource with the given uuid exists
    */
