@@ -158,11 +158,11 @@ int midasDatabaseProxy::GetParentId(int type, int id)
         << id << "'";
       break;
     default:
-      return -1;
+      return 0;
     }
   this->Database->ExecuteQuery(query.str().c_str());
   return (this->Database->GetNextRow() ? 
-    this->Database->GetValueAsInt(0) : -1);
+    this->Database->GetValueAsInt(0) : 0);
 }
 
 //-------------------------------------------------------------------------

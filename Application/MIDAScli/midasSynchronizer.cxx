@@ -607,7 +607,7 @@ bool midasSynchronizer::PushCommunity(int id)
   mws::WebAPI remote;
   remote.SetServerUrl(this->ServerURL.c_str());
   
-  if(parentId != -1)
+  if(parentId)
     {
     //2. Get uuid from parent id/type
     std::string parentUuid = this->DatabaseProxy->GetUuid(
@@ -618,17 +618,14 @@ bool midasSynchronizer::PushCommunity(int id)
     remote.GetRestXMLParser()->AddTag("/rsp/id", server_parentId);
     remote.Execute(fields.str().c_str());
     fields.str(std::string());
+    parentId = atoi(server_parentId.c_str());
     }
 
   //4. Create new community on server
-  fields << "uuid=" << uuid << "&name=" << name;
-  
-  if(parentId != -1)
-    {
-    fields << "&parentid=" << server_parentId;
-    }
-  //TODO remote.SetPostFields(fields.str().c_str());
-  bool success = remote.Execute("midas.community.create");
+  fields << "midas.community.create?uuid=" << uuid << "&name=" << name 
+    << "&parentid=" << parentId;
+  remote.SetPostData("");
+  bool success = remote.Execute(fields.str().c_str());
   if(success)
     {
     //5. Clear dirty flag on the resource
