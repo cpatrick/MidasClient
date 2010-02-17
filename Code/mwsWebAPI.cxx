@@ -24,6 +24,7 @@ WebAPI::WebAPI()
   m_RestXMLParser = new RestXMLParser();
   m_RestAPI->SetXMLParser(m_RestXMLParser);
   m_RestAPI->Initialize();
+  m_PostData = NULL;
 }
 
 /** Constructor */
@@ -59,7 +60,12 @@ WebAPI* WebAPI::Instance()
     }
   return m_Instance;  
 }
-  
+
+void WebAPI::SetPostData(const char* postData)
+{
+  m_PostData = postData;
+}
+
 /** Execute the command */
 bool WebAPI::Execute(const char* url)
 {  
@@ -71,7 +77,7 @@ bool WebAPI::Execute(const char* url)
     fullUrl << "&token=" << m_APIToken;
     }
 
-  bool success = m_RestAPI->Execute(fullUrl.str().c_str());
+  bool success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
 
   if(success && m_RestXMLParser->GetErrorCode() == 0)
     {

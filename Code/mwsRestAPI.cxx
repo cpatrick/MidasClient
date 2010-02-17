@@ -168,7 +168,7 @@ bool RestAPI::Execute(const char*  url,
     {
     curl_easy_setopt(m_cURL, CURLOPT_HTTPGET, 1);
     }
-  
+
   m_XMLParser->Initialize();
   if(!this->PerformCurl())
     {

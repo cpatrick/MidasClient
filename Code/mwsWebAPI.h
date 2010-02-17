@@ -43,6 +43,7 @@ public:
   
   // Execute the command
   bool Execute(const char* url);
+  void SetPostData(const char* postData);
   
   // Return the last error code
   int GetErrorCode();
@@ -84,6 +85,7 @@ protected:
   RestAPI*        m_RestAPI;
   RestXMLParser*  m_RestXMLParser;
   std::string     m_APIToken; // used when logged in to authenticate with the server
+  const char*     m_PostData;
 
 private:
 
