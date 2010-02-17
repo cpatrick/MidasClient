@@ -20,12 +20,14 @@ midasCLI::midasCLI()
   this->Synchronizer->SetProgressReporter(
     reinterpret_cast<midasProgressReporter*>(
     new midasDotProgressReporter(30)));
+  this->Authenticator = new midasAuthenticator();
 }
 
 midasCLI::~midasCLI()
 {
   this->Synchronizer->DeleteProgressReporter();
   delete this->Synchronizer;
+  delete this->Authenticator;
 }
 
 //-------------------------------------------------------------------
@@ -59,6 +61,11 @@ int midasCLI::Perform(std::vector<std::string> args)
       ok = this->ParseClone(postOpArgs);
       break;
       }
+    else if(args[i] == "create_profile")
+      {
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      return this->PerformCreateProfile(postOpArgs);
+      }
     else if(args[i] == "push")
       {
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
@@ -75,6 +82,7 @@ int midasCLI::Perform(std::vector<std::string> args)
       {
       i++;
       this->Synchronizer->SetDatabase(args[i]);
+      this->Authenticator->SetDatabase(args[i]);
       }
     else if(args[i] == "--help")
       {
@@ -96,6 +104,65 @@ int midasCLI::Perform(std::vector<std::string> args)
       }
     }
   return ok ? this->Synchronizer->Perform() : -1;
+}
+
+//-------------------------------------------------------------------
+int midasCLI::PerformCreateProfile(std::vector<std::string> args)
+{
+  unsigned i;
+
+  std::string name, user, apiKey, appName;
+  for(i = 0; i < args.size(); i++)
+    {
+    if(args[i] == "-u" || args[i] == "--email"
+      && args.size() > i + 1)
+      {
+      i++;
+      user = args[i];
+      }
+    else if(args[i] == "-n" || args[i] == "--profile-name"
+      && args.size() > i + 1)
+      {
+      i++;
+      name = args[i];
+      }
+    else if(args[i] == "-k" || args[i] == "--api-key"
+      && args.size() > i + 1)
+      {
+      i++;
+      apiKey = args[i];
+      }
+    else if(args[i] == "-a" || args[i] == "--app-name"
+      && args.size() > i + 1)
+      {
+      i++;
+      appName = args[i];
+      }
+    else
+      {
+      this->PrintCommandHelp("create_profile");
+      }
+    }
+
+  if(name == "" || user == "" || apiKey == "" || appName == "")
+    {
+    this->PrintCommandHelp("create_profile");
+    return -1;
+    }
+
+  std::cout << "Adding authentication profile '" << name << "'" << std::endl;
+  bool ok = this->Authenticator->AddAuthProfile(user, appName, apiKey, name);
+  
+  if(ok)
+    {
+    std::cout << "Profile successfully created." << std::endl;
+    return 0;
+    }
+  else
+    {
+    std::cout << "Failed to add authentication profile." << std::endl;
+    return -1;
+    }
 }
 
 //-------------------------------------------------------------------

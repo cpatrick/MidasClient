@@ -79,13 +79,13 @@ std::string midasAuthenticator::FetchToken(std::string profileName)
 }
 
 //-------------------------------------------------------------------
-void midasAuthenticator::SetDatabaseProxy(midasDatabaseProxy* database)
+void midasAuthenticator::SetDatabase(std::string database)
 {
   if(this->Database)
     {
     delete this->Database;
     }
-  this->Database = database;
+  this->Database = new midasDatabaseProxy(database);
 }
 
 //-------------------------------------------------------------------

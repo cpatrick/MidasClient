@@ -13,6 +13,7 @@
 #define MIDASCLI_H
 
 #include "midasSynchronizer.h"
+#include "midasAuthenticator.h"
 
 class midasCLI
 {
@@ -31,8 +32,11 @@ class midasCLI
     bool ParsePush(std::vector<std::string> args);
     bool ParseClone(std::vector<std::string> args);
 
+    int PerformCreateProfile(std::vector<std::string> args);
+
     //the synchronizer object which performs the action
     midasSynchronizer* Synchronizer;
+    midasAuthenticator* Authenticator;
 };
 
 #endif

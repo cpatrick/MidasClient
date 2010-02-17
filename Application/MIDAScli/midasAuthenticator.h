@@ -29,7 +29,7 @@ class midasAuthenticator
     // May need this function in case the old token expires
     void ClearToken();
 
-    void SetDatabaseProxy(midasDatabaseProxy* database);
+    void SetDatabase(std::string database);
     void SetServerURL(std::string url);
   protected:
     std::string ServerURL;
