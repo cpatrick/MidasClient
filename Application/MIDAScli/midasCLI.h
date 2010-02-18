@@ -36,7 +36,6 @@ class midasCLI
 
     //the synchronizer object which performs the action
     midasSynchronizer* Synchronizer;
-    midasAuthenticator* Authenticator;
 };
 
 #endif

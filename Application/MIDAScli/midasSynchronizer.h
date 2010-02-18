@@ -15,6 +15,7 @@
 #include "midasStandardIncludes.h"
 #include "midasProgressReporter.h"
 #include "midasDatabaseProxy.h"
+#include "midasAuthenticator.h"
 #include <mwsWebAPI.h>
 #include <mdoCommunity.h>
 
@@ -55,6 +56,8 @@ class midasSynchronizer
     void SetRecursive(bool recursive);
     bool GetRecursive();
 
+    midasAuthenticator* GetAuthenticator();
+
     int Perform();
   protected:
     int Add();
@@ -84,11 +87,12 @@ class midasSynchronizer
     
     // pull entire subtree of resources that are pulled?
     bool Recursive;
-    mws::WebAPI WebAPI;
+    mws::WebAPI* WebAPI;
     midasProgressReporter* Progress;
     
     std::string Database;
     midasDatabaseProxy* DatabaseProxy;
+    midasAuthenticator* Authenticator;
 };
 
 #endif

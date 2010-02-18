@@ -20,14 +20,12 @@ midasCLI::midasCLI()
   this->Synchronizer->SetProgressReporter(
     reinterpret_cast<midasProgressReporter*>(
     new midasDotProgressReporter(30)));
-  this->Authenticator = new midasAuthenticator();
 }
 
 midasCLI::~midasCLI()
 {
   this->Synchronizer->DeleteProgressReporter();
   delete this->Synchronizer;
-  delete this->Authenticator;
 }
 
 //-------------------------------------------------------------------
@@ -82,7 +80,11 @@ int midasCLI::Perform(std::vector<std::string> args)
       {
       i++;
       this->Synchronizer->SetDatabase(args[i]);
-      this->Authenticator->SetDatabase(args[i]);
+      }
+    else if(args[i] == "--profile" && i + 1 < args.size())
+      {
+      i++;
+      this->Synchronizer->GetAuthenticator()->SetProfile(args[i]);
       }
     else if(args[i] == "--help")
       {
@@ -151,7 +153,8 @@ int midasCLI::PerformCreateProfile(std::vector<std::string> args)
     }
 
   std::cout << "Adding authentication profile '" << name << "'" << std::endl;
-  bool ok = this->Authenticator->AddAuthProfile(user, appName, apiKey, name);
+  bool ok = this->Synchronizer->GetAuthenticator()->AddAuthProfile(
+    user, appName, apiKey, name);
   
   if(ok)
     {
@@ -302,13 +305,21 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
 void midasCLI::PrintUsage()
 {
   std::cout << "MIDAS Command Line Interface" << std::endl
-    << "Usage: MIDAScli [--database DATABASE_LOCATION] COMMAND [ARGS]"
-    << std::endl << std::endl << "Where COMMAND is one of the following:"
-    << std::endl << " add        Add a file into the local repository."
-    << std::endl << " clean      Clean the local repository."
-    << std::endl << " clone      Copy an entire MIDAS database locally."
-    << std::endl << " pull       Copy part of a MIDAS database locally."
-    << std::endl << " push       Copy local resources to a MIDAS server."
+    << "Usage: MIDAScli [--database DATABASE_LOCATION] [--profile PROFILE]"
+    " COMMAND [ARGS]" << std::endl << std::endl 
+    << "Where COMMAND is one of the following:"
+    << std::endl <<
+    " add              Add a file into the local repository."
+    << std::endl <<
+    " clean            Clean the local repository."
+    << std::endl <<
+    " clone            Copy an entire MIDAS database locally."
+    << std::endl <<
+    " create_profile   Create an authentication profile."
+    << std::endl <<
+    " pull             Copy part of a MIDAS database locally."
+    << std::endl <<
+    " push       Copy local resources to a MIDAS server."
     << std::endl << std::endl << "Use MIDAScli --help COMMAND for "
     "help with individual commands." << std::endl;
 }
@@ -330,7 +341,10 @@ void midasCLI::PrintCommandHelp(std::string command)
     }
   else if(command == "push")
     {
-    std::cout << "Usage: MIDAScli ... push URL " << std::endl;
+    std::cout << "Usage: MIDAScli ... push -p PROFILE URL " << std::endl
+      << "Where PROFILE is the name of a profile added using create_profile, "
+      " and URL is the URL of the MIDAS server." << std::endl;
+
     }
   else if(command == "clone")
     {

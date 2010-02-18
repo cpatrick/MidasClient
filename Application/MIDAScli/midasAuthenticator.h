@@ -22,19 +22,25 @@ class midasAuthenticator
     ~midasAuthenticator();
 
     bool AddAuthProfile(std::string user, std::string appName,
+      std::string apiKey);
+    bool AddAuthProfile(std::string user, std::string appName,
       std::string apiKey, std::string profileName);
     
     // Lazy getter for an api auth token
-    std::string FetchToken(std::string profileName);
+    std::string FetchToken();
     // May need this function in case the old token expires
     void ClearToken();
 
     void SetDatabase(std::string database);
     void SetServerURL(std::string url);
+    void SetProfile(std::string profile);
+
+    bool IsAnonymous();
   protected:
     std::string ServerURL;
     midasDatabaseProxy* Database;
     std::string Token;
+    std::string Profile;
 };
 
 #endif

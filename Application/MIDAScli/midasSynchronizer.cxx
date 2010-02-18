@@ -38,6 +38,8 @@ midasSynchronizer::midasSynchronizer()
   this->Progress = NULL;
   this->Database = "";
   this->DatabaseProxy = NULL;
+  this->Authenticator = new midasAuthenticator;
+  this->WebAPI = new mws::WebAPI;
 }
 
 midasSynchronizer::~midasSynchronizer()
@@ -46,6 +48,13 @@ midasSynchronizer::~midasSynchronizer()
     {
     delete this->DatabaseProxy;
     }
+  delete this->Authenticator;
+  delete this->WebAPI;
+}
+
+midasAuthenticator* midasSynchronizer::GetAuthenticator()
+{
+  return this->Authenticator;
 }
 
 void midasSynchronizer::SetDatabase(std::string path)
@@ -56,6 +65,7 @@ void midasSynchronizer::SetDatabase(std::string path)
     delete this->DatabaseProxy;
     }
   this->DatabaseProxy = new midasDatabaseProxy(path);
+  this->Authenticator->SetDatabase(path);
 }
 
 void midasSynchronizer::SetProgressReporter(midasProgressReporter* progress)
@@ -123,7 +133,8 @@ std::string midasSynchronizer::GetServerURL()
 
 void midasSynchronizer::SetServerURL(std::string url)
 {
-  this->WebAPI.SetServerUrl(url.c_str());
+  this->WebAPI->SetServerUrl(url.c_str());
+  this->Authenticator->SetServerURL(url.c_str());
   this->ServerURL = url;
 }
 
@@ -208,7 +219,7 @@ int midasSynchronizer::Clone()
 {
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
-  remote.SetWebAPI(&this->WebAPI);
+  remote.SetWebAPI(this->WebAPI);
   remote.SetObject(community);
   
   if(!remote.FetchTree())
@@ -277,20 +288,18 @@ bool midasSynchronizer::PullBitstream(int parentId, std::string filename)
     return true;
     }
 
-  mws::WebAPI remote;
-
   std::stringstream fields;
   fields << "midas.bitstream.download?id=" << this->GetResourceHandle();
   //TODO call remote.login() based on config options (profiles?)
-  remote.SetServerUrl(this->ServerURL.c_str());
   
   if(this->Progress)
     {
-    remote.GetRestAPI()->SetProgressCallback(DownloadProgress, this->Progress);
+    this->WebAPI->GetRestAPI()->SetProgressCallback(
+      DownloadProgress, this->Progress);
     this->Progress->SetMessage(filename);
     this->Progress->ResetProgress();
     }
-  remote.DownloadFile(fields.str().c_str(), filename.c_str());
+  this->WebAPI->DownloadFile(fields.str().c_str(), filename.c_str());
 
   this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
     uuid, WORKING_DIR() + "/" + filename, filename, midasResourceType::ITEM,
@@ -309,7 +318,7 @@ bool midasSynchronizer::PullCollection(int parentId)
   mws::Collection remote;
   mdo::Collection* collection = new mdo::Collection;
   collection->SetId(atoi(this->GetResourceHandle().c_str()));
-  remote.SetWebAPI(&this->WebAPI);
+  remote.SetWebAPI(this->WebAPI);
   remote.SetObject(collection);
 
   if(!remote.Fetch())
@@ -380,7 +389,7 @@ bool midasSynchronizer::PullCommunity(int parentId)
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
   community->SetId(atoi(this->ResourceHandle.c_str()));
-  remote.SetWebAPI(&this->WebAPI);
+  remote.SetWebAPI(this->WebAPI);
   remote.SetObject(community);
   
   if(!remote.FetchTree())
@@ -453,14 +462,13 @@ void midasSynchronizer::RecurseCommunities(int parentId,
 //-------------------------------------------------------------------
 std::string midasSynchronizer::GetUUID(int type)
 {
-  mws::WebAPI remote;
   std::stringstream fields;
   fields << "midas.uuid.get?id=" << this->GetResourceHandle()
     << "&type=" << type;
-  remote.SetServerUrl(this->ServerURL.c_str());
   std::string uuid;
-  remote.GetRestXMLParser()->AddTag("/rsp/uuid", uuid);
-  remote.Execute(fields.str().c_str());
+  this->WebAPI->GetRestXMLParser()->AddTag("/rsp/uuid", uuid);
+  this->WebAPI->Execute(fields.str().c_str());
+  this->WebAPI->GetRestXMLParser()->ClearTags();
   
   return uuid;
 }
@@ -471,7 +479,7 @@ std::string midasSynchronizer::GetBitstreamName()
   mws::Bitstream remote;
   mdo::Bitstream* bitstream = new mdo::Bitstream;
   bitstream->SetId(atoi(this->ResourceHandle.c_str()));
-  remote.SetWebAPI(&this->WebAPI);
+  remote.SetWebAPI(this->WebAPI);
   remote.SetObject(bitstream);
   
   if(!remote.Fetch())
@@ -496,7 +504,7 @@ bool midasSynchronizer::PullItem(int parentId)
   mws::Item remote;
   mdo::Item* item = new mdo::Item;
   item->SetId(atoi(this->GetResourceHandle().c_str()));
-  remote.SetWebAPI(&this->WebAPI);
+  remote.SetWebAPI(this->WebAPI);
   remote.SetObject(item);
 
   if(!remote.Fetch())
@@ -604,8 +612,6 @@ bool midasSynchronizer::PushCommunity(int id)
 
   std::stringstream fields;
   std::string server_parentId;
-  mws::WebAPI remote;
-  remote.SetServerUrl(this->ServerURL.c_str());
   
   if(parentId)
     {
@@ -615,8 +621,9 @@ bool midasSynchronizer::PushCommunity(int id)
 
     //3. Get server-side id of parent from the uuid
     fields << "midas.resource.get?uuid=" << parentUuid;
-    remote.GetRestXMLParser()->AddTag("/rsp/id", server_parentId);
-    remote.Execute(fields.str().c_str());
+    this->WebAPI->GetRestXMLParser()->AddTag("/rsp/id", server_parentId);
+    this->WebAPI->Execute(fields.str().c_str());
+    this->WebAPI->GetRestXMLParser()->ClearTags();
     fields.str(std::string());
     parentId = atoi(server_parentId.c_str());
     }
@@ -624,8 +631,8 @@ bool midasSynchronizer::PushCommunity(int id)
   //4. Create new community on server
   fields << "midas.community.create?uuid=" << uuid << "&name=" << name 
     << "&parentid=" << parentId;
-  remote.SetPostData("");
-  bool success = remote.Execute(fields.str().c_str());
+  this->WebAPI->SetPostData("");
+  bool success = this->WebAPI->Execute(fields.str().c_str());
   if(success)
     {
     //5. Clear dirty flag on the resource

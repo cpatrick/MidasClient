@@ -16,6 +16,7 @@ midasAuthenticator::midasAuthenticator()
 {
   this->Database = NULL;
   this->ClearToken();
+  this->Profile = "";
 }
 
 midasAuthenticator::~midasAuthenticator()
@@ -24,6 +25,12 @@ midasAuthenticator::~midasAuthenticator()
     {
     delete this->Database;
     }
+}
+
+//-------------------------------------------------------------------
+bool midasAuthenticator::IsAnonymous()
+{
+  return this->Profile == "";
 }
 
 //-------------------------------------------------------------------
@@ -51,7 +58,7 @@ void midasAuthenticator::ClearToken()
 }
 
 //-------------------------------------------------------------------
-std::string midasAuthenticator::FetchToken(std::string profileName)
+std::string midasAuthenticator::FetchToken()
 {
   if(this->Token != "")
     {
@@ -60,7 +67,7 @@ std::string midasAuthenticator::FetchToken(std::string profileName)
     std::string appName, email, apiKey;
     
     this->Database->Open();
-    if(!this->Database->GetAuthProfile(profileName, email, appName, apiKey))
+    if(!this->Database->GetAuthProfile(this->Profile, email, appName, apiKey))
       {
       std::cerr << "No profile exists with that name. Use the "
         "\"create_profile\" command to add a profile." << std::endl;
@@ -92,4 +99,11 @@ void midasAuthenticator::SetDatabase(std::string database)
 void midasAuthenticator::SetServerURL(std::string url)
 {
   this->ServerURL = url;
+}
+
+//-------------------------------------------------------------------
+void midasAuthenticator::SetProfile(std::string profile)
+{
+  this->Profile = profile;
+  this->ClearToken();
 }
