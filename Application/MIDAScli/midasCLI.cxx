@@ -88,7 +88,7 @@ int midasCLI::Perform(std::vector<std::string> args)
       }
     else if(args[i] == "--help")
       {
-      if(i + 2 < args.size())
+      if(i + 1 < args.size())
         {
         i++;
         this->PrintCommandHelp(args[i]);
@@ -321,7 +321,7 @@ void midasCLI::PrintUsage()
     << std::endl <<
     " pull             Copy part of a MIDAS database locally."
     << std::endl <<
-    " push       Copy local resources to a MIDAS server."
+    " push             Copy local resources to a MIDAS server."
     << std::endl << std::endl << "Use MIDAScli --help COMMAND for "
     "help with individual commands." << std::endl;
 }
