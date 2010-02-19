@@ -141,6 +141,12 @@ void midasSynchronizer::SetServerURL(std::string url)
 //-------------------------------------------------------------------
 int midasSynchronizer::Perform()
 {
+  if(!this->Authenticator->Login(this->WebAPI))
+    {
+    std::cerr << "Login failed." << std::endl;
+    return -1;
+    }
+
   switch(this->Operation)
     {
     case OPERATION_ADD:
@@ -465,6 +471,7 @@ std::string midasSynchronizer::GetUUID(int type)
   std::stringstream fields;
   fields << "midas.uuid.get?id=" << this->GetResourceHandle()
     << "&type=" << type;
+
   std::string uuid;
   this->WebAPI->GetRestXMLParser()->AddTag("/rsp/uuid", uuid);
   this->WebAPI->Execute(fields.str().c_str());
@@ -553,6 +560,7 @@ bool midasSynchronizer::PullItem(int parentId)
 int midasSynchronizer::Push()
 {
   this->DatabaseProxy->Open();
+  // breaking proxy rules for the sake of efficiency here
   this->DatabaseProxy->GetDatabase()->ExecuteQuery(
     "SELECT uuid FROM dirty_resource");
 
@@ -580,6 +588,13 @@ int midasSynchronizer::Push()
         break;
       default:
         return -1;
+      }
+    if(this->WebAPI->GetErrorCode() == -151
+      && this->Authenticator->IsAnonymous())
+      {
+      std::cerr << "You are not logged in. Please specify a user profile."
+        << std::endl;
+      return -1;
       }
     }
   this->DatabaseProxy->Close();
@@ -631,12 +646,19 @@ bool midasSynchronizer::PushCommunity(int id)
   //4. Create new community on server
   fields << "midas.community.create?uuid=" << uuid << "&name=" << name 
     << "&parentid=" << parentId;
+
   this->WebAPI->SetPostData("");
   bool success = this->WebAPI->Execute(fields.str().c_str());
   if(success)
     {
     //5. Clear dirty flag on the resource
     this->DatabaseProxy->ClearDirtyResource(uuid);
+    std::cout << "Pushed community " << name << std::endl;
+    }
+  else
+    {
+    std::cerr << "Failed to push community " << name << ": " <<
+    this->WebAPI->GetErrorMessage() << std::endl;
     }
   return success;
 }

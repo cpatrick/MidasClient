@@ -14,6 +14,7 @@
 
 #include "midasStandardIncludes.h"
 #include "midasDatabaseProxy.h"
+#include <mwsWebAPI.h>
 
 class midasAuthenticator
 {
@@ -34,6 +35,8 @@ class midasAuthenticator
     void SetDatabase(std::string database);
     void SetServerURL(std::string url);
     void SetProfile(std::string profile);
+
+    bool Login(mws::WebAPI* api);
 
     bool IsAnonymous();
   protected:

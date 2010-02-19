@@ -28,6 +28,27 @@ midasAuthenticator::~midasAuthenticator()
 }
 
 //-------------------------------------------------------------------
+bool midasAuthenticator::Login(mws::WebAPI* api)
+{
+  if(this->IsAnonymous())
+    {
+    return true;
+    }
+
+  std::string appName, email, apiKey;
+    
+  this->Database->Open();
+  if(!this->Database->GetAuthProfile(this->Profile, email, appName, apiKey))
+    {
+    std::cerr << "No profile exists with that name. Use the "
+      "\"create_profile\" command to add a profile." << std::endl;
+    return false;
+    }
+
+  return api->Login(appName.c_str(), email.c_str(), apiKey.c_str());
+}
+
+//-------------------------------------------------------------------
 bool midasAuthenticator::IsAnonymous()
 {
   return this->Profile == "";
