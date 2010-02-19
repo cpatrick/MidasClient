@@ -128,9 +128,9 @@ DROP VIEW IF EXISTS dcvalue;
 
 CREATE TABLE auth_profile (
   profile_name character varying(64) PRIMARY KEY,
-  eperson varchar(64),
+  eperson character varying(64),
   apikey character varying(40),
-  app_name character varying(256),
+  app_name character varying(256)
 );
 
 --
