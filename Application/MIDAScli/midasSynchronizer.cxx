@@ -296,7 +296,6 @@ bool midasSynchronizer::PullBitstream(int parentId, std::string filename)
 
   std::stringstream fields;
   fields << "midas.bitstream.download?id=" << this->GetResourceHandle();
-  //TODO call remote.login() based on config options (profiles?)
   
   if(this->Progress)
     {
@@ -397,7 +396,7 @@ bool midasSynchronizer::PullCommunity(int parentId)
   community->SetId(atoi(this->ResourceHandle.c_str()));
   remote.SetWebAPI(this->WebAPI);
   remote.SetObject(community);
-  
+
   if(!remote.FetchTree())
     {
     std::cerr << "Unable to fetch the community via the Web API" << std::endl;
@@ -424,7 +423,7 @@ bool midasSynchronizer::PullCommunity(int parentId)
     uuid, WORKING_DIR() + "/" + community->GetName(), community->GetName(),
     midasResourceType::COMMUNITY, parentId);
   this->DatabaseProxy->Close();
-  
+
   if(this->Recursive)
     {
     CHANGE_DIR(community->GetName().c_str());
@@ -471,12 +470,12 @@ std::string midasSynchronizer::GetUUID(int type)
   std::stringstream fields;
   fields << "midas.uuid.get?id=" << this->GetResourceHandle()
     << "&type=" << type;
+  mws::WebAPI remote;
+  remote.SetServerUrl(this->ServerURL.c_str());
 
   std::string uuid;
-  this->WebAPI->GetRestXMLParser()->AddTag("/rsp/uuid", uuid);
-  this->WebAPI->Execute(fields.str().c_str());
-  this->WebAPI->GetRestXMLParser()->ClearTags();
-  
+  remote.GetRestXMLParser()->AddTag("/rsp/uuid", uuid);
+  remote.Execute(fields.str().c_str());
   return uuid;
 }
 
