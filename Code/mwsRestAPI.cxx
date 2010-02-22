@@ -92,6 +92,9 @@ bool RestAPI::SetCurlOptions(const char* url,
     }
     
   curl_easy_setopt(m_cURL, CURLOPT_NOPROGRESS, this->fprogress == NULL);
+  curl_easy_setopt(m_cURL, CURLOPT_PROGRESSFUNCTION, this->fprogress);
+  curl_easy_setopt(m_cURL, CURLOPT_PROGRESSDATA, this->fprogress_data);
+
   curl_easy_setopt(m_cURL, CURLOPT_FOLLOWLOCATION, true);
 
   if (authentication != "")
@@ -156,9 +159,9 @@ bool RestAPI::Execute(const char*  url,
   // setup
   curl_easy_reset(m_cURL);
   m_OutputMode = BUFFER;
-    
+
   this->SetCurlOptions(URL.c_str(), authentication);  
-  
+
   if(post_data != NULL)
     {
     curl_easy_setopt(m_cURL, CURLOPT_POST, 1);

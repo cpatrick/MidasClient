@@ -70,8 +70,9 @@ void WebAPI::SetPostData(const char* postData)
 bool WebAPI::Execute(const char* url)
 {  
   std::stringstream fullUrl;
-  
+
   fullUrl << url;
+
   if(!m_APIToken.empty())
     {  
     fullUrl << "&token=" << m_APIToken;

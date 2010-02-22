@@ -12,9 +12,20 @@
 #define __RestXMLParser_h
 #include "expat/expat.h"
 
-#include <fstream>
-#include <iostream>
 #include <vector>
+#include <string>
+#include <iterator>
+#include <algorithm>
+#include <functional>
+#include <map>
+#include <list>
+#include <set>
+#include <deque>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 
 namespace mws{
 

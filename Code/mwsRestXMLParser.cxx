@@ -23,6 +23,7 @@ RestXMLParser::RestXMLParser()
 {
   m_ErrorCode = 0;
   m_ErrorMessage = "";
+  m_CurrentTag = "";
 }
  
 //----------------------------------------------------------------------------
@@ -64,10 +65,14 @@ void RestXMLParser::Initialize(void)
 
   XML_SetCharacterDataHandler(m_Parser,
                               &itkXMLParserCharacterDataHandler);
-  XML_SetUserData(m_Parser,this); 
-  m_CurrentTag = "";
-  m_ErrorMessage = "";
-  m_ErrorCode = 0;
+
+  XML_SetUserData(m_Parser,this);
+
+  std::string someString;
+
+  this->m_ErrorMessage = "";
+  this->m_CurrentTag = "";
+  this->m_ErrorCode = 0;
 }
   
 //--------------------------------------------------------------------------------------------------
