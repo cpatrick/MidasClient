@@ -676,13 +676,9 @@ bool midasSynchronizer::PushCommunity(int id)
   std::string name = this->DatabaseProxy->GetName(
     midasResourceType::COMMUNITY, id);
 
-  this->DatabaseProxy->Close();
-  this->DatabaseProxy->Open();
   int parentId = this->GetServerParentId(midasResourceType::COMMUNITY,
     this->DatabaseProxy->GetParentId(midasResourceType::COMMUNITY, id));
   while(this->DatabaseProxy->GetDatabase()->GetNextRow());
-  this->DatabaseProxy->Close();
-  this->DatabaseProxy->Open();
 
   // Create new community on server
   std::stringstream fields;
@@ -694,8 +690,6 @@ bool midasSynchronizer::PushCommunity(int id)
   if(success)
     {
     // Clear dirty flag on the resource
-      this->DatabaseProxy->Close();
-      this->DatabaseProxy->Open();
     this->DatabaseProxy->ClearDirtyResource(uuid);
     std::cout << "Pushed community " << name << std::endl;
     }
