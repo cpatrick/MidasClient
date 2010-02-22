@@ -30,6 +30,8 @@
 
 #include <kwsys/SystemTools.hxx>
 
+#define INVALID_POLICY -151
+
 // For resource_uuid.resource_type_id
 struct midasResourceType
 {

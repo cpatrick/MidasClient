@@ -90,6 +90,7 @@ bool midasDatabaseProxy::GetAuthProfile(std::string name, std::string& user,
     user = this->Database->GetValueAsString(0);
     apiKey = this->Database->GetValueAsString(1);
     appName = this->Database->GetValueAsString(2);
+    while(this->Database->GetNextRow());
     return true;
     }
   else
@@ -115,7 +116,6 @@ void midasDatabaseProxy::MarkDirtyResource(std::string uuid, int dirtyAction)
 {
   // Clear old dirty flags so that we don't have duplicates
   this->ClearDirtyResource(uuid);
-
   std::stringstream query;
   query << "INSERT INTO dirty_resource (uuid, action) VALUES ('" << uuid
     << "', '" << dirtyAction << "')";
@@ -125,6 +125,8 @@ void midasDatabaseProxy::MarkDirtyResource(std::string uuid, int dirtyAction)
 //-------------------------------------------------------------------------
 void midasDatabaseProxy::ClearDirtyResource(std::string uuid)
 {
+  this->Database->Close();
+  this->Database->Open(this->DatabasePath.c_str());
   std::stringstream query;
   query << "DELETE FROM dirty_resource WHERE uuid='" << uuid << "'";
   this->Database->ExecuteQuery(query.str().c_str());
@@ -241,7 +243,7 @@ void midasDatabaseProxy::GetTypeAndIdForUuid(std::string uuid,
   std::stringstream query;
   query << "SELECT resource_type_id, resource_id FROM resource_uuid "
     "WHERE uuid='" << uuid << "'";
-  this->Database->ExecuteQuery(query.str().c_str());
+  bool ok = this->Database->ExecuteQuery(query.str().c_str());
 
   if(this->Database->GetNextRow())
     {
@@ -251,6 +253,7 @@ void midasDatabaseProxy::GetTypeAndIdForUuid(std::string uuid,
   else
     {
     type = midasResourceType::TYPE_ERROR;
+    id = 0;
     }
 }
 
@@ -411,7 +414,7 @@ bool midasDatabaseProxy::Close()
 void midasDatabaseProxy::Clean()
 {
   std::stringstream selectQuery;
-  selectQuery << "SELECT path FROM resource_uuid;";
+  selectQuery << "SELECT path FROM resource_uuid";
   this->Database->ExecuteQuery(selectQuery.str().c_str());
 
   while(this->Database->GetNextRow())

@@ -73,6 +73,8 @@ class midasSynchronizer
     bool PullCommunity(int parentId);
     bool PullItem(int parentId);
 
+    // Helper function to convert client side parent ID to server side one
+    int GetServerParentId(midasResourceType::ResourceType type, int parentId);
     bool PushBitstream(int id);
     bool PushCollection(int id);
     bool PushCommunity(int id);

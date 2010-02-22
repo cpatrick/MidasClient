@@ -565,12 +565,19 @@ int midasSynchronizer::Push()
     "SELECT uuid FROM dirty_resource");
 
   bool success = true;
+  std::vector<std::string> uuids;
 
   while(this->DatabaseProxy->GetDatabase()->GetNextRow())
     {
+    // store the list so we can delete from dirty list while iterating it
+    uuids.push_back(this->DatabaseProxy->GetDatabase()->GetValueAsString(0));
+    }
+
+  for(std::vector<std::string>::iterator i = uuids.begin(); i != uuids.end();
+      ++i)
+    {
     int id, type;
-    this->DatabaseProxy->GetTypeAndIdForUuid(
-      this->DatabaseProxy->GetDatabase()->GetValueAsString(0), type, id);
+    this->DatabaseProxy->GetTypeAndIdForUuid((*i), type, id);
 
     switch(type)
       {
@@ -589,16 +596,39 @@ int midasSynchronizer::Push()
       default:
         return -1;
       }
-    if(this->WebAPI->GetErrorCode() == -151
+
+    if(this->WebAPI->GetErrorCode() == INVALID_POLICY
       && this->Authenticator->IsAnonymous())
       {
       std::cerr << "You are not logged in. Please specify a user profile."
         << std::endl;
+      this->DatabaseProxy->Close();
       return -1;
       }
     }
   this->DatabaseProxy->Close();
   return success ? 0 : -1;
+}
+
+//-------------------------------------------------------------------
+int midasSynchronizer::GetServerParentId(midasResourceType::ResourceType type,
+                                         int parentId)
+{
+  if(parentId)
+    {
+    std::stringstream fields;
+    std::string server_parentId;
+    // Get uuid from parent id/type
+    std::string parentUuid = this->DatabaseProxy->GetUuid(type, parentId);
+
+    // Get server-side id of parent from the uuid
+    fields << "midas.resource.get?uuid=" << parentUuid;
+    this->WebAPI->GetRestXMLParser()->AddTag("/rsp/id", server_parentId);
+    this->WebAPI->Execute(fields.str().c_str());
+    this->WebAPI->GetRestXMLParser()->ClearTags();
+    parentId = atoi(server_parentId.c_str());
+    }
+  return parentId;
 }
 
 //-------------------------------------------------------------------
@@ -610,7 +640,32 @@ bool midasSynchronizer::PushBitstream(int id)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PushCollection(int id)
 {
-  return true;
+  std::string uuid = this->DatabaseProxy->GetUuid(
+    midasResourceType::COLLECTION, id);
+  std::string name = this->DatabaseProxy->GetName(
+    midasResourceType::COLLECTION, id);
+
+  int parentId = this->GetServerParentId(midasResourceType::COMMUNITY,
+    this->DatabaseProxy->GetParentId(midasResourceType::COLLECTION, id));
+  
+  std::stringstream fields;
+  fields << "midas.collection.create?uuid=" << uuid << "&name=" << name 
+    << "&parentid=" << parentId;
+
+  this->WebAPI->SetPostData("");
+  bool success = this->WebAPI->Execute(fields.str().c_str());
+  if(success)
+    {
+    // Clear dirty flag on the resource
+    this->DatabaseProxy->ClearDirtyResource(uuid);
+    std::cout << "Pushed collection " << name << std::endl;
+    }
+  else
+    {
+    std::cerr << "Failed to push collection " << name << ": " <<
+    this->WebAPI->GetErrorMessage() << std::endl;
+    }
+  return success;
 }
 
 //-------------------------------------------------------------------
@@ -621,29 +676,16 @@ bool midasSynchronizer::PushCommunity(int id)
   std::string name = this->DatabaseProxy->GetName(
     midasResourceType::COMMUNITY, id);
 
-  //1. Get client-side parent id/type
-  int parentId = this->DatabaseProxy->GetParentId(
-    midasResourceType::COMMUNITY, id);
+  this->DatabaseProxy->Close();
+  this->DatabaseProxy->Open();
+  int parentId = this->GetServerParentId(midasResourceType::COMMUNITY,
+    this->DatabaseProxy->GetParentId(midasResourceType::COMMUNITY, id));
+  while(this->DatabaseProxy->GetDatabase()->GetNextRow());
+  this->DatabaseProxy->Close();
+  this->DatabaseProxy->Open();
 
+  // Create new community on server
   std::stringstream fields;
-  std::string server_parentId;
-  
-  if(parentId)
-    {
-    //2. Get uuid from parent id/type
-    std::string parentUuid = this->DatabaseProxy->GetUuid(
-      midasResourceType::COMMUNITY, parentId);
-
-    //3. Get server-side id of parent from the uuid
-    fields << "midas.resource.get?uuid=" << parentUuid;
-    this->WebAPI->GetRestXMLParser()->AddTag("/rsp/id", server_parentId);
-    this->WebAPI->Execute(fields.str().c_str());
-    this->WebAPI->GetRestXMLParser()->ClearTags();
-    fields.str(std::string());
-    parentId = atoi(server_parentId.c_str());
-    }
-
-  //4. Create new community on server
   fields << "midas.community.create?uuid=" << uuid << "&name=" << name 
     << "&parentid=" << parentId;
 
@@ -651,7 +693,9 @@ bool midasSynchronizer::PushCommunity(int id)
   bool success = this->WebAPI->Execute(fields.str().c_str());
   if(success)
     {
-    //5. Clear dirty flag on the resource
+    // Clear dirty flag on the resource
+      this->DatabaseProxy->Close();
+      this->DatabaseProxy->Open();
     this->DatabaseProxy->ClearDirtyResource(uuid);
     std::cout << "Pushed community " << name << std::endl;
     }
@@ -666,5 +710,30 @@ bool midasSynchronizer::PushCommunity(int id)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PushItem(int id)
 {
-  return true;
+  std::string uuid = this->DatabaseProxy->GetUuid(
+    midasResourceType::ITEM, id);
+  std::string name = this->DatabaseProxy->GetName(
+    midasResourceType::ITEM, id);
+
+  int parentId = this->GetServerParentId(midasResourceType::COLLECTION,
+    this->DatabaseProxy->GetParentId(midasResourceType::ITEM, id));
+  
+  std::stringstream fields;
+  fields << "midas.item.create?uuid=" << uuid << "&name=" << name 
+    << "&parentid=" << parentId;
+
+  this->WebAPI->SetPostData("");
+  bool success = this->WebAPI->Execute(fields.str().c_str());
+  if(success)
+    {
+    // Clear dirty flag on the resource
+    this->DatabaseProxy->ClearDirtyResource(uuid);
+    std::cout << "Pushed item " << name << std::endl;
+    }
+  else
+    {
+    std::cerr << "Failed to push item " << name << ": " <<
+    this->WebAPI->GetErrorMessage() << std::endl;
+    }
+  return success;
 }
