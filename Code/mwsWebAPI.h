@@ -63,6 +63,9 @@ public:
   // Upload a file and return the bitstream id
   unsigned int UploadFile(const char* url, const char* filename);
   
+  // After calling Login, use this to get the API token
+  std::string GetAPIToken();
+
   // Login to MIDAS
   bool Login(const char* applicationname,
              const char* email, 
@@ -84,7 +87,7 @@ protected:
 
   RestAPI*        m_RestAPI;
   RestXMLParser*  m_RestXMLParser;
-  std::string     m_APIToken; // used when logged in to authenticate with the server
+  std::string     m_APIToken;
   const char*     m_PostData;
 
 private:

@@ -147,7 +147,12 @@ unsigned int WebAPI::UploadFile(const char* url, const char* filename)
   return m_RestAPI->UploadPost(filename,completeUrl);
 }
 
-  
+
+std::string WebAPI::GetAPIToken()
+{
+  return this->m_APIToken;
+}
+
 // Login to MIDAS
 bool WebAPI::Login(const char* appname,
                    const char* email, 

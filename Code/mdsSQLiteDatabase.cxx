@@ -69,12 +69,12 @@ bool SQLiteDatabase::SetQuery(const char* query)
   if(m_Statement)
     {
     int finalizeStatus = sqlite3_finalize(m_Statement);
+    m_Statement = NULL;
     if (finalizeStatus != SQLITE_OK)
       {
       m_ErrorMessage = "SetQuery(): Finalize returned unexpected code ";
       return false;
       }
-    m_Statement = NULL;
     }
     
   const char *unused_statement;
@@ -267,7 +267,6 @@ float SQLiteDatabase::GetValueAsFloat(unsigned int column)
         return (float)sqlite3_column_double(m_Statement, column);
       }
     }
-  
   m_ErrorMessage = "Wrong column type";  
   return 0;
 }
