@@ -634,7 +634,31 @@ int midasSynchronizer::GetServerParentId(midasResourceType::ResourceType type,
 //-------------------------------------------------------------------
 bool midasSynchronizer::PushBitstream(int id)
 {
-  return true;
+  std::string uuid = this->DatabaseProxy->GetUuid(
+    midasResourceType::BITSTREAM, id);
+  std::string name = this->DatabaseProxy->GetName(
+    midasResourceType::BITSTREAM, id);
+  std::string path = this->DatabaseProxy->GetResourceLocation(uuid);
+
+  int parentId = this->GetServerParentId(midasResourceType::ITEM,
+    this->DatabaseProxy->GetParentId(midasResourceType::BITSTREAM, id));
+
+  std::stringstream fields;
+  fields << "midas.upload.bitstream?uuid=" << uuid << "&itemid=" << parentId;
+
+  bool ok = this->WebAPI->UploadFile(fields.str().c_str(), path.c_str());
+  if(ok)
+    {
+    // Clear dirty flag on the resource
+    this->DatabaseProxy->ClearDirtyResource(uuid);
+    std::cout << "Pushed bitstream " << name << std::endl;
+    }
+  else
+    {
+    std::cerr << "Failed to push bitstream " << name << ": " <<
+    this->WebAPI->GetErrorMessage() << std::endl;
+    }
+  return ok;
 }
 
 //-------------------------------------------------------------------

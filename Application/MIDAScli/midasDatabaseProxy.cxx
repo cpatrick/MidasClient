@@ -332,7 +332,7 @@ std::string midasDatabaseProxy::GetResourceLocation(std::string uuid)
   this->Database->ExecuteQuery(query.str().c_str());
   std::string result;
 
-  if(this->Database->GetNextRow())
+  while(this->Database->GetNextRow())
     {
     result = this->Database->GetValueAsString(0);
     }
