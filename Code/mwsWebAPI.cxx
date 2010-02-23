@@ -133,7 +133,7 @@ bool WebAPI::DownloadFile(const char* url, const char* filename)
 }
  
 // Upload a file 
-unsigned int WebAPI::UploadFile(const char* url, const char* filename)
+bool WebAPI::UploadFile(const char* url, const char* filename)
 {
   if(m_APIToken == "")
     {

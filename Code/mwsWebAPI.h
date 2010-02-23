@@ -60,8 +60,8 @@ public:
   // Download a file
   bool DownloadFile(const char* url, const char* filename);
   
-  // Upload a file and return the bitstream id
-  unsigned int UploadFile(const char* url, const char* filename);
+  // Upload a file
+  bool UploadFile(const char* url, const char* filename);
   
   // After calling Login, use this to get the API token
   std::string GetAPIToken();
