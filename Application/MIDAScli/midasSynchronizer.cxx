@@ -242,7 +242,7 @@ int midasSynchronizer::Clone()
 }
 
 //-------------------------------------------------------------------
-int DownloadProgress(void *clientp, double dltotal, double dlnow, 
+int ProgressCallback(void *clientp, double dltotal, double dlnow, 
                      double ultotal, double ulnow)
 {
   midasProgressReporter* out
@@ -301,7 +301,7 @@ bool midasSynchronizer::PullBitstream(int parentId, std::string filename)
   if(this->Progress)
     {
     this->WebAPI->GetRestAPI()->SetProgressCallback(
-      DownloadProgress, this->Progress);
+      ProgressCallback, this->Progress);
     this->Progress->SetMessage(filename);
     this->Progress->ResetProgress();
     }
@@ -646,7 +646,15 @@ bool midasSynchronizer::PushBitstream(int id)
   std::stringstream fields;
   fields << "midas.upload.bitstream?uuid=" << uuid << "&itemid=" << parentId;
 
+  if(this->Progress)
+    {
+    this->WebAPI->GetRestAPI()->SetProgressCallback(
+      ProgressCallback, this->Progress);
+    this->Progress->SetMessage(name);
+    this->Progress->ResetProgress();
+    }
   bool ok = this->WebAPI->UploadFile(fields.str().c_str(), path.c_str());
+
   if(ok)
     {
     // Clear dirty flag on the resource
