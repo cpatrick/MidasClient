@@ -184,6 +184,8 @@ int midasSynchronizer::Add()
     return -1;
     }
 
+  // Make slashes uniform in the database
+  kwsys::SystemTools::ConvertToUnixSlashes(path);
   std::string uuid = midasUtils::GenerateUUID();
 
   std::string name = kwsys::SystemTools::GetFilenameName(path);
