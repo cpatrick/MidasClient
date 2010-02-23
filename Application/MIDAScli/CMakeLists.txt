@@ -15,8 +15,8 @@ midasDotProgressReporter.h
 midasStandardIncludes.h
 midasSynchronizer.cxx
 midasSynchronizer.h
-midasUUID.cxx
-midasUUID.h
+midasUtils.cxx
+midasUtils.h
 )
 
 ADD_EXECUTABLE(MIDAScli ${MIDAScli_SRCS})

@@ -9,15 +9,16 @@
 
 =========================================================================*/
 
-#ifndef MIDASUUID_H
-#define MIDASUUID_H
+#ifndef MIDASUTILS_H
+#define MIDASUTILS_H
 
 #include "midasStandardIncludes.h"
 
-class midasUUID
+class midasUtils
 {
 public:
   static std::string GenerateUUID();
+  static std::string EscapeForURL(std::string s);
 };
 
 #endif

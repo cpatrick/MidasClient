@@ -29,6 +29,7 @@
 #include <iomanip>
 
 #include <kwsys/SystemTools.hxx>
+#include "midasUtils.h"
 
 #define INVALID_POLICY -151
 

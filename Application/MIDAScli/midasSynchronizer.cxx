@@ -21,7 +21,6 @@
 #include "midasSynchronizer.h"
 #include "midasProgressReporter.h"
 #include "midasDatabaseProxy.h"
-#include "midasUUID.h"
 
 #define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
 #define CHANGE_DIR kwsys::SystemTools::ChangeDirectory
@@ -185,7 +184,7 @@ int midasSynchronizer::Add()
     return -1;
     }
 
-  std::string uuid = midasUUID::GenerateUUID();
+  std::string uuid = midasUtils::GenerateUUID();
 
   std::string name = kwsys::SystemTools::GetFilenameName(path);
   std::string parentDir = 
@@ -590,7 +589,7 @@ int midasSynchronizer::Push()
         success &= this->PushCommunity(id);
         break;
       case midasResourceType::ITEM:
-        success &= this->PushBitstream(id);
+        success &= this->PushItem(id);
         break;
       default:
         return -1;
@@ -648,8 +647,8 @@ bool midasSynchronizer::PushCollection(int id)
     this->DatabaseProxy->GetParentId(midasResourceType::COLLECTION, id));
   
   std::stringstream fields;
-  fields << "midas.collection.create?uuid=" << uuid << "&name=" << name 
-    << "&parentid=" << parentId;
+  fields << "midas.collection.create?uuid=" << uuid << "&name=" <<
+    midasUtils::EscapeForURL(name) << "&parentid=" << parentId;
 
   this->WebAPI->SetPostData("");
   bool success = this->WebAPI->Execute(fields.str().c_str());
@@ -681,8 +680,8 @@ bool midasSynchronizer::PushCommunity(int id)
 
   // Create new community on server
   std::stringstream fields;
-  fields << "midas.community.create?uuid=" << uuid << "&name=" << name 
-    << "&parentid=" << parentId;
+  fields << "midas.community.create?uuid=" << uuid << "&name=" << 
+    midasUtils::EscapeForURL(name) << "&parentid=" << parentId;
 
   this->WebAPI->SetPostData("");
   bool success = this->WebAPI->Execute(fields.str().c_str());
@@ -712,8 +711,8 @@ bool midasSynchronizer::PushItem(int id)
     this->DatabaseProxy->GetParentId(midasResourceType::ITEM, id));
   
   std::stringstream fields;
-  fields << "midas.item.create?uuid=" << uuid << "&name=" << name 
-    << "&parentid=" << parentId;
+  fields << "midas.item.create?uuid=" << uuid << "&name=" <<
+    midasUtils::EscapeForURL(name) << "&parentid=" << parentId;
 
   this->WebAPI->SetPostData("");
   bool success = this->WebAPI->Execute(fields.str().c_str());
