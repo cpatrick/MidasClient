@@ -286,15 +286,15 @@ bool RestAPI::UploadPost(const char* filename, std::string url, curl_progress_ca
   headerlist = curl_slist_append(headerlist, buf);
 
   m_XMLParser->Initialize();
-  bool success = this->PerformCurl(); 
+  bool success = this->PerformCurl();
   m_XMLParser->Finalize();
+
+  success &= (m_XMLParser->GetErrorCode() == 0);
   
   curl_formfree(formpost);
   
   /* free slist */ 
   curl_slist_free_all (headerlist);
-  
-  std::cout << this->GetOutputBuffer().c_str() << std::endl;
   
   return success;
 }
