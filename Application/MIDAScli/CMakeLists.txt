@@ -13,6 +13,8 @@ midasDatabaseProxy.h
 midasDotProgressReporter.cxx
 midasDotProgressReporter.h
 midasStandardIncludes.h
+midasStatus.cxx
+midasStatus.h
 midasSynchronizer.cxx
 midasSynchronizer.h
 midasUtils.cxx

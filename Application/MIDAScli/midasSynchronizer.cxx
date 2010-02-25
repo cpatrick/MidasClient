@@ -148,6 +148,15 @@ void midasSynchronizer::SetServerURL(std::string url)
 }
 
 //-------------------------------------------------------------------
+std::vector<midasStatus> midasSynchronizer::GetStatusEntries()
+{
+  this->DatabaseProxy->Open();
+  std::vector<midasStatus> stats = this->DatabaseProxy->GetStatusEntries();
+  this->DatabaseProxy->Close();
+  return stats;
+}
+
+//-------------------------------------------------------------------
 int midasSynchronizer::Perform()
 {
   if(!this->Authenticator->Login(this->WebAPI))

@@ -13,6 +13,7 @@
 #define MIDASSQLITEPROXY_H
 
 #include "midasStandardIncludes.h"
+#include "midasStatus.h"
 #include <mdsSQLiteDatabase.h>
 
 class midasDatabaseProxy
@@ -77,6 +78,11 @@ public:
   void MarkDirtyResource(std::string uuid, int dirtyAction);
   void ClearDirtyResource(std::string uuid);
   int IsResourceDirty(std::string uuid);
+
+  /**
+   * Returns a list of dirty resources on the client
+   */
+  std::vector<midasStatus> GetStatusEntries();
 protected:
   /** 
    * Add a resource record to the database

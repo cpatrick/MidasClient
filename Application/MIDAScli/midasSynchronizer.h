@@ -16,6 +16,7 @@
 #include "midasProgressReporter.h"
 #include "midasDatabaseProxy.h"
 #include "midasAuthenticator.h"
+#include "midasStatus.h"
 #include <mwsWebAPI.h>
 #include <mdoCommunity.h>
 
@@ -55,6 +56,8 @@ class midasSynchronizer
 
     void SetRecursive(bool recursive);
     bool GetRecursive();
+
+    std::vector<midasStatus> GetStatusEntries();
 
     midasAuthenticator* GetAuthenticator();
 

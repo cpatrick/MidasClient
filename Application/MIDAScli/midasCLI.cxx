@@ -11,6 +11,7 @@
 
 #include "midasCLI.h"
 #include "midasDotProgressReporter.h"
+#include "midasStatus.h"
 
 midasCLI::midasCLI()
 {
@@ -74,6 +75,12 @@ int midasCLI::Perform(std::vector<std::string> args)
       {
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParsePull(postOpArgs);
+      break;
+      }
+    else if(args[i] == "status")
+      {
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      ok = this->ParseStatus(postOpArgs);
       break;
       }
     else if(args[i] == "--database" && i + 1 < args.size())
@@ -314,6 +321,20 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
 }
 
 //-------------------------------------------------------------------
+bool midasCLI::ParseStatus(std::vector<std::string> args)
+{
+  std::vector<midasStatus> stats = this->Synchronizer->GetStatusEntries();
+
+  for(std::vector<midasStatus>::iterator i = stats.begin(); i != stats.end();
+      ++i)
+    {
+    std::cout << i->GetType() << " " << i->GetName() << "  " 
+      << i->GetDirtyAction();
+    }
+  return true;
+}
+
+//-------------------------------------------------------------------
 void midasCLI::PrintUsage()
 {
   std::cout << "MIDAS Command Line Interface" << std::endl
@@ -353,10 +374,7 @@ void midasCLI::PrintCommandHelp(std::string command)
     }
   else if(command == "push")
     {
-    std::cout << "Usage: MIDAScli ... push -p PROFILE URL " << std::endl
-      << "Where PROFILE is the name of a profile added using create_profile, "
-      " and URL is the URL of the MIDAS server." << std::endl;
-
+    std::cout << "Usage: MIDAScli ... push [URL] " << std::endl;
     }
   else if(command == "clone")
     {
@@ -374,6 +392,7 @@ void midasCLI::PrintCommandHelp(std::string command)
       << std::endl << " -c         For adding a collection."
       << std::endl << " -i         For adding an item."
       << std::endl << " -b         For adding a bitstream."
+      << std::endl << " --local    Do not push this resource to the server."
       << std::endl << "Exactly one type must be specified (-b, -i, -c, -C)."
       << std::endl
       << "And PATH is a relative or absolute path to the dir/file to add."

@@ -472,3 +472,29 @@ void midasDatabaseProxy::SetLastUsedURL(std::string url)
   query << "INSERT INTO last_url (url) VALUES ('" << url << "')";
   this->Database->ExecuteQuery(query.str().c_str());
 }
+
+//--------------------------------------------------------------------------
+std::vector<midasStatus> midasDatabaseProxy::GetStatusEntries()
+{
+  std::vector<midasStatus> statlist;
+  this->Database->ExecuteQuery("SELECT uuid, action FROM dirty_resource");
+
+  while(this->Database->GetNextRow())
+    {
+    std::string uuid = this->Database->GetValueAsString(0);
+    midasDirtyAction::Action action = 
+      midasDirtyAction::Action(this->Database->GetValueAsInt(1));
+
+    int type, id;
+    this->GetTypeAndIdForUuid(uuid, type, id);
+
+    midasResourceType::ResourceType rt =
+      midasResourceType::ResourceType(type);
+    std::string name = this->GetName(type, id);
+
+    midasStatus status(uuid, name, action, rt);
+    statlist.push_back(status);
+    }
+
+  return statlist;
+}
