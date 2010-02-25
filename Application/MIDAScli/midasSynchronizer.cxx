@@ -65,6 +65,7 @@ void midasSynchronizer::SetDatabase(std::string path)
     }
   this->DatabaseProxy = new midasDatabaseProxy(path);
   this->Authenticator->SetDatabase(path);
+  this->SetServerURL(this->GetServerURL());
 }
 
 void midasSynchronizer::SetProgressReporter(midasProgressReporter* progress)
@@ -127,6 +128,12 @@ std::string midasSynchronizer::GetResourceHandle()
 
 std::string midasSynchronizer::GetServerURL()
 {
+  if(this->ServerURL == "")
+    {
+    this->DatabaseProxy->Open();
+    this->ServerURL = this->DatabaseProxy->GetLastUsedURL();
+    this->DatabaseProxy->Close();
+    }
   return this->ServerURL;
 }
 
@@ -134,6 +141,9 @@ void midasSynchronizer::SetServerURL(std::string url)
 {
   this->WebAPI->SetServerUrl(url.c_str());
   this->Authenticator->SetServerURL(url.c_str());
+  this->DatabaseProxy->Open();
+  this->DatabaseProxy->SetLastUsedURL(url.c_str());
+  this->DatabaseProxy->Close();
   this->ServerURL = url;
 }
 
@@ -224,6 +234,13 @@ int midasSynchronizer::Clean()
 //-------------------------------------------------------------------
 int midasSynchronizer::Clone()
 {
+  if(this->GetServerURL() == "")
+    {
+    std::cerr << "You must specify a server url. No last used URL exists "
+      "in the database." << std::endl;
+    return -1;
+    }
+
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
   remote.SetWebAPI(this->WebAPI);
@@ -254,8 +271,15 @@ int ProgressCallback(void *clientp, double dltotal, double dlnow,
 //-------------------------------------------------------------------
 int midasSynchronizer::Pull()
 {
-  if(this->ResourceType == midasResourceType::NONE || this->ServerURL == "")
+  if(this->ResourceType == midasResourceType::NONE)
     {
+    std::cerr << "You must specify a resource type." << std::endl;
+    return -1;
+    }
+  if(this->GetServerURL() == "")
+    {
+    std::cerr << "You must specify a server url. No last used URL exists "
+      "in the database." << std::endl;
     return -1;
     }
  
@@ -472,7 +496,7 @@ std::string midasSynchronizer::GetUUID(int type)
   fields << "midas.uuid.get?id=" << this->GetResourceHandle()
     << "&type=" << type;
   mws::WebAPI remote;
-  remote.SetServerUrl(this->ServerURL.c_str());
+  remote.SetServerUrl(this->GetServerURL().c_str());
 
   std::string uuid;
   remote.GetRestXMLParser()->AddTag("/rsp/uuid", uuid);
@@ -559,6 +583,12 @@ bool midasSynchronizer::PullItem(int parentId)
 //-------------------------------------------------------------------
 int midasSynchronizer::Push()
 {
+  if(this->GetServerURL() == "")
+    {
+    std::cerr << "You must specify a server url. No last used URL exists "
+      "in the database." << std::endl;
+    return -1;
+    }
   this->DatabaseProxy->Open();
   // breaking proxy rules for the sake of efficiency here
   this->DatabaseProxy->GetDatabase()->ExecuteQuery(

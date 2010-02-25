@@ -229,13 +229,13 @@ bool midasCLI::ParseClone(std::vector<std::string> args)
   if(args.size())
     {
     this->Synchronizer->SetServerURL(args[0]);
-    return true;
     }
-  else
+  else if(this->Synchronizer->GetServerURL() == "")
     {
     this->PrintCommandHelp("clone");
     return false;
     }
+  return true;
 }
 
 //-------------------------------------------------------------------
@@ -272,26 +272,36 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
       }
     }
 
-  if(i + 1 < args.size() &&
-    this->Synchronizer->GetResourceType() != midasResourceType::NONE)
+  if(this->Synchronizer->GetResourceType() == midasResourceType::NONE)
     {
-    this->Synchronizer->SetServerURL(args[i]);
+    this->PrintCommandHelp("pull");
+    return false;
+    }
+
+  if(i < args.size())
+    {
     i++;
     this->Synchronizer->SetResourceHandle(args[i]);
-    return true;
     }
   else
     {
     this->PrintCommandHelp("pull");
     return false;
     }
+
+  if(i < args.size())
+    {
+    i++;
+    this->Synchronizer->SetServerURL(args[i]);
+    }
+  return true;
 }
 
 //-------------------------------------------------------------------
 bool midasCLI::ParsePush(std::vector<std::string> args)
 {
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
-  if(!args.size())
+  if(!args.size() && this->Synchronizer->GetServerURL() == "")
     {
     this->PrintCommandHelp("push");
     return false;
@@ -331,8 +341,8 @@ void midasCLI::PrintCommandHelp(std::string command)
 {
   if(command == "pull")
     {
-    std::cout << "Usage: MIDAScli ... pull [COMMAND_OPTIONS] URL "
-      "RESOURCE_ID" << std::endl << "Where COMMAND_OPTIONS can be: "
+    std::cout << "Usage: MIDAScli ... pull [COMMAND_OPTIONS] RESOURCE_ID "
+      "[URL]" << std::endl << "Where COMMAND_OPTIONS can be: "
       << std::endl << " -r         Copy recursively."
       << std::endl << " -C         For pulling a community."
       << std::endl << " -c         For pulling a collection."
@@ -350,7 +360,7 @@ void midasCLI::PrintCommandHelp(std::string command)
     }
   else if(command == "clone")
     {
-    std::cout << "Usage: MIDAScli ... clone URL" << std::endl;
+    std::cout << "Usage: MIDAScli ... clone [URL]" << std::endl;
     }
   else if(command == "clean")
     {
@@ -371,7 +381,7 @@ void midasCLI::PrintCommandHelp(std::string command)
     }
   else if(command == "create_profile")
     {
-      std::cout << "Usage: MIDAScli ... create_profile [PROPERTIES] URL"
+      std::cout << "Usage: MIDAScli ... create_profile PROPERTIES [URL]"
       << std::endl << "Where PROPERTIES must contain all of: "
       << std::endl << 
       " --name NAME          The name of the profile to create"

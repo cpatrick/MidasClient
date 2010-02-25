@@ -445,3 +445,30 @@ void midasDatabaseProxy::Clean()
   this->Database->ExecuteQuery("DELETE FROM collection2item");
   this->Database->ExecuteQuery("DELETE FROM item2bitstream");
 }
+
+//-------------------------------------------------------------------------
+std::string midasDatabaseProxy::GetLastUsedURL()
+{
+  std::stringstream query;
+  query << "SELECT url FROM last_url LIMIT 1";
+  this->Database->ExecuteQuery(query.str().c_str());
+  
+  std::string url;
+  while(this->Database->GetNextRow())
+    {
+    url = this->Database->GetValueAsString(0);
+    }
+  return url;
+}
+
+//-------------------------------------------------------------------------
+void midasDatabaseProxy::SetLastUsedURL(std::string url)
+{
+  std::stringstream query;
+  query << "DELETE FROM last_url";
+  this->Database->ExecuteQuery(query.str().c_str());
+  query.str(std::string());
+
+  query << "INSERT INTO last_url (url) VALUES ('" << url << "')";
+  this->Database->ExecuteQuery(query.str().c_str());
+}

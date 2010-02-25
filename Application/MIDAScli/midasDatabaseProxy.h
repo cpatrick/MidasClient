@@ -31,6 +31,9 @@ public:
    */
   void Clean();
 
+  std::string GetLastUsedURL();
+  void SetLastUsedURL(std::string url);
+
   /**
    * Get the absolute path to the given resource
    */
