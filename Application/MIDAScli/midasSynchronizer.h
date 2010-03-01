@@ -35,6 +35,9 @@ class midasSynchronizer
       OPERATION_PUSH
       };
 
+    void SetParentId(int id);
+    int GetParentId();
+
     void SetOperation(SynchOperation op);
     SynchOperation GetOperation();
 
@@ -87,6 +90,7 @@ class midasSynchronizer
 
     SynchOperation Operation;
     int ResourceType;
+    int ParentId;
     std::string ServerURL;
     std::string ResourceHandle;
     

@@ -28,6 +28,12 @@
 
 #define NO_PARENT -1
 
+//The following define error codes returned by midas functions
+#define MIDAS_OK               0
+#define MIDAS_INVALID_PATH    -1
+#define MIDAS_BAD_FILE_TYPE   -2
+#define MIDAS_DUPLICATE_PATH  -3
+
 midasSynchronizer::midasSynchronizer()
 {
   this->Recursive = false;
@@ -39,6 +45,7 @@ midasSynchronizer::midasSynchronizer()
   this->DatabaseProxy = NULL;
   this->Authenticator = new midasAuthenticator;
   this->WebAPI = new mws::WebAPI;
+  this->ParentId = NO_PARENT;
 }
 
 midasSynchronizer::~midasSynchronizer()
@@ -54,6 +61,16 @@ midasSynchronizer::~midasSynchronizer()
 midasAuthenticator* midasSynchronizer::GetAuthenticator()
 {
   return this->Authenticator;
+}
+
+int midasSynchronizer::GetParentId()
+{
+  return this->ParentId;
+}
+
+void midasSynchronizer::SetParentId(int id)
+{
+  this->ParentId = id;
 }
 
 void midasSynchronizer::SetDatabase(std::string path)
@@ -193,14 +210,21 @@ int midasSynchronizer::Add()
     {
     std::cerr << "Error: \"" << this->ResourceHandle << "\" does not refer"
       " to a valid absolute or relative path." << std::endl;
-    return -1;
+    return MIDAS_INVALID_PATH;
     }
   if(kwsys::SystemTools::FileIsDirectory(path.c_str()) &&
      this->ResourceType == midasResourceType::BITSTREAM)
     {
     std::cerr << "Error: \"" << path << "\" is a directory. A bitstream "
       "refers to a file, not a directory." << std::endl;
-    return -1;
+    return MIDAS_BAD_FILE_TYPE;
+    }
+  if(!kwsys::SystemTools::FileIsDirectory(path.c_str()) &&
+    this->ResourceType != midasResourceType::BITSTREAM)
+    {
+    std::cerr << "Error: \"" << path << "\" is not a directory. For this "
+      "resource type, you must specify a directory." << std::endl;
+    return MIDAS_BAD_FILE_TYPE;
     }
 
   // Make slashes uniform in the database
@@ -217,7 +241,7 @@ int midasSynchronizer::Add()
     std::cerr << "Error: \"" << path << "\" is already in the database."
       << std::endl;
     this->DatabaseProxy->Close();
-    return -1;
+    return MIDAS_DUPLICATE_PATH;
     }
   std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
 
@@ -228,7 +252,7 @@ int midasSynchronizer::Add()
   //TODO propagate last modified stamp up the local tree. (perhaps in MarkDirtyResource())
   
   this->DatabaseProxy->Close();
-  return 0;
+  return MIDAS_OK;
 }
 
 //-------------------------------------------------------------------

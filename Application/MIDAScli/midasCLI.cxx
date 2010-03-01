@@ -201,6 +201,19 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
       {
       this->Synchronizer->SetResourceType(midasResourceType::BITSTREAM);
       }
+    else if(args[i] == "--parent")
+      {
+      i++;
+      if(i + 1 < args.size())
+        {
+        this->Synchronizer->SetParentId(atoi(args[i].c_str()));
+        }
+      else
+        {
+        this->PrintCommandHelp("add");
+        return false;
+        }
+      }
     else
       {
       break;
@@ -313,11 +326,11 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
     this->PrintCommandHelp("push");
     return false;
     }
-  else
+  else if(args.size())
     {
     this->Synchronizer->SetServerURL(args[0]);
-    return true;
     }
+  return true;
 }
 
 //-------------------------------------------------------------------
@@ -406,6 +419,8 @@ void midasCLI::PrintCommandHelp(std::string command)
       << std::endl << " -i         For adding an item."
       << std::endl << " -b         For adding a bitstream."
       << std::endl << " --local    Do not push this resource to the server."
+      << std::endl << " --parent PARENT_ID"
+      << std::endl << "            Specify the id of the server-side parent."
       << std::endl << "Exactly one type must be specified (-b, -i, -c, -C)."
       << std::endl
       << "And PATH is a relative or absolute path to the dir/file to add."

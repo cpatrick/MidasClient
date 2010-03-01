@@ -648,6 +648,7 @@ CREATE TABLE resource_uuid (
     resource_type_id integer,
     resource_id integer,
     path character varying(512),
+    server_parent integer,
     uuid character varying(60) PRIMARY KEY
 );
 
