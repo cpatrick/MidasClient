@@ -33,6 +33,12 @@
 #define MIDAS_INVALID_PATH    -1
 #define MIDAS_BAD_FILE_TYPE   -2
 #define MIDAS_DUPLICATE_PATH  -3
+#define MIDAS_NO_URL          -4
+#define MIDAS_LOGIN_FAILED    -5
+#define MIDAS_BAD_OP          -6
+#define MIDAS_WEB_API_FAILED  -7
+#define MIDAS_NO_RTYPE        -8
+#define MIDAS_FAILURE         -9
 
 midasSynchronizer::midasSynchronizer()
 {
@@ -179,7 +185,7 @@ int midasSynchronizer::Perform()
   if(!this->Authenticator->Login(this->WebAPI))
     {
     std::cerr << "Login failed." << std::endl;
-    return -1;
+    return MIDAS_LOGIN_FAILED;
     }
 
   switch(this->Operation)
@@ -195,7 +201,7 @@ int midasSynchronizer::Perform()
     case OPERATION_PUSH:
       return this->Push();
     default:
-      return -1;
+      return MIDAS_BAD_OP;
     }
 }
 
@@ -271,7 +277,7 @@ int midasSynchronizer::Clone()
     {
     std::cerr << "You must specify a server url. No last used URL exists "
       "in the database." << std::endl;
-    return -1;
+    return MIDAS_NO_URL;
     }
 
   mws::Community remote;
@@ -282,7 +288,7 @@ int midasSynchronizer::Clone()
   if(!remote.FetchTree())
     {
     std::cerr << "Unable to fetch resource tree via the Web API" << std::endl;
-    return -1;
+    return MIDAS_WEB_API_FAILED;
     }
 
   this->RecurseCommunities(NO_PARENT, community);
@@ -307,13 +313,13 @@ int midasSynchronizer::Pull()
   if(this->ResourceType == midasResourceType::NONE)
     {
     std::cerr << "You must specify a resource type." << std::endl;
-    return -1;
+    return MIDAS_NO_RTYPE;
     }
   if(this->GetServerURL() == "")
     {
     std::cerr << "You must specify a server url. No last used URL exists "
       "in the database." << std::endl;
-    return -1;
+    return MIDAS_NO_URL;
     }
  
   std::string name;
@@ -321,15 +327,15 @@ int midasSynchronizer::Pull()
     {
     case midasResourceType::BITSTREAM:
       name = this->GetBitstreamName();
-      return this->PullBitstream(NO_PARENT, name) ? 0 : -1;
+      return this->PullBitstream(NO_PARENT, name) ? 0 : MIDAS_FAILURE;
     case midasResourceType::COLLECTION:
-      return this->PullCollection(NO_PARENT) ? 0 : -1;
+      return this->PullCollection(NO_PARENT) ? 0 : MIDAS_FAILURE;
     case midasResourceType::COMMUNITY:
-      return this->PullCommunity(NO_PARENT) ? 0 : -1;
+      return this->PullCommunity(NO_PARENT) ? 0 : MIDAS_FAILURE;
     case midasResourceType::ITEM:
-      return this->PullItem(NO_PARENT) ? 0 : -1;
+      return this->PullItem(NO_PARENT) ? 0 : MIDAS_FAILURE;
     default:
-      return -1;
+      return MIDAS_NO_RTYPE;
     }
 }
 
@@ -620,7 +626,7 @@ int midasSynchronizer::Push()
     {
     std::cerr << "You must specify a server url. No last used URL exists "
       "in the database." << std::endl;
-    return -1;
+    return MIDAS_NO_URL;
     }
   this->DatabaseProxy->Open();
   // breaking proxy rules for the sake of efficiency here
@@ -657,7 +663,7 @@ int midasSynchronizer::Push()
         success &= this->PushItem(id);
         break;
       default:
-        return -1;
+        return MIDAS_NO_RTYPE;
       }
 
     if(this->WebAPI->GetErrorCode() == INVALID_POLICY
@@ -666,11 +672,11 @@ int midasSynchronizer::Push()
       std::cerr << "You are not logged in. Please specify a user profile."
         << std::endl;
       this->DatabaseProxy->Close();
-      return -1;
+      return MIDAS_LOGIN_FAILED;
       }
     }
   this->DatabaseProxy->Close();
-  return success ? 0 : -1;
+  return success ? MIDAS_OK : MIDAS_FAILURE;
 }
 
 //-------------------------------------------------------------------

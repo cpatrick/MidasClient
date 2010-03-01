@@ -123,7 +123,7 @@ int midasCLI::PerformCreateProfile(std::vector<std::string> args)
   std::string name, user, apiKey, appName;
   for(i = 0; i < args.size(); i++)
     {
-    if(args[i] == "-u" || args[i] == "--email"
+    if(args[i] == "-e" || args[i] == "--email"
       && args.size() > i + 1)
       {
       i++;
