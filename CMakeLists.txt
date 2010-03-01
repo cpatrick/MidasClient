@@ -31,6 +31,18 @@ IF(WIN32)
   ENDIF(NOT BORLAND)
 ENDIF(WIN32)
 
+INCLUDE(CTest)
+
+IF(CTEST_NEW_FORMAT)
+  CONFIGURE_FILE(
+    ${PROJECT_SOURCE_DIR}/CTestConfiguration.in
+    ${PROJECT_BINARY_DIR}/CTestConfiguration.ini )
+ELSE(CTEST_NEW_FORMAT)
+  CONFIGURE_FILE(
+    ${PROJECT_SOURCE_DIR}/CTestConfiguration.in
+    ${PROJECT_BINARY_DIR}/DartConfiguration.tcl )
+ENDIF(CTEST_NEW_FORMAT)
+
 
 # If CMake is the version we're expecting, don't show the
 # CMAKE_BACKWARDS_COMPATIBILITY option. If the version is higher than the
