@@ -30,3 +30,8 @@ midasResourceType::ResourceType midasStatus::GetType()
 {
   return this->Type;
 }
+
+std::string midasStatus::GetPath()
+{
+  return this->Path;
+}

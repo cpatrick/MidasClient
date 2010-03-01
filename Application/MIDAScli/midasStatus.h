@@ -21,17 +21,20 @@ class midasStatus
 {
   public:
     midasStatus(std::string uuid, std::string name,
-      midasDirtyAction::Action action, midasResourceType::ResourceType type)
-      : UUID(uuid), Name(name), DirtyAction(action), Type(type) {}
+      midasDirtyAction::Action action, midasResourceType::ResourceType type,
+      std::string path)
+      : UUID(uuid), Name(name), DirtyAction(action), Type(type), Path(path) {}
     ~midasStatus() {}
 
     std::string GetName();
     std::string GetUUID();
+    std::string GetPath();
     midasDirtyAction::Action GetDirtyAction();
     midasResourceType::ResourceType GetType();
   protected:
     std::string Name;
     std::string UUID;
+    std::string Path;
     midasDirtyAction::Action DirtyAction;
     midasResourceType::ResourceType Type;
 };

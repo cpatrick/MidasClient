@@ -479,20 +479,25 @@ std::vector<midasStatus> midasDatabaseProxy::GetStatusEntries()
   std::vector<midasStatus> statlist;
   this->Database->ExecuteQuery("SELECT uuid, action FROM dirty_resource");
 
+  std::map<std::string, midasDirtyAction::Action> dirties;
   while(this->Database->GetNextRow())
     {
-    std::string uuid = this->Database->GetValueAsString(0);
-    midasDirtyAction::Action action = 
+    dirties[this->Database->GetValueAsString(0)] =
       midasDirtyAction::Action(this->Database->GetValueAsInt(1));
+    }
 
+  for(std::map<std::string, midasDirtyAction::Action>::iterator i =
+      dirties.begin(); i != dirties.end(); ++i)
+    {
     int type, id;
-    this->GetTypeAndIdForUuid(uuid, type, id);
+    this->GetTypeAndIdForUuid(i->first, type, id);
+    std::string path = this->GetResourceLocation(i->first);
 
     midasResourceType::ResourceType rt =
       midasResourceType::ResourceType(type);
     std::string name = this->GetName(type, id);
 
-    midasStatus status(uuid, name, action, rt);
+    midasStatus status(i->first, name, i->second, rt, path);
     statlist.push_back(status);
     }
 

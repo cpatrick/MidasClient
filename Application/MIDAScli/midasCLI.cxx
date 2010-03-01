@@ -324,12 +324,25 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
 bool midasCLI::ParseStatus(std::vector<std::string> args)
 {
   std::vector<midasStatus> stats = this->Synchronizer->GetStatusEntries();
-
   for(std::vector<midasStatus>::iterator i = stats.begin(); i != stats.end();
       ++i)
     {
-    std::cout << i->GetType() << " " << i->GetName() << "  " 
-      << i->GetDirtyAction();
+    switch(i->GetType())
+      {
+      case midasResourceType::BITSTREAM:
+        std::cout << "b";
+        break;
+      case midasResourceType::COLLECTION:
+        std::cout << "c";
+        break;
+      case midasResourceType::COMMUNITY:
+        std::cout << "C";
+        break;
+      case midasResourceType::ITEM:
+        std::cout << "i";
+        break;
+      }
+    std::cout << " " << i->GetPath() << std::endl;
     }
   return true;
 }
