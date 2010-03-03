@@ -16,6 +16,16 @@
 #include "midasStatus.h"
 #include <mdsSQLiteDatabase.h>
 
+struct midasResourceRecord
+{
+  midasResourceRecord() :
+    Type(midasResourceType::TYPE_ERROR), Id(0), Parent(0), Path("") {}
+  int Type;
+  int Id;
+  int Parent;
+  std::string Path;
+};
+
 class midasDatabaseProxy
 {
 public:
@@ -35,10 +45,6 @@ public:
   std::string GetLastUsedURL();
   void SetLastUsedURL(std::string url);
 
-  /**
-   * Get the absolute path to the given resource
-   */
-  std::string GetResourceLocation(std::string uuid);
   std::string GetName(int type, int id);
 
   int GetParentId(int type, int id);
@@ -49,9 +55,9 @@ public:
    * If it does exist, returns its id.
    */
   int AddResource(int type, std::string uuid, std::string path,
-    std::string name, int parentType, int parentId);
+    std::string name, int parentType, int parentId, int serverParent);
   int AddResource(int type, std::string uuid, std::string path,
-    std::string name, std::string parentUuid);
+    std::string name, std::string parentUuid, int serverParent);
 
   bool AddAuthProfile(std::string user, std::string appName,
     std::string apiKey, std::string profileName);
@@ -64,7 +70,7 @@ public:
   bool ResourceExists(std::string uuid);
 
   int GetIdForUuid(std::string uuid);
-  void GetTypeAndIdForUuid(std::string uuid, int& type, int& id);
+  midasResourceRecord GetRecordByUuid(std::string uuid);
 
   /**
    * Add a child/parent relationship to the database
@@ -84,11 +90,8 @@ public:
    */
   std::vector<midasStatus> GetStatusEntries();
 protected:
-  /** 
-   * Add a resource record to the database
-   */
   void InsertResourceRecord(int type, int id,
-                            std::string path, std::string uuid);
+                            std::string path, std::string uuid, int parentId);
 
   int InsertBitstream(std::string path, std::string name);
   int InsertCollection(std::string name);

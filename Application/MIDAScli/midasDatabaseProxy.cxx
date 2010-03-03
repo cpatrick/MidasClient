@@ -29,15 +29,16 @@ mds::SQLiteDatabase* midasDatabaseProxy::GetDatabase()
 
 //-------------------------------------------------------------------------
 int midasDatabaseProxy::AddResource(int type, std::string uuid,
-  std::string path, std::string name, int parentType, int parentId)
+  std::string path, std::string name, int parentType, int parentId,
+  int serverParent)
 {
   return this->AddResource(type, uuid, path, name, 
-    this->GetUuid(parentType, parentId));
+    this->GetUuid(parentType, parentId), serverParent);
 }
 
 //-------------------------------------------------------------------------
 int midasDatabaseProxy::AddResource(int type, std::string uuid,
-  std::string path, std::string name, std::string parentUuid)
+  std::string path, std::string name, std::string parentUuid, int parentId)
 {
   if(!this->ResourceExists(uuid))
     {
@@ -61,7 +62,7 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
       }
     if(id > 0)
       {
-      this->InsertResourceRecord(type, id, path, uuid);
+      this->InsertResourceRecord(type, id, path, uuid, parentId);
       if(parentUuid != "")
         {
         this->AddChild(parentUuid, type, id);
@@ -237,33 +238,30 @@ std::string midasDatabaseProxy::GetUuid(int type, int id)
 }
 
 //-------------------------------------------------------------------------
-void midasDatabaseProxy::GetTypeAndIdForUuid(std::string uuid, 
-                                             int& type, int& id)
+midasResourceRecord midasDatabaseProxy::GetRecordByUuid(std::string uuid)
 {
   std::stringstream query;
-  query << "SELECT resource_type_id, resource_id FROM resource_uuid "
-    "WHERE uuid='" << uuid << "'";
+  query << "SELECT resource_type_id, resource_id, server_parent, path FROM "
+    "resource_uuid WHERE uuid='" << uuid << "'";
   bool ok = this->Database->ExecuteQuery(query.str().c_str());
+  midasResourceRecord record;
 
   if(this->Database->GetNextRow())
     {
-    type = this->Database->GetValueAsInt(0);
-    id = this->Database->GetValueAsInt(1);
+    record.Type = this->Database->GetValueAsInt(0);
+    record.Id = this->Database->GetValueAsInt(1);
+    record.Parent = this->Database->GetValueAsInt(2);
+    record.Path = this->Database->GetValueAsString(3);
     }
-  else
-    {
-    type = midasResourceType::TYPE_ERROR;
-    id = 0;
-    }
+  return record;
 }
 
 //-------------------------------------------------------------------------
 bool midasDatabaseProxy::AddChild(std::string parentUuid,
                                   int childType, int childId)
 {
-  int parentType, parentId;
-  this->GetTypeAndIdForUuid(parentUuid, parentType, parentId);
-  return this->AddChild(parentType, parentId, childType, childId);
+  midasResourceRecord record = this->GetRecordByUuid(parentUuid);
+  return this->AddChild(record.Type, record.Id, childType, childId);
 }
 
 //-------------------------------------------------------------------------
@@ -324,22 +322,6 @@ bool midasDatabaseProxy::AddChild(int parentType, int parentId,
 }
 
 //-------------------------------------------------------------------------
-std::string midasDatabaseProxy::GetResourceLocation(std::string uuid)
-{
-  std::stringstream query;
-  query << "SELECT path FROM resource_uuid WHERE uuid='" << uuid << "'";
-
-  this->Database->ExecuteQuery(query.str().c_str());
-  std::string result;
-
-  while(this->Database->GetNextRow())
-    {
-    result = this->Database->GetValueAsString(0);
-    }
-  return result;
-}
-
-//-------------------------------------------------------------------------
 int midasDatabaseProxy::InsertBitstream(std::string path, std::string name)
 {
   std::stringstream query;
@@ -379,12 +361,12 @@ int midasDatabaseProxy::InsertItem(std::string name)
 //-------------------------------------------------------------------------
 void midasDatabaseProxy::InsertResourceRecord(int type, int id,
                                               std::string path,
-                                              std::string uuid)
+                                              std::string uuid, int parentId)
 {
   std::stringstream query;
   query << "INSERT INTO resource_uuid (resource_type_id, resource_id, path, "
-    "uuid) VALUES ('" << type << "', '" << id << "', '" << path << "', '" 
-    << uuid << "')";
+    "uuid, server_parent) VALUES ('" << type << "', '" << id << "', '"
+    << path << "', '" << uuid << "', '" << parentId << "')";
   this->Database->ExecuteQuery(query.str().c_str());
 }
 
@@ -489,15 +471,13 @@ std::vector<midasStatus> midasDatabaseProxy::GetStatusEntries()
   for(std::map<std::string, midasDirtyAction::Action>::iterator i =
       dirties.begin(); i != dirties.end(); ++i)
     {
-    int type, id;
-    this->GetTypeAndIdForUuid(i->first, type, id);
-    std::string path = this->GetResourceLocation(i->first);
+    midasResourceRecord record = this->GetRecordByUuid(i->first);
 
     midasResourceType::ResourceType rt =
-      midasResourceType::ResourceType(type);
-    std::string name = this->GetName(type, id);
+      midasResourceType::ResourceType(record.Type);
+    std::string name = this->GetName(record.Type, record.Id);
 
-    midasStatus status(i->first, name, i->second, rt, path);
+    midasStatus status(i->first, name, i->second, rt, record.Path);
     statlist.push_back(status);
     }
 

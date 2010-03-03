@@ -159,12 +159,9 @@ int midasCLI::PerformCreateProfile(std::vector<std::string> args)
     return -1;
     }
 
-  this->
-
   std::cout << "Adding authentication profile '" << name << "'" << std::endl;
   bool ok = this->Synchronizer->GetAuthenticator()->AddAuthProfile(
     user, appName, apiKey, name);
-  
   if(ok)
     {
     std::cout << "Profile successfully created." << std::endl;

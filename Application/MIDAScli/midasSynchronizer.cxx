@@ -51,7 +51,7 @@ midasSynchronizer::midasSynchronizer()
   this->DatabaseProxy = NULL;
   this->Authenticator = new midasAuthenticator;
   this->WebAPI = new mws::WebAPI;
-  this->ParentId = NO_PARENT;
+  this->ParentId = 0;
 }
 
 midasSynchronizer::~midasSynchronizer()
@@ -214,8 +214,8 @@ int midasSynchronizer::Add()
 
   if(!kwsys::SystemTools::FileExists(path.c_str()))
     {
-    std::cerr << "Error: \"" << this->ResourceHandle << "\" does not refer"
-      " to a valid absolute or relative path." << std::endl;
+    std::cerr << "Error: \"" << this->ResourceHandle << "\" does not refer "
+      "to a valid absolute or relative path." << std::endl;
     return MIDAS_INVALID_PATH;
     }
   if(kwsys::SystemTools::FileIsDirectory(path.c_str()) &&
@@ -251,8 +251,9 @@ int midasSynchronizer::Add()
     }
   std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
 
+  //TODO validate this->ParentId is valid
   int id = this->DatabaseProxy->AddResource(this->ResourceType, uuid, 
-    path, name, parentUuid);
+    path, name, parentUuid, this->ParentId);
   this->DatabaseProxy->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
   
   //TODO propagate last modified stamp up the local tree. (perhaps in MarkDirtyResource())
@@ -327,13 +328,13 @@ int midasSynchronizer::Pull()
     {
     case midasResourceType::BITSTREAM:
       name = this->GetBitstreamName();
-      return this->PullBitstream(NO_PARENT, name) ? 0 : MIDAS_FAILURE;
+      return this->PullBitstream(NO_PARENT, name) ? MIDAS_OK : MIDAS_FAILURE;
     case midasResourceType::COLLECTION:
-      return this->PullCollection(NO_PARENT) ? 0 : MIDAS_FAILURE;
+      return this->PullCollection(NO_PARENT) ? MIDAS_OK : MIDAS_FAILURE;
     case midasResourceType::COMMUNITY:
-      return this->PullCommunity(NO_PARENT) ? 0 : MIDAS_FAILURE;
+      return this->PullCommunity(NO_PARENT) ? MIDAS_OK : MIDAS_FAILURE;
     case midasResourceType::ITEM:
-      return this->PullItem(NO_PARENT) ? 0 : MIDAS_FAILURE;
+      return this->PullItem(NO_PARENT) ? MIDAS_OK : MIDAS_FAILURE;
     default:
       return MIDAS_NO_RTYPE;
     }
@@ -348,10 +349,11 @@ bool midasSynchronizer::PullBitstream(int parentId, std::string filename)
     }
   this->DatabaseProxy->Open();
   std::string uuid = this->GetUUID(midasResourceType::BITSTREAM);
-  std::string path = this->DatabaseProxy->GetResourceLocation(uuid);
+  midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
 
   //TODO check md5 sum of file at location against server's checksum?
-  if(path != "" && kwsys::SystemTools::FileExists(path.c_str(), true))
+  if(record.Path != "" &&
+     kwsys::SystemTools::FileExists(record.Path.c_str(), true))
     {
     //we already have this bitstream, no need to download again
     this->DatabaseProxy->Close();
@@ -372,7 +374,7 @@ bool midasSynchronizer::PullBitstream(int parentId, std::string filename)
 
   this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
     uuid, WORKING_DIR() + "/" + filename, filename, midasResourceType::ITEM,
-    parentId);
+    parentId, 0);
   this->DatabaseProxy->Close();
   
   return true;
@@ -399,7 +401,7 @@ bool midasSynchronizer::PullCollection(int parentId)
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::COLLECTION,
     uuid, WORKING_DIR() + "/" + collection->GetName(), collection->GetName(),
-    midasResourceType::COMMUNITY, parentId);
+    midasResourceType::COMMUNITY, parentId, 0);
   
   this->DatabaseProxy->Close();
 
@@ -485,7 +487,7 @@ bool midasSynchronizer::PullCommunity(int parentId)
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::COMMUNITY,
     uuid, WORKING_DIR() + "/" + community->GetName(), community->GetName(),
-    midasResourceType::COMMUNITY, parentId);
+    midasResourceType::COMMUNITY, parentId, 0);
   this->DatabaseProxy->Close();
 
   if(this->Recursive)
@@ -596,7 +598,7 @@ bool midasSynchronizer::PullItem(int parentId)
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::ITEM,
     uuid, WORKING_DIR() + "/" + title, item->GetTitle(),
-    midasResourceType::COLLECTION, parentId);
+    midasResourceType::COLLECTION, parentId, 0);
   this->DatabaseProxy->Close();
 
   if(this->Recursive)
@@ -645,22 +647,21 @@ int midasSynchronizer::Push()
   for(std::vector<std::string>::iterator i = uuids.begin(); i != uuids.end();
       ++i)
     {
-    int id, type;
-    this->DatabaseProxy->GetTypeAndIdForUuid((*i), type, id);
+    midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(*i);
 
-    switch(type)
+    switch(record.Type)
       {
       case midasResourceType::BITSTREAM:
-        success &= this->PushBitstream(id);
+        success &= this->PushBitstream(record.Id);
         break;
       case midasResourceType::COLLECTION:
-        success &= this->PushCollection(id);
+        success &= this->PushCollection(record.Id);
         break;
       case midasResourceType::COMMUNITY:
-        success &= this->PushCommunity(id);
+        success &= this->PushCommunity(record.Id);
         break;
       case midasResourceType::ITEM:
-        success &= this->PushItem(id);
+        success &= this->PushItem(record.Id);
         break;
       default:
         return MIDAS_NO_RTYPE;
@@ -707,13 +708,24 @@ bool midasSynchronizer::PushBitstream(int id)
     midasResourceType::BITSTREAM, id);
   std::string name = this->DatabaseProxy->GetName(
     midasResourceType::BITSTREAM, id);
-  std::string path = this->DatabaseProxy->GetResourceLocation(uuid);
 
-  int parentId = this->GetServerParentId(midasResourceType::ITEM,
-    this->DatabaseProxy->GetParentId(midasResourceType::BITSTREAM, id));
+  midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
+
+  if(record.Parent == 0)
+    {
+    record.Parent = this->GetServerParentId(midasResourceType::ITEM,
+      this->DatabaseProxy->GetParentId(midasResourceType::BITSTREAM, id));
+    }
+  if(record.Parent == 0)
+    {
+    std::cerr << "The parent of this bitstream could not be resolved."
+      << std::endl;
+    return false;
+    }
 
   std::stringstream fields;
-  fields << "midas.upload.bitstream?uuid=" << uuid << "&itemid=" << parentId;
+  fields << "midas.upload.bitstream?uuid=" << uuid << "&itemid="
+    << record.Parent;
 
   if(this->Progress)
     {
@@ -722,7 +734,8 @@ bool midasSynchronizer::PushBitstream(int id)
     this->Progress->SetMessage(name);
     this->Progress->ResetProgress();
     }
-  bool ok = this->WebAPI->UploadFile(fields.str().c_str(), path.c_str());
+  bool ok = this->WebAPI->UploadFile(fields.str().c_str(),
+                                     record.Path.c_str());
 
   if(ok)
     {
@@ -746,12 +759,22 @@ bool midasSynchronizer::PushCollection(int id)
   std::string name = this->DatabaseProxy->GetName(
     midasResourceType::COLLECTION, id);
 
-  int parentId = this->GetServerParentId(midasResourceType::COMMUNITY,
-    this->DatabaseProxy->GetParentId(midasResourceType::COLLECTION, id));
+  midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
+  if(record.Parent == 0)
+    {
+    record.Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
+      this->DatabaseProxy->GetParentId(midasResourceType::COLLECTION, id));
+    }
+  if(record.Parent == 0)
+    {
+    std::cerr << "The parent of this collection could not be resolved."
+      << std::endl;
+    return false;
+    }
   
   std::stringstream fields;
   fields << "midas.collection.create?uuid=" << uuid << "&name=" <<
-    midasUtils::EscapeForURL(name) << "&parentid=" << parentId;
+    midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
 
   this->WebAPI->SetPostData("");
   bool success = this->WebAPI->Execute(fields.str().c_str());
@@ -777,14 +800,17 @@ bool midasSynchronizer::PushCommunity(int id)
   std::string name = this->DatabaseProxy->GetName(
     midasResourceType::COMMUNITY, id);
 
-  int parentId = this->GetServerParentId(midasResourceType::COMMUNITY,
-    this->DatabaseProxy->GetParentId(midasResourceType::COMMUNITY, id));
-  while(this->DatabaseProxy->GetDatabase()->GetNextRow());
+  midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
+  if(record.Parent == 0)
+    {
+    record.Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
+      this->DatabaseProxy->GetParentId(midasResourceType::COMMUNITY, id));
+    }
 
   // Create new community on server
   std::stringstream fields;
   fields << "midas.community.create?uuid=" << uuid << "&name=" << 
-    midasUtils::EscapeForURL(name) << "&parentid=" << parentId;
+    midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
 
   this->WebAPI->SetPostData("");
   bool success = this->WebAPI->Execute(fields.str().c_str());
@@ -810,12 +836,22 @@ bool midasSynchronizer::PushItem(int id)
   std::string name = this->DatabaseProxy->GetName(
     midasResourceType::ITEM, id);
 
-  int parentId = this->GetServerParentId(midasResourceType::COLLECTION,
-    this->DatabaseProxy->GetParentId(midasResourceType::ITEM, id));
+  midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
+  if(record.Parent == 0)
+    {
+    record.Parent = this->GetServerParentId(midasResourceType::COLLECTION,
+      this->DatabaseProxy->GetParentId(midasResourceType::ITEM, id));
+    }
+  if(record.Parent == 0)
+    {
+    std::cerr << "The parent of this item could not be resolved."
+      << std::endl;
+    return false;
+    }
   
   std::stringstream fields;
   fields << "midas.item.create?uuid=" << uuid << "&name=" <<
-    midasUtils::EscapeForURL(name) << "&parentid=" << parentId;
+    midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
 
   this->WebAPI->SetPostData("");
   bool success = this->WebAPI->Execute(fields.str().c_str());
