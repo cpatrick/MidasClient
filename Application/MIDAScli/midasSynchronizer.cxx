@@ -40,6 +40,7 @@
 #define MIDAS_NO_RTYPE        -8
 #define MIDAS_FAILURE         -9
 #define MIDAS_INVALID_PARENT -10
+#define MIDAS_EMPTY_FILE     -11
 
 midasSynchronizer::midasSynchronizer()
 {
@@ -233,6 +234,13 @@ int midasSynchronizer::Add()
       "resource type, you must specify a directory." << std::endl;
     return MIDAS_BAD_FILE_TYPE;
     }
+  if(this->ResourceType == midasResourceType::BITSTREAM &&
+    kwsys::SystemTools::FileLength(path.c_str()) == 0)
+    {
+    std::cerr << "Error: \"" << path << "\" is 0 bytes. You may "
+      "not add an empty bitstream." << std::endl;
+    return MIDAS_EMPTY_FILE;
+    }
 
   // Make slashes uniform in the database
   kwsys::SystemTools::ConvertToUnixSlashes(path);
@@ -250,16 +258,17 @@ int midasSynchronizer::Add()
     this->DatabaseProxy->Close();
     return MIDAS_DUPLICATE_PATH;
     }
+
+  std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
+
   if(!this->ValidateParentId(this->ParentId, 
-    midasResourceType::ResourceType(this->ResourceType)))
+    midasResourceType::ResourceType(this->ResourceType)) && parentUuid == "")
     {
-    std::cerr << "Error: the parent ID specified is not valid on the server."
+    std::cerr << "The parent of this resource could not be resolved."
       << std::endl;
     this->DatabaseProxy->Close();
     return MIDAS_INVALID_PARENT;
     }
-
-  std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
 
   int id = this->DatabaseProxy->AddResource(this->ResourceType, uuid, 
     path, name, parentUuid, this->ParentId);
@@ -751,6 +760,13 @@ bool midasSynchronizer::PushBitstream(int id)
     midasResourceType::BITSTREAM, id);
 
   midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
+
+  if(kwsys::SystemTools::FileLength(record.Path.c_str()) == 0)
+    {
+    std::cerr << "Error: \"" << record.Path << "\" is 0 bytes. You may "
+      "not push an empty bitstream." << std::endl;
+    return false;
+    }
 
   if(record.Parent == 0)
     {
