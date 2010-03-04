@@ -217,17 +217,23 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
       }
     }
 
-  if(args.size() &&
+  if(i < args.size() &&
      this->Synchronizer->GetResourceType() != midasResourceType::NONE)
     {
     this->Synchronizer->SetResourceHandle(args[i]);
-    return true;
     }
   else
     {
     this->PrintCommandHelp("add");
     return false;
     }
+  
+  i++;
+  if(i < args.size())
+    {
+    this->Synchronizer->SetServerURL(args[i]);
+    }
+  return true;
 }
 
 //-------------------------------------------------------------------
@@ -306,9 +312,9 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
     return false;
     }
 
+  i++;
   if(i < args.size())
     {
-    i++;
     this->Synchronizer->SetServerURL(args[i]);
     }
   return true;
@@ -409,7 +415,7 @@ void midasCLI::PrintCommandHelp(std::string command)
     }
   else if(command == "add")
     {
-    std::cout << "Usage: MIDAScli ... add [COMMAND_OPTIONS] PATH "
+    std::cout << "Usage: MIDAScli ... add [COMMAND_OPTIONS] PATH [URL]"
       << std::endl << "Where COMMAND_OPTIONS can be: "
       << std::endl << " -C         For adding a community."
       << std::endl << " -c         For adding a collection."
