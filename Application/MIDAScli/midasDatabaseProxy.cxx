@@ -395,27 +395,6 @@ bool midasDatabaseProxy::Close()
 //-------------------------------------------------------------------------
 void midasDatabaseProxy::Clean()
 {
-  std::stringstream selectQuery;
-  selectQuery << "SELECT path FROM resource_uuid";
-  this->Database->ExecuteQuery(selectQuery.str().c_str());
-
-  while(this->Database->GetNextRow())
-    {
-    const char* path = this->Database->GetValueAsString(0);
-
-    if(kwsys::SystemTools::FileExists(path))
-      {
-      if(kwsys::SystemTools::FileIsDirectory(path))
-        {
-        kwsys::SystemTools::RemoveADirectory(path);
-        }
-      else
-        {
-        kwsys::SystemTools::RemoveFile(path);
-        }
-      }
-    }
-
   this->Database->ExecuteQuery("DELETE FROM resource_uuid");
   this->Database->ExecuteQuery("DELETE FROM dirty_resource");
   this->Database->ExecuteQuery("DELETE FROM bitstream");
