@@ -425,7 +425,7 @@ void midasCLI::PrintCommandHelp(std::string command)
     }
   else if(command == "create_profile")
     {
-      std::cout << "Usage: MIDAScli ... create_profile PROPERTIES [URL]"
+    std::cout << "Usage: MIDAScli ... create_profile PROPERTIES [URL]"
       << std::endl << "Where PROPERTIES must contain all of: "
       << std::endl << 
       " --name NAME          The name of the profile to create"

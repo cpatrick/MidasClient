@@ -88,6 +88,8 @@ class midasSynchronizer
 
     void RecurseCommunities(int parentId, mdo::Community* community);
 
+    bool ValidateParentId(int parentId, midasResourceType::ResourceType type);
+
     SynchOperation Operation;
     int ResourceType;
     int ParentId;

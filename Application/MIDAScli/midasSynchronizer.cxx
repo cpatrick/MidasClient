@@ -39,6 +39,7 @@
 #define MIDAS_WEB_API_FAILED  -7
 #define MIDAS_NO_RTYPE        -8
 #define MIDAS_FAILURE         -9
+#define MIDAS_INVALID_PARENT -10
 
 midasSynchronizer::midasSynchronizer()
 {
@@ -249,17 +250,57 @@ int midasSynchronizer::Add()
     this->DatabaseProxy->Close();
     return MIDAS_DUPLICATE_PATH;
     }
+  if(!this->ValidateParentId(this->ParentId, 
+    midasResourceType::ResourceType(this->ResourceType)))
+    {
+    std::cerr << "Error: the parent ID specified is not valid on the server."
+      << std::endl;
+    this->DatabaseProxy->Close();
+    return MIDAS_INVALID_PARENT;
+    }
+
   std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
 
-  //TODO validate this->ParentId is valid
   int id = this->DatabaseProxy->AddResource(this->ResourceType, uuid, 
     path, name, parentUuid, this->ParentId);
   this->DatabaseProxy->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
-  
+
   //TODO propagate last modified stamp up the local tree. (perhaps in MarkDirtyResource())
-  
+
   this->DatabaseProxy->Close();
   return MIDAS_OK;
+}
+
+//-------------------------------------------------------------------
+bool midasSynchronizer::ValidateParentId(int parentId,
+                                         midasResourceType::ResourceType type)
+{
+  if(parentId == 0)
+    {
+    // Only communities may have no parent
+    return type == midasResourceType::COMMUNITY;
+    }
+  std::stringstream fields;
+  fields << "midas.";
+  switch(type)
+    {
+    case midasResourceType::BITSTREAM:
+      fields << "item";
+      break;
+    case midasResourceType::COLLECTION:
+      fields << "community";
+      break;
+    case midasResourceType::COMMUNITY:
+      fields << "community";
+      break;
+    case midasResourceType::ITEM:
+      fields << "collection";
+    default:
+      return false;
+    }
+  fields << ".get?id=" << parentId;
+
+  return this->WebAPI->Execute(fields.str().c_str());
 }
 
 //-------------------------------------------------------------------
@@ -285,7 +326,7 @@ int midasSynchronizer::Clone()
   mdo::Community* community = new mdo::Community;
   remote.SetWebAPI(this->WebAPI);
   remote.SetObject(community);
-  
+
   if(!remote.FetchTree())
     {
     std::cerr << "Unable to fetch resource tree via the Web API" << std::endl;
@@ -322,7 +363,7 @@ int midasSynchronizer::Pull()
       "in the database." << std::endl;
     return MIDAS_NO_URL;
     }
- 
+
   std::string name;
   switch(this->ResourceType)
     {
@@ -771,7 +812,7 @@ bool midasSynchronizer::PushCollection(int id)
       << std::endl;
     return false;
     }
-  
+
   std::stringstream fields;
   fields << "midas.collection.create?uuid=" << uuid << "&name=" <<
     midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
