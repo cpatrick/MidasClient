@@ -257,7 +257,7 @@ bool RestAPI::UploadPost(const char* filename, std::string url, curl_progress_ca
   std::string URL = url;
   if(!m_ServerUrl.empty())
     {
-    URL = m_ServerUrl + URL; 
+    URL = m_ServerUrl + URL;
     }
     
   curl_easy_reset(m_cURL);
@@ -303,7 +303,6 @@ bool RestAPI::UploadPost(const char* filename, std::string url, curl_progress_ca
 bool RestAPI::Upload(const std::string &data, std::string url, curl_progress_callback fprogress,
                      void * fprogress_data, const char* authentication)
 {
-
   std::string URL = url;
   if(!m_ServerUrl.empty())
     {
