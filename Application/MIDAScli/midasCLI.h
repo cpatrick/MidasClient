@@ -12,7 +12,7 @@
 #ifndef MIDASCLI_H
 #define MIDASCLI_H
 
-#include "midasSynchronizer.h"
+#include <midasSynchronizer.h>
 
 class midasCLI
 {
