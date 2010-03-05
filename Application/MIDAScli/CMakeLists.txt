@@ -7,11 +7,12 @@ midasAuthenticator.cxx
 midasAuthenticator.h
 midasCLI.cxx
 midasCLI.h
-midasProgressReporter.h
 midasDatabaseProxy.cxx
 midasDatabaseProxy.h
 midasDotProgressReporter.cxx
 midasDotProgressReporter.h
+midasLog.h
+midasProgressReporter.h
 midasStandardIncludes.h
 midasStatus.cxx
 midasStatus.h

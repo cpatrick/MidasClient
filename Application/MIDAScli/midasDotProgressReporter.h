@@ -18,9 +18,6 @@
 // The default length of the progress bar
 #define DEFAULT_LENGTH 25
 
-/**
- * Abstract class for updating progress
- */
 class midasDotProgressReporter : midasProgressReporter
 {
   public:

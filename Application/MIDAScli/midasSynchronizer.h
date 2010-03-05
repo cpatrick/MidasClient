@@ -17,6 +17,7 @@
 #include "midasDatabaseProxy.h"
 #include "midasAuthenticator.h"
 #include "midasStatus.h"
+#include "midasLog.h"
 #include <mwsWebAPI.h>
 #include <mdoCommunity.h>
 
@@ -34,6 +35,10 @@ class midasSynchronizer
       OPERATION_PULL,
       OPERATION_PUSH
       };
+
+    void SetLog(midasLog* log);
+    midasLog* GetLog();
+    void DeleteLog();
 
     void SetParentId(int id);
     int GetParentId();
@@ -100,7 +105,8 @@ class midasSynchronizer
     bool Recursive;
     mws::WebAPI* WebAPI;
     midasProgressReporter* Progress;
-    
+    midasLog* Log;
+
     std::string Database;
     midasDatabaseProxy* DatabaseProxy;
     midasAuthenticator* Authenticator;

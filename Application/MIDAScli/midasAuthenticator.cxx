@@ -17,6 +17,7 @@ midasAuthenticator::midasAuthenticator()
   this->Database = NULL;
   this->ClearToken();
   this->Profile = "";
+  this->Log = NULL;
 }
 
 midasAuthenticator::~midasAuthenticator()
@@ -40,7 +41,7 @@ bool midasAuthenticator::Login(mws::WebAPI* api)
   this->Database->Open();
   if(!this->Database->GetAuthProfile(this->Profile, email, appName, apiKey))
     {
-    std::cerr << "No profile exists with that name. Use the "
+    this->Log->Error() << "No profile exists with that name. Use the "
       "\"create_profile\" command to add a profile." << std::endl;
     return false;
     }
@@ -63,7 +64,7 @@ bool midasAuthenticator::AddAuthProfile(std::string user, std::string appName,
   remote.SetServerUrl(this->ServerURL.c_str());
   if(!remote.Login(appName.c_str(), user.c_str(), apiKey.c_str()))
     {
-    std::cerr << "Login credentials refused by server." << std::endl;
+    this->Log->Error() << "Login credentials refused by server." << std::endl;
     return false;
     }
   bool success = 
@@ -90,7 +91,7 @@ std::string midasAuthenticator::FetchToken()
     this->Database->Open();
     if(!this->Database->GetAuthProfile(this->Profile, email, appName, apiKey))
       {
-      std::cerr << "No profile exists with that name. Use the "
+      this->Log->Error() << "No profile exists with that name. Use the "
         "\"create_profile\" command to add a profile." << std::endl;
       return "";
       }
@@ -98,7 +99,8 @@ std::string midasAuthenticator::FetchToken()
 
     if(!remote.Login(appName.c_str(), email.c_str(), apiKey.c_str()))
       {
-      std::cerr << "Login credentials refused by server." << std::endl;
+      this->Log->Error() << "Login credentials refused by server."
+        << std::endl;
       return "";
       }
     this->Token = remote.GetAPIToken();
@@ -109,10 +111,6 @@ std::string midasAuthenticator::FetchToken()
 //-------------------------------------------------------------------
 void midasAuthenticator::SetDatabase(std::string database)
 {
-  if(this->Database)
-    {
-    delete this->Database;
-    }
   this->Database = new midasDatabaseProxy(database);
 }
 
@@ -127,4 +125,10 @@ void midasAuthenticator::SetProfile(std::string profile)
 {
   this->Profile = profile;
   this->ClearToken();
+}
+
+//-------------------------------------------------------------------
+void midasAuthenticator::SetLog(midasLog* log)
+{
+  this->Log = log;
 }

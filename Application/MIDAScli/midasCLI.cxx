@@ -25,7 +25,6 @@ midasCLI::midasCLI()
 
 midasCLI::~midasCLI()
 {
-  this->Synchronizer->DeleteProgressReporter();
   delete this->Synchronizer;
 }
 

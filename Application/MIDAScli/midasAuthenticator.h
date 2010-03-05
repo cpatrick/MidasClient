@@ -14,6 +14,7 @@
 
 #include "midasStandardIncludes.h"
 #include "midasDatabaseProxy.h"
+#include "midasLog.h"
 #include <mwsWebAPI.h>
 
 class midasAuthenticator
@@ -32,6 +33,7 @@ class midasAuthenticator
     // May need this function in case the old token expires
     void ClearToken();
 
+    void SetLog(midasLog* log);
     void SetDatabase(std::string database);
     void SetServerURL(std::string url);
     void SetProfile(std::string profile);
@@ -44,6 +46,7 @@ class midasAuthenticator
     midasDatabaseProxy* Database;
     std::string Token;
     std::string Profile;
+    midasLog* Log;
 };
 
 #endif
