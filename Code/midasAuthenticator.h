@@ -24,8 +24,6 @@ class midasAuthenticator
     ~midasAuthenticator();
 
     bool AddAuthProfile(std::string user, std::string appName,
-      std::string apiKey);
-    bool AddAuthProfile(std::string user, std::string appName,
       std::string apiKey, std::string profileName);
     
     // Lazy getter for an api auth token

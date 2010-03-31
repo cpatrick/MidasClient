@@ -78,8 +78,8 @@ SET(midas_db "${CMAKE_BINARY_DIR}/midas.db")
 # Add target to build the database from definitions at build time
 ADD_CUSTOM_COMMAND (
   OUTPUT ${midas_db}
-  DEPENDS "${CMAKE_SOURCE_DIR}/Code/Synchronizer/sql/MIDAS_SQLite.sql"
-  COMMAND sqlite3 -init "${CMAKE_SOURCE_DIR}/Code/Synchronizer/sql/MIDAS_SQLite.sql" ${midas_db} "SELECT * FROM resource_uuid;"
+  DEPENDS "${CMAKE_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql"
+  COMMAND sqlite3 -init "${CMAKE_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql" ${midas_db} "SELECT * FROM resource_uuid;"
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
   COMMENT "Creating SQLite database..."
 )

@@ -63,6 +63,7 @@ public:
     std::string apiKey, std::string profileName);
   bool GetAuthProfile(std::string name, std::string& user,
     std::string& appName, std::string& apiKey);
+  std::vector<std::string> GetAuthProfiles();
 
   /**
    * Returns whether or not a resource with the given uuid exists

@@ -101,6 +101,18 @@ bool midasDatabaseProxy::GetAuthProfile(std::string name, std::string& user,
 }
 
 //-------------------------------------------------------------------------
+std::vector<std::string> midasDatabaseProxy::GetAuthProfiles()
+{
+  this->Database->ExecuteQuery("SELECT profile_name FROM auth_profile");
+  std::vector<std::string> profileNames;
+  while(this->Database->GetNextRow())
+    {
+    profileNames.push_back(this->Database->GetValueAsString(0));
+    }
+  return profileNames;
+}
+
+//-------------------------------------------------------------------------
 bool midasDatabaseProxy::AddAuthProfile(std::string user, std::string appName,
                                         std::string apiKey, std::string name)
 {
