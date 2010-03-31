@@ -61,14 +61,8 @@ midasSynchronizer::midasSynchronizer()
 
 midasSynchronizer::~midasSynchronizer()
 {
-  if(this->DatabaseProxy)
-    {
-    delete this->DatabaseProxy;
-    }
-  if(this->Progress)
-    {
-    delete this->Progress;
-    }
+  delete this->DatabaseProxy;
+  delete this->Progress;
   delete this->Authenticator;
   delete this->WebAPI;
   delete this->Log;
@@ -92,10 +86,7 @@ void midasSynchronizer::SetParentId(int id)
 void midasSynchronizer::SetDatabase(std::string path)
 {
   this->Database = path;
-  if(this->DatabaseProxy)
-    {
-    delete this->DatabaseProxy;
-    }
+  delete this->DatabaseProxy;
   this->DatabaseProxy = new midasDatabaseProxy(path);
   this->Authenticator->SetDatabase(path);
   this->SetServerURL(this->GetServerURL());
@@ -103,10 +94,7 @@ void midasSynchronizer::SetDatabase(std::string path)
 
 void midasSynchronizer::SetLog(midasLog* log)
 {
-  if(this->Log)
-    {
-    delete this->Log;
-    }
+  delete this->Log;
   this->Log = log;
 }
 
@@ -117,10 +105,7 @@ midasLog* midasSynchronizer::GetLog()
 
 void midasSynchronizer::SetProgressReporter(midasProgressReporter* progress)
 {
-  if(this->Progress)
-    {
-    delete this->Progress;
-    }
+  delete this->Progress;
   this->Progress = progress;
 }
 
