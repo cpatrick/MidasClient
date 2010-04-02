@@ -11,13 +11,14 @@
 
 #include "midasAuthenticator.h"
 #include "mwsWebAPI.h"
+#include "midasStdOutLog.h"
 
 midasAuthenticator::midasAuthenticator()
 {
   this->Database = NULL;
   this->ClearToken();
   this->Profile = "";
-  this->Log = NULL;
+  this->Log = new midasStdOutLog();
 }
 
 midasAuthenticator::~midasAuthenticator()
@@ -41,8 +42,10 @@ bool midasAuthenticator::Login(mws::WebAPI* api)
   this->Database->Open();
   if(!this->Database->GetAuthProfile(this->Profile, email, appName, apiKey))
     {
-    this->Log->Error() << "No profile exists with that name. Use the "
+    std::stringstream text;
+    text << "No profile exists with that name. Use the "
       "\"create_profile\" command to add a profile." << std::endl;
+    Log->Error(text.str());
     return false;
     }
 
@@ -64,7 +67,9 @@ bool midasAuthenticator::AddAuthProfile(std::string user, std::string appName,
   remote.SetServerUrl(this->ServerURL.c_str());
   if(!remote.Login(appName.c_str(), user.c_str(), apiKey.c_str()))
     {
-    this->Log->Error() << "Login credentials refused by server." << std::endl;
+    std::stringstream text;
+    text << "Login credentials refused by server." << std::endl;
+    Log->Error(text.str());
     return false;
     }
   bool success = 
@@ -91,16 +96,20 @@ std::string midasAuthenticator::FetchToken()
     this->Database->Open();
     if(!this->Database->GetAuthProfile(this->Profile, email, appName, apiKey))
       {
-      this->Log->Error() << "No profile exists with that name. Use the "
+      std::stringstream text;
+      text << "No profile exists with that name. Use the "
         "\"create_profile\" command to add a profile." << std::endl;
+      Log->Error(text.str());
       return "";
       }
     this->Database->Close();
 
     if(!remote.Login(appName.c_str(), email.c_str(), apiKey.c_str()))
       {
-      this->Log->Error() << "Login credentials refused by server."
+      std::stringstream text;
+      text << "Login credentials refused by server."
         << std::endl;
+      Log->Error(text.str());
       return "";
       }
     this->Token = remote.GetAPIToken();

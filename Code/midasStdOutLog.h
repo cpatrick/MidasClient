@@ -9,20 +9,19 @@
 
 =========================================================================*/
 
-#ifndef MIDASLOG_H
-#define MIDASLOG_H
+#ifndef __midasStdOutLog_H
+#define __midasStdOutLog_H
 
-#include "midasStandardIncludes.h"
+#include "midasLog.h"
 
-/**
- * Class for logging messages
- */
-class midasLog
+class midasStdOutLog : public midasLog
 {
-  public:
-    virtual void Error(std::string text) = 0; 
-    virtual void Message(std::string text) = 0;
-  private:
+public:
+  midasStdOutLog();
+  ~midasStdOutLog();
+
+  void Error(std::string text);
+  void Message(std::string text);
 };
 
 #endif

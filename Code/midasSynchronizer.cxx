@@ -22,6 +22,7 @@
 #include "mdoItem.h"
 #include "midasProgressReporter.h"
 #include "midasDatabaseProxy.h"
+#include "midasStdOutLog.h"
 
 #define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
 #define CHANGE_DIR kwsys::SystemTools::ChangeDirectory
@@ -50,7 +51,7 @@ midasSynchronizer::midasSynchronizer()
   this->ResourceType = midasResourceType::NONE;
   this->ServerURL = "";
   this->Progress = NULL;
-  this->Log = new midasLog();
+  this->Log = new midasStdOutLog();
   this->Database = "";
   this->DatabaseProxy = NULL;
   this->Authenticator = new midasAuthenticator;
@@ -189,7 +190,9 @@ int midasSynchronizer::Perform()
 {
   if(!this->Authenticator->Login(this->WebAPI))
     {
-    this->Log->Error() << "Login failed." << std::endl;
+    std::stringstream text;
+    text << "Login failed." << std::endl;
+    this->Log->Error(text.str());
     return MIDAS_LOGIN_FAILED;
     }
 
@@ -219,29 +222,37 @@ int midasSynchronizer::Add()
 
   if(!kwsys::SystemTools::FileExists(path.c_str()))
     {
-    this->Log->Error() << "Error: \"" << this->ResourceHandle << "\" does "
+    std::stringstream text;
+    text << "Error: \"" << this->ResourceHandle << "\" does "
       "not refer to a valid absolute or relative path." << std::endl;
+    this->Log->Error(text.str());
     return MIDAS_INVALID_PATH;
     }
   if(kwsys::SystemTools::FileIsDirectory(path.c_str()) &&
      this->ResourceType == midasResourceType::BITSTREAM)
     {
-    this->Log->Error() << "Error: \"" << path << "\" is a directory. A "
+    std::stringstream text;
+    text << "Error: \"" << path << "\" is a directory. A "
       "bitstream refers to a file, not a directory." << std::endl;
+    this->Log->Error(text.str());
     return MIDAS_BAD_FILE_TYPE;
     }
   if(!kwsys::SystemTools::FileIsDirectory(path.c_str()) &&
     this->ResourceType != midasResourceType::BITSTREAM)
     {
-    this->Log->Error() << "Error: \"" << path << "\" is not a directory. For "
+    std::stringstream text;
+    text << "Error: \"" << path << "\" is not a directory. For "
       "this resource type, you must specify a directory." << std::endl;
+    this->Log->Error(text.str());
     return MIDAS_BAD_FILE_TYPE;
     }
   if(this->ResourceType == midasResourceType::BITSTREAM &&
     kwsys::SystemTools::FileLength(path.c_str()) == 0)
     {
-    this->Log->Error() << "Error: \"" << path << "\" is 0 bytes. You may "
+    std::stringstream text;
+    text << "Error: \"" << path << "\" is 0 bytes. You may "
       "not add an empty bitstream." << std::endl;
+    this->Log->Error(text.str());
     return MIDAS_EMPTY_FILE;
     }
 
@@ -256,8 +267,10 @@ int midasSynchronizer::Add()
   this->DatabaseProxy->Open();
   if(this->DatabaseProxy->GetUuidFromPath(path) != "")
     {
-    this->Log->Error() << "Error: \"" << path << "\" is already in the "
+    std::stringstream text;
+    text << "Error: \"" << path << "\" is already in the "
       "database." << std::endl;
+    this->Log->Error(text.str());
     this->DatabaseProxy->Close();
     return MIDAS_DUPLICATE_PATH;
     }
@@ -267,8 +280,9 @@ int midasSynchronizer::Add()
   if(!this->ValidateParentId(this->ParentId, 
     midasResourceType::ResourceType(this->ResourceType)) && parentUuid == "")
     {
-    this->Log->Error() << "The parent of this resource could not be resolved."
-      << std::endl;
+    std::stringstream text;
+    text << "The parent of this resource could not be resolved." << std::endl;
+    this->Log->Error(text.str());
     this->DatabaseProxy->Close();
     return MIDAS_INVALID_PARENT;
     }
@@ -329,8 +343,10 @@ int midasSynchronizer::Clone()
 {
   if(this->GetServerURL() == "")
     {
-    this->Log->Error() << "You must specify a server url. No last used URL "
+    std::stringstream text;
+    text << "You must specify a server url. No last used URL "
       "exists in the database." << std::endl;
+    this->Log->Error(text.str());
     return MIDAS_NO_URL;
     }
 
@@ -341,7 +357,9 @@ int midasSynchronizer::Clone()
 
   if(!remote.FetchTree())
     {
-    this->Log->Error() << "Unable to fetch resource tree via the Web API" << std::endl;
+    std::stringstream text;
+    text << "Unable to fetch resource tree via the Web API" << std::endl;
+    Log->Error(text.str());
     return MIDAS_WEB_API_FAILED;
     }
 
@@ -366,13 +384,17 @@ int midasSynchronizer::Pull()
 {
   if(this->ResourceType == midasResourceType::NONE)
     {
-    this->Log->Error() << "You must specify a resource type." << std::endl;
+    std::stringstream text;
+    text << "You must specify a resource type." << std::endl;
+    Log->Error(text.str());
     return MIDAS_NO_RTYPE;
     }
   if(this->GetServerURL() == "")
     {
-    this->Log->Error() << "You must specify a server url. No last used URL "
+    std::stringstream text;
+    text << "You must specify a server url. No last used URL "
       "exists in the database." << std::endl;
+    Log->Error(text.str());
     return MIDAS_NO_URL;
     }
 
@@ -447,8 +469,10 @@ bool midasSynchronizer::PullCollection(int parentId)
 
   if(!remote.Fetch())
     {
-    this->Log->Error() << "Unable to fetch the collection via the Web API."
+    std::stringstream text;
+    text << "Unable to fetch the collection via the Web API."
       << std::endl;
+    Log->Error(text.str());
     this->DatabaseProxy->Close();
     return false;
     }
@@ -519,16 +543,20 @@ bool midasSynchronizer::PullCommunity(int parentId)
 
   if(!remote.FetchTree())
     {
-    this->Log->Error() << "Unable to fetch the community via the Web API."
+    std::stringstream text;
+    text << "Unable to fetch the community via the Web API."
       << std::endl;
+    Log->Error(text.str());
     this->DatabaseProxy->Close();
     return false;
     }
   community = FindInTree(community, atoi(this->ResourceHandle.c_str()));
   if(!community)
     {
-    this->Log->Error() << "Error: Community " << this->ResourceHandle 
+    std::stringstream text;
+    text << "Error: Community " << this->ResourceHandle 
       << " does not exist." << std::endl;
+    Log->Error(text.str());
     this->DatabaseProxy->Close();
     return false;
     }
@@ -611,14 +639,18 @@ std::string midasSynchronizer::GetBitstreamName()
   
   if(!remote.Fetch())
     {
-    this->Log->Error() << "Unable to get bitstream via the web API."
+    std::stringstream text;
+    text << "Unable to get bitstream via the web API."
       << std::endl;
+    Log->Error(text.str());
     }
 
   if(bitstream->GetName() == "")
     {
-    this->Log->Error() << "Bitstream " << this->ResourceHandle <<
+    std::stringstream text;
+    text << "Bitstream " << this->ResourceHandle <<
       " does not exist." << std::endl;
+    Log->Error(text.str());
     }
   return bitstream->GetName();
 }
@@ -637,8 +669,10 @@ bool midasSynchronizer::PullItem(int parentId)
 
   if(!remote.Fetch())
     {
-    this->Log->Error() << "Unable to fetch the item via the Web API"
+    std::stringstream text;
+    text << "Unable to fetch the item via the Web API"
       << std::endl;
+    Log->Error(text.str());
     this->DatabaseProxy->Close();
     return false;
     }
@@ -683,8 +717,10 @@ int midasSynchronizer::Push()
 {
   if(this->GetServerURL() == "")
     {
-    this->Log->Error() << "You must specify a server url. No last used URL "
+    std::stringstream text;
+    text << "You must specify a server url. No last used URL "
       "exists in the database." << std::endl;
+    Log->Error(text.str());
     return MIDAS_NO_URL;
     }
   this->DatabaseProxy->Open();
@@ -727,8 +763,10 @@ int midasSynchronizer::Push()
     if(this->WebAPI->GetErrorCode() == INVALID_POLICY
       && this->Authenticator->IsAnonymous())
       {
-      this->Log->Error() << "You are not logged in. Please specify a user "
+      std::stringstream text;
+      text << "You are not logged in. Please specify a user "
         "profile." << std::endl;
+      Log->Error(text.str());
       this->DatabaseProxy->Close();
       return MIDAS_LOGIN_FAILED;
       }
@@ -770,8 +808,10 @@ bool midasSynchronizer::PushBitstream(int id)
 
   if(kwsys::SystemTools::FileLength(record.Path.c_str()) == 0)
     {
-    this->Log->Error() << "Error: \"" << record.Path << "\" is 0 bytes. You "
+    std::stringstream text;
+    text << "Error: \"" << record.Path << "\" is 0 bytes. You "
       "may not push an empty bitstream." << std::endl;
+    Log->Error(text.str());
     return false;
     }
 
@@ -782,8 +822,10 @@ bool midasSynchronizer::PushBitstream(int id)
     }
   if(record.Parent == 0)
     {
-    this->Log->Error() << "The parent of bitstream \"" << name <<
+    std::stringstream text;
+    text << "The parent of bitstream \"" << name <<
       "\" could not be resolved." << std::endl;
+    Log->Error(text.str());
     return false;
     }
 
@@ -805,12 +847,16 @@ bool midasSynchronizer::PushBitstream(int id)
     {
     // Clear dirty flag on the resource
     this->DatabaseProxy->ClearDirtyResource(uuid);
-    this->Log->Message() << "Pushed bitstream " << name << std::endl;
+    std::stringstream text;
+    text << "Pushed bitstream " << name << std::endl;
+    Log->Message(text.str());
     }
   else
     {
-    this->Log->Error() << "Failed to push bitstream " << name << ": " <<
+    std::stringstream text;
+    text << "Failed to push bitstream " << name << ": " <<
     this->WebAPI->GetErrorMessage() << std::endl;
+    Log->Error(text.str());
     }
   return ok;
 }
@@ -831,8 +877,10 @@ bool midasSynchronizer::PushCollection(int id)
     }
   if(record.Parent == 0)
     {
-    this->Log->Error() << "The parent of collection \"" << name <<
+    std::stringstream text;
+    text << "The parent of collection \"" << name <<
       "\" could not be resolved." << std::endl;
+    Log->Error(text.str());
     return false;
     }
 
@@ -846,12 +894,16 @@ bool midasSynchronizer::PushCollection(int id)
     {
     // Clear dirty flag on the resource
     this->DatabaseProxy->ClearDirtyResource(uuid);
-    this->Log->Message() << "Pushed collection " << name << std::endl;
+    std::stringstream text;
+    text << "Pushed collection " << name << std::endl;
+    Log->Message(text.str());
     }
   else
     {
-    this->Log->Error() << "Failed to push collection " << name << ": " <<
+    std::stringstream text;
+    text << "Failed to push collection " << name << ": " <<
     this->WebAPI->GetErrorMessage() << std::endl;
+    Log->Error(text.str());
     }
   return success;
 }
@@ -882,12 +934,16 @@ bool midasSynchronizer::PushCommunity(int id)
     {
     // Clear dirty flag on the resource
     this->DatabaseProxy->ClearDirtyResource(uuid);
-    this->Log->Message() << "Pushed community " << name << std::endl;
+    std::stringstream text;
+    text << "Pushed community " << name << std::endl;
+    Log->Message(text.str());
     }
   else
     {
-    this->Log->Error() << "Failed to push community " << name << ": " <<
+    std::stringstream text; 
+    text << "Failed to push community " << name << ": " <<
     this->WebAPI->GetErrorMessage() << std::endl;
+    Log->Error(text.str());
     }
   return success;
 }
@@ -908,8 +964,10 @@ bool midasSynchronizer::PushItem(int id)
     }
   if(record.Parent == 0)
     {
-    this->Log->Error() << "The parent of item \"" << name <<
+    std::stringstream text;
+    text << "The parent of item \"" << name <<
       "\" could not be resolved." << std::endl;
+    Log->Error(text.str());
     return false;
     }
   
@@ -923,12 +981,16 @@ bool midasSynchronizer::PushItem(int id)
     {
     // Clear dirty flag on the resource
     this->DatabaseProxy->ClearDirtyResource(uuid);
-    this->Log->Message() << "Pushed item " << name << std::endl;
+    std::stringstream text;
+    text << "Pushed item " << name << std::endl;
+    Log->Message(text.str());
     }
   else
     {
-    this->Log->Error() << "Failed to push item " << name << ": " <<
+    std::stringstream text;
+    text << "Failed to push item " << name << ": " <<
     this->WebAPI->GetErrorMessage() << std::endl;
+    Log->Error(text.str());
     }
   return success;
 }

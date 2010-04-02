@@ -67,6 +67,8 @@ set(MIDASSynch_SRCS
   midasStandardIncludes.h
   midasStatus.cxx
   midasStatus.h
+  midasStdOutLog.cxx
+  midasStdOutLog.h
   midasSynchronizer.cxx
   midasSynchronizer.h
   midasUtils.cxx
