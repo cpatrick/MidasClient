@@ -97,6 +97,7 @@ public:
   std::vector<midasStatus> GetStatusEntries();
 
   std::vector<mdo::Community*> GetTopLevelCommunities(bool buildTree);
+  void Populate(mdo::Community* node);
 protected:
   void InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);

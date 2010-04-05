@@ -12,6 +12,7 @@
 #include "midasDatabaseProxy.h"
 
 #include "mdoCommunity.h"
+#include "mdoCollection.h"
 
 midasDatabaseProxy::midasDatabaseProxy(std::string database)
 {
@@ -478,7 +479,8 @@ std::vector<midasStatus> midasDatabaseProxy::GetStatusEntries()
 }
 
 //--------------------------------------------------------------------------
-std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(bool buildTree)
+std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
+                                                            bool buildTree)
 {
   std::vector<mdo::Community*> communities;
   this->Database->ExecuteQuery("SELECT community_id, name FROM community "
@@ -493,10 +495,53 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(bool bui
     communities.push_back(community);
     }
 
-  for(std::vector<mdo::Community*>::iterator i = communities.begin();
-      i != communities.end(); ++i)
+  if(buildTree)
     {
-
+    for(std::vector<mdo::Community*>::iterator i = communities.begin();
+        i != communities.end(); ++i)
+      {
+      this->Populate(*i);
+      }
     }
   return communities;
+}
+
+void midasDatabaseProxy::Populate(mdo::Community* node)
+{
+  std::stringstream query;
+  query << "SELECT community_id, name FROM community WHERE community_id IN "
+    "(SELECT child_comm_id FROM community2community WHERE parent_comm_id=" 
+    << node->GetId() << ")";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  std::vector<mdo::Community*> childCommunities;
+  while(this->Database->GetNextRow())
+    {
+    mdo::Community* community = new mdo::Community;
+    community->SetId(this->Database->GetValueAsInt(0));
+    community->SetName(this->Database->GetValueAsString(1));
+    childCommunities.push_back(community);
+    }
+
+  // We can only recurse after fetching all database rows
+  for(std::vector<mdo::Community*>::iterator i = childCommunities.begin();
+      i != childCommunities.end(); ++i)
+    {
+    node->AddCommunity(*i);
+    this->Populate(*i);
+    }
+
+  query.str(std::string());
+  query << "SELECT collection_id, name FROM collection WHERE collection_id "
+    "IN (SELECT collection_id FROM community2collection WHERE community_id="
+    << node->GetId() << ")";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  while(this->Database->GetNextRow())
+    {
+    mdo::Collection* collection = new mdo::Collection;
+    collection->SetId(this->Database->GetValueAsInt(0));
+    collection->SetName(this->Database->GetValueAsString(1));
+    node->AddCollection(collection);
+    }
 }
