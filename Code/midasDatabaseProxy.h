@@ -16,6 +16,11 @@
 #include "midasStatus.h"
 #include "mdsSQLiteDatabase.h"
 
+namespace mdo
+{
+  class Community;
+}
+
 struct midasResourceRecord
 {
   midasResourceRecord() :
@@ -90,6 +95,8 @@ public:
    * Returns a list of dirty resources on the client
    */
   std::vector<midasStatus> GetStatusEntries();
+
+  std::vector<mdo::Community*> GetTopLevelCommunities(bool buildTree);
 protected:
   void InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);

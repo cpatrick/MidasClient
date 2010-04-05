@@ -11,6 +11,8 @@
 
 #include "midasDatabaseProxy.h"
 
+#include "mdoCommunity.h"
+
 midasDatabaseProxy::midasDatabaseProxy(std::string database)
 {
   this->Database = new mds::SQLiteDatabase();
@@ -473,4 +475,28 @@ std::vector<midasStatus> midasDatabaseProxy::GetStatusEntries()
     }
 
   return statlist;
+}
+
+//--------------------------------------------------------------------------
+std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(bool buildTree)
+{
+  std::vector<mdo::Community*> communities;
+  this->Database->ExecuteQuery("SELECT community_id, name FROM community "
+    "community WHERE community.community_id NOT IN (SELECT child_comm_id "
+    "FROM community2community)");
+
+  while(this->Database->GetNextRow())
+    {
+    mdo::Community* community = new mdo::Community;
+    community->SetId(this->Database->GetValueAsInt(0));
+    community->SetName(this->Database->GetValueAsString(1));
+    communities.push_back(community);
+    }
+
+  for(std::vector<mdo::Community*>::iterator i = communities.begin();
+      i != communities.end(); ++i)
+    {
+
+    }
+  return communities;
 }

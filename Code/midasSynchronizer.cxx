@@ -277,7 +277,7 @@ int midasSynchronizer::Add()
 
   std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
 
-  if(!this->ValidateParentId(this->ParentId, 
+  if(!this->ValidateParentId(this->ParentId,
     midasResourceType::ResourceType(this->ResourceType)) && parentUuid == "")
     {
     std::stringstream text;
