@@ -168,7 +168,7 @@ Community::Community()
   
 /** Destructor */
 Community::~Community()
-{  
+{
 }
 
 // Add the object

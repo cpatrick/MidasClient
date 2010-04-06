@@ -18,15 +18,12 @@ midasAuthenticator::midasAuthenticator()
   this->Database = NULL;
   this->ClearToken();
   this->Profile = "";
-  this->Log = new midasStdOutLog();
+  this->Log = NULL;
 }
 
 midasAuthenticator::~midasAuthenticator()
 {
-  if(this->Database)
-    {
-    delete this->Database;
-    }
+  delete this->Database;
 }
 
 //-------------------------------------------------------------------

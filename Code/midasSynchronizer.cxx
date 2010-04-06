@@ -51,7 +51,7 @@ midasSynchronizer::midasSynchronizer()
   this->ResourceType = midasResourceType::NONE;
   this->ServerURL = "";
   this->Progress = NULL;
-  this->Log = new midasStdOutLog();
+  this->Log = NULL;
   this->Database = "";
   this->DatabaseProxy = NULL;
   this->Authenticator = new midasAuthenticator;
@@ -63,10 +63,8 @@ midasSynchronizer::midasSynchronizer()
 midasSynchronizer::~midasSynchronizer()
 {
   delete this->DatabaseProxy;
-  delete this->Progress;
   delete this->Authenticator;
   delete this->WebAPI;
-  delete this->Log;
 }
 
 midasAuthenticator* midasSynchronizer::GetAuthenticator()
@@ -95,8 +93,8 @@ void midasSynchronizer::SetDatabase(std::string path)
 
 void midasSynchronizer::SetLog(midasLog* log)
 {
-  delete this->Log;
   this->Log = log;
+  this->Authenticator->SetLog(log);
 }
 
 midasLog* midasSynchronizer::GetLog()
@@ -104,9 +102,13 @@ midasLog* midasSynchronizer::GetLog()
   return this->Log;
 }
 
+void midasSynchronizer::DeleteLog()
+{
+  delete this->Log;
+}
+
 void midasSynchronizer::SetProgressReporter(midasProgressReporter* progress)
 {
-  delete this->Progress;
   this->Progress = progress;
 }
 
