@@ -29,11 +29,6 @@ class RestXMLParser;
 class WebAPI
 {
 public:
-     
-  // constructor
-  WebAPI();
-  ~WebAPI();
-  
   // Singleton to be used in an application
   static WebAPI* Instance();
   
@@ -90,8 +85,10 @@ protected:
   std::string     m_APIToken;
   const char*     m_PostData;
 
+  // constructor
+  WebAPI();
+  ~WebAPI();
 private:
-
   static WebAPI * m_Instance; 
 
 };

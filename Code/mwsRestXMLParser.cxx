@@ -68,8 +68,6 @@ void RestXMLParser::Initialize(void)
 
   XML_SetUserData(m_Parser,this);
 
-  std::string someString;
-
   this->m_ErrorMessage = "";
   this->m_CurrentTag = "";
   this->m_ErrorCode = 0;

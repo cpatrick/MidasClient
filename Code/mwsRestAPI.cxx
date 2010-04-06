@@ -34,7 +34,7 @@ RestAPI::RestAPI()
   m_XMLParser = NULL;
 }
 
-/** Desctructor */
+/** Destructor */
 RestAPI::~RestAPI()
 {
   this->Finalize();
@@ -69,7 +69,12 @@ bool RestAPI::Initialize()
 void RestAPI::SetXMLParser(mws::RestXMLParser* parser)
 {
   m_XMLParser = parser;
-} 
+}
+
+mws::RestXMLParser* RestAPI::GetXMLParser()
+{
+  return m_XMLParser;
+}
  
 /** Set the cURL options */
 bool RestAPI::SetCurlOptions(const char* url, 

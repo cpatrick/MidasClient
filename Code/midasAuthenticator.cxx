@@ -11,6 +11,7 @@
 
 #include "midasAuthenticator.h"
 #include "mwsWebAPI.h"
+#include "mwsRestXMLParser.h"
 #include "midasStdOutLog.h"
 
 midasAuthenticator::midasAuthenticator()
@@ -45,7 +46,8 @@ bool midasAuthenticator::Login(mws::WebAPI* api)
     Log->Error(text.str());
     return false;
     }
-
+  mws::RestXMLParser parser;
+  api->GetRestAPI()->SetXMLParser(&parser);
   return api->Login(appName.c_str(), email.c_str(), apiKey.c_str());
 }
 
@@ -60,9 +62,12 @@ bool midasAuthenticator::AddAuthProfile(std::string user, std::string appName,
       std::string apiKey, std::string profileName)
 {
   this->Database->Open();
-  mws::WebAPI remote;
-  remote.SetServerUrl(this->ServerURL.c_str());
-  if(!remote.Login(appName.c_str(), user.c_str(), apiKey.c_str()))
+  mws::RestXMLParser parser;
+  mws::WebAPI* remote = mws::WebAPI::Instance();
+  remote->SetServerUrl(this->ServerURL.c_str());
+  remote->GetRestAPI()->SetXMLParser(&parser);
+
+  if(!remote->Login(appName.c_str(), user.c_str(), apiKey.c_str()))
     {
     std::stringstream text;
     text << "Login credentials refused by server." << std::endl;
@@ -86,8 +91,10 @@ std::string midasAuthenticator::FetchToken()
 {
   if(this->Token != "")
     {
-    mws::WebAPI remote;
-    remote.SetServerUrl(this->ServerURL.c_str());
+    mws::RestXMLParser parser;
+    mws::WebAPI* remote = mws::WebAPI::Instance();
+    remote->SetServerUrl(this->ServerURL.c_str());
+    remote->GetRestAPI()->SetXMLParser(&parser);
     std::string appName, email, apiKey;
     
     this->Database->Open();
@@ -101,7 +108,7 @@ std::string midasAuthenticator::FetchToken()
       }
     this->Database->Close();
 
-    if(!remote.Login(appName.c_str(), email.c_str(), apiKey.c_str()))
+    if(!remote->Login(appName.c_str(), email.c_str(), apiKey.c_str()))
       {
       std::stringstream text;
       text << "Login credentials refused by server."
@@ -109,7 +116,7 @@ std::string midasAuthenticator::FetchToken()
       Log->Error(text.str());
       return "";
       }
-    this->Token = remote.GetAPIToken();
+    this->Token = remote->GetAPIToken();
     }
   return this->Token;
 }

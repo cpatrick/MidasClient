@@ -107,6 +107,8 @@ public:
 
  /** Set the XML parser */
  void SetXMLParser(mws::RestXMLParser* parser);
+
+ mws::RestXMLParser* GetXMLParser();
  
  /** XML parsing */
  bool Parse(const char* buffer,unsigned long length);

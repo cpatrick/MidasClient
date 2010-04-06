@@ -56,7 +56,7 @@ midasSynchronizer::midasSynchronizer()
   this->DatabaseProxy = NULL;
   this->Authenticator = new midasAuthenticator;
   this->Authenticator->SetLog(this->Log);
-  this->WebAPI = new mws::WebAPI;
+  this->WebAPI = mws::WebAPI::Instance();
   this->ParentId = 0;
 }
 
@@ -64,7 +64,6 @@ midasSynchronizer::~midasSynchronizer()
 {
   delete this->DatabaseProxy;
   delete this->Authenticator;
-  delete this->WebAPI;
 }
 
 midasAuthenticator* midasSynchronizer::GetAuthenticator()
@@ -327,7 +326,9 @@ bool midasSynchronizer::ValidateParentId(int parentId,
       return false;
     }
   fields << ".get?id=" << parentId;
-
+  
+  mws::RestXMLParser parser;
+  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
   return this->WebAPI->Execute(fields.str().c_str());
 }
 
@@ -621,12 +622,12 @@ std::string midasSynchronizer::GetUUID(int type)
   std::stringstream fields;
   fields << "midas.uuid.get?id=" << this->GetResourceHandle()
     << "&type=" << type;
-  mws::WebAPI remote;
-  remote.SetServerUrl(this->GetServerURL().c_str());
 
   std::string uuid;
-  remote.GetRestXMLParser()->AddTag("/rsp/uuid", uuid);
-  remote.Execute(fields.str().c_str());
+  mws::RestXMLParser parser;
+  parser.AddTag("/rsp/uuid", uuid);
+  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
+  this->WebAPI->Execute(fields.str().c_str());
   return uuid;
 }
 
@@ -797,9 +798,10 @@ int midasSynchronizer::GetServerParentId(midasResourceType::ResourceType type,
 
     // Get server-side id of parent from the uuid
     fields << "midas.resource.get?uuid=" << parentUuid;
-    this->WebAPI->GetRestXMLParser()->AddTag("/rsp/id", server_parentId);
+    mws::RestXMLParser parser;
+    parser.AddTag("/rsp/id", server_parentId);
+    this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
     this->WebAPI->Execute(fields.str().c_str());
-    this->WebAPI->GetRestXMLParser()->ClearTags();
     parentId = atoi(server_parentId.c_str());
     }
   return parentId;
@@ -897,7 +899,9 @@ bool midasSynchronizer::PushCollection(int id)
   fields << "midas.collection.create?uuid=" << uuid << "&name=" <<
     midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
 
+  mws::RestXMLParser parser;
   this->WebAPI->SetPostData("");
+  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
   bool success = this->WebAPI->Execute(fields.str().c_str());
   if(success)
     {
@@ -937,7 +941,9 @@ bool midasSynchronizer::PushCommunity(int id)
   fields << "midas.community.create?uuid=" << uuid << "&name=" << 
     midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
 
+  mws::RestXMLParser parser;
   this->WebAPI->SetPostData("");
+  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
   bool success = this->WebAPI->Execute(fields.str().c_str());
   if(success)
     {
@@ -984,6 +990,8 @@ bool midasSynchronizer::PushItem(int id)
   fields << "midas.item.create?uuid=" << uuid << "&name=" <<
     midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
 
+  mws::RestXMLParser parser;
+  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
   this->WebAPI->SetPostData("");
   bool success = this->WebAPI->Execute(fields.str().c_str());
   if(success)

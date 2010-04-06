@@ -27,7 +27,7 @@ WebAPI::WebAPI()
   m_PostData = NULL;
 }
 
-/** Constructor */
+/** Destructor */
 WebAPI::~WebAPI()
 {
   m_RestAPI->Finalize();
@@ -58,7 +58,7 @@ WebAPI* WebAPI::Instance()
     {
     m_Instance = new WebAPI();
     }
-  return m_Instance;  
+  return m_Instance;
 }
 
 void WebAPI::SetPostData(const char* postData)
@@ -120,7 +120,7 @@ void WebAPI::SetVerbose(bool verbose)
 // Get the default rest XML parser
 RestXMLParser* WebAPI::GetRestXMLParser()
 {
-  return m_RestXMLParser;
+  return this->GetRestAPI()->GetXMLParser();
 }
  
 // Download a file 
