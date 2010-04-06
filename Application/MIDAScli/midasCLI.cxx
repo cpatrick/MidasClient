@@ -12,6 +12,7 @@
 #include "midasCLI.h"
 #include "midasDotProgressReporter.h"
 #include "midasStatus.h"
+#include "midasStdOutLog.h"
 
 midasCLI::midasCLI()
 {
@@ -21,11 +22,13 @@ midasCLI::midasCLI()
   this->Synchronizer->SetProgressReporter(
     reinterpret_cast<midasProgressReporter*>(
     new midasDotProgressReporter(30)));
+  this->Synchronizer->SetLog(new midasStdOutLog());
 }
 
 midasCLI::~midasCLI()
 {
   delete this->Synchronizer;
+  this->Synchronizer->DeleteLog();
 }
 
 //-------------------------------------------------------------------
