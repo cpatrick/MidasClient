@@ -739,6 +739,13 @@ int midasSynchronizer::Push()
     uuids.push_back(this->DatabaseProxy->GetDatabase()->GetValueAsString(0));
     }
 
+  if(!uuids.size())
+    {
+    std::stringstream text;
+    text << "There are no staged resources to push." << std::endl;
+    Log->Error(text.str());
+    }
+
   for(std::vector<std::string>::iterator i = uuids.begin(); i != uuids.end();
       ++i)
     {
