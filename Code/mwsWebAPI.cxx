@@ -77,7 +77,6 @@ bool WebAPI::Execute(const char* url)
     {  
     fullUrl << "&token=" << m_APIToken;
     }
-
   bool success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
 
   if(success && m_RestAPI->GetXMLParser()->GetErrorCode() == 0)
@@ -159,6 +158,7 @@ bool WebAPI::Login(const char* appname,
                    const char* email, 
                    const char* apikey)
 {
+  m_APIToken = "";
   RestXMLParser parser;
   parser.AddTag("/rsp/token",m_APIToken);
   this->GetRestAPI()->SetXMLParser(&parser);
