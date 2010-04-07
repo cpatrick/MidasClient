@@ -80,7 +80,7 @@ bool WebAPI::Execute(const char* url)
 
   bool success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
 
-  if(success && m_RestXMLParser->GetErrorCode() == 0)
+  if(success && m_RestAPI->GetXMLParser()->GetErrorCode() == 0)
     {
     return true;
     }
@@ -102,13 +102,13 @@ bool WebAPI::CheckConnection()
 // Return the last error code
 int WebAPI::GetErrorCode()
 {
-  return m_RestXMLParser->GetErrorCode();
+  return this->GetRestAPI()->GetXMLParser()->GetErrorCode();
 }
   
 // Return the last error message
 const char* WebAPI::GetErrorMessage()
 {
-  return m_RestXMLParser->GetErrorMessage();
+  return this->GetRestAPI()->GetXMLParser()->GetErrorMessage();
 }
 
 // Set verbose mode
@@ -159,8 +159,9 @@ bool WebAPI::Login(const char* appname,
                    const char* email, 
                    const char* apikey)
 {
-  RestXMLParser* parser = this->GetRestXMLParser();
-  parser->AddTag("/rsp/token",m_APIToken);
+  RestXMLParser parser;
+  parser.AddTag("/rsp/token",m_APIToken);
+  this->GetRestAPI()->SetXMLParser(&parser);
   std::stringstream url;
   url << "midas.login?email=" << email;
   url << "&apikey=" << apikey;
