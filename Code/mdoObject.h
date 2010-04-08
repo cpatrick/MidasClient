@@ -28,6 +28,7 @@ public:
     {
     m_Proxy = new Proxy();
     m_Proxy->SetObject(this);
+    m_Dirty = false;
     }
     
   ~Object()
@@ -37,11 +38,13 @@ public:
     
   /** Get the default proxy */
   Proxy* GetProxy() {return m_Proxy;}
-
+  virtual bool IsDirty() { return m_Dirty; }
+  virtual void SetDirty(bool dirty) { m_Dirty = dirty; }
     
 protected:
 
-  Proxy* m_Proxy; 
+  Proxy* m_Proxy;
+  bool m_Dirty;
 };
 
 } //end namespace
