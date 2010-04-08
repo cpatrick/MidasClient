@@ -151,14 +151,16 @@ void midasDatabaseProxy::ClearDirtyResource(std::string uuid)
 }
 
 //-------------------------------------------------------------------------
-int midasDatabaseProxy::IsResourceDirty(std::string uuid)
+bool midasDatabaseProxy::IsResourceDirty(std::string uuid)
 {
   std::stringstream query;
-  query << "SELECT action FROM dirty_resource WHERE uuid='"
+  query << "SELECT uuid FROM dirty_resource WHERE uuid='"
     << uuid << "'";
   this->Database->ExecuteQuery(query.str().c_str());
 
-  return this->Database->GetNextRow() ? this->Database->GetValueAsInt(0) : 0;
+  bool dirty = this->Database->GetNextRow();
+  while(this->Database->GetNextRow());
+  return dirty;
 }
 
 //-------------------------------------------------------------------------
@@ -508,8 +510,13 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
   return communities;
 }
 
-void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse)
+void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool checkDirty)
 {
+  if(checkDirty)
+    {
+    node->SetDirty(IsResourceDirty(GetUuid(
+      midasResourceType::COMMUNITY, node->GetId())));
+    }
   std::stringstream query;
   query << "SELECT community_id, name FROM community WHERE community_id IN "
     "(SELECT child_comm_id FROM community2community WHERE parent_comm_id=" 
@@ -559,8 +566,13 @@ void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse)
   }
 }
 
-void midasDatabaseProxy::Populate(mdo::Collection* node, bool recurse)
+void midasDatabaseProxy::Populate(mdo::Collection* node, bool recurse, bool checkDirty)
 {
+  if(checkDirty)
+    {
+    node->SetDirty(IsResourceDirty(GetUuid(
+      midasResourceType::COLLECTION, node->GetId())));
+    }
   std::stringstream query;
   query << "SELECT item_id, title FROM item WHERE item_id "
     "IN (SELECT item_id FROM collection2item WHERE collection_id="
@@ -587,19 +599,36 @@ void midasDatabaseProxy::Populate(mdo::Collection* node, bool recurse)
     }
 }
 
-void midasDatabaseProxy::Populate(mdo::Item* node)
+void midasDatabaseProxy::Populate(mdo::Item* node, bool checkDirty)
 {
+  if(checkDirty)
+    {
+    node->SetDirty(IsResourceDirty(GetUuid(
+      midasResourceType::ITEM, node->GetId())));
+    }
   std::stringstream query;
   query << "SELECT bitstream_id, name FROM bitstream WHERE bitstream_id "
     "IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
     << node->GetId() << ")";
   this->Database->ExecuteQuery(query.str().c_str());
 
+  std::vector<mdo::Bitstream*> bitstreams;
   while(this->Database->GetNextRow())
     {
     mdo::Bitstream* bitstream = new mdo::Bitstream;
     bitstream->SetId(this->Database->GetValueAsInt(0));
     bitstream->SetName(this->Database->GetValueAsString(1));
     node->AddBitstream(bitstream);
+    bitstreams.push_back(bitstream);
+    }
+
+  if(checkDirty)
+    {
+    for(std::vector<mdo::Bitstream*>::iterator i = bitstreams.begin();
+        i != bitstreams.end(); ++i)
+      {
+      (*i)->SetDirty(IsResourceDirty(GetUuid(
+        midasResourceType::BITSTREAM, (*i)->GetId())));
+      }
     }
 }

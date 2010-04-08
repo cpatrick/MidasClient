@@ -851,6 +851,8 @@ bool midasSynchronizer::PushBitstream(int id)
     this->Progress->SetMessage(name);
     this->Progress->ResetProgress();
     }
+  mws::RestXMLParser parser;
+  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
   bool ok = this->WebAPI->UploadFile(fields.str().c_str(),
                                      record.Path.c_str());
 

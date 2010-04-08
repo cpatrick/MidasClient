@@ -91,7 +91,7 @@ public:
 
   void MarkDirtyResource(std::string uuid, int dirtyAction);
   void ClearDirtyResource(std::string uuid);
-  int IsResourceDirty(std::string uuid);
+  bool IsResourceDirty(std::string uuid);
 
   /**
    * Returns a list of dirty resources on the client
@@ -99,9 +99,11 @@ public:
   std::vector<midasStatus> GetStatusEntries();
 
   std::vector<mdo::Community*> GetTopLevelCommunities(bool buildTree);
-  void Populate(mdo::Community* node, bool recurse = true);
-  void Populate(mdo::Collection* node, bool recurse = true);
-  void Populate(mdo::Item* node);
+  void Populate(mdo::Community* node, bool recurse = true,
+                bool checkDirty = true);
+  void Populate(mdo::Collection* node, bool recurse = true,
+                bool checkDirty = true);
+  void Populate(mdo::Item* node, bool checkDirty = true);
 protected:
   void InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);
