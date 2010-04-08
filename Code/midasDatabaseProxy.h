@@ -19,6 +19,8 @@
 namespace mdo
 {
   class Community;
+  class Collection;
+  class Item;
 }
 
 struct midasResourceRecord
@@ -98,6 +100,8 @@ public:
 
   std::vector<mdo::Community*> GetTopLevelCommunities(bool buildTree);
   void Populate(mdo::Community* node);
+  void Populate(mdo::Collection* node);
+  void Populate(mdo::Item* node);
 protected:
   void InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);

@@ -13,6 +13,8 @@
 
 #include "mdoCommunity.h"
 #include "mdoCollection.h"
+#include "mdoItem.h"
+#include "mdoBitstream.h"
 
 midasDatabaseProxy::midasDatabaseProxy(std::string database)
 {
@@ -537,11 +539,61 @@ void midasDatabaseProxy::Populate(mdo::Community* node)
     << node->GetId() << ")";
   this->Database->ExecuteQuery(query.str().c_str());
 
+  std::vector<mdo::Collection*> collections;
   while(this->Database->GetNextRow())
     {
     mdo::Collection* collection = new mdo::Collection;
     collection->SetId(this->Database->GetValueAsInt(0));
     collection->SetName(this->Database->GetValueAsString(1));
     node->AddCollection(collection);
+    collections.push_back(collection);
+    }
+
+  for(std::vector<mdo::Collection*>::iterator i = collections.begin();
+      i != collections.end(); ++i)
+    {
+    this->Populate(*i);
+    }
+}
+
+void midasDatabaseProxy::Populate(mdo::Collection* node)
+{
+  std::stringstream query;
+  query << "SELECT item_id, title FROM item WHERE item_id "
+    "IN (SELECT item_id FROM collection2item WHERE collection_id="
+    << node->GetId() << ")";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  std::vector<mdo::Item*> items;
+  while(this->Database->GetNextRow())
+    {
+    mdo::Item* item = new mdo::Item;
+    item->SetId(this->Database->GetValueAsInt(0));
+    item->SetTitle(this->Database->GetValueAsString(1));
+    node->AddItem(item);
+    items.push_back(item);
+    }
+
+  for(std::vector<mdo::Item*>::iterator i = items.begin();
+      i != items.end(); ++i)
+    {
+    this->Populate(*i);
+    }
+}
+
+void midasDatabaseProxy::Populate(mdo::Item* node)
+{
+  std::stringstream query;
+  query << "SELECT bitstream_id, name FROM bitstream WHERE bitstream_id "
+    "IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
+    << node->GetId() << ")";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  while(this->Database->GetNextRow())
+    {
+    mdo::Bitstream* bitstream = new mdo::Bitstream;
+    bitstream->SetId(this->Database->GetValueAsInt(0));
+    bitstream->SetName(this->Database->GetValueAsString(1));
+    node->AddBitstream(bitstream);
     }
 }
