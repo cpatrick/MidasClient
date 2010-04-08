@@ -508,7 +508,7 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
   return communities;
 }
 
-void midasDatabaseProxy::Populate(mdo::Community* node)
+void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse)
 {
   std::stringstream query;
   query << "SELECT community_id, name FROM community WHERE community_id IN "
@@ -525,38 +525,41 @@ void midasDatabaseProxy::Populate(mdo::Community* node)
     childCommunities.push_back(community);
     }
 
-  // We can only recurse after fetching all database rows
-  for(std::vector<mdo::Community*>::iterator i = childCommunities.begin();
-      i != childCommunities.end(); ++i)
+  if(recurse)
     {
-    node->AddCommunity(*i);
-    this->Populate(*i);
-    }
+    // We can only recurse after fetching all database rows
+    for(std::vector<mdo::Community*>::iterator i = childCommunities.begin();
+        i != childCommunities.end(); ++i)
+      {
+      node->AddCommunity(*i);
+      this->Populate(*i);
+      }
 
-  query.str(std::string());
-  query << "SELECT collection_id, name FROM collection WHERE collection_id "
-    "IN (SELECT collection_id FROM community2collection WHERE community_id="
-    << node->GetId() << ")";
-  this->Database->ExecuteQuery(query.str().c_str());
+    query.str(std::string());
+    query << "SELECT collection_id, name FROM collection WHERE collection_id "
+      "IN (SELECT collection_id FROM community2collection WHERE community_id="
+      << node->GetId() << ")";
+    this->Database->ExecuteQuery(query.str().c_str());
 
-  std::vector<mdo::Collection*> collections;
-  while(this->Database->GetNextRow())
-    {
-    mdo::Collection* collection = new mdo::Collection;
-    collection->SetId(this->Database->GetValueAsInt(0));
-    collection->SetName(this->Database->GetValueAsString(1));
-    node->AddCollection(collection);
-    collections.push_back(collection);
-    }
+    std::vector<mdo::Collection*> collections;
+    while(this->Database->GetNextRow())
+      {
+      mdo::Collection* collection = new mdo::Collection;
+      collection->SetId(this->Database->GetValueAsInt(0));
+      collection->SetName(this->Database->GetValueAsString(1));
+      node->AddCollection(collection);
+      collections.push_back(collection);
+      }
 
-  for(std::vector<mdo::Collection*>::iterator i = collections.begin();
-      i != collections.end(); ++i)
-    {
-    this->Populate(*i);
-    }
+    for(std::vector<mdo::Collection*>::iterator i = collections.begin();
+        i != collections.end(); ++i)
+      {
+      this->Populate(*i);
+      }
+  }
 }
 
-void midasDatabaseProxy::Populate(mdo::Collection* node)
+void midasDatabaseProxy::Populate(mdo::Collection* node, bool recurse)
 {
   std::stringstream query;
   query << "SELECT item_id, title FROM item WHERE item_id "
@@ -574,10 +577,13 @@ void midasDatabaseProxy::Populate(mdo::Collection* node)
     items.push_back(item);
     }
 
-  for(std::vector<mdo::Item*>::iterator i = items.begin();
-      i != items.end(); ++i)
+  if(recurse)
     {
-    this->Populate(*i);
+    for(std::vector<mdo::Item*>::iterator i = items.begin();
+        i != items.end(); ++i)
+      {
+      this->Populate(*i);
+      }
     }
 }
 
