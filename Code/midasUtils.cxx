@@ -10,6 +10,7 @@
 =========================================================================*/
 
 #include "midasUtils.h"
+#include "mdsSQLiteDatabase.h"
 #include <time.h>
 
 #define UUID_LENGTH 45
@@ -49,4 +50,19 @@ std::string midasUtils::EscapeForURL(std::string s)
   kwsys::SystemTools::ReplaceString(s, "#", "%23");
 
   return s;
+}
+
+bool midasUtils::IsDatabaseValid(std::string path)
+{
+  if(!kwsys::SystemTools::FileExists(path.c_str(), true))
+    {
+    return false;
+    }
+
+  mds::SQLiteDatabase db;
+  bool result = db.Open(path.c_str());
+  result &= db.ExecuteQuery("SELECT * FROM dirty_resource");
+  while(db.GetNextRow());
+  result &= db.Close();
+  return result;
 }

@@ -19,6 +19,7 @@ class midasUtils
 public:
   static std::string GenerateUUID();
   static std::string EscapeForURL(std::string s);
+  static bool IsDatabaseValid(std::string path);
 };
 
 #endif
