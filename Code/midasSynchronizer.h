@@ -70,6 +70,7 @@ class midasSynchronizer
     midasAuthenticator* GetAuthenticator();
 
     int Perform();
+
   protected:
     int Add();
     int Clone();
@@ -95,13 +96,16 @@ class midasSynchronizer
 
     bool ValidateParentId(int parentId, midasResourceType::ResourceType type);
 
+    // Reset the synchronizer to its starting state
+    void Reset();
+
     SynchOperation Operation;
     int ResourceType;
     int ParentId;
     std::string ServerURL;
     std::string ResourceHandle;
     
-    // pull entire subtree of resources that are pulled?
+    // Pull entire subtree of resources that are pulled?
     bool Recursive;
     mws::WebAPI* WebAPI;
     midasProgressReporter* Progress;

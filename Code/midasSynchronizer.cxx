@@ -189,29 +189,39 @@ std::vector<midasStatus> midasSynchronizer::GetStatusEntries()
 //-------------------------------------------------------------------
 int midasSynchronizer::Perform()
 {
+  int rc = 0;
   if(!this->Authenticator->Login(this->WebAPI))
     {
     std::stringstream text;
     text << "Login failed." << std::endl;
     this->Log->Error(text.str());
+    this->Reset();
     return MIDAS_LOGIN_FAILED;
     }
 
   switch(this->Operation)
     {
     case OPERATION_ADD:
-      return this->Add();
+      rc = this->Add();
+      break;
     case OPERATION_CLEAN:
-      return this->Clean();
+      rc = this->Clean();
+      break;
     case OPERATION_CLONE:
-      return this->Clone();
+      rc = this->Clone();
+      break;
     case OPERATION_PULL:
-      return this->Pull();
+      rc = this->Pull();
+      break;
     case OPERATION_PUSH:
-      return this->Push();
+      rc = this->Push();
+      break;
     default:
-      return MIDAS_BAD_OP;
+      rc = MIDAS_BAD_OP;
+      break;
     }
+  this->Reset();
+  return rc;
 }
 
 //-------------------------------------------------------------------
@@ -1012,4 +1022,13 @@ bool midasSynchronizer::PushItem(int id)
     Log->Error(text.str());
     }
   return success;
+}
+
+//-------------------------------------------------------------------
+void midasSynchronizer::Reset()
+{
+  this->SetOperation(midasSynchronizer::OPERATION_NONE);
+  this->SetResourceHandle("");
+  this->SetResourceType(midasResourceType::NONE);
+  this->SetParentId(0);
 }
