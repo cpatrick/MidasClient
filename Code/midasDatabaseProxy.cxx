@@ -187,8 +187,10 @@ std::string midasDatabaseProxy::GetName(int type, int id)
       return "";
     }
   this->Database->ExecuteQuery(query.str().c_str());
-  return (this->Database->GetNextRow() ? 
+  std::string name = (this->Database->GetNextRow() ? 
     this->Database->GetValueAsString(0) : "");
+  while(this->Database->GetNextRow());
+  return name;
 }
 
 //-------------------------------------------------------------------------
@@ -218,8 +220,10 @@ int midasDatabaseProxy::GetParentId(int type, int id)
       return 0;
     }
   this->Database->ExecuteQuery(query.str().c_str());
-  return (this->Database->GetNextRow() ? 
+  int parentId = (this->Database->GetNextRow() ? 
     this->Database->GetValueAsInt(0) : 0);
+  while(this->Database->GetNextRow());
+  return parentId;
 }
 
 //-------------------------------------------------------------------------
@@ -230,7 +234,10 @@ int midasDatabaseProxy::GetIdForUuid(std::string uuid)
     << uuid << "'";
   this->Database->ExecuteQuery(query.str().c_str());
 
-  return this->Database->GetNextRow() ? this->Database->GetValueAsInt(0) : -1;
+  int id = this->Database->GetNextRow() ? 
+    this->Database->GetValueAsInt(0) : -1;
+  while(this->Database->GetNextRow());
+  return id;
 }
 
 //-------------------------------------------------------------------------
@@ -240,8 +247,10 @@ std::string midasDatabaseProxy::GetUuidFromPath(std::string path)
   query << "SELECT uuid FROM resource_uuid WHERE path='" << path << "'";
   this->Database->ExecuteQuery(query.str().c_str());
 
-  return this->Database->GetNextRow() ? 
+  std::string uuid = this->Database->GetNextRow() ? 
     this->Database->GetValueAsString(0) : "";
+  while(this->Database->GetNextRow());
+  return uuid;
 }
 
 //-------------------------------------------------------------------------
@@ -252,8 +261,10 @@ std::string midasDatabaseProxy::GetUuid(int type, int id)
     << type << "' AND resource_id='" << id << "'";
   this->Database->ExecuteQuery(query.str().c_str());
 
-  return this->Database->GetNextRow() ? 
+  std::string uuid = this->Database->GetNextRow() ? 
     this->Database->GetValueAsString(0) : "";
+  while(this->Database->GetNextRow());
+  return uuid;
 }
 
 //-------------------------------------------------------------------------
@@ -272,6 +283,7 @@ midasResourceRecord midasDatabaseProxy::GetRecordByUuid(std::string uuid)
     record.Parent = this->Database->GetValueAsInt(2);
     record.Path = this->Database->GetValueAsString(3);
     }
+  while(this->Database->GetNextRow());
   return record;
 }
 
@@ -396,7 +408,9 @@ bool midasDatabaseProxy::ResourceExists(std::string uuid)
   query << "SELECT * FROM resource_uuid WHERE uuid='" << uuid << "'";
   this->Database->ExecuteQuery(query.str().c_str());
   
-  return this->Database->GetNextRow();
+  bool exists = this->Database->GetNextRow();
+  while(this->Database->GetNextRow());
+  return exists;
 }
 
 //-------------------------------------------------------------------------

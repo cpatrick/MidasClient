@@ -286,6 +286,7 @@ int midasSynchronizer::Add()
     return MIDAS_DUPLICATE_PATH;
     }
 
+  //TODO have an alternative way of specifying the parent UUID
   std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
 
   if(!this->ValidateParentId(this->ParentId,
