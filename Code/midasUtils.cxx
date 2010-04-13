@@ -18,7 +18,6 @@
 //-------------------------------------------------------------------
 std::string midasUtils::GenerateUUID()
 {
-  srand ( (unsigned int)time(NULL) );
   // Generate a random number for the uuid.
   std::stringstream randomchars;
   for(unsigned int i = 0; i < UUID_LENGTH; i++)
