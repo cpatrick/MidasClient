@@ -75,25 +75,24 @@ set(MIDASSynch_SRCS
   midasUtils.h
 )
 
-SET(midas_db "${CMAKE_BINARY_DIR}/midas.db")
+set(midas_db "${MIDASCPP_BINARY_DIR}/midas.db")
 
 # Add target to build the database from definitions at build time
-ADD_CUSTOM_COMMAND (
+add_custom_command (
   OUTPUT ${midas_db}
-  DEPENDS "${CMAKE_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql"
-  COMMAND sqlite3 -init "${CMAKE_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql" ${midas_db} "SELECT * FROM resource_uuid;"
-  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+  DEPENDS "${MIDASCPP_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql"
+  COMMAND sqlite3 -init "${MIDASCPP_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql" ${midas_db} "SELECT * FROM resource_uuid;"
+  WORKING_DIRECTORY "${MIDASCPP_BINARY_DIR}"
   COMMENT "Creating SQLite database..."
 )
-ADD_CUSTOM_TARGET (
+add_custom_target (
   sqlite_db ALL
   DEPENDS sqlite3 ${midas_db}
 )
 
+install (FILES ${midas_db} DESTINATION ".")
 
 #-----------------------------------------------------------------------------
 #
 add_library(MIDAS ${MIDASRest_SRCS} ${MIDASSynch_SRCS}) 
 target_link_libraries(MIDAS cmcurl ITKEXPAT sqlite kwsys)
-
-
