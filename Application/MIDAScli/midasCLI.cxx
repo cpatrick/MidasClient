@@ -23,6 +23,7 @@ midasCLI::midasCLI()
     reinterpret_cast<midasProgressReporter*>(
     new midasDotProgressReporter(30)));
   this->Synchronizer->SetLog(new midasStdOutLog());
+  srand ( (unsigned int)time(NULL) ); //init random number generator 
 }
 
 midasCLI::~midasCLI()
