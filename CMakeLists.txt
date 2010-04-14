@@ -82,3 +82,5 @@ SUBDIRS(Code Application Utilities)
 #-----------------------------------------------------------------------------
 # Export the configuration files
 SUBDIRS(CMake/ExportConfiguration)
+
+INCLUDE("${MIDASCPP_SOURCE_DIR}/MIDASCPack.cmake")
