@@ -879,7 +879,7 @@ bool midasSynchronizer::PushBitstream(int id)
     {
     std::stringstream text;
     text << "Failed to push bitstream " << name << ": " <<
-    this->WebAPI->GetErrorMessage() << std::endl;
+      this->WebAPI->GetErrorMessage() << std::endl;
     Log->Error(text.str());
     }
   return ok;
