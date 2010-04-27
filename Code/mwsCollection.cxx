@@ -30,7 +30,7 @@ public:
     
   ~CollectionXMLParser() 
     {
-    };  
+    };
 
   /// Callback function -- called from XML parser with start-of-element
   /// information.
@@ -40,7 +40,7 @@ public:
     if(!m_CurrentTag.compare("/rsp/items/data"))
       {
       m_Item = new mdo::Item();
-      }  
+      }
     m_CurrentValue = "";  
     }
 
@@ -48,10 +48,17 @@ public:
   /// encountered
   virtual void EndElement(const char *name)
     {
+    if(!m_CurrentTag.compare("/rsp/items/data/id"))
+      {
+      m_Item->SetId(atoi(m_CurrentValue.c_str()));
+      }
+    if(!m_CurrentTag.compare("/rsp/items/data/title"))
+      {
+      m_Item->SetTitle(m_CurrentValue.c_str());
+      }
     if(!m_CurrentTag.compare("/rsp/items/data"))
       {
       m_Collection->AddItem(m_Item);
-      m_Item->SetId(atoi(m_CurrentValue.c_str()));
       }
     RestXMLParser::EndElement(name);
     }
