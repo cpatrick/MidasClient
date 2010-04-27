@@ -18,7 +18,7 @@
 -- SELECT 'DROP TABLE IF EXISTS ' || name || ';' FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';
 DROP TABLE IF EXISTS auth_profile;
 DROP TABLE IF EXISTS default_profile;
-DROP TABLE IF EXISTS last_url;
+DROP TABLE IF EXISTS app_settings;
 DROP TABLE IF EXISTS version;
 DROP TABLE IF EXISTS cart;
 DROP TABLE IF EXISTS cart2eperson;
@@ -135,8 +135,9 @@ CREATE TABLE auth_profile (
   app_name character varying(256)
 );
 
-CREATE TABLE last_url (
-  url character varying(512) PRIMARY KEY
+CREATE TABLE app_settings (
+  key character varying(512) PRIMARY KEY,
+  value character varying(512)
 );
 
 CREATE TABLE default_profile (

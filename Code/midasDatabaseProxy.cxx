@@ -444,7 +444,7 @@ void midasDatabaseProxy::Clean()
 std::string midasDatabaseProxy::GetLastUsedURL()
 {
   std::stringstream query;
-  query << "SELECT url FROM last_url LIMIT 1";
+  query << "SELECT value FROM app_settings WHERE key='last_url' LIMIT 1";
   this->Database->ExecuteQuery(query.str().c_str());
   
   std::string url;
@@ -459,11 +459,12 @@ std::string midasDatabaseProxy::GetLastUsedURL()
 void midasDatabaseProxy::SetLastUsedURL(std::string url)
 {
   std::stringstream query;
-  query << "DELETE FROM last_url";
+  query << "DELETE FROM app_settings WHERE key='last_url'";
   this->Database->ExecuteQuery(query.str().c_str());
   query.str(std::string());
 
-  query << "INSERT INTO last_url (url) VALUES ('" << url << "')";
+  query << "INSERT INTO app_settings (key, value) VALUES ('last_url', '"
+    << url << "')";
   this->Database->ExecuteQuery(query.str().c_str());
 }
 
