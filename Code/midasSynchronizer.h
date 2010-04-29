@@ -100,8 +100,10 @@ class midasSynchronizer
     SynchOperation Operation;
     int ResourceType;
     int ParentId;
+    int LastId;
     std::string ServerURL;
     std::string ResourceHandle;
+    std::string LastDir;
     
     // Pull entire subtree of resources that are pulled?
     bool Recursive;

@@ -199,6 +199,7 @@ int midasSynchronizer::Perform()
     return MIDAS_LOGIN_FAILED;
     }
 
+  std::string temp = WORKING_DIR();
   switch(this->Operation)
     {
     case OPERATION_ADD:
@@ -220,6 +221,7 @@ int midasSynchronizer::Perform()
       rc = MIDAS_BAD_OP;
       break;
     }
+  CHANGE_DIR(temp.c_str());
   this->Reset();
   return rc;
 }
@@ -430,11 +432,6 @@ int midasSynchronizer::Pull()
 //-------------------------------------------------------------------
 bool midasSynchronizer::PullBitstream(int parentId)
 {
-  if(parentId == NO_PARENT)
-    {
-    //TODO zach pull all of the parents and then set the parentId.
-    }
-
   mws::Bitstream remote;
   mdo::Bitstream* bitstream = new mdo::Bitstream;
   bitstream->SetId(atoi(this->ResourceHandle.c_str()));
@@ -447,6 +444,23 @@ bool midasSynchronizer::PullBitstream(int parentId)
     text << "Unable to get bitstream via the web API."
       << std::endl;
     Log->Error(text.str());
+    }
+
+  // Pull any parents we need
+  if(parentId == NO_PARENT)
+    {
+    bool recurse = this->Recursive;
+    this->Recursive = false;
+    std::string handle = this->ResourceHandle;
+    this->ResourceHandle = bitstream->GetParent();
+
+    this->PullItem(NO_PARENT);
+    this->DatabaseProxy->Open();
+    CHANGE_DIR(this->LastDir.c_str());
+
+    this->ResourceHandle = handle;
+    this->Recursive = recurse;
+    parentId = this->LastId;
     }
 
   if(bitstream->GetName() == "")
@@ -495,11 +509,6 @@ bool midasSynchronizer::PullBitstream(int parentId)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PullCollection(int parentId)
 {
-  if(parentId == NO_PARENT)
-    {
-    //TODO zach pull all of the parents and then set the parentId.
-    }
-
   this->DatabaseProxy->Open();
 
   mws::Collection remote;
@@ -518,16 +527,34 @@ bool midasSynchronizer::PullCollection(int parentId)
     return false;
     }
 
+  // Pull any parents we need
+  if(parentId == NO_PARENT)
+    {
+    bool recurse = this->Recursive;
+    this->Recursive = false;
+    std::string handle = this->ResourceHandle;
+    this->ResourceHandle = collection->GetParent();
+
+    this->PullCommunity(NO_PARENT);
+    this->DatabaseProxy->Open();
+    CHANGE_DIR(this->LastDir.c_str());
+
+    this->ResourceHandle = handle;
+    this->Recursive = recurse;
+    parentId = this->LastId;
+    }
+
   int id = this->DatabaseProxy->AddResource(midasResourceType::COLLECTION,
     collection->GetUuid(), WORKING_DIR() + "/" + collection->GetName(),
     collection->GetName(), midasResourceType::COMMUNITY, parentId, 0);
-  
   this->DatabaseProxy->Close();
+  this->LastId = id;
 
   if(!kwsys::SystemTools::FileIsDirectory(collection->GetName().c_str()))
     {
     MKDIR(collection->GetName().c_str());
     }
+  this->LastDir = WORKING_DIR() + "/" + collection->GetName();
 
   if(this->Recursive)
     {
@@ -573,11 +600,6 @@ mdo::Community* FindInTree(mdo::Community* root, int id)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PullCommunity(int parentId)
 {
-  if(parentId == NO_PARENT)
-    {
-    //TODO zach pull all of the parents and then set the parentId.
-    }
-
   this->DatabaseProxy->Open();
 
   mws::Community remote;
@@ -606,17 +628,36 @@ bool midasSynchronizer::PullCommunity(int parentId)
     return false;
     }
 
+  // Pull any parents we need
+  if(parentId == NO_PARENT && community->GetParentId())
+    {
+    bool recurse = this->Recursive;
+    this->Recursive = false;
+    std::string handle = this->ResourceHandle;
+    this->ResourceHandle = community->GetParent();
+
+    this->PullCommunity(NO_PARENT);
+    this->DatabaseProxy->Open();
+    CHANGE_DIR(this->LastDir.c_str());
+
+    this->ResourceHandle = handle;
+    this->Recursive = recurse;
+    parentId = this->LastId;
+    }
+
   std::string topLevelDir = WORKING_DIR();
 
   if(!kwsys::SystemTools::FileIsDirectory(community->GetName().c_str()))
     {
     MKDIR(community->GetName().c_str());
     }
+  this->LastDir = WORKING_DIR() + "/" + community->GetName();
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::COMMUNITY,
     community->GetUuid(), WORKING_DIR() + "/" + community->GetName(),
     community->GetName(), midasResourceType::COMMUNITY, parentId, 0);
   this->DatabaseProxy->Close();
+  this->LastId = id;
 
   if(this->Recursive)
     {
@@ -679,9 +720,21 @@ bool midasSynchronizer::PullItem(int parentId)
     return false;
     }
 
+  // Pull any parents we need
   if(parentId == NO_PARENT)
     {
-    //TODO zach pull all of the parents and then set the parentId.
+    bool recurse = this->Recursive;
+    this->Recursive = false;
+    std::string handle = this->ResourceHandle;
+    this->ResourceHandle = item->GetParent();
+
+    this->PullCollection(NO_PARENT);
+    this->DatabaseProxy->Open();
+    CHANGE_DIR(this->LastDir.c_str());
+
+    this->ResourceHandle = handle;
+    this->Recursive = recurse;
+    parentId = this->LastId;
     }
   
   std::stringstream altTitle;
@@ -693,11 +746,13 @@ bool midasSynchronizer::PullItem(int parentId)
     {
     MKDIR(title.c_str());
     }
+  this->LastDir = WORKING_DIR() + "/" + title;
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::ITEM,
     item->GetUuid(), WORKING_DIR() + "/" + title, item->GetTitle(),
     midasResourceType::COLLECTION, parentId, 0);
   this->DatabaseProxy->Close();
+  this->LastId = id;
 
   if(this->Recursive)
     {
