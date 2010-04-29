@@ -19,7 +19,7 @@ namespace mdo{
 Community::Community()
 {
   m_Id = 0;
-  m_Parent = NULL;
+  m_ParentComm = NULL;
 }
   
 /** Destructor */
@@ -49,7 +49,7 @@ Community::~Community()
 /** Set the parent community */
 void Community::SetParent(Community* community)
 {
-  m_Parent = community;
+  m_ParentComm = community;
 }
    
 /** Add a sub community */

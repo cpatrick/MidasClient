@@ -28,13 +28,22 @@ public:
   // Fill the item given the id
   bool Fill(unsigned int id, const std::vector<std::string>* fields=NULL);
 
-  // Set/Get the ID of the bitstream
+  // Set/Get ID
   void SetId(int id) { this->m_Id = id; }
   const int GetId() {return this->m_Id; }
+
+  // Set/Get the ID of the parent
+  void SetParent(std::string id) { m_Parent = id; }
+  std::string & GetParent() {return m_Parent;}
+  const int GetParentId() {return atoi(m_Parent.c_str());}
 
   // Set/Get the name of bitstream
   void SetName(const char* name) { m_Name = name; }
   std::string & GetName() {return m_Name;}
+
+  // Set/Get the uuid
+  void SetUuid(const char* uuid) { m_Uuid = uuid; }
+  std::string & GetUuid() {return m_Uuid;}
   
   // Set/Get the size of bitstream
   void SetSize(std::string size) { m_Size = size; }
@@ -45,9 +54,11 @@ public:
 
 protected:
 
-  unsigned int   m_Id;
-  std::string    m_Name;
-  std::string    m_Size;
+  unsigned int m_Id;
+  std::string  m_Parent;
+  std::string  m_Name;
+  std::string  m_Size;
+  std::string  m_Uuid;
 };
 
 } //end namespace

@@ -89,7 +89,7 @@ public:
         if(m_ParentCommunity)
           {
           m_Community = m_ParentCommunity;
-          m_ParentCommunity = m_ParentCommunity->GetParent();
+          m_ParentCommunity = m_ParentCommunity->GetParentCommunity();
           }
         }
       }
@@ -112,7 +112,15 @@ public:
       if(!strcmp(name,"description"))
         {
         m_Collection->SetDescription(m_CurrentValue.c_str());
-        }   
+        }
+      if(!strcmp(name,"parent"))
+        {
+        m_Collection->SetParent(m_CurrentValue.c_str());
+        }
+      if(!strcmp(name,"uuid"))
+        {
+        m_Collection->SetUuid(m_CurrentValue.c_str());
+        }
       }
     // If we are in the community
     else if(m_InCommunity)
@@ -128,7 +136,15 @@ public:
       if(!strcmp(name,"description"))
         {
         m_Community->SetDescription(m_CurrentValue.c_str());
-        }  
+        }
+      if(!strcmp(name,"parent"))
+        {
+        m_Community->SetParent(m_CurrentValue.c_str());
+        }
+      if(!strcmp(name,"uuid"))
+        {
+        m_Community->SetUuid(m_CurrentValue.c_str());
+        }
       }
   
     RestXMLParser::EndElement(name);
@@ -196,6 +212,8 @@ bool Community::Fetch()
   parser.SetCommunity(m_Community);
   parser.AddTag("/rsp/name",m_Community->GetName());
   parser.AddTag("/rsp/description",m_Community->GetDescription());
+  parser.AddTag("/rsp/uuid",m_Community->GetUuid());
+  parser.AddTag("/rsp/parent",m_Community->GetParent());
   
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
   

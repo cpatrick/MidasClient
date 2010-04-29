@@ -78,9 +78,7 @@ class midasSynchronizer
     int Pull();
     int Clean();
 
-    std::string GetBitstreamName();
-    std::string GetUUID(int type);
-    bool PullBitstream(int parentId, std::string name);
+    bool PullBitstream(int parentId);
     bool PullCollection(int parentId);
     bool PullCommunity(int parentId);
     bool PullItem(int parentId);

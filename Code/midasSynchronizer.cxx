@@ -412,12 +412,10 @@ int midasSynchronizer::Pull()
     return MIDAS_NO_URL;
     }
 
-  std::string name;
   switch(this->ResourceType)
     {
     case midasResourceType::BITSTREAM:
-      name = this->GetBitstreamName();
-      return this->PullBitstream(NO_PARENT, name) ? MIDAS_OK : MIDAS_FAILURE;
+      return this->PullBitstream(NO_PARENT) ? MIDAS_OK : MIDAS_FAILURE;
     case midasResourceType::COLLECTION:
       return this->PullCollection(NO_PARENT) ? MIDAS_OK : MIDAS_FAILURE;
     case midasResourceType::COMMUNITY:
@@ -430,15 +428,39 @@ int midasSynchronizer::Pull()
 }
 
 //-------------------------------------------------------------------
-bool midasSynchronizer::PullBitstream(int parentId, std::string filename)
+bool midasSynchronizer::PullBitstream(int parentId)
 {
-  if(filename == "")
+  if(parentId == NO_PARENT)
     {
+    //TODO zach pull all of the parents and then set the parentId.
+    }
+
+  mws::Bitstream remote;
+  mdo::Bitstream* bitstream = new mdo::Bitstream;
+  bitstream->SetId(atoi(this->ResourceHandle.c_str()));
+  remote.SetWebAPI(this->WebAPI);
+  remote.SetObject(bitstream);
+  
+  if(!remote.Fetch())
+    {
+    std::stringstream text;
+    text << "Unable to get bitstream via the web API."
+      << std::endl;
+    Log->Error(text.str());
+    }
+
+  if(bitstream->GetName() == "")
+    {
+    std::stringstream text;
+    text << "Bitstream " << this->ResourceHandle <<
+      " does not exist." << std::endl;
+    Log->Error(text.str());
     return false;
     }
+
   this->DatabaseProxy->Open();
-  std::string uuid = this->GetUUID(midasResourceType::BITSTREAM);
-  midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
+  midasResourceRecord record =
+    this->DatabaseProxy->GetRecordByUuid(bitstream->GetUuid());
 
   //TODO check md5 sum of file at location against server's checksum?
   if(record.Path != "" &&
@@ -456,14 +478,15 @@ bool midasSynchronizer::PullBitstream(int parentId, std::string filename)
     {
     this->WebAPI->GetRestAPI()->SetProgressCallback(
       ProgressCallback, this->Progress);
-    this->Progress->SetMessage(filename);
+    this->Progress->SetMessage(bitstream->GetName());
     this->Progress->ResetProgress();
     }
-  this->WebAPI->DownloadFile(fields.str().c_str(), filename.c_str());
+  this->WebAPI->DownloadFile(fields.str().c_str(),
+                             bitstream->GetName().c_str());
 
   this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
-    uuid, WORKING_DIR() + "/" + filename, filename, midasResourceType::ITEM,
-    parentId, 0);
+    bitstream->GetUuid(), WORKING_DIR() + "/" + bitstream->GetName(),
+    bitstream->GetName(), midasResourceType::ITEM, parentId, 0);
   this->DatabaseProxy->Close();
   
   return true;
@@ -472,8 +495,12 @@ bool midasSynchronizer::PullBitstream(int parentId, std::string filename)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PullCollection(int parentId)
 {
+  if(parentId == NO_PARENT)
+    {
+    //TODO zach pull all of the parents and then set the parentId.
+    }
+
   this->DatabaseProxy->Open();
-  std::string uuid = this->GetUUID(midasResourceType::COLLECTION);
 
   mws::Collection remote;
   mdo::Collection* collection = new mdo::Collection;
@@ -492,8 +519,8 @@ bool midasSynchronizer::PullCollection(int parentId)
     }
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::COLLECTION,
-    uuid, WORKING_DIR() + "/" + collection->GetName(), collection->GetName(),
-    midasResourceType::COMMUNITY, parentId, 0);
+    collection->GetUuid(), WORKING_DIR() + "/" + collection->GetName(),
+    collection->GetName(), midasResourceType::COMMUNITY, parentId, 0);
   
   this->DatabaseProxy->Close();
 
@@ -546,8 +573,12 @@ mdo::Community* FindInTree(mdo::Community* root, int id)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PullCommunity(int parentId)
 {
+  if(parentId == NO_PARENT)
+    {
+    //TODO zach pull all of the parents and then set the parentId.
+    }
+
   this->DatabaseProxy->Open();
-  std::string uuid = this->GetUUID(midasResourceType::COMMUNITY);
 
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
@@ -583,8 +614,8 @@ bool midasSynchronizer::PullCommunity(int parentId)
     }
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::COMMUNITY,
-    uuid, WORKING_DIR() + "/" + community->GetName(), community->GetName(),
-    midasResourceType::COMMUNITY, parentId, 0);
+    community->GetUuid(), WORKING_DIR() + "/" + community->GetName(),
+    community->GetName(), midasResourceType::COMMUNITY, parentId, 0);
   this->DatabaseProxy->Close();
 
   if(this->Recursive)
@@ -628,52 +659,9 @@ void midasSynchronizer::RecurseCommunities(int parentId,
 }
 
 //-------------------------------------------------------------------
-std::string midasSynchronizer::GetUUID(int type)
-{
-  std::stringstream fields;
-  fields << "midas.uuid.get?id=" << this->GetResourceHandle()
-    << "&type=" << type;
-
-  std::string uuid;
-  mws::RestXMLParser parser;
-  parser.AddTag("/rsp/uuid", uuid);
-  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
-  this->WebAPI->Execute(fields.str().c_str());
-  return uuid;
-}
-
-//-------------------------------------------------------------------
-std::string midasSynchronizer::GetBitstreamName()
-{
-  mws::Bitstream remote;
-  mdo::Bitstream* bitstream = new mdo::Bitstream;
-  bitstream->SetId(atoi(this->ResourceHandle.c_str()));
-  remote.SetWebAPI(this->WebAPI);
-  remote.SetObject(bitstream);
-  
-  if(!remote.Fetch())
-    {
-    std::stringstream text;
-    text << "Unable to get bitstream via the web API."
-      << std::endl;
-    Log->Error(text.str());
-    }
-
-  if(bitstream->GetName() == "")
-    {
-    std::stringstream text;
-    text << "Bitstream " << this->ResourceHandle <<
-      " does not exist." << std::endl;
-    Log->Error(text.str());
-    }
-  return bitstream->GetName();
-}
-
-//-------------------------------------------------------------------
 bool midasSynchronizer::PullItem(int parentId)
 {
   this->DatabaseProxy->Open();
-  std::string uuid = this->GetUUID(midasResourceType::ITEM);
 
   mws::Item remote;
   mdo::Item* item = new mdo::Item;
@@ -690,6 +678,11 @@ bool midasSynchronizer::PullItem(int parentId)
     this->DatabaseProxy->Close();
     return false;
     }
+
+  if(parentId == NO_PARENT)
+    {
+    //TODO zach pull all of the parents and then set the parentId.
+    }
   
   std::stringstream altTitle;
   altTitle << "item" << item->GetId();
@@ -702,7 +695,7 @@ bool midasSynchronizer::PullItem(int parentId)
     }
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::ITEM,
-    uuid, WORKING_DIR() + "/" + title, item->GetTitle(),
+    item->GetUuid(), WORKING_DIR() + "/" + title, item->GetTitle(),
     midasResourceType::COLLECTION, parentId, 0);
   this->DatabaseProxy->Close();
 
@@ -717,7 +710,7 @@ bool midasSynchronizer::PullItem(int parentId)
       std::stringstream s;
       s << (*i)->GetId();
       this->SetResourceHandle(s.str());
-      this->PullBitstream(id, (*i)->GetName());
+      this->PullBitstream(id);
       }
     CHANGE_DIR(temp.c_str());
     }

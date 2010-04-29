@@ -88,6 +88,8 @@ bool Bitstream::Fetch()
   parser.SetBitstream(m_Bitstream);
   parser.AddTag("/rsp/name",m_Bitstream->GetName());
   parser.AddTag("/rsp/size",m_Bitstream->GetSize());
+  parser.AddTag("/rsp/uuid",m_Bitstream->GetUuid());
+  parser.AddTag("/rsp/parent",m_Bitstream->GetParent());
   
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
   

@@ -118,6 +118,8 @@ bool Collection::Fetch()
   parser.SetCollection(m_Collection);
   parser.AddTag("/rsp/name",m_Collection->GetName());
   parser.AddTag("/rsp/description",m_Collection->GetDescription());
+  parser.AddTag("/rsp/uuid",m_Collection->GetUuid());
+  parser.AddTag("/rsp/parent",m_Collection->GetParent());
   
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
   

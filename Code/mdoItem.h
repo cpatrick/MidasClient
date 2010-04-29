@@ -36,6 +36,15 @@ public:
   void SetId(int id) { this->m_Id = id; }
   const int GetId() {return this->m_Id; }
 
+  // Set/Get the ID of the parent
+  void SetParent(std::string id) { m_Parent = id; }
+  std::string & GetParent() {return m_Parent;}
+  const int GetParentId() {return atoi(m_Parent.c_str());}
+
+  // Set/Get the uuid
+  void SetUuid(const char* uuid) { m_Uuid = uuid; }
+  std::string & GetUuid() {return m_Uuid;}
+
   // Set/Get the title of the item
   void SetTitle(const char* title) { m_Title = title; }
   std::string & GetTitle() {return m_Title;}
@@ -65,8 +74,10 @@ protected:
   friend class ItemXMLParser;
   
   unsigned int m_Id;
+  std::string  m_Parent;
   std::string  m_Title;
   std::string  m_Abstract;
+  std::string  m_Uuid;
   
   std::vector<Bitstream*> m_Bitstreams;
 };
