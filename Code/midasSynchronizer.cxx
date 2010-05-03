@@ -288,7 +288,6 @@ int midasSynchronizer::Add()
     return MIDAS_DUPLICATE_PATH;
     }
 
-  //TODO have an alternative way of specifying the parent UUID
   std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
 
   if(!this->ValidateParentId(this->ParentId,
@@ -303,6 +302,14 @@ int midasSynchronizer::Add()
 
   int id = this->DatabaseProxy->AddResource(this->ResourceType, uuid, 
     path, name, parentUuid, this->ParentId);
+  if(id <= 0)
+    {
+    std::stringstream text;
+    text << "AddResource failed: " << path << std::endl;
+    this->Log->Error(text.str());
+    this->DatabaseProxy->Close();
+    return MIDAS_FAILURE;
+    }
   this->DatabaseProxy->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
 
   //TODO propagate last modified stamp up the local tree. (perhaps in MarkDirtyResource())
