@@ -1,19 +1,21 @@
+site_name(host_name)
 set(midascli_command "${MIDASCPP_BINARY_DIR}/bin/MIDAScli")
 set(sqlite3_command "${MIDASCPP_BINARY_DIR}/bin/sqlite3")
-set(midas_server_url http://xanadu/MIDASserver/midas/api/rest)
+set(midas_server_url http://${host_name}/midas/api/rest)
 set(midas_api_key CFtrF6RJxrOY6DVTFbiH73w6LGGlt4o7zGIFUthG)
 set(midas_app_name zach)
 set(midas_email admin@localhost)
-site_name(comm_name)
+site_name(top_level_community_name)
+
 
 # Setup a mock tree we can add
-execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${comm_name}")
-execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${comm_name}/Subcomm")
-execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${comm_name}/Subcomm/Collection")
-execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${comm_name}/Subcomm/Collection/Item")
+execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}")
+execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm")
+execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm/Collection")
+execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm/Collection/Item")
 configure_file(
   "${MIDASCPP_SOURCE_DIR}/README.TXT"
-  "${MIDASCPP_BINARY_DIR}/Testing/${comm_name}/Subcomm/Collection/Item/bitstream.txt"
+  "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm/Collection/Item/bitstream.txt"
   COPYONLY)
 
 # Pull a copy of the database into this dir so we can play with it
@@ -42,15 +44,15 @@ add_test(cleanDatabase2 ${midascli_command} clean)
 set_tests_properties(cleanDatabase2 PROPERTIES DEPENDS testPushNoResources)
 
 # "add" command tests
-add_test(testAddTopLevelCommunity ${midascli_command} add -C "${comm_name}")
+add_test(testAddTopLevelCommunity ${midascli_command} add -C "${top_level_community_name}")
 set_tests_properties(testAddTopLevelCommunity PROPERTIES DEPENDS cleanDatabase2)
-add_test(testAddSubCommunity ${midascli_command} add -C "${comm_name}/Subcomm")
+add_test(testAddSubCommunity ${midascli_command} add -C "${top_level_community_name}/Subcomm")
 set_tests_properties(testAddSubCommunity PROPERTIES DEPENDS testAddTopLevelCommunity)
-add_test(testAddCollection ${midascli_command} add -c "${comm_name}/Subcomm/Collection")
+add_test(testAddCollection ${midascli_command} add -c "${top_level_community_name}/Subcomm/Collection")
 set_tests_properties(testAddCollection PROPERTIES DEPENDS testAddSubCommunity)
-add_test(testAddItem ${midascli_command} add -i "${comm_name}/Subcomm/Collection/Item")
+add_test(testAddItem ${midascli_command} add -i "${top_level_community_name}/Subcomm/Collection/Item")
 set_tests_properties(testAddItem PROPERTIES DEPENDS testAddCollection)
-add_test(testAddBitstream ${midascli_command} add -b "${comm_name}/Subcomm/Collection/Item/bitstream.txt")
+add_test(testAddBitstream ${midascli_command} add -b "${top_level_community_name}/Subcomm/Collection/Item/bitstream.txt")
 set_tests_properties(testAddBitstream PROPERTIES DEPENDS testAddItem)
 
 # "push" command tests
