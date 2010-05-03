@@ -4,7 +4,7 @@ set(midas_server_url http://xanadu/MIDASserver/midas/api/rest)
 set(midas_api_key CFtrF6RJxrOY6DVTFbiH73w6LGGlt4o7zGIFUthG)
 set(midas_app_name zach)
 set(midas_email admin@localhost)
-set(comm_name MACHINENAME_DATE)
+site_name(comm_name)
 
 # Setup a mock tree we can add
 execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${comm_name}")
@@ -37,9 +37,13 @@ set_tests_properties(testCreateProfile PROPERTIES DEPENDS testClone)
 add_test(testPushNoResources ${midascli_command} --profile test push)
 set_tests_properties(testPushNoResources PROPERTIES DEPENDS testCreateProfile)
 
+# Restore database to a fresh state again
+add_test(cleanDatabase2 ${midascli_command} clean)
+set_tests_properties(cleanDatabase2 PROPERTIES DEPENDS testPushNoResources)
+
 # "add" command tests
 add_test(testAddTopLevelCommunity ${midascli_command} add -C "${comm_name}")
-set_tests_properties(testAddTopLevelCommunity PROPERTIES DEPENDS testPushNoResources)
+set_tests_properties(testAddTopLevelCommunity PROPERTIES DEPENDS cleanDatabase2)
 add_test(testAddSubCommunity ${midascli_command} add -C "${comm_name}/Subcomm")
 set_tests_properties(testAddSubCommunity PROPERTIES DEPENDS testAddTopLevelCommunity)
 add_test(testAddCollection ${midascli_command} add -c "${comm_name}/Subcomm/Collection")
@@ -49,4 +53,8 @@ set_tests_properties(testAddItem PROPERTIES DEPENDS testAddCollection)
 add_test(testAddBitstream ${midascli_command} add -b "${comm_name}/Subcomm/Collection/Item/bitstream.txt")
 set_tests_properties(testAddBitstream PROPERTIES DEPENDS testAddItem)
 
-
+# "push" command tests
+add_test(testPushNoAuth ${midascli_command} push)
+set_tests_properties(testPushNoAuth PROPERTIES DEPENDS testAddBitstream WILL_FAIL ON)
+add_test(testPush ${midascli_command} --profile test push)
+set_tests_properties(testPush PROPERTIES DEPENDS testPushNoAuth)
