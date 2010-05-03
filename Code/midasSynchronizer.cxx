@@ -444,6 +444,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
     text << "Unable to get bitstream via the web API."
       << std::endl;
     Log->Error(text.str());
+    return false;
     }
 
   // Pull any parents we need

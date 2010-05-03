@@ -31,7 +31,7 @@ IF(WIN32)
   ENDIF(NOT BORLAND)
 ENDIF(WIN32)
 
-INCLUDE(CTest)
+enable_testing()
 
 # If CMake is the version we're expecting, don't show the
 # CMAKE_BACKWARDS_COMPATIBILITY option. If the version is higher than the
@@ -77,7 +77,7 @@ INCLUDE_DIRECTORIES(${MIDASCPP_SOURCE_DIR}/Utilities)
 INCLUDE_DIRECTORIES(${MIDASCPP_BINARY_DIR}/Utilities/expat)
 INCLUDE_DIRECTORIES(${MIDASCPP_BINARY_DIR}/Utilities/kwsys)
 
-SUBDIRS(Code Application Utilities)
+SUBDIRS(Code Application Utilities Testing)
 
 #-----------------------------------------------------------------------------
 # Export the configuration files
