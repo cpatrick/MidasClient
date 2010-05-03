@@ -28,8 +28,8 @@ midasCLI::midasCLI()
 
 midasCLI::~midasCLI()
 {
-  delete this->Synchronizer;
   this->Synchronizer->DeleteLog();
+  delete this->Synchronizer;
 }
 
 //-------------------------------------------------------------------
@@ -306,7 +306,6 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
 
   if(i < args.size())
     {
-    i++;
     this->Synchronizer->SetResourceHandle(args[i]);
     }
   else
