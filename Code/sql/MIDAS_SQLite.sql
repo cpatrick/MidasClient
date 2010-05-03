@@ -17,7 +17,6 @@
 -- This text is a result of the query:
 -- SELECT 'DROP TABLE IF EXISTS ' || name || ';' FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';
 DROP TABLE IF EXISTS auth_profile;
-DROP TABLE IF EXISTS default_profile;
 DROP TABLE IF EXISTS app_settings;
 DROP TABLE IF EXISTS version;
 DROP TABLE IF EXISTS cart;
@@ -138,10 +137,6 @@ CREATE TABLE auth_profile (
 CREATE TABLE app_settings (
   key character varying(512) PRIMARY KEY,
   value character varying(512)
-);
-
-CREATE TABLE default_profile (
-  profile_name character varying(64) PRIMARY KEY
 );
 
 --
