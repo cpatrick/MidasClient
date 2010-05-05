@@ -32,6 +32,54 @@ mds::SQLiteDatabase* midasDatabaseProxy::GetDatabase()
   return this->Database;
 }
 
+bool midasDatabaseProxy::FillCommunity(mdo::Community* community)
+{
+  std::stringstream query;
+  query << "UPDATE community SET " << 
+    "short_description='" << community->GetDescription() << "', '" <<
+    "introductory_text='" << community->GetIntroductoryText() << "', '" <<
+    "copyright_text='" << community->GetCopyright() << "'" <<
+    " WHERE community_id='" << community->GetId() << "'";
+
+  return this->Database->ExecuteQuery(query.str().c_str());
+}
+
+bool midasDatabaseProxy::FillCollection(mdo::Collection* coll)
+{
+  std::stringstream query;
+  query << "UPDATE collection SET " << 
+    "short_description='" << coll->GetDescription() << "', '" <<
+    "introductory_text='" << coll->GetIntroductoryText() << "', '" <<
+    "copyright_text='" << coll->GetCopyright() << "'" <<
+    " WHERE collection_id='" << coll->GetId() << "'";
+
+  return this->Database->ExecuteQuery(query.str().c_str());
+}
+
+bool midasDatabaseProxy::FillItem(mdo::Item* item)
+{
+  bool ok = true;
+  std::stringstream query;
+  query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
+    << "VALUES ('" << item->GetId() << "','27','" << item->GetAbstract()
+    << "')";
+  ok &= this->Database->ExecuteQuery(query.str().c_str());
+  query.str(std::string());
+
+  query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
+    << "VALUES ('" << item->GetId() << "','64','" << item->GetTitle() << "')";
+  ok &= this->Database->ExecuteQuery(query.str().c_str());
+  query.str(std::string());
+
+  return ok;
+}
+
+bool midasDatabaseProxy::FillBitstream(mdo::Bitstream* bitstream)
+{
+  //TODO implement
+  return true;
+}
+
 //-------------------------------------------------------------------------
 int midasDatabaseProxy::AddResource(int type, std::string uuid,
   std::string path, std::string name, int parentType, int parentId,

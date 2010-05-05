@@ -21,6 +21,7 @@ namespace mdo
   class Community;
   class Collection;
   class Item;
+  class Bitstream;
 }
 
 struct midasResourceRecord
@@ -65,6 +66,11 @@ public:
     std::string name, int parentType, int parentId, int serverParent);
   int AddResource(int type, std::string uuid, std::string path,
     std::string name, std::string parentUuid, int serverParent);
+
+  bool FillCommunity(mdo::Community* community);
+  bool FillCollection(mdo::Collection* collection);
+  bool FillItem(mdo::Item* item);
+  bool FillBitstream(mdo::Bitstream* bitstream);
 
   bool AddAuthProfile(std::string user, std::string appName,
     std::string apiKey, std::string profileName);
