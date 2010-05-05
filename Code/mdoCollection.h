@@ -51,7 +51,15 @@ public:
  
   // Set/Get the description of the collection
   void SetDescription(const char* description) { m_Description = description; }
-  std::string & GetDescription() {return m_Description;} 
+  std::string & GetDescription() {return m_Description;}
+
+  // Set/Get introductory text
+  void SetIntroductoryText(const char* text) { m_IntroductoryText = text; }
+  std::string & GetIntroductoryText() {return m_IntroductoryText;}
+  
+  // Set/Get copyright
+  void SetCopyright(const char* copyright) { m_Copyright = copyright; }
+  std::string & GetCopyright() {return m_Copyright;}
   
   // Return the list of items
   const std::vector<Item*>& GetItems() { return m_Items; }
@@ -70,6 +78,8 @@ protected:
   std::string  m_Parent;
   std::string  m_Name;
   std::string  m_Description;
+  std::string  m_Copyright;
+  std::string  m_IntroductoryText;
   std::string  m_Uuid;
   
   std::vector<Item*> m_Items;

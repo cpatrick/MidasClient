@@ -19,6 +19,7 @@ set(MIDASRest_SRCS
   mdoDicom.cxx
   mdoItem.h
   mdoItem.cxx
+  mdoObject.h
   mdoProxy.h
   mdoProxy.cxx
   mdoProxyInterface.h
