@@ -2,9 +2,9 @@ site_name(host_name)
 set(midascli_command "${MIDASCPP_BINARY_DIR}/bin/MIDAScli")
 set(sqlite3_command "${MIDASCPP_BINARY_DIR}/bin/sqlite3")
 set(midas_server_url http://${host_name}/midas/api/rest)
-set(midas_api_key CFtrF6RJxrOY6DVTFbiH73w6LGGlt4o7zGIFUthG)
-set(midas_app_name zach)
-set(midas_email admin@localhost)
+set(midas_api_key NO_KEY CACHE STRING "The MIDAS API key")
+set(midas_app_name test CACHE STRING "The MIDAS API name")
+set(midas_email admin@localhost CACHE STRING "The MIDAS login email")
 site_name(top_level_community_name)
 
 
