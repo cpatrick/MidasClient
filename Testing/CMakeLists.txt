@@ -9,10 +9,6 @@ site_name(top_level_community_name)
 
 
 # Setup a mock tree we can add
-execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}")
-execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm")
-execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm/Collection")
-execute_process(COMMAND mkdir "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm/Collection/Item")
 configure_file(
   "${MIDASCPP_SOURCE_DIR}/README.TXT"
   "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm/Collection/Item/bitstream.txt"
