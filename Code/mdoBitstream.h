@@ -27,6 +27,7 @@ public:
 
   // Fill the item given the id
   bool Fill(unsigned int id, const std::vector<std::string>* fields=NULL);
+  void Clear();
 
   // Set/Get ID
   void SetId(int id) { this->m_Id = id; }

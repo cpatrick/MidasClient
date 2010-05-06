@@ -42,6 +42,7 @@ public:
   Proxy* GetProxy() {return m_Proxy;}
   virtual bool IsDirty() { return m_Dirty; }
   virtual void SetDirty(bool dirty) { m_Dirty = dirty; }
+  virtual void Clear() = 0;
     
 protected:
 

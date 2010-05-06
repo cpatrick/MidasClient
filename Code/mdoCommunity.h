@@ -84,6 +84,8 @@ public:
   // Add a collection
   void AddCollection(Collection* collection);
   
+  void Clear();
+  
   // Get the parent
   Community* GetParentCommunity() {return m_ParentComm;}
   

@@ -31,6 +31,13 @@ bool Item::Load()
   return m_Proxy->Load();
 }
 
+void Item::Clear()
+{
+  this->m_Title = "";
+  this->m_Abstract = "";
+  this->m_Description = "";
+}
+
 /** Upload a bitstream to MIDAS */
 unsigned int Item::UploadBitstream(unsigned int itemid,const char* filename)
 {

@@ -63,7 +63,16 @@ void Community::AddCollection(Collection* collection)
 {
   m_Collections.push_back(collection);
 }
-  
+
+void Community::Clear()
+{
+  this->m_Name = "";
+  this->m_Description = "";
+  this->m_IntroductoryText = "";
+  this->m_Copyright = "";
+  this->m_Links = "";
+}
+
 /** Load */
 bool Community::Load()
 {  

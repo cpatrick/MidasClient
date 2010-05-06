@@ -40,6 +40,14 @@ bool Collection::Load()
   return m_Proxy->Load();
 }
 
+void Collection::Clear()
+{
+  this->m_Name = "";
+  this->m_Description = "";
+  this->m_IntroductoryText = "";
+  this->m_Copyright = "";
+}
+
 //--------------------------------------------------------------------------------------------------
 void Collection::Print(std::ostream &os, int indent)
 {

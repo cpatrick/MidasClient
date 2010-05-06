@@ -27,6 +27,9 @@ Bitstream::~Bitstream()
 {
 }
 
+void Bitstream::Clear()
+{
+}
 
 //--------------------------------------------------------------------------------------------------
 void Bitstream::Print(std::ostream &os, int indent)

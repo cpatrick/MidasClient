@@ -31,6 +31,7 @@ public:
 
   // Fill the collection given the id
   bool Load();
+  void Clear();
 
   // Set/Get the ID of the collection
   void SetId(int id) { this->m_Id = id; }

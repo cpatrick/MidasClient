@@ -31,6 +31,7 @@ public:
 
   // Load
   bool Load();
+  void Clear();
 
   // Set/Get the ID of the item
   void SetId(int id) { this->m_Id = id; }
@@ -49,6 +50,10 @@ public:
   void SetTitle(const char* title) { m_Title = title; }
   std::string & GetTitle() {return m_Title;}
 
+  // Set/Get the description of the item
+  void SetDescription(const char* desc) { m_Description = desc; }
+  std::string & GetDescription() {return m_Description;}
+
   // Set/Get the abstract of the item
   void SetAbstract(const char* abstract) { m_Abstract = abstract; }
   std::string & GetAbstract() {return m_Abstract;}
@@ -60,6 +65,12 @@ public:
   // If the bitstream can be access locally then a new filename is returned
   std::string DownloadBitstream(const char* uuid,const char* filename);
   
+  void SetAuthors(std::vector<std::string> authors) {m_Authors = authors;}
+  std::vector<std::string> & GetAuthors() { return m_Authors; }
+
+  void SetKeywords(std::vector<std::string> keywords) {m_Keywords = keywords;}
+  std::vector<std::string> & GetKeywords() { return m_Keywords; }
+
   // Get the list of bitstreams
   const std::vector<Bitstream*>& GetBitstreams() { return m_Bitstreams; }
 
@@ -77,8 +88,11 @@ protected:
   std::string  m_Parent;
   std::string  m_Title;
   std::string  m_Abstract;
+  std::string  m_Description;
   std::string  m_Uuid;
-  
+  std::vector<std::string> m_Authors;
+  std::vector<std::string> m_Keywords;
+
   std::vector<Bitstream*> m_Bitstreams;
 };
 

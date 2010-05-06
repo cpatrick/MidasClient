@@ -116,6 +116,7 @@ bool Collection::Fetch()
        
   CollectionXMLParser parser;
   parser.SetCollection(m_Collection);
+  m_Collection->Clear();
   parser.AddTag("/rsp/name",m_Collection->GetName());
   parser.AddTag("/rsp/description",m_Collection->GetDescription());
   parser.AddTag("/rsp/uuid",m_Collection->GetUuid());

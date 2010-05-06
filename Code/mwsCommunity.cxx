@@ -210,6 +210,7 @@ bool Community::Fetch()
     
   CommunityXMLParser parser;
   parser.SetCommunity(m_Community);
+  m_Community->Clear();
   parser.AddTag("/rsp/name",m_Community->GetName());
   parser.AddTag("/rsp/description",m_Community->GetDescription());
   parser.AddTag("/rsp/uuid",m_Community->GetUuid());
