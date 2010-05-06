@@ -27,11 +27,27 @@ midasDatabaseProxy::~midasDatabaseProxy()
   delete this->Database;
 }
 
+//-------------------------------------------------------------------------
+std::string midasDatabaseProxy::GetKeyName(MidasAppSetting setting)
+{
+  switch(setting)
+    {
+    case LAST_URL:
+      return "last_url";
+    case LAST_FETCH_TIME:
+      return "last_fetch";
+    default:
+      return "";
+    }
+}
+
+//-------------------------------------------------------------------------
 mds::SQLiteDatabase* midasDatabaseProxy::GetDatabase()
 {
   return this->Database;
 }
 
+//-------------------------------------------------------------------------
 bool midasDatabaseProxy::FillCommunity(mdo::Community* community)
 {
   std::stringstream query;
@@ -44,6 +60,7 @@ bool midasDatabaseProxy::FillCommunity(mdo::Community* community)
   return this->Database->ExecuteQuery(query.str().c_str());
 }
 
+//-------------------------------------------------------------------------
 bool midasDatabaseProxy::FillCollection(mdo::Collection* coll)
 {
   std::stringstream query;
@@ -56,6 +73,7 @@ bool midasDatabaseProxy::FillCollection(mdo::Collection* coll)
   return this->Database->ExecuteQuery(query.str().c_str());
 }
 
+//-------------------------------------------------------------------------
 bool midasDatabaseProxy::FillItem(mdo::Item* item)
 {
   bool ok = true;
@@ -74,6 +92,7 @@ bool midasDatabaseProxy::FillItem(mdo::Item* item)
   return ok;
 }
 
+//-------------------------------------------------------------------------
 bool midasDatabaseProxy::FillBitstream(mdo::Bitstream* bitstream)
 {
   //TODO implement
@@ -489,30 +508,34 @@ void midasDatabaseProxy::Clean()
 }
 
 //-------------------------------------------------------------------------
-std::string midasDatabaseProxy::GetLastUsedURL()
+std::string midasDatabaseProxy::GetSetting(MidasAppSetting setting)
 {
+  std::string key = this->GetKeyName(setting);
+
   std::stringstream query;
-  query << "SELECT value FROM app_settings WHERE key='last_url' LIMIT 1";
+  query << "SELECT value FROM app_settings WHERE key='" << key << "' LIMIT 1";
   this->Database->ExecuteQuery(query.str().c_str());
   
-  std::string url;
+  std::string value;
   while(this->Database->GetNextRow())
     {
-    url = this->Database->GetValueAsString(0);
+    value = this->Database->GetValueAsString(0);
     }
-  return url;
+  return value;
 }
 
 //-------------------------------------------------------------------------
-void midasDatabaseProxy::SetLastUsedURL(std::string url)
+void midasDatabaseProxy::SetSetting(MidasAppSetting setting, std::string value)
 {
+  std::string key = this->GetKeyName(setting);
+
   std::stringstream query;
-  query << "DELETE FROM app_settings WHERE key='last_url'";
+  query << "DELETE FROM app_settings WHERE key='" << key << "'";
   this->Database->ExecuteQuery(query.str().c_str());
   query.str(std::string());
 
-  query << "INSERT INTO app_settings (key, value) VALUES ('last_url', '"
-    << url << "')";
+  query << "INSERT INTO app_settings (key, value) VALUES ('" << key << "', '"
+    << value << "')";
   this->Database->ExecuteQuery(query.str().c_str());
 }
 

@@ -161,7 +161,8 @@ std::string midasSynchronizer::GetServerURL()
   if(this->ServerURL == "")
     {
     this->DatabaseProxy->Open();
-    this->ServerURL = this->DatabaseProxy->GetLastUsedURL();
+    this->ServerURL =
+      this->DatabaseProxy->GetSetting(midasDatabaseProxy::LAST_URL);
     this->DatabaseProxy->Close();
     }
   return this->ServerURL;
@@ -172,7 +173,7 @@ void midasSynchronizer::SetServerURL(std::string url)
   this->WebAPI->SetServerUrl(url.c_str());
   this->Authenticator->SetServerURL(url.c_str());
   this->DatabaseProxy->Open();
-  this->DatabaseProxy->SetLastUsedURL(url.c_str());
+  this->DatabaseProxy->SetSetting(midasDatabaseProxy::LAST_URL, url.c_str());
   this->DatabaseProxy->Close();
   this->ServerURL = url;
 }

@@ -66,7 +66,7 @@ bool midasAuthenticator::AddAuthProfile(std::string user, std::string appName,
   mws::WebAPI* remote = mws::WebAPI::Instance();
   if(this->ServerURL == "")
     {
-    this->ServerURL = this->Database->GetLastUsedURL();
+    this->ServerURL = this->Database->GetSetting(midasDatabaseProxy::LAST_URL);
     }
   remote->SetServerUrl(this->ServerURL.c_str());
   remote->GetRestAPI()->SetXMLParser(&parser);

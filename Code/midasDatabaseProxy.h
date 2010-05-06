@@ -40,6 +40,12 @@ public:
   midasDatabaseProxy(std::string database);
   ~midasDatabaseProxy();
 
+  enum MidasAppSetting
+    {
+    LAST_URL,
+    LAST_FETCH_TIME
+    };
+
   mds::SQLiteDatabase* GetDatabase();
 
   bool Open();
@@ -50,8 +56,8 @@ public:
    */
   void Clean();
 
-  std::string GetLastUsedURL();
-  void SetLastUsedURL(std::string url);
+  std::string GetSetting(MidasAppSetting setting);
+  void SetSetting(MidasAppSetting setting, std::string value);
 
   std::string GetName(int type, int id);
 
@@ -118,6 +124,8 @@ protected:
   int InsertCollection(std::string name);
   int InsertCommunity(std::string name);
   int InsertItem(std::string name);
+
+  std::string GetKeyName(MidasAppSetting setting);
 
   mds::SQLiteDatabase* Database;
   std::string DatabasePath;
