@@ -10,7 +10,7 @@ site_name(top_level_community_name)
 
 # Setup a mock tree we can add
 configure_file(
-  "${MIDASCPP_SOURCE_DIR}/README.TXT"
+  "${MIDASCPP_SOURCE_DIR}/README.txt"
   "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm/Collection/Item/bitstream.txt"
   COPYONLY)
 
