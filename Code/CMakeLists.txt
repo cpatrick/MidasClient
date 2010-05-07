@@ -25,12 +25,15 @@ set(MIDASRest_SRCS
   mdoProxyInterface.h
   mdoProxyInterface.cxx
 
+  mwsObject.h
   mwsBitstream.h
   mwsBitstream.cxx
   mwsCollection.h
   mwsCollection.cxx
   mwsCommunity.h
   mwsCommunity.cxx
+  mwsNewResources.h
+  mwsNewResources.cxx
   mwsDicom.h
   mwsDicom.cxx
   mwsItem.h
