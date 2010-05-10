@@ -14,8 +14,13 @@ configure_file(
   "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm/Collection/Item/bitstream.txt"
   COPYONLY)
 
-# Pull a copy of the database into this dir so we can play with it
-configure_file("${MIDASCPP_BINARY_DIR}/midas.db" "${MIDASCPP_BINARY_DIR}/Testing/midas.db" COPYONLY)
+# Add target to copy our database to the testing dir during build
+add_custom_command (
+  TARGET sqlite_db
+  POST_BUILD
+  COMMAND "${CMAKE_CMAKE_COMMAND}" -E copy "${MIDASCPP_BINARY_DIR}/midas.db" "${MIDASCPP_BINARY_DIR}/Testing/midas.db"
+  COMMENT "Copying SQLite database into Test dir..."
+)
 
 add_test(testCliNoArgs ${midascli_command})
 set_tests_properties(testCliNoArgs PROPERTIES WILL_FAIL ON)
