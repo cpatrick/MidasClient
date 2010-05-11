@@ -89,6 +89,8 @@ bool WebAPI::Execute(const char* url)
 /** Check the connection to the MIDAS server */
 bool WebAPI::CheckConnection()
 {
+  mws::RestXMLParser parser;
+  this->GetRestAPI()->SetXMLParser(&parser);
   std::string url = "midas.info";
   if(!this->Execute(url.c_str()))
     {
