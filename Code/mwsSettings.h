@@ -47,10 +47,6 @@ public:
   /** Set/Get the email */
   void SetEmail(const char* email) {m_Email=email;}
   std::string GetEmail() { return m_Email; }
-
-  /** Set/Get the password */
-  void SetPassword(const char* password);
-  std::string GetPassword();
   
   /** Set/Get working directory */
   void SetWorkingDirectory(const char* value) { m_WorkingDirectory = value; }
