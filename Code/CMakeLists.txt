@@ -38,6 +38,8 @@ set(MIDASRest_SRCS
   mwsDicom.cxx
   mwsItem.h
   mwsItem.cxx
+  mwsSearch.h
+  mwsSearch.cxx
   mwsRestAPI.h
   mwsRestAPI.cxx
   mwsRestXMLParser.h

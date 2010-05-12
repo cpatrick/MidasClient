@@ -8,27 +8,28 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#include "mwsNewResources.h"
-#include "midasUtils.h"
+
+#include "mwsSearch.h"
+#include "mdoObject.h"
 #include <stdio.h>
 #include <string.h>
 #include <sstream>
 #include <iostream>
 #include "mwsRestXMLParser.h"
 
-namespace mws{
-
+namespace mws
+{
 /** Custom XML parser */
-class NewResourcesXMLParser : public RestXMLParser
+class SearchXMLParser : public RestXMLParser
 {
 public:
    
-  NewResourcesXMLParser()
+  SearchXMLParser()
     {
-    m_NewResources = NULL;
+    m_Results = NULL;
     };
     
-  ~NewResourcesXMLParser() 
+  ~SearchXMLParser() 
     {
     };  
 
@@ -44,10 +45,10 @@ public:
   // encountered
   virtual void EndElement(const char *name)
     {
-    if(!strcmp(name,"data"))
+    /*if(!strcmp(name,"data"))
       {
       m_NewResources->AddUuid(m_CurrentValue);
-      }
+      }*/
     RestXMLParser::EndElement(name);
     }
     
@@ -60,62 +61,37 @@ public:
     }
   
   /** Set the NewResources object */
-  void SetObject(mws::NewResources* nr) 
+  void SetObject(std::vector<mdo::Object*>* results) 
     {
-    m_NewResources = nr;
+    m_Results = results;
     }
   
 protected:
-
-  mws::NewResources*  m_NewResources;
-  std::string         m_CurrentValue;
+  enum ParseStatus
+    {
+    NONE,
+    BITSTREAMS,
+    ITEMS,
+    COLLECTIONS,
+    COMMUNITIES
+    };
+  
+  ParseStatus                m_Status;
+  std::string                m_CurrentValue;
+  std::vector<mdo::Object*>* m_Results;
 };
 
 
-/** Constructor */
-NewResources::NewResources()
+std::vector<mdo::Object*> Search::SearchServer(std::vector<std::string> tokens)
 {
-}
-  
-/** Destructor */
-NewResources::~NewResources()
-{
+  std::vector<mdo::Object*> results;
+  return results;
 }
 
-// Add the object
-void NewResources::SetObject(mdo::Object* object)
+std::vector<mdo::Object*> Search::SearchClient(std::vector<std::string> tokens)
 {
+  std::vector<mdo::Object*> results;
+  return results;
 }
 
-/** Fetch the list of new resources */
-bool NewResources::Fetch()
-{
-  NewResourcesXMLParser parser;
-  parser.SetObject(this);
-  this->m_Uuids.clear();
-  parser.AddTag("/rsp/timestamp",this->GetTimestamp());
-  
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  
-  std::stringstream url;
-  url << "midas.newresources.get";
-
-  if(this->m_Since != "")
-    {
-      url << "?since=" << midasUtils::EscapeForURL(m_Since);
-    }
-  return mws::WebAPI::Instance()->Execute(url.str().c_str());
-}
-
-bool NewResources::FetchTree()
-{
-  return this->Fetch();
-}
-
-/** Commit */
-bool NewResources::Commit()
-{
-  return true;
-}
-
-} // end namespace
+} //end namespace
