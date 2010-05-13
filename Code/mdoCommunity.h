@@ -88,19 +88,19 @@ public:
   
   // Get the parent
   Community* GetParentCommunity() {return m_ParentComm;}
+
+  std::string GetTypeName() { return "Community"; }
   
 protected:
 
   friend class CommunityXMLParser;
   
-  unsigned int m_Id;
   std::string  m_Parent;
   std::string  m_Name;
   std::string  m_Description;
   std::string  m_Copyright;
   std::string  m_IntroductoryText;
   std::string  m_Links;
-  std::string  m_Uuid;
    
   Community*   m_ParentComm; // pointer the parent community
   

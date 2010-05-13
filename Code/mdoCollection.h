@@ -33,10 +33,6 @@ public:
   bool Load();
   void Clear();
 
-  // Set/Get the ID of the collection
-  void SetId(int id) { this->m_Id = id; }
-  const int GetId() {return this->m_Id; }
-
   // Set/Get the ID of the parent
   void SetParent(std::string id) { m_Parent = id; }
   std::string & GetParent() {return m_Parent;}
@@ -71,17 +67,17 @@ public:
   // Add an item
   void AddItem(Item* item) {m_Items.push_back(item);}
   
+  std::string GetTypeName() { return "Community"; }
+  
 protected:
 
   friend class CollectionXMLParser;
   
-  unsigned int m_Id;
   std::string  m_Parent;
   std::string  m_Name;
   std::string  m_Description;
   std::string  m_Copyright;
   std::string  m_IntroductoryText;
-  std::string  m_Uuid;
   
   std::vector<Item*> m_Items;
 };

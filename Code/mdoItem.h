@@ -33,22 +33,16 @@ public:
   bool Load();
   void Clear();
 
-  // Set/Get the ID of the item
-  void SetId(int id) { this->m_Id = id; }
-  const int GetId() {return this->m_Id; }
-
   // Set/Get the ID of the parent
   void SetParent(std::string id) { m_Parent = id; }
   std::string & GetParent() {return m_Parent;}
   const int GetParentId() {return atoi(m_Parent.c_str());}
 
-  // Set/Get the uuid
-  void SetUuid(const char* uuid) { m_Uuid = uuid; }
-  std::string & GetUuid() {return m_Uuid;}
-
   // Set/Get the title of the item
   void SetTitle(const char* title) { m_Title = title; }
   std::string & GetTitle() {return m_Title;}
+
+  std::string & GetName() {return m_Title;}
 
   // Set/Get the description of the item
   void SetDescription(const char* desc) { m_Description = desc; }
@@ -79,17 +73,17 @@ public:
   
   // Display all the tags and their respective names and values.
   void Print(std::ostream &os, int indent=-1);
+
+  std::string GetTypeName() { return "Item"; }
  
 protected:
 
   friend class ItemXMLParser;
   
-  unsigned int m_Id;
   std::string  m_Parent;
   std::string  m_Title;
   std::string  m_Abstract;
   std::string  m_Description;
-  std::string  m_Uuid;
   std::vector<std::string> m_Authors;
   std::vector<std::string> m_Keywords;
 
