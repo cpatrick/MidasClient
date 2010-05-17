@@ -36,6 +36,7 @@ public:
   bool Fetch();
   void SetObject(mdo::Object* object);
   bool Commit();
+  void ResolveParents();
   
 protected:
 

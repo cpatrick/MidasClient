@@ -223,6 +223,7 @@ void MidasTreeView::selectByObject(mdo::Object* object)
       mws::Community remote;
       remote.SetObject(comm);
       remote.Fetch();
+      
       //next fetch parent community
       //path.push_back(parent);
       }

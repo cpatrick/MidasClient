@@ -116,4 +116,9 @@ void Bitstream::SetObject(mdo::Object* object)
   m_Bitstream = reinterpret_cast<mdo::Bitstream*>(object);
 }
 
+void Bitstream::ResolveParents()
+{
+  //TODO implement
+}
+
 } // end namespace

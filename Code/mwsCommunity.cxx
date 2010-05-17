@@ -252,4 +252,8 @@ bool Community::Commit()
   return true;
 }
 
+void Community::ResolveParents()
+{
+}
+
 } // end namespace

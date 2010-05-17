@@ -38,6 +38,8 @@ public:
     m_WebAPI = api;
     }
 
+  virtual void ResolveParents() = 0;
+
 protected:
 
   WebAPI* m_WebAPI;

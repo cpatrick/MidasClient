@@ -193,4 +193,8 @@ void Item::SetObject(mdo::Object* object)
   m_Item = static_cast<mdo::Item*>(object);
 }
 
+void Item::ResolveParents()
+{
+}
+
 } // end namespace

@@ -38,6 +38,7 @@ public:
   
   // Commit the data on the server 
   bool Commit();
+  void ResolveParents();
   
   // Add the object
   void SetObject(mdo::Object* object);

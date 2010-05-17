@@ -140,4 +140,9 @@ bool Collection::Commit()
   return true;
 }
 
+void Collection::ResolveParents()
+{
+
+}
+
 } // end namespace
