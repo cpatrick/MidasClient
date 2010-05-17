@@ -36,6 +36,7 @@ public:
   bool FetchTree();
   void SetObject(mdo::Object* object);
   bool Commit();
+  void ResolveParents() {} //do nothing (no parents)
 
   std::vector<std::string> GetUuids() { return m_Uuids;}
   void AddUuid(std::string uuid) { m_Uuids.push_back(uuid); }

@@ -51,6 +51,7 @@ std::string midasUtils::EscapeForURL(std::string s)
   return s;
 }
 
+//-------------------------------------------------------------------
 bool midasUtils::IsDatabaseValid(std::string path)
 {
   if(!kwsys::SystemTools::FileExists(path.c_str(), true))
