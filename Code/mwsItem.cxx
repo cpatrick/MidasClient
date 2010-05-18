@@ -9,6 +9,8 @@
 
 =========================================================================*/
 #include "mwsItem.h"
+#include "mdoCollection.h"
+#include "mwsCollection.h"
 #include <sstream>
 #include <iostream>
 #include "mwsRestXMLParser.h"
@@ -195,6 +197,13 @@ void Item::SetObject(mdo::Object* object)
 
 void Item::ResolveParents()
 {
+  mdo::Collection coll;
+  coll.SetId(m_Item->GetParentId());
+
+  mws::Collection remote;
+  remote.SetObject(&coll);
+  remote.Fetch();
+  remote.ResolveParents();
 }
 
 } // end namespace

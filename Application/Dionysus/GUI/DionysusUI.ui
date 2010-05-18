@@ -427,9 +427,6 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionUpload_Agreement"/>
-    <addaction name="separator"/>
-    <addaction name="actionKitware_com"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuFile">
@@ -447,7 +444,6 @@
      <string>Settings</string>
     </property>
     <addaction name="actionCreate_Profile"/>
-    <addaction name="actionEdit_database_settings"/>
     <addaction name="actionEdit_search_settings"/>
     <addaction name="separator"/>
    </widget>
@@ -463,19 +459,6 @@
       <iconset resource="../DionysusIcons.qrc">
        <normaloff>:/icons/earth_network.png</normaloff>:/icons/earth_network.png</iconset>
      </property>
-     <addaction name="actionCreate_community"/>
-     <addaction name="actionDelete_community"/>
-     <addaction name="separator"/>
-     <addaction name="actionCreate_sub_community"/>
-     <addaction name="separator"/>
-     <addaction name="actionCreate_collection"/>
-     <addaction name="actionDelete_collection"/>
-     <addaction name="separator"/>
-     <addaction name="actionCreate_item"/>
-     <addaction name="actionDelete_item"/>
-     <addaction name="separator"/>
-     <addaction name="actionDelete_bitstream"/>
-     <addaction name="separator"/>
      <addaction name="actionPull_Resource"/>
     </widget>
     <widget class="QMenu" name="menuClient">
@@ -526,18 +509,6 @@
     <string>Quit MidasDesktop</string>
    </property>
   </action>
-  <action name="actionEdit_database_settings">
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/earth_network.png</normaloff>:/icons/earth_network.png</iconset>
-   </property>
-   <property name="text">
-    <string>Server</string>
-   </property>
-   <property name="statusTip">
-    <string>Set database parameters.</string>
-   </property>
-  </action>
   <action name="actionEdit_search_settings">
    <property name="icon">
     <iconset resource="../DionysusIcons.qrc">
@@ -548,18 +519,6 @@
    </property>
    <property name="statusTip">
     <string>Set search parameters.</string>
-   </property>
-  </action>
-  <action name="actionKitware_com">
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/KitwareOnlyLogo.PNG</normaloff>:/icons/KitwareOnlyLogo.PNG</iconset>
-   </property>
-   <property name="text">
-    <string>Visit Kitware.com</string>
-   </property>
-   <property name="statusTip">
-    <string>Link to www.kitware.com</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -574,235 +533,13 @@
     <string>About Dionysus.</string>
    </property>
   </action>
-  <action name="actionCheck_database_settings">
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/check.png</normaloff>:/icons/check.png</iconset>
-   </property>
-   <property name="text">
-    <string>Check Connection</string>
-   </property>
-   <property name="statusTip">
-    <string>Check connection parameters.</string>
-   </property>
-  </action>
-  <action name="actionDisplay_my_computer_widget">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/workstation_network.png</normaloff>:/icons/workstation_network.png</iconset>
-   </property>
-   <property name="text">
-    <string>My Computer</string>
-   </property>
-  </action>
-  <action name="actionDisplay_search_widget">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/find.png</normaloff>:/icons/find.png</iconset>
-   </property>
-   <property name="text">
-    <string>Search items</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+F</string>
-   </property>
-  </action>
-  <action name="actionBuy">
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/MidasClientWarning.png</normaloff>:/icons/MidasClientWarning.png</iconset>
-   </property>
-   <property name="text">
-    <string>Buy MidasDesktop!</string>
-   </property>
-  </action>
-  <action name="actionCreate_community">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/folder_add.png</normaloff>:/icons/folder_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>Create community</string>
-   </property>
-  </action>
-  <action name="actionDelete_community">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/delete2.png</normaloff>:/icons/delete2.png</iconset>
-   </property>
-   <property name="text">
-    <string>Delete community</string>
-   </property>
-  </action>
-  <action name="actionCreate_sub_community">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/folder_add.png</normaloff>:/icons/folder_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>Create sub-community</string>
-   </property>
-  </action>
-  <action name="actionCreate_collection">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/add2.png</normaloff>:/icons/add2.png</iconset>
-   </property>
-   <property name="text">
-    <string>Create collection</string>
-   </property>
-  </action>
-  <action name="actionDelete_collection">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/delete2.png</normaloff>:/icons/delete2.png</iconset>
-   </property>
-   <property name="text">
-    <string>Delete collection</string>
-   </property>
-  </action>
-  <action name="actionCreate_item">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/document_add.png</normaloff>:/icons/document_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>Create Item</string>
-   </property>
-  </action>
-  <action name="actionDelete_item">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/document_delete.png</normaloff>:/icons/document_delete.png</iconset>
-   </property>
-   <property name="text">
-    <string>Delete item</string>
-   </property>
-  </action>
-  <action name="actionDelete_bitstream">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/document_delete.png</normaloff>:/icons/document_delete.png</iconset>
-   </property>
-   <property name="text">
-    <string>Delete bitstream</string>
-   </property>
-  </action>
-  <action name="actionSelect_files_to_upload">
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/document_add.png</normaloff>:/icons/document_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>Load files</string>
-   </property>
-  </action>
-  <action name="actionSelect_folder_to_upload">
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/folder_add.png</normaloff>:/icons/folder_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>Load folder</string>
-   </property>
-  </action>
-  <action name="actionRemove_files_from_selection">
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/delete2.png</normaloff>:/icons/delete2.png</iconset>
-   </property>
-   <property name="text">
-    <string>Remove</string>
-   </property>
-  </action>
-  <action name="actionUpload_files">
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/nav_left_green.png</normaloff>:/icons/nav_left_green.png</iconset>
-   </property>
-   <property name="text">
-    <string>Upload files</string>
-   </property>
-  </action>
-  <action name="actionResume_transfer">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Resume</string>
-   </property>
-  </action>
-  <action name="actionStop_transfer">
-   <property name="text">
-    <string>Stop</string>
-   </property>
-  </action>
-  <action name="actionAbort_transfer">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Abort</string>
-   </property>
-  </action>
-  <action name="actionDownload_bitstreams">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/nav_right_green.png</normaloff>:/icons/nav_right_green.png</iconset>
-   </property>
-   <property name="text">
-    <string>Download bitstreams</string>
-   </property>
-  </action>
-  <action name="actionUpload_Agreement">
-   <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
-     <normaloff>:/icons/download.png</normaloff>:/icons/download.png</iconset>
-   </property>
-   <property name="text">
-    <string>Upload Agreement</string>
-   </property>
-  </action>
   <action name="actionCreate_Profile">
    <property name="icon">
     <iconset resource="../DionysusIcons.qrc">
      <normaloff>:/icons/dude3.png</normaloff>:/icons/dude3.png</iconset>
    </property>
    <property name="text">
-    <string>Create Profile</string>
+    <string>Profile</string>
    </property>
    <property name="statusTip">
     <string>Create a user profile</string>
@@ -955,24 +692,9 @@
   <include location="../DionysusIcons.qrc"/>
   <include location="../DionysusIcons.qrc"/>
   <include location="../DionysusIcons.qrc"/>
+  <include location="../DionysusIcons.qrc"/>
  </resources>
  <connections>
-  <connection>
-   <sender>searchQueryEdit</sender>
-   <signal>returnPressed()</signal>
-   <receiver>actionSearch_items</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>788</x>
-     <y>386</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>clientExpandAllButton</sender>
    <signal>released()</signal>

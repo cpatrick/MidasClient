@@ -163,9 +163,7 @@ DionysusUI::DionysusUI() : currentTransferMode(DionysusUI::NotSet)
   // ------------- signal/slot connections -------------
   connect( this->dlg_signInUI, SIGNAL(signedIn()), this, SLOT(signIn()) );
 
-  connect( actionEdit_database_settings,  SIGNAL( triggered() ), this, SLOT( editServerSettings() ) );
   connect( actionEdit_search_settings,    SIGNAL( triggered() ), this, SLOT( editSearchSettings() ) );
-  connect( actionCheck_database_settings, SIGNAL( triggered() ), this, SLOT( checkDatabaseSettings() ) );
   connect( actionPush_Resources,          SIGNAL( triggered() ), this, SLOT( pushResources() ) );
   connect( actionPull_Resource,           SIGNAL( triggered() ), dlg_pullUI, SLOT( exec() ) );
 
@@ -186,28 +184,11 @@ DionysusUI::DionysusUI() : currentTransferMode(DionysusUI::NotSet)
   //connect( actionDisplay_search_widget,           SIGNAL( triggered() ), searchItemsDockWidget, SLOT( show( ) ) );
   //connect( actionDisplay_my_computer_widget,      SIGNAL( triggered() ), myComputerDockWidget, SLOT( show() ) );
 
-  connect( actionCreate_community,      SIGNAL( triggered() ), this, SLOT( createCommunity() ) );
-  connect( actionDelete_community,      SIGNAL( triggered() ), this, SLOT( deleteCommunity() ) );
-  connect( actionCreate_sub_community,  SIGNAL( triggered() ), this, SLOT( createSubCommunity() ) );
-  connect( actionCreate_collection,     SIGNAL( triggered() ), this, SLOT( createCollection() ) );
-  connect( actionDelete_collection,     SIGNAL( triggered() ), this, SLOT( deleteCollection() ) );
-  connect( actionCreate_item,       SIGNAL( triggered() ), this, SLOT( createItem() ) );
-  connect( actionDelete_item,       SIGNAL( triggered() ), this, SLOT( deleteItem() ) );
-  connect( actionDelete_bitstream,  SIGNAL( triggered() ), this, SLOT( deleteBitstream() ) );
-
   connect( actionAdd_community, SIGNAL(triggered()), this, SLOT(addCommunity()));
   connect( actionAdd_subcommunity, SIGNAL(triggered()), this, SLOT(addSubcommunity()));
   connect( actionAdd_collection, SIGNAL(triggered()), this, SLOT(addCollection()));
   connect( actionAdd_item, SIGNAL(triggered()), this, SLOT(addItem()));
   connect( actionAdd_bitstream, SIGNAL(triggered()), this, SLOT(addBitstream()));
-
-  connect( actionSelect_files_to_upload,      SIGNAL( triggered() ), this, SLOT( selectFilesToUpload() ) );
-  connect( actionSelect_folder_to_upload,     SIGNAL( triggered() ), this, SLOT( selectFolderToUpload() ) );
-  connect( actionRemove_files_from_selection, SIGNAL( triggered() ), this, SLOT( removeFilesFromSelection() ) );
-  connect( actionUpload_files,                SIGNAL( triggered() ), this, SLOT( uploadFiles() ) );
-  connect( actionUpload_Agreement,            SIGNAL( triggered() ), dlg_uploadAgreementUI, SLOT( exec() ) );
-
-  connect( actionDownload_bitstreams,         SIGNAL( triggered() ), this, SLOT( downloadBitstreams() ) );
 
   connect( searchItemsListWidget, SIGNAL( midasListWidgetItemClicked( QListWidgetItemMidasItem * ) ),
     this, SLOT( searchItemClicked( QListWidgetItemMidasItem * ) ) );
@@ -275,9 +256,7 @@ void DionysusUI::activateActions(bool value, ActivateActions activateAction)
   {
   if ( activateAction & ACTION_CONNECTED )
     {
-    this->actionCreate_community->setEnabled( value );
     this->searchTab->setEnabled( value );
-    this->actionDisplay_search_widget->setEnabled( value );
     this->treeView->setEnabled( value );
     this->midasTreeItemInfoGroupBox->setEnabled( value );
     this->pull_Button->setEnabled( value );
@@ -291,22 +270,16 @@ void DionysusUI::activateActions(bool value, ActivateActions activateAction)
 
   if ( activateAction & ACTION_COMMUNITY  )
     {
-    this->actionCreate_sub_community->setEnabled( value );
-    this->actionDelete_community->setEnabled( value );
-    this->actionCreate_collection->setEnabled( value );
     this->actionPull_Resource->setEnabled( value );
     }
 
   if ( activateAction & ACTION_COLLECTION  )
     {
-    this->actionDelete_collection->setEnabled( value );
-    this->actionCreate_item->setEnabled( value );
     this->actionPull_Resource->setEnabled( value );
     }
 
   if ( activateAction & ACTION_ITEM  )
     {
-    this->actionDelete_item->setEnabled( value );
     this->actionPull_Resource->setEnabled( value );
     }
 
@@ -426,7 +399,7 @@ void DionysusUI::showLogTab()
 /** Show the community information */
 void DionysusUI::updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem )
 { 
-  QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
+  QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
   /*if (!readonly)
     {
     options |= QTableWidgetDescriptionItem::Editable; 
@@ -626,129 +599,19 @@ void DionysusUI::displayClientResourceContextMenu( QContextMenuEvent* e )
 void DionysusUI::displayServerResourceContextMenu( QContextMenuEvent* e )
 {
   QMenu menu( this );
-  MidasCommunityTreeItem * communityTreeItem = NULL; 
-  MidasCollectionTreeItem * collectionTreeItem = NULL; 
-  MidasItemTreeItem * itemTreeItem = NULL; 
-
   QModelIndex index = treeView->indexAt( e->pos() );
-  MidasTreeItem * item = const_cast<MidasTreeItem*>( 
-                         reinterpret_cast<MidasTreeModel*>(treeView->model())->midasTreeItem( index ) );
-  
+
   if ( index.isValid() )
     {
     treeView->selectionModel()->select( index, QItemSelectionModel::SelectCurrent ); 
-
-    if ( ( communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>( item ) ) != NULL )
-      {
-      menu.addAction( this->actionCreate_sub_community );
-      menu.addAction( this->actionCreate_collection );
-      menu.addAction( this->actionDelete_community );
-      menu.addSeparator();
-      }
-    else if ( ( collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>( item ) ) != NULL )
-      {
-      menu.addAction( this->actionCreate_item );
-      menu.addAction( this->actionDelete_collection );
-      menu.addSeparator();
-      }
-    else if ( ( itemTreeItem = dynamic_cast<MidasItemTreeItem*>( item ) ) != NULL )
-      {
-      menu.addAction( this->actionDelete_item );
-      menu.addSeparator();
-      }
-    menu.addAction( this->actionPull_Resource );
     }
   else 
     {
     treeView->selectionModel()->clearSelection(); 
-    menu.addAction( this->actionCreate_community );
     }
+  menu.addAction( this->actionPull_Resource );
   menu.exec( e->globalPos() );
 }
-
-
-void DionysusUI::createCommunity()
-  {
-  this->dlg_createMidasCommunityUI->exec();
-  }
-
-void DionysusUI::deleteCommunity()
-{
-  MidasTreeItem * item =  const_cast<MidasTreeItem*>(this->treeView->getSelectedMidasTreeItem());
-  assert( dynamic_cast<MidasCommunityTreeItem*>( item ) != NULL );
-  QModelIndex selected = this->getTreeView()->getSelectedModelIndex();
-
-//  this->getTreeView()->model()->deleteMidasCommunity(selected);
-}
-
-void DionysusUI::createSubCommunity()
-{
-  this->dlg_createMidasSubCommunityUI->exec();
-}
-
-void DionysusUI::createCollection()
-  {
-  MidasTreeItem * item =  const_cast<MidasTreeItem*>(this->treeView->getSelectedMidasTreeItem());
-  assert( dynamic_cast<MidasCommunityTreeItem*>( item ) != NULL );
-
-  this->dlg_createMidasCollectionUI->exec();
-  }
-
-void DionysusUI::deleteCollection()
-{
-  MidasTreeItem * item =  const_cast<MidasTreeItem*>(this->treeView->getSelectedMidasTreeItem());
-  assert( dynamic_cast<MidasCollectionTreeItem*>( item ) != NULL );
-
-  QModelIndex selected = this->getTreeView()->getSelectedModelIndex();
-//  this->getTreeView()->model()->deleteMidasCollection(selected); 
-}
-
-void DionysusUI::createItem()
-{
-  MidasTreeItem * item =  const_cast<MidasTreeItem*>(this->treeView->getSelectedMidasTreeItem());
-  assert( dynamic_cast<MidasCollectionTreeItem*>( item ) != NULL );
-
-  this->dlg_createMidasItemUI->exec();
-}
-
-void DionysusUI::deleteItem()
-  {
-  MidasTreeItem * item =  const_cast<MidasTreeItem*>(this->treeView->getSelectedMidasTreeItem());
-  assert( dynamic_cast<MidasItemTreeItem*>( item ) != NULL );
-
-  QModelIndex selected = this->getTreeView()->getSelectedModelIndex();
-//  this->getTreeView()->model()->deleteMidasItem(selected); 
-  }
-
-void DionysusUI::deleteBitstream()
-  {
-  /*
-  QItemSelectionModel * itemSelectionModel = this->bitstreamsTable->selectionModel(); 
-  assert( itemSelectionModel!=NULL ); 
-  
-  QModelIndexList indexList = itemSelectionModel->selectedRows();
-
-  this->bitstreamsTable->setSortingEnabled( false ); 
-
-  while (indexList.count() > 0)
-    {
-    QModelIndex index = indexList.first(); 
-    //Logger::debug("\trow:" + INT2STR(index.row()) + ", col:" + INT2STR(index.column())); 
-    
-    QTableWidgetBitstreamItem * bitstreamItem = dynamic_cast<QTableWidgetBitstreamItem *>( 
-      this->bitstreamsTable->item ( index.row(), index.column() ) ); 
-    assert( bitstreamItem!=NULL ); 
-
-    bitstreamItem->getItemModelData()->deleteBitstream( bitstreamItem->getModelData() );
-
-    this->bitstreamsTable->removeRow(index.row()); // update UI component
-
-    indexList = itemSelectionModel->selectedRows();
-    }
-
-  this->bitstreamsTable->setSortingEnabled( true ); 
-  */
-  }
 
 void DionysusUI::addCommunity()
 {
@@ -921,10 +784,11 @@ void DionysusUI::createProfile(std::string name, std::string email,
     }
 
   std::string msg;
+  m_auth->SetServerURL(m_url);
   if(m_auth->AddAuthProfile(email, apiName, apiKey, name))
     {
     msg = "Successfully created profile \"" + name + "\".";
-    this->dlg_signInUI->profileCreated(name, this->m_url);
+    this->dlg_signInUI->profileCreated(name);
     }
   else
     {

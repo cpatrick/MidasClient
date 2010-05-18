@@ -114,14 +114,6 @@ public slots:
   // ------------- UI updates -------------
 
   // ------------- resource manipulation -------------
-  void createCommunity(); 
-  void deleteCommunity(); 
-  void createSubCommunity(); 
-  void createCollection(); 
-  void deleteCollection(); 
-  void createItem(); 
-  void deleteItem(); 
-  void deleteBitstream();
 
   void addCommunity();
   void addSubcommunity();

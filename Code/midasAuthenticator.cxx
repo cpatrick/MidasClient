@@ -34,11 +34,10 @@ bool midasAuthenticator::Login(mws::WebAPI* api)
     {
     return true;
     }
-
-  std::string appName, email, apiKey;
     
   this->Database->Open();
-  if(!this->Database->GetAuthProfile(this->Profile, email, appName, apiKey))
+  midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
+  if(profile.Name == "")
     {
     std::stringstream text;
     text << "No profile exists with that name. Use the "
@@ -48,7 +47,8 @@ bool midasAuthenticator::Login(mws::WebAPI* api)
     }
   mws::RestXMLParser parser;
   api->GetRestAPI()->SetXMLParser(&parser);
-  return api->Login(appName.c_str(), email.c_str(), apiKey.c_str());
+  return api->Login(profile.AppName.c_str(), profile.User.c_str(),
+                    profile.ApiKey.c_str());
 }
 
 //-------------------------------------------------------------------
@@ -59,7 +59,7 @@ bool midasAuthenticator::IsAnonymous()
 
 //-------------------------------------------------------------------
 bool midasAuthenticator::AddAuthProfile(std::string user, std::string appName,
-      std::string apiKey, std::string profileName)
+                                        std::string apiKey, std::string profileName)
 {
   this->Database->Open();
   mws::RestXMLParser parser;
@@ -79,7 +79,7 @@ bool midasAuthenticator::AddAuthProfile(std::string user, std::string appName,
     return false;
     }
   bool success = 
-    this->Database->AddAuthProfile(user, appName, apiKey, profileName);
+    this->Database->AddAuthProfile(user, appName, apiKey, profileName, this->ServerURL);
   this->Database->Close();
   return success;
 }
@@ -99,10 +99,10 @@ std::string midasAuthenticator::FetchToken()
     mws::WebAPI* remote = mws::WebAPI::Instance();
     remote->SetServerUrl(this->ServerURL.c_str());
     remote->GetRestAPI()->SetXMLParser(&parser);
-    std::string appName, email, apiKey;
     
     this->Database->Open();
-    if(!this->Database->GetAuthProfile(this->Profile, email, appName, apiKey))
+    midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
+    if(profile.Name == "")
       {
       std::stringstream text;
       text << "No profile exists with that name. Use the "
@@ -112,7 +112,8 @@ std::string midasAuthenticator::FetchToken()
       }
     this->Database->Close();
 
-    if(!remote->Login(appName.c_str(), email.c_str(), apiKey.c_str()))
+    if(!remote->Login(profile.AppName.c_str(), profile.User.c_str(),
+                      profile.ApiKey.c_str()))
       {
       std::stringstream text;
       text << "Login credentials refused by server."

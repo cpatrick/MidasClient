@@ -149,27 +149,25 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::GetAuthProfile(std::string name, std::string& user,
-                                        std::string& appName,
-                                        std::string& apiKey)
+midasAuthProfile midasDatabaseProxy::GetAuthProfile(std::string name)
 {
   std::stringstream query;
-  query << "SELECT eperson, apikey, app_name FROM auth_profile WHERE "
+  query << "SELECT eperson, apikey, app_name, url FROM auth_profile WHERE "
     "profile_name='" << name << "'";
+
+  midasAuthProfile profile;
 
   this->Database->ExecuteQuery(query.str().c_str());
   if(this->Database->GetNextRow())
     {
-    user = this->Database->GetValueAsString(0);
-    apiKey = this->Database->GetValueAsString(1);
-    appName = this->Database->GetValueAsString(2);
+    profile.Name = name;
+    profile.User = this->Database->GetValueAsString(0);
+    profile.ApiKey = this->Database->GetValueAsString(1);
+    profile.AppName = this->Database->GetValueAsString(2);
+    profile.Url = this->Database->GetValueAsString(3);
     while(this->Database->GetNextRow());
-    return true;
     }
-  else
-    {
-    return false;
-    }
+  return profile;
 }
 
 //-------------------------------------------------------------------------
@@ -186,12 +184,17 @@ std::vector<std::string> midasDatabaseProxy::GetAuthProfiles()
 
 //-------------------------------------------------------------------------
 bool midasDatabaseProxy::AddAuthProfile(std::string user, std::string appName,
-                                        std::string apiKey, std::string name)
+                                        std::string apiKey, std::string name,
+                                        std::string url)
 {
   std::stringstream query;
+  query << "DELETE FROM auth_profile WHERE profile_name = '" << name << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  query.str(std::string());
   query << "INSERT INTO auth_profile (profile_name, eperson, apikey, "
-    "app_name) VALUES ('" << name << "', '" << user << "', '" << apiKey <<
-    "', '" << appName << "')";
+    "app_name, url) VALUES ('" << name << "', '" << user << "', '" << apiKey
+    << "', '" << appName << "', '" << url << "')";
 
   return this->Database->ExecuteQuery(query.str().c_str());
 }

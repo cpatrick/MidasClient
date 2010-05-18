@@ -131,7 +131,8 @@ CREATE TABLE auth_profile (
   profile_name character varying(64) PRIMARY KEY,
   eperson character varying(64),
   apikey character varying(40),
-  app_name character varying(256)
+  app_name character varying(256),
+  url character varying(512)
 );
 
 CREATE TABLE app_settings (

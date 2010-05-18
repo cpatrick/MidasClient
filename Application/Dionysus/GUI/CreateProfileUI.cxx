@@ -5,23 +5,52 @@
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"
 #include "midasDatabaseProxy.h"
+#include <QString>
 
 CreateProfileUI::CreateProfileUI(DionysusUI *parent):
   QDialog(parent), parent(parent)
 {
   setupUi(this);
+
+  connect(profileComboBox, SIGNAL( currentIndexChanged(const QString&) ),
+    this, SLOT( fillData(const QString&) ) );
 }
 
 void CreateProfileUI::init()
 {
-  this->emailEdit->setText("");
-  this->profileNameEdit->setText("");
-  this->apiKeyEdit->setText("");
-  this->apiNameEdit->setText("");
+  emailEdit->setText("");
+  profileNameEdit->setText("");
+  apiKeyEdit->setText("");
+  apiNameEdit->setText("");
+
+  profileComboBox->clear();
+  profileComboBox->addItem("");
+
   parent->getDatabaseProxy()->Open();
-  this->serverURLEdit->setText(
+  serverURLEdit->setText(
     parent->getDatabaseProxy()->GetSetting(midasDatabaseProxy::LAST_URL).c_str());
+
+  std::vector<std::string> profiles = parent->getDatabaseProxy()->GetAuthProfiles();
+
+  for(std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i)
+    {
+    profileComboBox->addItem(i->c_str());
+    }
   parent->getDatabaseProxy()->Close();
+}
+
+void CreateProfileUI::fillData(const QString& name)
+{
+  parent->getDatabaseProxy()->Open();
+  midasAuthProfile profile = parent->getDatabaseProxy()->GetAuthProfile(
+    name.toStdString());
+  parent->getDatabaseProxy()->Close();
+
+  profileNameEdit->setText(profile.Name.c_str());
+  emailEdit->setText(profile.User.c_str());
+  apiKeyEdit->setText(profile.ApiKey.c_str());
+  apiNameEdit->setText(profile.AppName.c_str());
+  serverURLEdit->setText(profile.Url.c_str());
 }
 
 int CreateProfileUI::exec()

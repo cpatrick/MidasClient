@@ -254,6 +254,17 @@ bool Community::Commit()
 
 void Community::ResolveParents()
 {
+  int id = m_Community->GetParentId();
+  if(id)
+    {
+    mdo::Community comm;
+    comm.SetId(id);
+
+    mws::Community remote;
+    remote.SetObject(&comm);
+    remote.Fetch();
+    remote.ResolveParents();
+    }
 }
 
 } // end namespace

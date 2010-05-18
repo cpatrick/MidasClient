@@ -211,30 +211,28 @@ void MidasTreeView::selectByObject(mdo::Object* object)
   std::vector<std::string> path; //path of uuids to the root
   path.push_back(object->GetUuid());
 
-  while(true)
-    {
-    mdo::Community* comm = NULL;
-    mdo::Collection* coll = NULL;
-    mdo::Item* item = NULL;
-    mdo::Bitstream* bitstream = NULL;
+  mdo::Community* comm = NULL;
+  mdo::Collection* coll = NULL;
+  mdo::Item* item = NULL;
+  mdo::Bitstream* bitstream = NULL;
 
-    if((comm = dynamic_cast<mdo::Community*>(object)) != NULL)
-      {
-      mws::Community remote;
-      remote.SetObject(comm);
-      remote.Fetch();
-      
-      //next fetch parent community
-      //path.push_back(parent);
-      }
-    else if((coll = dynamic_cast<mdo::Collection*>(object)) != NULL)
-      {
-      }
-    else if((item = dynamic_cast<mdo::Item*>(object)) != NULL)
-      {
-      }
-    else if((bitstream = dynamic_cast<mdo::Bitstream*>(object)) != NULL)
-      {
-      }
+  if((comm = dynamic_cast<mdo::Community*>(object)) != NULL)
+    {
+    mws::Community remote;
+    remote.SetObject(comm);
+    remote.Fetch();
+    remote.ResolveParents();
+    
+    //next fetch parent community
+    //path.push_back(parent);
+    }
+  else if((coll = dynamic_cast<mdo::Collection*>(object)) != NULL)
+    {
+    }
+  else if((item = dynamic_cast<mdo::Item*>(object)) != NULL)
+    {
+    }
+  else if((bitstream = dynamic_cast<mdo::Bitstream*>(object)) != NULL)
+    {
     }
 }

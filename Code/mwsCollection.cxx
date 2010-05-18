@@ -12,7 +12,9 @@
 #include <sstream>
 #include <iostream>
 #include "mwsRestXMLParser.h"
+#include "mwsCommunity.h"
 #include "mdoCollection.h"
+#include "mdoCommunity.h"
 #include "mdoItem.h"
 
 namespace mws{
@@ -142,7 +144,13 @@ bool Collection::Commit()
 
 void Collection::ResolveParents()
 {
+  mdo::Community comm;
+  comm.SetId(m_Collection->GetParentId());
 
+  mws::Community remote;
+  remote.SetObject(&comm);
+  remote.Fetch();
+  remote.ResolveParents();
 }
 
 } // end namespace

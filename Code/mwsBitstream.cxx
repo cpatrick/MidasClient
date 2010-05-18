@@ -10,6 +10,8 @@
 =========================================================================*/
 #include "mwsBitstream.h"
 #include "mdoBitstream.h"
+#include "mdoItem.h"
+#include "mwsItem.h"
 #include <sstream>
 #include <iostream>
 #include "mwsRestXMLParser.h"
@@ -118,7 +120,13 @@ void Bitstream::SetObject(mdo::Object* object)
 
 void Bitstream::ResolveParents()
 {
-  //TODO implement
+  mdo::Item item;
+  item.SetId(m_Bitstream->GetParentId());
+
+  mws::Item remote;
+  remote.SetObject(&item);
+  remote.Fetch();
+  remote.ResolveParents();
 }
 
 } // end namespace

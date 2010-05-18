@@ -34,6 +34,15 @@ struct midasResourceRecord
   std::string Path;
 };
 
+struct midasAuthProfile
+{
+  std::string Name;
+  std::string Url;
+  std::string AppName;
+  std::string ApiKey;
+  std::string User;
+};
+
 class midasDatabaseProxy
 {
 public:
@@ -79,9 +88,8 @@ public:
   bool FillBitstream(mdo::Bitstream* bitstream);
 
   bool AddAuthProfile(std::string user, std::string appName,
-    std::string apiKey, std::string profileName);
-  bool GetAuthProfile(std::string name, std::string& user,
-    std::string& appName, std::string& apiKey);
+    std::string apiKey, std::string profileName, std::string url);
+  midasAuthProfile GetAuthProfile(std::string name);
   std::vector<std::string> GetAuthProfiles();
 
   /**

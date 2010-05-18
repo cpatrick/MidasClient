@@ -24,9 +24,8 @@ public slots:
 
   int exec();
   virtual void accept();
-  void editServerSettings();
   void showCreateProfileDialog();
-  void profileCreated(std::string name, std::string url);
+  void profileCreated(std::string name);
 
 private:
 

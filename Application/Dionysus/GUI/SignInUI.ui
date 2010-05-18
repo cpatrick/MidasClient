@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>376</width>
-    <height>120</height>
+    <width>286</width>
+    <height>73</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -61,76 +61,17 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>16</width>
-         <height>16</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16</width>
-         <height>16</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::AutoText</enum>
-       </property>
-       <property name="pixmap">
-        <pixmap resource="../DionysusIcons.qrc">:/icons/earth_network.png</pixmap>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Server URL:</string>
-       </property>
-       <property name="margin">
-        <number>3</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QLineEdit" name="serverEdit">
-       <property name="readOnly">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="3">
-      <widget class="QPushButton" name="editServerSettingsButton">
-       <property name="toolTip">
-        <string>Edit Server Settings</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../DionysusIcons.qrc">
-         <normaloff>:/icons/edit.png</normaloff>:/icons/edit.png</iconset>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="2">
       <widget class="QComboBox" name="profileComboBox"/>
      </item>
      <item row="0" column="3">
       <widget class="QPushButton" name="createProfileButton">
+       <property name="maximumSize">
+        <size>
+         <width>34</width>
+         <height>34</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Create a Profile</string>
        </property>
@@ -157,11 +98,10 @@
  <tabstops>
   <tabstop>profileComboBox</tabstop>
   <tabstop>createProfileButton</tabstop>
-  <tabstop>serverEdit</tabstop>
-  <tabstop>editServerSettingsButton</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
+  <include location="../DionysusIcons.qrc"/>
   <include location="../DionysusIcons.qrc"/>
   <include location="../DionysusIcons.qrc"/>
   <include location="../DionysusIcons.qrc"/>

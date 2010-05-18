@@ -12,21 +12,14 @@ SignInUI::SignInUI(DionysusUI *parent):
   QDialog(parent), parent(parent)
 {
   setupUi(this);
-  connect( editServerSettingsButton, SIGNAL( released() ), this, SLOT( editServerSettings() ) );
   connect( createProfileButton, SIGNAL( released() ), this, SLOT( showCreateProfileDialog() ) );
 }
 
 /** */
 void SignInUI::init()
 {
-  while(profileComboBox->count())
-    {
-    //clear all old options before we add them
-    profileComboBox->removeItem(0);
-    }
+  profileComboBox->clear();
   parent->getDatabaseProxy()->Open();
-  serverEdit->setText( parent->getDatabaseProxy()->GetSetting(midasDatabaseProxy::LAST_URL).c_str() );
-
   std::vector<std::string> profiles = parent->getDatabaseProxy()->GetAuthProfiles();
   
   for(std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i)
@@ -54,18 +47,22 @@ int SignInUI::exec()
 /** */
 void SignInUI::accept()
 {
-  mws::WebAPI::Instance()->SetServerUrl(serverEdit->text().toStdString().c_str());
+  parent->getDatabaseProxy()->Open();
+  std::string url = parent->getDatabaseProxy()->GetAuthProfile(
+    profileComboBox->currentText().toStdString()).Url;
+  parent->getDatabaseProxy()->Close();
+
+  mws::WebAPI::Instance()->SetServerUrl(url.c_str());
   if(mws::WebAPI::Instance()->CheckConnection())
     {
-    parent->setServerURL(serverEdit->text().toStdString());
+    parent->setServerURL(url);
     parent->getDatabaseProxy()->Open();
-    parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::LAST_URL, serverEdit->text().toStdString());
     parent->getAuthenticator()->SetProfile(profileComboBox->currentText().toStdString());
     parent->getDatabaseProxy()->Close();
     parent->getSynchronizer()->GetAuthenticator()->SetProfile(profileComboBox->currentText().toStdString());
     parent->getLog()->Message("Signed in successfully.");
 
-    emit signedIn(); 
+    emit signedIn();
     }
   else
     {
@@ -74,18 +71,10 @@ void SignInUI::accept()
   QDialog::accept();
 }
 
-/** */
-void SignInUI::editServerSettings()
+void SignInUI::profileCreated(std::string name)
 {
-  mws::Settings::GetInstance()->Write();
-  this->parent->editServerSettings(); 
-  serverEdit->setText(  mws::Settings::GetInstance()->GetServerURL().c_str() );
-}
-
-void SignInUI::profileCreated(std::string name, std::string url)
-{
-  profileComboBox->addItem(name.c_str());
-  serverEdit->setText(url.c_str());
+  init();
+  profileComboBox->setCurrentIndex(profileComboBox->findText(name.c_str()));
 }
 
 void SignInUI::showCreateProfileDialog()
