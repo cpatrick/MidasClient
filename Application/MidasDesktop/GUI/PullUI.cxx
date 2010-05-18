@@ -1,6 +1,6 @@
 #include "PullUI.h"
 #include "MidasClientGlobal.h"
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "midasAuthenticator.h"
 #include "midasDatabaseProxy.h"
 #include "midasSynchronizer.h"

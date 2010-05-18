@@ -3,7 +3,7 @@
 
 #define MIDAS_CLIENT_VERSION (STR("1.0 beta"))
 
-#define MIDAS_CLIENT_VERSION_STR (STR("MidasDesktop ") + MIDAS_CLIENT_VERSION + STR(" by Kitware Inc. (c) 2009") )
+#define MIDAS_CLIENT_VERSION_STR (STR("MIDASDesktop ") + MIDAS_CLIENT_VERSION + STR(" by Kitware Inc. (c) 2009") )
 
 #define MIDAS_KEYWORDS_DELIMITER "/"
 #define MIDAS_AUTHORS_DELIMITER ";"

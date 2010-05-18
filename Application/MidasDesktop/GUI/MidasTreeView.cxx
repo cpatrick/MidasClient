@@ -5,7 +5,7 @@
 #include <QContextMenuEvent>
 #include <QModelIndex>
 
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "MidasTreeItem.h"
 #include "MidasTreeModel.h"
 #include "MidasCommunityTreeItem.h"

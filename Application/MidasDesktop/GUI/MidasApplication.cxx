@@ -53,7 +53,7 @@ bool MidasApplication::notify ( QObject * receiver, QEvent * event )
     Logger::error("Notify event", &e);
     assert( this->dionysus != NULL); 
     //this->dionysus->signOut();
-    QMessageBox::critical(this->dionysus, "Midas Desktop error", STR2QSTR(e.what()));
+    QMessageBox::critical(this->dionysus, "MIDAS Desktop error", STR2QSTR(e.what()));
     }
   return false; 
   }
