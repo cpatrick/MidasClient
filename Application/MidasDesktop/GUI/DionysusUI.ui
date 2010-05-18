@@ -1,0 +1,750 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DionysusWindow</class>
+ <widget class="QMainWindow" name="DionysusWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1085</width>
+    <height>813</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Midas Desktop</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../DionysusIcons.qrc">
+    <normaloff>:/icons/Icon16.PNG</normaloff>:/icons/Icon16.PNG</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout">
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <property name="spacing">
+     <number>6</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="midasTreeItemInfoGroupBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="title">
+          <string> Description </string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="MidasResourceDescTable" name="midasTreeItemInfoTable">
+            <property name="toolTip">
+             <string>Community, Collection or Item detailed information.</string>
+            </property>
+            <property name="tabKeyNavigation">
+             <bool>false</bool>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <property name="gridStyle">
+             <enum>Qt::NoPen</enum>
+            </property>
+            <property name="columnCount">
+             <number>2</number>
+            </property>
+            <column/>
+            <column/>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QTabWidget" name="logAndSearchTabContainer">
+         <property name="tabPosition">
+          <enum>QTabWidget::South</enum>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="searchTab">
+          <attribute name="title">
+           <string>Search</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QLabel" name="label_8">
+               <property name="minimumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap resource="../DionysusIcons.qrc">:/icons/find.png</pixmap>
+               </property>
+               <property name="scaledContents">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="searchQueryEdit">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="searchButton">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Search</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <widget class="MidasSearchResultList" name="searchItemsListWidget">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>List of items retrieved using the provided search query</string>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_7">
+          <attribute name="title">
+           <string>Log</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="0" column="0" colspan="2">
+            <widget class="QTextEdit" name="log">
+             <property name="toolTip">
+              <string/>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="clearLogButton">
+             <property name="text">
+              <string>Clear Log</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../DionysusIcons.qrc">
+               <normaloff>:/icons/delete.png</normaloff>:/icons/delete.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item row="0" column="0" rowspan="2">
+        <widget class="QTabWidget" name="treeTabContainer">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="serverTab">
+          <attribute name="title">
+           <string>Server Tree</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="0" rowspan="2">
+            <widget class="MidasTreeView" name="treeView">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="acceptDrops">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="pull_Button">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Pull Resources</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../DionysusIcons.qrc">
+               <normaloff>:/icons/nav_right_green.png</normaloff>:/icons/nav_right_green.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="refreshButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>22</width>
+               <height>22</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Refresh List</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../DionysusIcons.qrc">
+               <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="clientTab">
+          <attribute name="title">
+           <string>Client Tree</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="3" column="0">
+            <widget class="QPushButton" name="push_Button">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Push Resources</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../DionysusIcons.qrc">
+               <normaloff>:/icons/nav_left_green.png</normaloff>:/icons/nav_left_green.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="addResource_Button">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Add Resource</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../DionysusIcons.qrc">
+               <normaloff>:/icons/add2.png</normaloff>:/icons/add2.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" rowspan="3" colspan="2">
+            <widget class="MidasTreeViewClient" name="treeViewClient">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="acceptDrops">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="clientExpandAllButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>22</width>
+               <height>22</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Expand All</string>
+             </property>
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="clientCollapseAllButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>22</width>
+               <height>22</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Collapse All</string>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1085</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionChoose_Local_Database"/>
+    <addaction name="separator"/>
+    <addaction name="actionSign_In"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionCreate_Profile"/>
+    <addaction name="actionEdit_search_settings"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuCommunity">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <widget class="QMenu" name="menuServer">
+     <property name="title">
+      <string>Server</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../DionysusIcons.qrc">
+       <normaloff>:/icons/earth_network.png</normaloff>:/icons/earth_network.png</iconset>
+     </property>
+     <addaction name="actionPull_Resource"/>
+    </widget>
+    <widget class="QMenu" name="menuClient">
+     <property name="title">
+      <string>Client</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../DionysusIcons.qrc">
+       <normaloff>:/icons/workstation_network.png</normaloff>:/icons/workstation_network.png</iconset>
+     </property>
+     <addaction name="actionAdd_community"/>
+     <addaction name="separator"/>
+     <addaction name="actionAdd_subcommunity"/>
+     <addaction name="actionAdd_collection"/>
+     <addaction name="separator"/>
+     <addaction name="actionAdd_item"/>
+     <addaction name="separator"/>
+     <addaction name="actionAdd_bitstream"/>
+     <addaction name="separator"/>
+     <addaction name="actionPush_Resources"/>
+    </widget>
+    <addaction name="menuClient"/>
+    <addaction name="menuServer"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuCommunity"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSign_In">
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/earth_connection.png</normaloff>:/icons/earth_connection.png</iconset>
+   </property>
+   <property name="text">
+    <string>Sign In</string>
+   </property>
+   <property name="statusTip">
+    <string>Connect to database.</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="statusTip">
+    <string>Quit MidasDesktop</string>
+   </property>
+  </action>
+  <action name="actionEdit_search_settings">
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/find.png</normaloff>:/icons/find.png</iconset>
+   </property>
+   <property name="text">
+    <string>Search</string>
+   </property>
+   <property name="statusTip">
+    <string>Set search parameters.</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/Icon16.PNG</normaloff>:/icons/Icon16.PNG</iconset>
+   </property>
+   <property name="text">
+    <string>About MidasDesktop</string>
+   </property>
+   <property name="statusTip">
+    <string>About Dionysus.</string>
+   </property>
+  </action>
+  <action name="actionCreate_Profile">
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/dude3.png</normaloff>:/icons/dude3.png</iconset>
+   </property>
+   <property name="text">
+    <string>Profile</string>
+   </property>
+   <property name="statusTip">
+    <string>Create a user profile</string>
+   </property>
+  </action>
+  <action name="actionChoose_Local_Database">
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/workstation_network.png</normaloff>:/icons/workstation_network.png</iconset>
+   </property>
+   <property name="text">
+    <string>Choose Local Database</string>
+   </property>
+   <property name="statusTip">
+    <string>Select the location of the sqlite database</string>
+   </property>
+  </action>
+  <action name="actionAdd_community">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/gpl_folder_add.png</normaloff>:/icons/gpl_folder_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add community</string>
+   </property>
+   <property name="statusTip">
+    <string>Add a new community</string>
+   </property>
+  </action>
+  <action name="actionAdd_subcommunity">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/gpl_folder_add.png</normaloff>:/icons/gpl_folder_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add subcommunity</string>
+   </property>
+   <property name="statusTip">
+    <string>Add a new community under the selected one</string>
+   </property>
+  </action>
+  <action name="actionAdd_collection">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/folder_add.png</normaloff>:/icons/folder_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add collection</string>
+   </property>
+   <property name="statusTip">
+    <string>Add a new collection under the selected community</string>
+   </property>
+  </action>
+  <action name="actionAdd_item">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/document_add.png</normaloff>:/icons/document_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add item</string>
+   </property>
+   <property name="statusTip">
+    <string>Add a new item under the selected collection</string>
+   </property>
+  </action>
+  <action name="actionAdd_bitstream">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/gpl_document_add.png</normaloff>:/icons/gpl_document_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add bitstream</string>
+   </property>
+   <property name="statusTip">
+    <string>Add a new bitstream under the current item</string>
+   </property>
+  </action>
+  <action name="actionPush_Resources">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/nav_left_green.png</normaloff>:/icons/nav_left_green.png</iconset>
+   </property>
+   <property name="text">
+    <string>Push Resources</string>
+   </property>
+   <property name="statusTip">
+    <string>Upload added resources to the server</string>
+   </property>
+  </action>
+  <action name="actionPull_Resource">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../DionysusIcons.qrc">
+     <normaloff>:/icons/nav_right_green.png</normaloff>:/icons/nav_right_green.png</iconset>
+   </property>
+   <property name="text">
+    <string>Pull Resource...</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MidasTreeView</class>
+   <extends>QTreeView</extends>
+   <header>MidasTreeView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MidasSearchResultList</class>
+   <extends>QListWidget</extends>
+   <header>MidasSearchResultList.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MidasResourceDescTable</class>
+   <extends>QTableWidget</extends>
+   <header>MidasResourceDescTable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MidasTreeViewClient</class>
+   <extends>QTreeView</extends>
+   <header>MidasTreeViewClient.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>searchQueryEdit</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../DionysusIcons.qrc"/>
+  <include location="../DionysusIcons.qrc"/>
+  <include location="../DionysusIcons.qrc"/>
+  <include location="../DionysusIcons.qrc"/>
+  <include location="../DionysusIcons.qrc"/>
+  <include location="../DionysusIcons.qrc"/>
+  <include location="../DionysusIcons.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>clientExpandAllButton</sender>
+   <signal>released()</signal>
+   <receiver>treeViewClient</receiver>
+   <slot>expandAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>515</x>
+     <y>74</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>472</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clientCollapseAllButton</sender>
+   <signal>released()</signal>
+   <receiver>treeViewClient</receiver>
+   <slot>collapseAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>523</x>
+     <y>103</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>485</x>
+     <y>391</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearLogButton</sender>
+   <signal>released()</signal>
+   <receiver>log</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1002</x>
+     <y>744</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>893</x>
+     <y>672</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>testDataBaseModel()</slot>
+ </slots>
+</ui>

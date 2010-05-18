@@ -1,0 +1,152 @@
+<ui version="4.0" >
+ <class>CreateMidasCommunityDialog</class>
+ <widget class="QDialog" name="CreateMidasCommunityDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>382</width>
+    <height>155</height>
+   </rect>
+  </property>
+  <property name="minimumSize" >
+   <size>
+    <width>382</width>
+    <height>141</height>
+   </size>
+  </property>
+  <property name="windowTitle" >
+   <string>Create community</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="DionysusIcons.qrc" >
+    <normaloff>:/icons/folder_add.png</normaloff>:/icons/folder_add.png</iconset>
+  </property>
+  <property name="modal" >
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" >
+   <item>
+    <layout class="QGridLayout" name="gridLayout" >
+     <item row="0" column="1" >
+      <widget class="QLineEdit" name="nameEdit" />
+     </item>
+     <item row="0" column="0" >
+      <widget class="QLabel" name="nameLabel" >
+       <property name="text" >
+        <string>Name</string>
+       </property>
+       <property name="alignment" >
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="margin" >
+        <number>3</number>
+       </property>
+       <property name="buddy" >
+        <cstring>nameEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" >
+      <widget class="QLineEdit" name="short_descriptionEdit" />
+     </item>
+     <item row="1" column="0" >
+      <widget class="QLabel" name="descriptionLabel" >
+       <property name="text" >
+        <string>Short description</string>
+       </property>
+       <property name="alignment" >
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="margin" >
+        <number>3</number>
+       </property>
+       <property name="buddy" >
+        <cstring>nameEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" >
+      <widget class="QLineEdit" name="linksEdit" />
+     </item>
+     <item row="2" column="0" >
+      <widget class="QLabel" name="links" >
+       <property name="text" >
+        <string>Links</string>
+       </property>
+       <property name="alignment" >
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="margin" >
+        <number>3</number>
+       </property>
+       <property name="buddy" >
+        <cstring>nameEdit</cstring>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>20</width>
+       <height>2</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="DionysusIcons.qrc" />
+ </resources>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>CreateMidasCommunityDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>320</x>
+     <y>615</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>96</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>CreateMidasCommunityDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>320</x>
+     <y>615</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>179</x>
+     <y>282</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

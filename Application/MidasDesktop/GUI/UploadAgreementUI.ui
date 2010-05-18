@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UploadAgreementDialog</class>
+ <widget class="QDialog" name="UploadAgreementDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>479</width>
+    <height>556</height>
+   </rect>
+  </property>
+  <property name="cursor">
+   <cursorShape>ArrowCursor</cursorShape>
+  </property>
+  <property name="windowTitle">
+   <string>Upload Agreement</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../DionysusIcons.qrc">
+    <normaloff>:/icons/download.png</normaloff>:/icons/download.png</iconset>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTextEdit" name="textEdit">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg'; font-size:8pt;&quot;&gt;MIDAS Upload Agreement&lt;br /&gt;Version 1.0, November 1, 2009&lt;br /&gt;&lt;br /&gt;Contract with the Insight Software Consortium and its Agents&lt;br /&gt;&lt;br /&gt;1) By uploading to MIDAS you represent that (i) you are legally authorized and entitled to make such Contribution and to grant all licenses granted in this Contribution Agreement with respect to such Contribution; (ii) if your Contribution includes any patient data, all such data is de-identified in accordance with U.S. confidentiality and security laws and requirements, including but not limited to the Health Insurance Portability and Accountability Act (HIPAA) and its regulations, and your disclosure of such data for the purposes contemplated by this Agreement is properly authorized and in compliance with all applicable laws and regulations; and (iii) you have preserved in the Contribution all applicable attributions, copyright notices and licenses for any third party software or data included in the Contribution.&lt;br /&gt;&lt;br /&gt;2) Except for the licenses granted in this Agreement, you reserve all right, title and interest in your Contribution.&lt;br /&gt;&lt;br /&gt;3) You hereby grant the Insight Software Consortium and its agents, with the right to sublicense, a perpetual, worldwide, non-exclusive, no charge, royalty-free, irrevocable license to use, reproduce, make derivative works of, display and distribute the Contribution. If your Contribution is protected by patent, you hereby grant to the Insight Software Consortium, with the right to sublicense, a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable license under your interest in patent rights covering the Contribution, to make, have made, use, sell and otherwise transfer your Contribution, alone or in combination with any other code.&lt;br /&gt;&lt;br /&gt;4) You agree that the Insight Software Consortium and its agents, including Kitware, shall have no liability arising in connection with claims resulting from your breach of any of the terms of this Agreement.&lt;br /&gt;&lt;br /&gt;5) YOU WARRANT THAT TO THE BEST OF YOUR KNOWLEDGE YOUR CONTRIBUTION DOES NOT CONTAIN ANY CODE THAT REQUIRES OR PRESCRIBES AN &quot;OPEN SOURCE LICENSE&quot; FOR DERIVATIVE WORKS (by way of non-limiting example, the GNU General Public License or other so-called &quot;reciprocal&quot; license that requires any derived work to be licensed under the GNU General Public License or other &quot;open source license&quot;).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="agreementCheckBox">
+     <property name="text">
+      <string>I have read and agreed to the MIDAS Upload Agreement</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../DionysusIcons.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>UploadAgreementDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>528</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>470</x>
+     <y>502</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>UploadAgreementDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>263</x>
+     <y>529</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>475</x>
+     <y>449</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
