@@ -3,7 +3,7 @@
 
 #include <QApplication>
 
-class DionysusUI; 
+class MIDASDesktopUI; 
 
 class MidasApplication: public QApplication
 {
@@ -19,7 +19,7 @@ public:
 private:
   static MidasApplication* m_instance; 
 
-  DionysusUI * dionysus; 
+  MIDASDesktopUI * MIDASDesktop; 
 };
 
 #endif //__MidasApplication_H

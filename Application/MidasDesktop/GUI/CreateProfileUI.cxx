@@ -7,7 +7,7 @@
 #include "midasDatabaseProxy.h"
 #include <QString>
 
-CreateProfileUI::CreateProfileUI(DionysusUI *parent):
+CreateProfileUI::CreateProfileUI(MIDASDesktopUI *parent):
   QDialog(parent), parent(parent)
 {
   setupUi(this);

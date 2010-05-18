@@ -3,7 +3,7 @@
 
 #include "ui_CreateMidasCollectionUI.h"
 
-class DionysusUI; 
+class MIDASDesktopUI; 
 
 class CreateMidasCollectionUI :  public QDialog, private Ui::CreateMidasCollectionDialog
 {
@@ -17,7 +17,7 @@ public:
     };
   Q_DECLARE_FLAGS(Types, Type)
 
-  CreateMidasCollectionUI(DionysusUI *parent, CreateMidasCollectionUI::Types type = CreateMidasCollectionUI::Collection);
+  CreateMidasCollectionUI(MIDASDesktopUI *parent, CreateMidasCollectionUI::Types type = CreateMidasCollectionUI::Collection);
   ~CreateMidasCollectionUI(){}
 
   void setType(Types type);
@@ -28,7 +28,7 @@ public slots:
   virtual void accept();
 
 protected:
-  DionysusUI * parent;
+  MIDASDesktopUI * parent;
   Types type; 
 };
 

@@ -8,7 +8,7 @@
 #include "midasSynchronizer.h"
 
 /** Constructor */
-SignInUI::SignInUI(DionysusUI *parent):
+SignInUI::SignInUI(MIDASDesktopUI *parent):
   QDialog(parent), parent(parent)
 {
   setupUi(this);

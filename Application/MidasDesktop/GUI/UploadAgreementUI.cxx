@@ -3,7 +3,7 @@
 #include "MIDASDesktopUI.h"
 #include "mwsSettings.h"
 
-UploadAgreementUI::UploadAgreementUI(DionysusUI *parent):
+UploadAgreementUI::UploadAgreementUI(MIDASDesktopUI *parent):
 QDialog(parent), parent(parent)
 {
   setupUi(this);

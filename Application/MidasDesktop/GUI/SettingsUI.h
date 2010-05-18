@@ -3,7 +3,7 @@
 
 #include "ui_SettingsUI.h"
 
-class DionysusUI; 
+class MIDASDesktopUI; 
 class SettingsUI; 
  
 class SettingsUI :  public QDialog, private Ui::SettingsDialog
@@ -12,7 +12,7 @@ class SettingsUI :  public QDialog, private Ui::SettingsDialog
  
 public:
 
-  SettingsUI(DionysusUI *parent);
+  SettingsUI(MIDASDesktopUI *parent);
   ~SettingsUI();
 
   void init(int currenttab = 0); 
@@ -25,7 +25,7 @@ public slots:
   void checkConnectionSettings(); 
 
 private:
-  DionysusUI*       parent;
+  MIDASDesktopUI*       parent;
 };
 
 #endif //__SettingsUI_H

@@ -3,14 +3,14 @@
  
 #include "ui_AboutUI.h"
 
-class DionysusUI; 
+class MIDASDesktopUI; 
 
 class AboutUI :  public QDialog, private Ui::AboutDialog
 {
   Q_OBJECT
  
 public:
-  AboutUI(DionysusUI *parent);
+  AboutUI(MIDASDesktopUI *parent);
   ~AboutUI(){}
 
 

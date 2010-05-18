@@ -5,7 +5,7 @@
 #include "MIDASDesktopUI.h"
 #include "mwsWebAPI.h"
 
-SettingsUI::SettingsUI(DionysusUI *parent):parent(parent)
+SettingsUI::SettingsUI(MIDASDesktopUI *parent):parent(parent)
 {
   setupUi(this); // this sets up GUI
   connect( checkConnectionSettingsButton, SIGNAL( clicked() ), this, SLOT( checkConnectionSettings() ) );

@@ -3,14 +3,14 @@
 
 #include "ui_UploadAgreementUI.h"
 
-class DionysusUI; 
+class MIDASDesktopUI; 
 
 class UploadAgreementUI :  public QDialog, private Ui::UploadAgreementDialog
 {
   Q_OBJECT
  
 public:
-  UploadAgreementUI(DionysusUI *parent);
+  UploadAgreementUI(MIDASDesktopUI *parent);
   ~UploadAgreementUI(){}
 
 public slots:
@@ -19,7 +19,7 @@ public slots:
   virtual void accept(); 
 
 protected:
- DionysusUI * parent; 
+ MIDASDesktopUI * parent; 
 
 };
 

@@ -3,7 +3,7 @@
  
 #include "ui_CreateProfileUI.h"
 
-class DionysusUI;
+class MIDASDesktopUI;
 
 class CreateProfileUI :  public QDialog, private Ui::CreateProfileDialog
 {
@@ -11,7 +11,7 @@ class CreateProfileUI :  public QDialog, private Ui::CreateProfileDialog
  
 public:
 
-  CreateProfileUI(DionysusUI *parent);
+  CreateProfileUI(MIDASDesktopUI *parent);
   ~CreateProfileUI(){};
 
   void init(); 
@@ -29,7 +29,7 @@ public slots:
 
 private:
 
-  DionysusUI* parent;
+  MIDASDesktopUI* parent;
   
 };
 

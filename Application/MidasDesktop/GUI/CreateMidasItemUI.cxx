@@ -15,7 +15,7 @@
 #include "MidasCollectionTreeItem.h"
 #include "MidasClientGlobal.h"
 
-CreateMidasItemUI::CreateMidasItemUI(DionysusUI *parent, CreateMidasItemUI::Types type):
+CreateMidasItemUI::CreateMidasItemUI(MIDASDesktopUI *parent, CreateMidasItemUI::Types type):
   QDialog(parent), parent(parent)
 {
   this->setType(type);

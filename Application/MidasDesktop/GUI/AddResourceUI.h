@@ -3,7 +3,7 @@
  
 #include "ui_AddResourceUI.h"
 
-class DionysusUI;
+class MIDASDesktopUI;
 
 class AddResourceUI :  public QDialog, private Ui::AddResourceDialog
 {
@@ -11,7 +11,7 @@ class AddResourceUI :  public QDialog, private Ui::AddResourceDialog
  
 public:
 
-  AddResourceUI(DionysusUI *parent);
+  AddResourceUI(MIDASDesktopUI *parent);
   ~AddResourceUI(){};
 
   void init(); 
@@ -28,7 +28,7 @@ public slots:
   void handleRadioSelection();
 private:
 
-  DionysusUI* parent;
+  MIDASDesktopUI* parent;
   
 };
 

@@ -6,7 +6,7 @@
 #include "midasSynchronizer.h"
 
 /** Constructor */
-PullUI::PullUI(DionysusUI *parent):
+PullUI::PullUI(MIDASDesktopUI *parent):
   QDialog(parent), parent(parent)
 {
   setupUi(this);

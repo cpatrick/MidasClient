@@ -14,7 +14,7 @@
 
 #include <kwsys/SystemTools.hxx>
 
-CreateMidasCommunityUI::CreateMidasCommunityUI(DionysusUI *parent, CreateMidasCommunityUI::Types type):
+CreateMidasCommunityUI::CreateMidasCommunityUI(MIDASDesktopUI *parent, CreateMidasCommunityUI::Types type):
   QDialog(parent), parent(parent)
   {
   setupUi(this); // this sets up GUI

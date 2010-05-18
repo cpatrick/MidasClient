@@ -3,7 +3,7 @@
  
 #include "ui_PullUI.h"
 
-class DionysusUI;
+class MIDASDesktopUI;
 
 class PullUI :  public QDialog, private Ui::PullDialog
 {
@@ -11,7 +11,7 @@ class PullUI :  public QDialog, private Ui::PullDialog
  
 public:
 
-  PullUI(DionysusUI *parent);
+  PullUI(MIDASDesktopUI *parent);
   ~PullUI(){};
 
   void setPullId(int id);
@@ -31,7 +31,7 @@ public slots:
 
 private:
 
-  DionysusUI* parent;
+  MIDASDesktopUI* parent;
   int pullId;
   int resourceTypeIndex;
   

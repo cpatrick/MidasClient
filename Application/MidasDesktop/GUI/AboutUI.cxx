@@ -3,7 +3,7 @@
 #include "MIDASDesktopUI.h"
 #include "MidasClientGlobal.h"
 
-AboutUI::AboutUI(DionysusUI *parent):
+AboutUI::AboutUI(MIDASDesktopUI *parent):
   QDialog(parent)
   {
   setupUi(this);

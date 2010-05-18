@@ -3,7 +3,7 @@
  
 #include "ui_SignInUI.h"
 
-class DionysusUI;
+class MIDASDesktopUI;
 
 class SignInUI :  public QDialog, private Ui::SignInDialog
 {
@@ -11,7 +11,7 @@ class SignInUI :  public QDialog, private Ui::SignInDialog
  
 public:
 
-  SignInUI(DionysusUI *parent);
+  SignInUI(MIDASDesktopUI *parent);
   ~SignInUI(){};
 
   void init(); 
@@ -29,7 +29,7 @@ public slots:
 
 private:
 
-  DionysusUI* parent;
+  MIDASDesktopUI* parent;
   
 };
 

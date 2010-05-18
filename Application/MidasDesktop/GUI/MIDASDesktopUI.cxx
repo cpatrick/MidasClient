@@ -56,7 +56,7 @@
 #include "mwsWebAPI.h"
 
 // ------------- TreeModel / TreeView -------------
-DionysusUI::DionysusUI() : currentTransferMode(DionysusUI::NotSet)
+MIDASDesktopUI::MIDASDesktopUI() : currentTransferMode(MIDASDesktopUI::NotSet)
 {
   setupUi(this); // this sets up GUI
   int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
@@ -154,8 +154,6 @@ DionysusUI::DionysusUI() : currentTransferMode(DionysusUI::NotSet)
   connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
     this, SLOT( displayClientResourceContextMenu(QContextMenuEvent*) ));
 
-  connect(pull_Button, SIGNAL(released()), this, SLOT( performPush()));
-
   connect(dlg_addResourceUI, SIGNAL(addedResource()), this, SLOT( clientTreeViewUpdated() ) );
   connect(dlg_pullUI, SIGNAL(pulledResources()), this, SLOT( clientTreeViewUpdated() ) );
   // ------------- setup TreeView signals -------------
@@ -223,7 +221,7 @@ DionysusUI::DionysusUI() : currentTransferMode(DionysusUI::NotSet)
  }
 
 /** Destructor */
-DionysusUI::~DionysusUI()
+MIDASDesktopUI::~MIDASDesktopUI()
   {
   ProcessingStatusUI::finalize();
   delete dlg_aboutUI;
@@ -247,12 +245,12 @@ DionysusUI::~DionysusUI()
   delete m_synch;
   }
 
-MidasTreeView * DionysusUI::getTreeView()
+MidasTreeView * MIDASDesktopUI::getTreeView()
   {
   return this->treeView; 
   }
 
-void DionysusUI::activateActions(bool value, ActivateActions activateAction)
+void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
   {
   if ( activateAction & ACTION_CONNECTED )
     {
@@ -309,7 +307,7 @@ void DionysusUI::activateActions(bool value, ActivateActions activateAction)
     }
   }
 
-void DionysusUI::updateActionState( const MidasTreeItem* item )
+void MIDASDesktopUI::updateActionState( const MidasTreeItem* item )
 {
   MidasCommunityTreeItem * communityTreeItem = NULL; 
   MidasCollectionTreeItem * collectionTreeItem = NULL; 
@@ -345,7 +343,7 @@ void DionysusUI::updateActionState( const MidasTreeItem* item )
     }
 }
 
-void DionysusUI::updateActionStateClient( const MidasTreeItem* item )
+void MIDASDesktopUI::updateActionStateClient( const MidasTreeItem* item )
 {
   MidasCommunityTreeItem * communityTreeItem = NULL;
   MidasCollectionTreeItem * collectionTreeItem = NULL;
@@ -377,27 +375,27 @@ void DionysusUI::updateActionStateClient( const MidasTreeItem* item )
     }
 }
 
-void DionysusUI::clientTreeViewUpdated()
+void MIDASDesktopUI::clientTreeViewUpdated()
 {
   this->treeTabContainer->setCurrentIndex(1);
   this->treeViewClient->Update();
   this->treeViewClient->expandAll();
 }
 
-void DionysusUI::serverTreeViewUpdated()
+void MIDASDesktopUI::serverTreeViewUpdated()
 {
   this->treeTabContainer->setCurrentIndex(0);
   this->treeView->Update();
   //this->treeView->expandAll();
 }
 
-void DionysusUI::showLogTab()
+void MIDASDesktopUI::showLogTab()
 {
   this->logAndSearchTabContainer->setCurrentIndex(1);
 }
 
 /** Show the community information */
-void DionysusUI::updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem )
+void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem )
 { 
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
   /*if (!readonly)
@@ -445,7 +443,7 @@ void DionysusUI::updateInfoPanel( const MidasCommunityTreeItem* communityTreeIte
            this, SLOT( resourceDescriptionChanged(QTableWidgetItem *) ) );
 }
 
-void DionysusUI::updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem )
+void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem )
 {
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
 /*  if (!readonly)
@@ -479,7 +477,7 @@ void DionysusUI::updateInfoPanel( const MidasCollectionTreeItem* collectionTreeI
   connect( midasTreeItemInfoTable, SIGNAL( itemChanged ( QTableWidgetItem * ) ), this, SLOT( resourceDescriptionChanged(QTableWidgetItem *) ) ); 
   }
 
-void DionysusUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
+void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
   {
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
 /*  if (!readonly)
@@ -524,13 +522,13 @@ void DionysusUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
   connect( midasTreeItemInfoTable, SIGNAL( itemChanged ( QTableWidgetItem * ) ), this, SLOT( resourceDescriptionChanged(QTableWidgetItem *) ) ); 
   }
 
-void DionysusUI::clearInfoPanel()
+void MIDASDesktopUI::clearInfoPanel()
   {
   midasTreeItemInfoTable->clear();
   midasTreeItemInfoTable->setRowCount( 0 );
   }
 
-void DionysusUI::resourceDescriptionChanged(QTableWidgetItem * item )
+void MIDASDesktopUI::resourceDescriptionChanged(QTableWidgetItem * item )
   { 
   QTableWidgetMidasCommunityDescItem * communityItem = NULL; 
   QTableWidgetMidasCollectionDescItem * collectionItem = NULL; 
@@ -553,7 +551,7 @@ void DionysusUI::resourceDescriptionChanged(QTableWidgetItem * item )
     */
   }
 
-void DionysusUI::displayClientResourceContextMenu( QContextMenuEvent* e )
+void MIDASDesktopUI::displayClientResourceContextMenu( QContextMenuEvent* e )
 {
   QMenu menu( this );
   MidasCommunityTreeItem * communityTreeItem = NULL;
@@ -596,7 +594,7 @@ void DionysusUI::displayClientResourceContextMenu( QContextMenuEvent* e )
   menu.exec( e->globalPos() );
 }
 
-void DionysusUI::displayServerResourceContextMenu( QContextMenuEvent* e )
+void MIDASDesktopUI::displayServerResourceContextMenu( QContextMenuEvent* e )
 {
   QMenu menu( this );
   QModelIndex index = treeView->indexAt( e->pos() );
@@ -613,27 +611,27 @@ void DionysusUI::displayServerResourceContextMenu( QContextMenuEvent* e )
   menu.exec( e->globalPos() );
 }
 
-void DionysusUI::addCommunity()
+void MIDASDesktopUI::addCommunity()
 {
   this->dlg_addMidasCommunityUI->exec();
 }
 
-void DionysusUI::addSubcommunity()
+void MIDASDesktopUI::addSubcommunity()
 {
   this->dlg_addMidasSubCommunityUI->exec();
 }
 
-void DionysusUI::addCollection()
+void MIDASDesktopUI::addCollection()
 {
   this->dlg_addMidasCollectionUI->exec();
 }
 
-void DionysusUI::addItem()
+void MIDASDesktopUI::addItem()
 {
   this->dlg_addMidasItemUI->exec();
 }
 
-void DionysusUI::addBitstream()
+void MIDASDesktopUI::addBitstream()
 {
   QStringList files = QFileDialog::getOpenFileNames(
                                     this, tr("Load Files"),
@@ -648,7 +646,7 @@ void DionysusUI::addBitstream()
     }
 }
 
-void DionysusUI::addBitstreams(const MidasItemTreeItem* parentItem,
+void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
                                const QStringList & files)
 {
   for(QStringList::const_iterator i = files.begin(); i != files.end(); ++i)
@@ -675,17 +673,17 @@ void DionysusUI::addBitstreams(const MidasItemTreeItem* parentItem,
   this->clientTreeViewUpdated();
 }
 
-void DionysusUI::displayStatus(const QString& message)
+void MIDASDesktopUI::displayStatus(const QString& message)
   {
   stateLabel->setText(message); 
   }
 
-void DionysusUI::resetStatus()
+void MIDASDesktopUI::resetStatus()
   {
   stateLabel->setText(""); 
   }
 
-void DionysusUI::signInOrOut()
+void MIDASDesktopUI::signInOrOut()
   {
   if ( !this->m_signIn )
     {
@@ -697,7 +695,7 @@ void DionysusUI::signInOrOut()
     }
   }
 
-void DionysusUI::signIn()
+void MIDASDesktopUI::signIn()
 {
   connectLabel->hide();
   hostLabel->hide();
@@ -719,7 +717,7 @@ void DionysusUI::signIn()
   this->displayStatus(tr(""));
 }
 
-void DionysusUI::chooseLocalDatabase()
+void MIDASDesktopUI::chooseLocalDatabase()
 {
   // ------------- display FileDialog -------------
   QString file = QFileDialog::getOpenFileName(
@@ -730,7 +728,7 @@ void DionysusUI::chooseLocalDatabase()
   setLocalDatabase(file.toStdString());
 }
 
-void DionysusUI::setLocalDatabase(std::string file)
+void MIDASDesktopUI::setLocalDatabase(std::string file)
 {
   if(file == "")
     {
@@ -766,7 +764,7 @@ void DionysusUI::setLocalDatabase(std::string file)
     }
 }
 
-void DionysusUI::setServerURL(std::string url)
+void MIDASDesktopUI::setServerURL(std::string url)
 {
   this->m_synch->SetServerURL(url);
   this->m_auth->SetServerURL(url);
@@ -774,7 +772,7 @@ void DionysusUI::setServerURL(std::string url)
   this->m_url = url;
 }
 
-void DionysusUI::createProfile(std::string name, std::string email,
+void MIDASDesktopUI::createProfile(std::string name, std::string email,
                                std::string apiName, std::string apiKey)
 {
   if(!m_database)
@@ -798,7 +796,7 @@ void DionysusUI::createProfile(std::string name, std::string email,
 }
 
 /** Signing out */
-void DionysusUI::signOut()
+void MIDASDesktopUI::signOut()
 {
   this->activateActions(false, ACTION_ALL); 
   treeView->Clear(); 
@@ -809,22 +807,22 @@ void DionysusUI::signOut()
   m_signIn = false;
 }
 
-void DionysusUI::editServerSettings()
+void MIDASDesktopUI::editServerSettings()
   {
   this->dlg_settingsUI->exec(0); 
   }
 
-void DionysusUI::editSearchSettings()
+void MIDASDesktopUI::editSearchSettings()
   {
   this->dlg_settingsUI->exec(1);
   }
 
-void DionysusUI::checkDatabaseSettings()
+void MIDASDesktopUI::checkDatabaseSettings()
   {
   this->dlg_settingsUI->exec(2);
   }
 
-void DionysusUI::pushResources()
+void MIDASDesktopUI::pushResources()
 {
   this->displayStatus(tr("Beginning to push locally added resources..."));
   this->m_synch->SetOperation(midasSynchronizer::OPERATION_PUSH);
@@ -837,7 +835,7 @@ void DionysusUI::pushResources()
   this->displayStatus(tr("Finished pushing locally added resources."));
 }
 
-void DionysusUI::search()
+void MIDASDesktopUI::search()
 {
   this->displayStatus(tr("Searching...")); 
   searchItemsListWidget->clear();
@@ -853,12 +851,12 @@ void DionysusUI::search()
   this->resetStatus();
 }
 
-void DionysusUI::searchItemClicked(QListWidgetItemMidasItem * listItem)
+void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem * listItem)
 {
   this->treeView->selectByObject(listItem->getObject());
 }
 
-void DionysusUI::openBitstream(int id)
+void MIDASDesktopUI::openBitstream(int id)
 {
   if(!this->m_database)
     {
@@ -883,7 +881,7 @@ void DionysusUI::openBitstream(int id)
     }
 }
 
-void DionysusUI::storeLastPollTime()
+void MIDASDesktopUI::storeLastPollTime()
 {
   mws::NewResources newResources;
   m_database->Open();
@@ -896,7 +894,7 @@ void DionysusUI::storeLastPollTime()
   this->decorateServerTree();
 }
 
-void DionysusUI::decorateServerTree()
+void MIDASDesktopUI::decorateServerTree()
 {
   for(std::vector<std::string>::iterator i = m_dirtyUuids.begin();
       i != m_dirtyUuids.end(); ++i)

@@ -1,10 +1,10 @@
-#ifndef __DionysusUI_H
-#define __DionysusUI_H
+#ifndef __MIDASDesktopUI_H
+#define __MIDASDesktopUI_H
 
 #include <QFlags>
 #include <QProgressBar>
 
-#include "ui_DionysusUI.h"
+#include "ui_MIDASDesktopUI.h"
 
 class UploadAgreementUI;
 class UpDownLoadUI; 
@@ -31,7 +31,7 @@ extern "C" {
   static int progress_transfer_callback(void* data, double dltotal, double dlnow, double ultotal, double ulnow); 
 }
 
-class DionysusUI :  public QMainWindow, private Ui::DionysusWindow
+class MIDASDesktopUI :  public QMainWindow, private Ui::MIDASDesktopWindow
 {
   Q_OBJECT
  
@@ -64,8 +64,8 @@ public:
     }; 
   Q_DECLARE_FLAGS(ActivateActions, ActivateAction)
      
-  DionysusUI();
-  ~DionysusUI();
+  MIDASDesktopUI();
+  ~MIDASDesktopUI();
 
   void activateActions(bool value, ActivateActions activateAction); 
 
@@ -184,7 +184,7 @@ private:
   std::vector<std::string>    m_dirtyUuids;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( DionysusUI::TransferModes )
-Q_DECLARE_OPERATORS_FOR_FLAGS( DionysusUI::ActivateActions )
+Q_DECLARE_OPERATORS_FOR_FLAGS( MIDASDesktopUI::TransferModes )
+Q_DECLARE_OPERATORS_FOR_FLAGS( MIDASDesktopUI::ActivateActions )
 
-#endif //__DionysusUI_H
+#endif //__MIDASDesktopUI_H

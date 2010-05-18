@@ -5,7 +5,7 @@
 
 #include <QFlags>
 
-class DionysusUI; 
+class MIDASDesktopUI; 
 
 class CreateMidasCommunityUI :  public QDialog, private Ui::CreateMidasCommunityDialog
 {
@@ -21,7 +21,7 @@ public:
     };
   Q_DECLARE_FLAGS(Types, Type)
   
-  CreateMidasCommunityUI(DionysusUI *parent, CreateMidasCommunityUI::Types type = CreateMidasCommunityUI::Community);
+  CreateMidasCommunityUI(MIDASDesktopUI *parent, CreateMidasCommunityUI::Types type = CreateMidasCommunityUI::Community);
   ~CreateMidasCommunityUI(){}
 
   void setType(Types type);
@@ -32,7 +32,7 @@ public slots:
   virtual void accept(); 
 
 private:
-  DionysusUI*       parent; 
+  MIDASDesktopUI* parent; 
   Types type; 
 };
 

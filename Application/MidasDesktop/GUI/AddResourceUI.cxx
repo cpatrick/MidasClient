@@ -5,7 +5,7 @@
 #include <QFileDialog>
 #include <QString>
 
-AddResourceUI::AddResourceUI(DionysusUI *parent):
+AddResourceUI::AddResourceUI(MIDASDesktopUI *parent):
   QDialog(parent), parent(parent)
 {
   setupUi(this);

@@ -9,7 +9,7 @@
 
 ProcessingStatusUI * ProcessingStatusUI::_instance = NULL;
 
-void ProcessingStatusUI::init(DionysusUI *parent)
+void ProcessingStatusUI::init(MIDASDesktopUI *parent)
   {
   assert( _instance == NULL );
   if (_instance == NULL)
@@ -48,7 +48,7 @@ void ProcessingStatusUI::desactivate()
     }
   }
 
-ProcessingStatusUI::ProcessingStatusUI(DionysusUI *parent): 
+ProcessingStatusUI::ProcessingStatusUI(MIDASDesktopUI *parent): 
   QDialog(parent, Qt::FramelessWindowHint), parent(parent)
   {
   setupUi(this); // this sets up GUI

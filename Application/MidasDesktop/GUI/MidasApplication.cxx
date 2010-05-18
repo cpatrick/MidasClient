@@ -31,14 +31,14 @@ int MidasApplication::exec()
   {
   Q_INIT_RESOURCE(MIDASDesktopIcons);
 
-  this->dionysus = new DionysusUI();
+  this->MIDASDesktop = new MIDASDesktopUI();
 
-  dionysus->show(); 
+  MIDASDesktop->show(); 
 
-  dionysus->signInOrOut(); 
+  MIDASDesktop->signInOrOut(); 
 
   int code = QApplication::exec(); 
-  delete this->dionysus; 
+  delete this->MIDASDesktop; 
   return code; 
   }
 
@@ -51,9 +51,9 @@ bool MidasApplication::notify ( QObject * receiver, QEvent * event )
   catch (const std::exception& e)
     {
     Logger::error("Notify event", &e);
-    assert( this->dionysus != NULL); 
-    //this->dionysus->signOut();
-    QMessageBox::critical(this->dionysus, "MIDAS Desktop error", STR2QSTR(e.what()));
+    assert( this->MIDASDesktop != NULL); 
+    //this->MIDASDesktop->signOut();
+    QMessageBox::critical(this->MIDASDesktop, "MIDAS Desktop error", STR2QSTR(e.what()));
     }
   return false; 
   }
