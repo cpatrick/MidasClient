@@ -4,7 +4,7 @@
 
 #include "MidasClientGlobal.h"
 #include "Utils.h"
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "Logger.h"
 
 ProcessingStatusUI * ProcessingStatusUI::_instance = NULL;

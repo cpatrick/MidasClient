@@ -4,7 +4,7 @@
 #include <Qt>
 #include <QDate>
 
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "mwsSettings.h"
 #include "midasSynchronizer.h"
 #include "Utils.h"

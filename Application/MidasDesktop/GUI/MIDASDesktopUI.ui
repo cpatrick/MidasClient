@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DionysusWindow</class>
- <widget class="QMainWindow" name="DionysusWindow">
+ <class>MIDASDesktopWindow</class>
+ <widget class="QMainWindow" name="MIDASDesktopWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,7 +14,7 @@
    <string>Midas Desktop</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../DionysusIcons.qrc">
+   <iconset resource="../MIDASDesktopIcons.qrc">
     <normaloff>:/icons/Icon16.PNG</normaloff>:/icons/Icon16.PNG</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -118,7 +118,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="../DionysusIcons.qrc">:/icons/find.png</pixmap>
+                <pixmap resource="../MIDASDesktopIcons.qrc">:/icons/find.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -205,7 +205,7 @@
               <string>Clear Log</string>
              </property>
              <property name="icon">
-              <iconset resource="../DionysusIcons.qrc">
+              <iconset resource="../MIDASDesktopIcons.qrc">
                <normaloff>:/icons/delete.png</normaloff>:/icons/delete.png</iconset>
              </property>
             </widget>
@@ -262,7 +262,7 @@
               <string>Pull Resources</string>
              </property>
              <property name="icon">
-              <iconset resource="../DionysusIcons.qrc">
+              <iconset resource="../MIDASDesktopIcons.qrc">
                <normaloff>:/icons/nav_right_green.png</normaloff>:/icons/nav_right_green.png</iconset>
              </property>
             </widget>
@@ -285,7 +285,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="../DionysusIcons.qrc">
+              <iconset resource="../MIDASDesktopIcons.qrc">
                <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
              </property>
             </widget>
@@ -319,7 +319,7 @@
               <string>Push Resources</string>
              </property>
              <property name="icon">
-              <iconset resource="../DionysusIcons.qrc">
+              <iconset resource="../MIDASDesktopIcons.qrc">
                <normaloff>:/icons/nav_left_green.png</normaloff>:/icons/nav_left_green.png</iconset>
              </property>
             </widget>
@@ -333,7 +333,7 @@
               <string>Add Resource</string>
              </property>
              <property name="icon">
-              <iconset resource="../DionysusIcons.qrc">
+              <iconset resource="../MIDASDesktopIcons.qrc">
                <normaloff>:/icons/add2.png</normaloff>:/icons/add2.png</iconset>
              </property>
             </widget>
@@ -456,7 +456,7 @@
       <string>Server</string>
      </property>
      <property name="icon">
-      <iconset resource="../DionysusIcons.qrc">
+      <iconset resource="../MIDASDesktopIcons.qrc">
        <normaloff>:/icons/earth_network.png</normaloff>:/icons/earth_network.png</iconset>
      </property>
      <addaction name="actionPull_Resource"/>
@@ -466,7 +466,7 @@
       <string>Client</string>
      </property>
      <property name="icon">
-      <iconset resource="../DionysusIcons.qrc">
+      <iconset resource="../MIDASDesktopIcons.qrc">
        <normaloff>:/icons/workstation_network.png</normaloff>:/icons/workstation_network.png</iconset>
      </property>
      <addaction name="actionAdd_community"/>
@@ -491,7 +491,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSign_In">
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/earth_connection.png</normaloff>:/icons/earth_connection.png</iconset>
    </property>
    <property name="text">
@@ -511,7 +511,7 @@
   </action>
   <action name="actionEdit_search_settings">
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/find.png</normaloff>:/icons/find.png</iconset>
    </property>
    <property name="text">
@@ -523,19 +523,19 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/Icon16.PNG</normaloff>:/icons/Icon16.PNG</iconset>
    </property>
    <property name="text">
     <string>About MidasDesktop</string>
    </property>
    <property name="statusTip">
-    <string>About Dionysus.</string>
+    <string>About MIDASDesktop.</string>
    </property>
   </action>
   <action name="actionCreate_Profile">
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/dude3.png</normaloff>:/icons/dude3.png</iconset>
    </property>
    <property name="text">
@@ -547,7 +547,7 @@
   </action>
   <action name="actionChoose_Local_Database">
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/workstation_network.png</normaloff>:/icons/workstation_network.png</iconset>
    </property>
    <property name="text">
@@ -562,7 +562,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/gpl_folder_add.png</normaloff>:/icons/gpl_folder_add.png</iconset>
    </property>
    <property name="text">
@@ -577,7 +577,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/gpl_folder_add.png</normaloff>:/icons/gpl_folder_add.png</iconset>
    </property>
    <property name="text">
@@ -592,7 +592,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/folder_add.png</normaloff>:/icons/folder_add.png</iconset>
    </property>
    <property name="text">
@@ -607,7 +607,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/document_add.png</normaloff>:/icons/document_add.png</iconset>
    </property>
    <property name="text">
@@ -622,7 +622,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/gpl_document_add.png</normaloff>:/icons/gpl_document_add.png</iconset>
    </property>
    <property name="text">
@@ -637,7 +637,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/nav_left_green.png</normaloff>:/icons/nav_left_green.png</iconset>
    </property>
    <property name="text">
@@ -652,7 +652,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../DionysusIcons.qrc">
+    <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/nav_right_green.png</normaloff>:/icons/nav_right_green.png</iconset>
    </property>
    <property name="text">
@@ -686,13 +686,13 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>

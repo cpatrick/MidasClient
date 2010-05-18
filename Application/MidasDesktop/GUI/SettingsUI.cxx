@@ -2,7 +2,7 @@
 
 #include "Utils.h"
 #include "mwsSettings.h"
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "mwsWebAPI.h"
 
 SettingsUI::SettingsUI(DionysusUI *parent):parent(parent)

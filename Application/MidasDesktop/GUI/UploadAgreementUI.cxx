@@ -1,6 +1,6 @@
 #include "UploadAgreementUI.h"
 
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "mwsSettings.h"
 
 UploadAgreementUI::UploadAgreementUI(DionysusUI *parent):

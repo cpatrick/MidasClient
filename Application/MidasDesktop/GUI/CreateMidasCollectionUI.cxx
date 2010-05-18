@@ -3,7 +3,7 @@
 #include <QtGui> 
 #include <Qt>
 
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "mwsSettings.h"
 #include "midasSynchronizer.h"
 

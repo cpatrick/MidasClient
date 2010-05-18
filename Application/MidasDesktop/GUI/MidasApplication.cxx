@@ -3,7 +3,7 @@
 #include <QPlastiqueStyle>
 #include <QMessageBox>
 
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "Utils.h"
 #include "Logger.h"
 #include "MidasClientGlobal.h"
@@ -29,7 +29,7 @@ QApplication(argc, argv)
 
 int MidasApplication::exec()
   {
-  Q_INIT_RESOURCE(DionysusIcons);
+  Q_INIT_RESOURCE(MIDASDesktopIcons);
 
   this->dionysus = new DionysusUI();
 

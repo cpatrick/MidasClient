@@ -1,4 +1,4 @@
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 
 #include <QModelIndex>
 #include <QItemSelection>

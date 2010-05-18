@@ -34,7 +34,7 @@
       <string>Browse...</string>
      </property>
      <property name="icon">
-      <iconset resource="../DionysusIcons.qrc">
+      <iconset resource="../MIDASDesktopIcons.qrc">
        <normaloff>:/icons/folder_add.png</normaloff>:/icons/folder_add.png</iconset>
      </property>
     </widget>
@@ -116,7 +116,7 @@
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
-  <include location="../DionysusIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>

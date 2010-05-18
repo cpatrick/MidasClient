@@ -13,7 +13,7 @@
    <string>Create item</string>
   </property>
   <property name="windowIcon" >
-   <iconset resource="DionysusIcons.qrc" >
+   <iconset resource="MIDASDesktopIcons.qrc" >
     <normaloff>:/icons/document_add.png</normaloff>:/icons/document_add.png</iconset>
   </property>
   <property name="modal" >
@@ -48,7 +48,7 @@
      <item>
       <widget class="QPushButton" name="addAuthorButton" >
        <property name="icon" >
-        <iconset resource="DionysusIcons.qrc" >
+        <iconset resource="MIDASDesktopIcons.qrc" >
          <normaloff>:/icons/add2.png</normaloff>:/icons/add2.png</iconset>
        </property>
       </widget>
@@ -105,7 +105,7 @@
      <item>
       <widget class="QPushButton" name="addKeywordButton" >
        <property name="icon" >
-        <iconset resource="DionysusIcons.qrc" >
+        <iconset resource="MIDASDesktopIcons.qrc" >
          <normaloff>:/icons/add2.png</normaloff>:/icons/add2.png</iconset>
        </property>
       </widget>
@@ -258,7 +258,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="DionysusIcons.qrc" />
+  <include location="MIDASDesktopIcons.qrc" />
  </resources>
  <connections>
   <connection>

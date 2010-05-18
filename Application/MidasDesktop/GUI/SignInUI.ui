@@ -17,7 +17,7 @@
    <string>MidasClient Sign in</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../DionysusIcons.qrc">
+   <iconset resource="../MIDASDesktopIcons.qrc">
     <normaloff>:/icons/Icon16.PNG</normaloff>:/icons/Icon16.PNG</iconset>
   </property>
   <property name="modal">
@@ -44,7 +44,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../DionysusIcons.qrc">:/icons/dude3.png</pixmap>
+        <pixmap resource="../MIDASDesktopIcons.qrc">:/icons/dude3.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -79,7 +79,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../DionysusIcons.qrc">
+        <iconset resource="../MIDASDesktopIcons.qrc">
          <normaloff>:/icons/add2.png</normaloff>:/icons/add2.png</iconset>
        </property>
       </widget>
@@ -101,15 +101,15 @@
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>

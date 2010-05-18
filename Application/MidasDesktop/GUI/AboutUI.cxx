@@ -1,6 +1,6 @@
 #include "AboutUI.h"
 
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "MidasClientGlobal.h"
 
 AboutUI::AboutUI(DionysusUI *parent):

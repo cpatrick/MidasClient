@@ -19,7 +19,7 @@
    <string>About MidasDesktop</string>
   </property>
   <property name="windowIcon" >
-   <iconset resource="DionysusIcons.qrc" >
+   <iconset resource="MIDASDesktopIcons.qrc" >
     <normaloff>:/icons/Icon32.ico</normaloff>:/icons/Icon32.ico</iconset>
   </property>
   <property name="modal" >
@@ -35,7 +35,7 @@
       </sizepolicy>
      </property>
      <property name="pixmap" >
-      <pixmap resource="DionysusIcons.qrc" >:/icons/MidasClientLogo.png</pixmap>
+      <pixmap resource="MIDASDesktopIcons.qrc" >:/icons/MidasClientLogo.png</pixmap>
      </property>
      <property name="scaledContents" >
       <bool>true</bool>
@@ -76,7 +76,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="DionysusIcons.qrc" />
+  <include location="MIDASDesktopIcons.qrc" />
  </resources>
  <connections>
   <connection>

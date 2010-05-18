@@ -1,5 +1,5 @@
 #include "AddResourceUI.h"
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "midasSynchronizer.h"
 
 #include <QFileDialog>

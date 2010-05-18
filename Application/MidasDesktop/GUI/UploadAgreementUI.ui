@@ -17,7 +17,7 @@
    <string>Upload Agreement</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../DionysusIcons.qrc">
+   <iconset resource="../MIDASDesktopIcons.qrc">
     <normaloff>:/icons/download.png</normaloff>:/icons/download.png</iconset>
   </property>
   <property name="modal">
@@ -55,7 +55,7 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <resources>
-  <include location="../DionysusIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>

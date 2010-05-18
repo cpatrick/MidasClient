@@ -1,7 +1,7 @@
 #include "SignInUI.h"
 #include "MidasClientGlobal.h"
 #include "mwsSettings.h"
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"
 #include "midasDatabaseProxy.h"

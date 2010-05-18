@@ -13,7 +13,7 @@
 #include <iostream>
 #include <QDir>
 #include "mwsSettings.h"
-#include "DionysusUI.h"
+#include "MIDASDesktopUI.h"
 #include "Utils.h"
 #include "mwsRestAPI.h"
 #include "Logger.h"

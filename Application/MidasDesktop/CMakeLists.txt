@@ -1,4 +1,4 @@
-project(Dionysus)
+project(MIDASDesktop)
 cmake_minimum_required(VERSION 2.6)
 
 # Find Qt
@@ -47,16 +47,14 @@ endif(UNIX)
 
 subdirs(utils)
 
-set(DionysusUI_SRCS
+set(MIDASDesktopUI_SRCS
   main.cxx
-  GUI/DionysusUI.cxx
-  GUI/DionysusUI.h
+  GUI/MIDASDesktopUI.cxx
+  GUI/MIDASDesktopUI.h
   GUI/SettingsUI.cxx
   GUI/SettingsUI.h
   GUI/SignInUI.cxx
   GUI/SignInUI.h
-  GUI/UserUI.cxx
-  GUI/UserUI.h
   GUI/CreateMidasCommunityUI.cxx
   GUI/CreateMidasCommunityUI.h
   GUI/CreateMidasCollectionUI.cxx
@@ -107,17 +105,16 @@ set(DionysusUI_SRCS
   GUI/ProcessingStatusUI.cxx
 )
 
-#set(DionysusUI_SRCS ${DionysusUI_SRCS} MidasClient.rc)
+#set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MidasClient.rc)
 
-set(DionysusUI_UI_SRCS
-  GUI/DionysusUI.ui
+set(MIDASDesktopUI_UI_SRCS
+  GUI/MIDASDesktopUI.ui
   GUI/CreateMidasCommunityUI.ui
   GUI/CreateMidasCollectionUI.ui
   GUI/CreateMidasItemUI.ui
   GUI/CreateProfileUI.ui
   GUI/UploadAgreementUI.ui
   GUI/SettingsUI.ui
-  GUI/UserUI.ui
   GUI/SignInUI.ui
   GUI/AboutUI.ui
   GUI/ProcessingStatusUI.ui
@@ -125,10 +122,10 @@ set(DionysusUI_UI_SRCS
   GUI/AddResourceUI.ui
 )
 
-set(DionysusUI_RCCS DionysusIcons.qrc)
+set(MIDASDesktopUI_RCCS MIDASDesktopIcons.qrc)
 
-set(DionysusUI_MOC_SRCS
-  GUI/DionysusUI.h 
+set(MIDASDesktopUI_MOC_SRCS
+  GUI/MIDASDesktopUI.h 
   GUI/CreateMidasCommunityUI.h
   GUI/CreateMidasCollectionUI.h
   GUI/CreateMidasItemUI.h
@@ -138,7 +135,6 @@ set(DionysusUI_MOC_SRCS
   GUI/SettingsUI.h 
   GUI/UploadAgreementUI.h 
   GUI/SignInUI.h 
-  GUI/UserUI.h
   GUI/AboutUI.h
   GUI/MidasTreeView.h
   GUI/MidasTreeViewClient.h
@@ -157,18 +153,18 @@ set(DionysusUI_MOC_SRCS
   GUI/ProcessingStatusUI.h
 )
 
-QT4_WRAP_CPP(DionysusUI_SRCS ${DionysusUI_MOC_SRCS})
-QT4_WRAP_UI(DionysusUI_UI_CXX ${DionysusUI_UI_SRCS})
-QT4_ADD_RESOURCES(DionysusUI_SRCS ${DionysusUI_RCCS})
+QT4_WRAP_CPP(MIDASDesktopUI_SRCS ${MIDASDesktopUI_MOC_SRCS})
+QT4_WRAP_UI(MIDASDesktopUI_UI_CXX ${MIDASDesktopUI_UI_SRCS})
+QT4_ADD_RESOURCES(MIDASDesktopUI_SRCS ${MIDASDesktopUI_RCCS})
  
-# MidasDesktop Executable
+# MIDASDesktop Executable
 if(WIN32)
-  add_executable(MidasDesktop WIN32 ${DionysusUI_SRCS} ${DionysusUI_UI_CXX})
+  add_executable(MIDASDesktop WIN32 ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX})
 else(WIN32)
-  add_executable(MidasDesktop ${DionysusUI_SRCS} ${DionysusUI_UI_CXX})
+  add_executable(MIDASDesktop ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX})
 endif(WIN32)
 
-target_link_libraries(MidasDesktop
+target_link_libraries(MIDASDesktop
   MIDAS
   DionysusUtils
   kwsys
@@ -177,7 +173,7 @@ target_link_libraries(MidasDesktop
   ${QT_QTGUI_LIBRARY}
 )
 
-install(TARGETS MidasDesktop DESTINATION bin)
+install(TARGETS MIDASDesktop DESTINATION bin)
 
 # -----Install Qt Shared libraries on windows-------------
 if ( NOT Q_WS_MAC)

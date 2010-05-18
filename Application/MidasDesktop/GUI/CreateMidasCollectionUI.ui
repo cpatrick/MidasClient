@@ -19,7 +19,7 @@
    <string>Create collection</string>
   </property>
   <property name="windowIcon" >
-   <iconset resource="DionysusIcons.qrc" >
+   <iconset resource="MIDASDesktopIcons.qrc" >
     <normaloff>:/icons/add2.png</normaloff>:/icons/add2.png</iconset>
   </property>
   <property name="modal" >
@@ -126,7 +126,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="DionysusIcons.qrc" />
+  <include location="MIDASDesktopIcons.qrc" />
  </resources>
  <connections>
   <connection>

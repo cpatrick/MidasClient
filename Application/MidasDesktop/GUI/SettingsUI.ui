@@ -23,7 +23,7 @@
    <string>Settings</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../DionysusIcons.qrc">
+   <iconset resource="../MIDASDesktopIcons.qrc">
     <normaloff>:/icons/Icon16.PNG</normaloff>:/icons/Icon16.PNG</iconset>
   </property>
   <property name="modal">
@@ -40,7 +40,7 @@
      </property>
      <widget class="QWidget" name="serverTab">
       <attribute name="icon">
-       <iconset resource="../DionysusIcons.qrc">
+       <iconset resource="../MIDASDesktopIcons.qrc">
         <normaloff>:/icons/earth_network.png</normaloff>:/icons/earth_network.png</iconset>
       </attribute>
       <attribute name="title">
@@ -101,7 +101,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="../DionysusIcons.qrc">:/icons/QuestionMark_48x48.png</pixmap>
+          <pixmap resource="../MIDASDesktopIcons.qrc">:/icons/QuestionMark_48x48.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -123,7 +123,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="../DionysusIcons.qrc">:/icons/QuestionMark_48x48.png</pixmap>
+          <pixmap resource="../MIDASDesktopIcons.qrc">:/icons/QuestionMark_48x48.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -149,7 +149,7 @@
           <string>Check</string>
          </property>
          <property name="icon">
-          <iconset resource="../DionysusIcons.qrc">
+          <iconset resource="../MIDASDesktopIcons.qrc">
            <normaloff>:/icons/check2.png</normaloff>:/icons/check2.png</iconset>
          </property>
         </widget>
@@ -171,7 +171,7 @@
      </widget>
      <widget class="QWidget" name="searchTab">
       <attribute name="icon">
-       <iconset resource="../DionysusIcons.qrc">
+       <iconset resource="../MIDASDesktopIcons.qrc">
         <normaloff>:/icons/find.png</normaloff>:/icons/find.png</iconset>
       </attribute>
       <attribute name="title">
@@ -288,11 +288,11 @@
   <tabstop>searchInBitstreamsCheckBox</tabstop>
  </tabstops>
  <resources>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>

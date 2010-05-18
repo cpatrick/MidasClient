@@ -19,7 +19,7 @@
    <string>Create community</string>
   </property>
   <property name="windowIcon" >
-   <iconset resource="DionysusIcons.qrc" >
+   <iconset resource="MIDASDesktopIcons.qrc" >
     <normaloff>:/icons/folder_add.png</normaloff>:/icons/folder_add.png</iconset>
   </property>
   <property name="modal" >
@@ -113,7 +113,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="DionysusIcons.qrc" />
+  <include location="MIDASDesktopIcons.qrc" />
  </resources>
  <connections>
   <connection>

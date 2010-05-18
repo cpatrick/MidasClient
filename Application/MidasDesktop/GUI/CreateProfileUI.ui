@@ -91,7 +91,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../DionysusIcons.qrc">:/icons/lock.png</pixmap>
+        <pixmap resource="../MIDASDesktopIcons.qrc">:/icons/lock.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -139,7 +139,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../DionysusIcons.qrc">:/icons/earth_network.png</pixmap>
+        <pixmap resource="../MIDASDesktopIcons.qrc">:/icons/earth_network.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -169,7 +169,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../DionysusIcons.qrc">:/icons/dude3.png</pixmap>
+        <pixmap resource="../MIDASDesktopIcons.qrc">:/icons/dude3.png</pixmap>
        </property>
       </widget>
      </item>
@@ -191,10 +191,10 @@
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
-  <include location="../DionysusIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>
