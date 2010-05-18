@@ -176,6 +176,16 @@
     </layout>
    </item>
    <item>
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>Server URL should refer to the REST API, that is, midas_url/api/rest</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -191,6 +201,7 @@
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
