@@ -166,7 +166,7 @@ endif(WIN32)
 
 target_link_libraries(MIDASDesktop
   MIDAS
-  DionysusUtils
+  MIDASDesktopUtils
   kwsys
   ${QT_QTCORE_LIBRARY}
   ${QT_QTMAIN_LIBRARY}

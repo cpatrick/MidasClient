@@ -527,7 +527,7 @@
      <normaloff>:/icons/Icon16.PNG</normaloff>:/icons/Icon16.PNG</iconset>
    </property>
    <property name="text">
-    <string>About MidasDesktop</string>
+    <string>About MIDASDesktop</string>
    </property>
    <property name="statusTip">
     <string>About MIDASDesktop.</string>
@@ -686,6 +686,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

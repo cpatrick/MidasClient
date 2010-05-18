@@ -1,7 +1,7 @@
-PROJECT(DionysusUtils)
+PROJECT(MIDASDesktopUtils)
 cmake_minimum_required(VERSION 2.6)
 
-SET(DionysusUtils_SRCS
+SET(MIDASDesktopUtils_SRCS
   kwCrypt.h
   kwCrypt.cxx
   Utils.h
@@ -16,5 +16,5 @@ SET(DionysusUtils_SRCS
 )
 
 # Create the base library
-ADD_LIBRARY(DionysusUtils ${DionysusUtils_SRCS})
+ADD_LIBRARY(MIDASDesktopUtils ${MIDASDesktopUtils_SRCS})
 
