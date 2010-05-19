@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>396</width>
-    <height>210</height>
+    <width>377</width>
+    <height>229</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,7 +37,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="profileComboBox"/>
+      <widget class="QComboBox" name="profileComboBox">
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_2">
