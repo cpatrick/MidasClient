@@ -9,6 +9,7 @@
 
 =========================================================================*/
 #include "mdoItem.h"
+#include "mdoCollection.h"
 #include <sstream>
 #include <iostream>
 
@@ -18,11 +19,13 @@ namespace mdo{
 Item::Item()
 {
   m_Id = 0;
+  m_ParentCollection = NULL;
 }
   
 /** Destructor */
 Item::~Item()
 {
+  delete m_ParentCollection;
 }
   
 /** Load */
@@ -36,6 +39,7 @@ void Item::Clear()
   this->m_Title = "";
   this->m_Abstract = "";
   this->m_Description = "";
+  this->m_Uuid = "";
 }
 
 /** Upload a bitstream to MIDAS */

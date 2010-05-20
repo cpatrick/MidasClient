@@ -177,10 +177,6 @@ MIDASDesktopUI::MIDASDesktopUI() : currentTransferMode(MIDASDesktopUI::NotSet)
   connect( actionSign_In,   SIGNAL( triggered() ), this, SLOT( signInOrOut() ) );
   connect( actionQuit,      SIGNAL( triggered() ), this, SLOT( close() ) );
   connect( actionAbout,     SIGNAL( triggered() ), dlg_aboutUI, SLOT( exec() ) );
-  
-  //connect( actionKitware_com, SIGNAL( triggered() ), this, SLOT( DisplayInBrowser() ) );
-  //connect( actionDisplay_search_widget,           SIGNAL( triggered() ), searchItemsDockWidget, SLOT( show( ) ) );
-  //connect( actionDisplay_my_computer_widget,      SIGNAL( triggered() ), myComputerDockWidget, SLOT( show() ) );
 
   connect( actionAdd_community, SIGNAL(triggered()), this, SLOT(addCommunity()));
   connect( actionAdd_subcommunity, SIGNAL(triggered()), this, SLOT(addSubcommunity()));
@@ -190,6 +186,8 @@ MIDASDesktopUI::MIDASDesktopUI() : currentTransferMode(MIDASDesktopUI::NotSet)
 
   connect( searchItemsListWidget, SIGNAL( midasListWidgetItemClicked( QListWidgetItemMidasItem * ) ),
     this, SLOT( searchItemClicked( QListWidgetItemMidasItem * ) ) );
+  connect( searchItemsListWidget, SIGNAL( midasListWidgetContextMenu( QContextMenuEvent * ) ),
+    this, SLOT( searchItemContextMenu( QContextMenuEvent * ) ) );
 
   connect( addResource_Button, SIGNAL( released() ), dlg_addResourceUI, SLOT( exec() ) );
   connect( push_Button, SIGNAL( released() ), this, SLOT( pushResources() ) );
@@ -197,7 +195,8 @@ MIDASDesktopUI::MIDASDesktopUI() : currentTransferMode(MIDASDesktopUI::NotSet)
   connect( refreshButton, SIGNAL( released() ), this, SLOT( serverTreeViewUpdated() ) );
   connect( searchButton, SIGNAL( released() ), this, SLOT( search() ) );
 
-  connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
+  //connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
+
   // ------------- signal/slot connections -------------
 
   // ------------- setup client members and logging ----
@@ -854,6 +853,18 @@ void MIDASDesktopUI::search()
 void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem * listItem)
 {
   this->treeView->selectByObject(listItem->getObject());
+}
+
+void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)
+{
+  QMenu menu( this );
+  QModelIndex index = searchItemsListWidget->indexAt( e->pos() );
+
+  if ( index.isValid() )
+    {
+    menu.addAction( this->actionPull_Resource );
+    menu.exec( e->globalPos() );
+    }
 }
 
 void MIDASDesktopUI::openBitstream(int id)

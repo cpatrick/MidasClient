@@ -52,7 +52,7 @@ public:
           }
         m_ParentCommunity = m_Community;
         m_Community = new mdo::Community();
-        m_Community->SetParent(m_ParentCommunity);
+        m_Community->SetParentCommunity(m_ParentCommunity);
         if(!m_ParentCommunity)
           {
           std::cout << "Parent community is null" << std::endl;
@@ -252,19 +252,21 @@ bool Community::Commit()
   return true;
 }
 
-void Community::ResolveParents()
+bool Community::FetchParent()
 {
   int id = m_Community->GetParentId();
   if(id)
     {
-    mdo::Community comm;
-    comm.SetId(id);
+    mdo::Community* parent = new mdo::Community;
+    m_Community->SetParentCommunity(parent);
+    parent->SetId(m_Community->GetParentId());
 
     mws::Community remote;
-    remote.SetObject(&comm);
-    remote.Fetch();
-    remote.ResolveParents();
+    remote.SetWebAPI(mws::WebAPI::Instance());
+    remote.SetObject(parent);
+    return remote.Fetch();
     }
+  return true;
 }
 
 } // end namespace

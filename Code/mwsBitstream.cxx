@@ -15,6 +15,7 @@
 #include <sstream>
 #include <iostream>
 #include "mwsRestXMLParser.h"
+#include "mwsWebAPI.h"
 
 namespace mws{
 
@@ -63,7 +64,7 @@ protected:
 /** Constructor */
 Bitstream::Bitstream()
 {
-  m_Bitstream = 0;
+  m_Bitstream = NULL;
 }
   
 /** Destructor */
@@ -118,15 +119,16 @@ void Bitstream::SetObject(mdo::Object* object)
   m_Bitstream = reinterpret_cast<mdo::Bitstream*>(object);
 }
 
-void Bitstream::ResolveParents()
+bool Bitstream::FetchParent()
 {
-  mdo::Item item;
-  item.SetId(m_Bitstream->GetParentId());
+  mdo::Item* parent = new mdo::Item;
+  m_Bitstream->SetParentItem(parent);
+  parent->SetId(m_Bitstream->GetParentId());
 
   mws::Item remote;
-  remote.SetObject(&item);
-  remote.Fetch();
-  remote.ResolveParents();
+  remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetObject(parent);
+  return remote.Fetch(); 
 }
 
 } // end namespace

@@ -76,7 +76,8 @@ public:
   void Print(std::ostream &os, int indent=-1);
  
   // Set the parent
-  void SetParent(Community* community);
+  void SetParentCommunity(Community* comm) { m_ParentCommunity = comm; }
+  Community* GetParentCommunity() { return m_ParentCommunity; }
  
   // Add a sub community
   void AddCommunity(Community* community);
@@ -85,9 +86,6 @@ public:
   void AddCollection(Collection* collection);
   
   void Clear();
-  
-  // Get the parent
-  Community* GetParentCommunity() {return m_ParentComm;}
 
   std::string GetTypeName() { return "Community"; }
   
@@ -102,7 +100,7 @@ protected:
   std::string  m_IntroductoryText;
   std::string  m_Links;
    
-  Community*   m_ParentComm; // pointer the parent community
+  Community*   m_ParentCommunity;
   
   std::vector<Community*>    m_Communities;
   std::vector<Collection*>   m_Collections;

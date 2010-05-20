@@ -41,6 +41,9 @@ public:
                      int role = Qt::DisplayRole) const;
   QModelIndex index(int row, int column,
                    const QModelIndex &parent = QModelIndex()) const;
+
+  QModelIndex getIndexByUuid(std::string uuid);
+
   QModelIndex parent(const QModelIndex &index) const;
   bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const; 
   int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -100,6 +103,7 @@ public slots:
 
 private:
   void decorateRecurse( MidasTreeItem* node, std::string uuid);
+  QModelIndex getIndexRecurse(MidasTreeItem* node, std::string uuid);
 
   mws::WebAPI*                     m_WebAPI;
   QList<MidasCommunityTreeItem*>   m_TopLevelCommunities;

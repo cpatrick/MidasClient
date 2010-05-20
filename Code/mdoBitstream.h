@@ -17,6 +17,8 @@
 
 namespace mdo{
 
+class Item;
+
 /** This class represent a bitstream on the MIDAS server. */
 class Bitstream : public Object
 {
@@ -47,11 +49,15 @@ public:
 
   std::string GetTypeName() { return "Bitstream"; }
 
+  Item* GetParentItem() { return m_ParentItem; }
+  void SetParentItem(Item* item) { m_ParentItem = item; }
+
 protected:
 
   std::string  m_Parent;
   std::string  m_Name;
   std::string  m_Size;
+  Item*        m_ParentItem;
 };
 
 } //end namespace

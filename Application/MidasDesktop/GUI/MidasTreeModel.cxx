@@ -567,3 +567,28 @@ void MidasTreeModel::decorateRecurse(MidasTreeItem* node, std::string uuid)
     decorateRecurse(node->child(i), uuid);
     }
 }
+
+QModelIndex MidasTreeModel::getIndexByUuid(std::string uuid)
+{
+  QModelIndex value;
+  for(QList<MidasCommunityTreeItem*>::iterator i = m_TopLevelCommunities.begin();
+      i != this->m_TopLevelCommunities.end(); ++i)
+    {
+    value = getIndexRecurse(reinterpret_cast<MidasTreeItem*>(*i), uuid);
+    if(value.isValid()) break;
+    }
+  return value;
+}
+
+QModelIndex MidasTreeModel::getIndexRecurse(MidasTreeItem* node, std::string uuid)
+{
+  if(node->getUuid() == uuid)
+    {
+    return index(node->row(), 0);
+    }
+  for(int i = 0; i < node->childCount(); i++)
+    {
+    return getIndexRecurse(node->child(i), uuid);
+    }
+  return QModelIndex();
+}

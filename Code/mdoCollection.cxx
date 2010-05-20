@@ -9,6 +9,7 @@
 
 =========================================================================*/
 #include "mdoCollection.h"
+#include "mdoCommunity.h"
 #include <sstream>
 #include <iostream>
 
@@ -18,6 +19,7 @@ namespace mdo{
 Collection::Collection()
 {
   m_Id = 0;
+  m_ParentCommunity = NULL;
 }
   
 /** Destructor */
@@ -31,7 +33,8 @@ Collection::~Collection()
     itItem++;
     delete item;
     }
-  m_Items.clear();  
+  m_Items.clear();
+  delete m_ParentCommunity;
 }
   
 /** Load */
@@ -46,6 +49,7 @@ void Collection::Clear()
   this->m_Description = "";
   this->m_IntroductoryText = "";
   this->m_Copyright = "";
+  this->m_Uuid = "";
 }
 
 //------------------------------------------------------------------------

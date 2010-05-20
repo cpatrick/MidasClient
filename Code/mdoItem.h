@@ -20,6 +20,8 @@
 
 namespace mdo{
 
+class Collection;
+
 /** This class represent an item on the MIDAS server. 
  *  An item has many bitstreams. */
 class Item : public Object
@@ -75,6 +77,9 @@ public:
   void Print(std::ostream &os, int indent=-1);
 
   std::string GetTypeName() { return "Item"; }
+
+  Collection* GetParentCollection() { return m_ParentCollection; }
+  void SetParentCollection(Collection* coll) { m_ParentCollection = coll; }
  
 protected:
 
@@ -88,6 +93,8 @@ protected:
   std::vector<std::string> m_Keywords;
 
   std::vector<Bitstream*> m_Bitstreams;
+
+  Collection* m_ParentCollection;
 };
 
 } //end namespace

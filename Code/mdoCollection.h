@@ -20,6 +20,8 @@
 
 namespace mdo{
 
+class Community;
+
 /** This class represent an collection on the MIDAS server. 
  *  An collection has many bitstreams. */
 class Collection : public Object
@@ -67,7 +69,10 @@ public:
   // Add an item
   void AddItem(Item* item) {m_Items.push_back(item);}
   
-  std::string GetTypeName() { return "Community"; }
+  std::string GetTypeName() { return "Collection"; }
+
+  Community* GetParentCommunity() { return m_ParentCommunity; }
+  void SetParentCommunity(Community* comm) { m_ParentCommunity = comm; }
   
 protected:
 
@@ -79,6 +84,8 @@ protected:
   std::string  m_Copyright;
   std::string  m_IntroductoryText;
   
+  Community* m_ParentCommunity;
+
   std::vector<Item*> m_Items;
 };
 

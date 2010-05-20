@@ -132,7 +132,8 @@ public slots:
 
   // ------------- search -------------
   void search(); 
-  void searchItemClicked(QListWidgetItemMidasItem * item); 
+  void searchItemClicked(QListWidgetItemMidasItem * item);
+  void searchItemContextMenu(QContextMenuEvent * e);
   // ------------- search -------------
 
   void setServerURL(std::string);

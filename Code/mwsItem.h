@@ -35,10 +35,13 @@ public:
 
   // Fetch data from the MIDAS server
   bool Fetch();
-  
+
+  // Fetch the parent collection
+  bool FetchParent();
+
   // Commit the data on the server 
   bool Commit();
-  void ResolveParents();
+
   
   // Add the object
   void SetObject(mdo::Object* object);

@@ -195,15 +195,16 @@ void Item::SetObject(mdo::Object* object)
   m_Item = static_cast<mdo::Item*>(object);
 }
 
-void Item::ResolveParents()
+bool Item::FetchParent()
 {
-  mdo::Collection coll;
-  coll.SetId(m_Item->GetParentId());
+  mdo::Collection* parent = new mdo::Collection;
+  m_Item->SetParentCollection(parent);
+  parent->SetId(m_Item->GetParentId());
 
   mws::Collection remote;
-  remote.SetObject(&coll);
-  remote.Fetch();
-  remote.ResolveParents();
+  remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetObject(parent);
+  return remote.Fetch();
 }
 
 } // end namespace

@@ -9,6 +9,7 @@
 
 =========================================================================*/
 #include "mdoBitstream.h"
+#include "mdoItem.h"
 #include <sstream>
 #include <iostream>
 
@@ -18,6 +19,7 @@ namespace mdo{
 Bitstream::Bitstream()
 {
   m_Id = 0;
+  m_ParentItem = NULL;
   m_Size = "0";
   m_Name = "";
 }
@@ -25,10 +27,12 @@ Bitstream::Bitstream()
 /** Destructor */
 Bitstream::~Bitstream()
 {
+  delete m_ParentItem;
 }
 
 void Bitstream::Clear()
 {
+  this->m_Uuid = "";
 }
 
 //------------------------------------------------------------------------

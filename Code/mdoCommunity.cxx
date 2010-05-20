@@ -19,7 +19,7 @@ namespace mdo{
 Community::Community()
 {
   m_Id = 0;
-  m_ParentComm = NULL;
+  m_ParentCommunity = NULL;
 }
   
 /** Destructor */
@@ -44,13 +44,6 @@ Community::~Community()
     }
   m_Collections.clear();
 }
-
- 
-/** Set the parent community */
-void Community::SetParent(Community* community)
-{
-  m_ParentComm = community;
-}
    
 /** Add a sub community */
 void Community::AddCommunity(Community* community)
@@ -71,6 +64,7 @@ void Community::Clear()
   this->m_IntroductoryText = "";
   this->m_Copyright = "";
   this->m_Links = "";
+  this->m_Uuid = "";
 }
 
 /** Load */
@@ -93,14 +87,14 @@ void Community::Print(std::ostream &os, int indent)
   os << "Description: " << m_Description.c_str() << "\n";
   os << "# of collections: " << m_Collections.size() << "\n";
   // Display all the collections in the list
-  for(unsigned int i=0; i<m_Collections.size(); i++)
+  for(unsigned int i=0; i < m_Collections.size(); i++)
     {
     m_Collections[i]->Print(os, indent+1);
     }  
     
   // Display all the communities in the list  
   os << "# of communities: " << m_Communities.size() << "\n"; 
-  for(unsigned int i=0; i<m_Communities.size(); i++)
+  for(unsigned int i=0; i < m_Communities.size(); i++)
     {
     m_Communities[i]->Print(os, indent+1);
     }

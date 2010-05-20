@@ -94,34 +94,6 @@ void MidasTreeView::Clear()
   this->reset(); 
 }
 
- //const MidasTreeItem * MidasTreeView::getMidasTreeItemParent(QModelIndex& selected) const
- //  {
- //  QModelIndex parent = selected.parent(); 
- //  if ( !parent.isValid() )
- //    {
- //    return NULL; 
- //    }
- //  else 
- //    {
- //    return this->model()->midasTreeItem(parent); 
- //    }
- //  }
-
- //const std::string MidasTreeView::getSelectedMidasTreeItemParentId() const
- //  {
- //  assert(this->isModelIndexSelected()); 
- //  QModelIndex parent = this->getSelectedModelIndex().parent(); 
- //  if ( !parent.isValid() )
- //    {
- //    return "-1"; 
- //    }
- //  else 
- //    {
- //    const MidasTreeItem * parentItem = this->model()->midasTreeItem(parent); 
- //    return parentItem->getId(); 
- //    }
- //  }
-
  bool MidasTreeView::isModelIndexSelected() const
    {
    QItemSelectionModel * selectionModel = this->selectionModel(); 
@@ -209,30 +181,77 @@ void MidasTreeView::alertFetchedMore()
 void MidasTreeView::selectByObject(mdo::Object* object)
 {
   std::vector<std::string> path; //path of uuids to the root
-  path.push_back(object->GetUuid());
 
   mdo::Community* comm = NULL;
   mdo::Collection* coll = NULL;
   mdo::Item* item = NULL;
   mdo::Bitstream* bitstream = NULL;
 
-  if((comm = dynamic_cast<mdo::Community*>(object)) != NULL)
+  while(true)
     {
-    mws::Community remote;
-    remote.SetObject(comm);
-    remote.Fetch();
-    remote.ResolveParents();
-    
-    //next fetch parent community
-    //path.push_back(parent);
+    if((comm = dynamic_cast<mdo::Community*>(object)) != NULL)
+      {
+      mws::Community remote;
+      remote.SetWebAPI(mws::WebAPI::Instance());
+      remote.SetObject(comm);
+      if(path.size() == 0)
+        {
+        remote.Fetch();
+        }
+      remote.FetchParent();
+      object = comm->GetParentCommunity();
+      path.push_back(comm->GetUuid());
+      }
+    else if((coll = dynamic_cast<mdo::Collection*>(object)) != NULL)
+      {
+      mws::Collection remote;
+      remote.SetWebAPI(mws::WebAPI::Instance());
+      remote.SetObject(coll);
+      if(path.size() == 0)
+        {
+        remote.Fetch();
+        }
+      remote.FetchParent();
+      object = coll->GetParentCommunity();
+      path.push_back(coll->GetUuid());
+      }
+    else if((item = dynamic_cast<mdo::Item*>(object)) != NULL)
+      {
+      mws::Item remote;
+      remote.SetWebAPI(mws::WebAPI::Instance());
+      remote.SetObject(item);
+      if(path.size() == 0)
+        {
+        remote.Fetch();
+        }
+      remote.FetchParent();
+      object = item->GetParentCollection();
+      path.push_back(item->GetUuid());
+      }
+    else if((bitstream = dynamic_cast<mdo::Bitstream*>(object)) != NULL)
+      {
+      mws::Bitstream remote;
+      remote.SetWebAPI(mws::WebAPI::Instance());
+      remote.SetObject(bitstream);
+      if(path.size() == 0)
+        {
+        remote.Fetch();
+        }
+      remote.FetchParent();
+      object = bitstream->GetParentItem();
+      path.push_back(bitstream->GetUuid());
+      }
+    if(object == NULL)
+      {
+      break;
+      }
     }
-  else if((coll = dynamic_cast<mdo::Collection*>(object)) != NULL)
+
+  for(std::vector<std::string>::reverse_iterator i = path.rbegin();
+      i != path.rend(); ++i) //TODO rend +/- 1?
     {
+    expand(m_Model->getIndexByUuid(*i));
     }
-  else if((item = dynamic_cast<mdo::Item*>(object)) != NULL)
-    {
-    }
-  else if((bitstream = dynamic_cast<mdo::Bitstream*>(object)) != NULL)
-    {
-    }
+  selectionModel()->select(m_Model->getIndexByUuid(*(path.begin())), QItemSelectionModel::Select | QItemSelectionModel::Clear);
+  
 }

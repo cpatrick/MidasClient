@@ -31,9 +31,9 @@ public:
 
   // Fill the item given the id
   bool Fetch();
+  bool FetchParent();
   bool Commit();
   void SetObject(mdo::Object* object);
-  void ResolveParents();
 
 protected:
 

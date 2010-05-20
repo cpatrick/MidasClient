@@ -35,6 +35,7 @@ public:
   // Fill the community
   bool Fetch();
   bool FetchTree();
+  bool FetchParent();
   void SetObject(mdo::Object* object);
   bool Commit();
   void ResolveParents();

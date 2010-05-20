@@ -142,15 +142,16 @@ bool Collection::Commit()
   return true;
 }
 
-void Collection::ResolveParents()
+bool Collection::FetchParent()
 {
-  mdo::Community comm;
-  comm.SetId(m_Collection->GetParentId());
+  mdo::Community* parent = new mdo::Community;
+  m_Collection->SetParentCommunity(parent);
+  parent->SetId(m_Collection->GetParentId());
 
   mws::Community remote;
-  remote.SetObject(&comm);
-  remote.Fetch();
-  remote.ResolveParents();
+  remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetObject(parent);
+  return remote.Fetch();
 }
 
 } // end namespace

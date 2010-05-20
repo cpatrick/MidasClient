@@ -34,9 +34,9 @@ public:
   
   // Fill the collection
   bool Fetch();
+  bool FetchParent();
   void SetObject(mdo::Object* object);
   bool Commit();
-  void ResolveParents();
   
 protected:
 
