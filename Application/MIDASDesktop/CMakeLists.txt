@@ -199,14 +199,6 @@ if ( NOT Q_WS_MAC)
                   DESTINATION bin
                   CONFIGURATIONS Release
                   COMPONENT Applications)
-                add_custom_target(Midas_${qtlib}-Debug-Copy ALL
-                  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_DLL_PATH_tmp}/${qtlib}${TYPE}4.dll
-                  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/
-                  COMMENT "Copying ${qtlib}${TYPE}4.dll to ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/")
-                add_custom_target(Midas_${qtlib}-Release-Copy ALL
-                  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_DLL_PATH_tmp}/${qtlib}4.dll
-                  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/
-                  COMMENT "Copying ${qtlib}4.dll to ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/")
               endif(WIN32)
             endforeach(qtlib)
         endif()
