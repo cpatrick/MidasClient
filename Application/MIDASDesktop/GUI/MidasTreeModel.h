@@ -103,7 +103,8 @@ public slots:
 
 private:
   void decorateRecurse( MidasTreeItem* node, std::string uuid);
-  QModelIndex getIndexRecurse(MidasTreeItem* node, std::string uuid);
+  QModelIndex getIndexRecurse(MidasTreeItem* node, std::string uuid,
+                              QModelIndex parent);
 
   mws::WebAPI*                     m_WebAPI;
   QList<MidasCommunityTreeItem*>   m_TopLevelCommunities;

@@ -252,6 +252,7 @@ void MidasTreeView::selectByObject(mdo::Object* object)
     {
     expand(m_Model->getIndexByUuid(*i));
     }
-  selectionModel()->select(m_Model->getIndexByUuid(*(path.begin())), QItemSelectionModel::Select | QItemSelectionModel::Clear);
+  selectionModel()->select(m_Model->getIndexByUuid(*(path.begin())),
+    QItemSelectionModel::Select | QItemSelectionModel::Clear);
   
 }
