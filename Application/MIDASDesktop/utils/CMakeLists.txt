@@ -2,8 +2,6 @@ PROJECT(MIDASDesktopUtils)
 cmake_minimum_required(VERSION 2.6)
 
 SET(MIDASDesktopUtils_SRCS
-  kwCrypt.h
-  kwCrypt.cxx
   Utils.h
 #  DetailedException.h
 #  DetailedException.cxx
