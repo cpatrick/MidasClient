@@ -205,9 +205,16 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>profileComboBox</tabstop>
+  <tabstop>profileNameEdit</tabstop>
+  <tabstop>emailEdit</tabstop>
+  <tabstop>apiNameEdit</tabstop>
+  <tabstop>apiKeyEdit</tabstop>
+  <tabstop>serverURLEdit</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
