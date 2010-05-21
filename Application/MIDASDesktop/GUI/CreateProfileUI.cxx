@@ -24,7 +24,7 @@ void CreateProfileUI::init()
   apiNameEdit->setText("");
 
   profileComboBox->clear();
-  profileComboBox->addItem("");
+  profileComboBox->addItem("New Profile");
 
   parent->getDatabaseProxy()->Open();
   serverURLEdit->setText(
@@ -41,16 +41,27 @@ void CreateProfileUI::init()
 
 void CreateProfileUI::fillData(const QString& name)
 {
-  parent->getDatabaseProxy()->Open();
-  midasAuthProfile profile = parent->getDatabaseProxy()->GetAuthProfile(
-    name.toStdString());
-  parent->getDatabaseProxy()->Close();
+  if(profileComboBox->currentIndex() == 0)
+    {
+    profileNameEdit->setText("");
+    emailEdit->setText("");
+    apiKeyEdit->setText("");
+    apiNameEdit->setText("");
+    serverURLEdit->setText("");
+    }
+  else
+    {
+    parent->getDatabaseProxy()->Open();
+    midasAuthProfile profile = parent->getDatabaseProxy()->GetAuthProfile(
+      name.toStdString());
+    parent->getDatabaseProxy()->Close();
 
-  profileNameEdit->setText(profile.Name.c_str());
-  emailEdit->setText(profile.User.c_str());
-  apiKeyEdit->setText(profile.ApiKey.c_str());
-  apiNameEdit->setText(profile.AppName.c_str());
-  serverURLEdit->setText(profile.Url.c_str());
+    profileNameEdit->setText(profile.Name.c_str());
+    emailEdit->setText(profile.User.c_str());
+    apiKeyEdit->setText(profile.ApiKey.c_str());
+    apiNameEdit->setText(profile.AppName.c_str());
+    serverURLEdit->setText(profile.Url.c_str());
+    }
 }
 
 int CreateProfileUI::exec()
