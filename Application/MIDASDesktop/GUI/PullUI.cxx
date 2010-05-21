@@ -29,12 +29,6 @@ void PullUI::radioButtonChanged()
   bool val = pullRadioButton->isChecked();
   
   recursiveCheckBox->setEnabled(val);
-  
-  idEdit->setEnabled(val);
-  idLabel->setEnabled(val);
-
-  resourceTypeComboBox->setEnabled(val);
-  resourceTypeLabel->setEnabled(val);
 }
 
 void PullUI::setPullId(int id)
@@ -53,16 +47,11 @@ void PullUI::init()
   if(this->pullId)
     {
     pullRadioButton->setChecked(true);
-    std::stringstream str;
-    str << this->pullId;
-    idEdit->setText(str.str().c_str());
     }
   else
     {
     cloneRadioButton->setChecked(true);
-    idEdit->setText("");
     }
-  resourceTypeComboBox->setCurrentIndex(this->resourceTypeIndex);
   emit radioButtonChanged();
 }
 
@@ -125,7 +114,9 @@ void PullUI::accept()
       default:
         break;
       }
-    parent->getSynchronizer()->SetResourceHandle(idEdit->text().toStdString());
+    std::stringstream idStr;
+    idStr << pullId;
+    parent->getSynchronizer()->SetResourceHandle(idStr.str());
     parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_PULL);
     parent->getSynchronizer()->SetRecursive(recursiveCheckBox->isChecked());
 
