@@ -699,6 +699,7 @@ void MIDASDesktopUI::signIn()
   connectLabel->hide();
   hostLabel->hide();
   this->displayStatus(tr("Connecting to server..."));
+  this->setProgressIndeterminate();
   this->getTreeView()->SetWebAPI(mws::WebAPI::Instance());
   this->getTreeView()->Initialize();
   this->activateActions( true, ACTION_CONNECTED );
@@ -714,6 +715,7 @@ void MIDASDesktopUI::signIn()
   hostLabel->show();
   m_signIn = true; 
   this->displayStatus(tr(""));
+  this->setProgressEmpty();
 }
 
 void MIDASDesktopUI::chooseLocalDatabase()
