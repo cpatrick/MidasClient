@@ -83,28 +83,44 @@ void PullUI::accept()
     parent->getSynchronizer()->SetRecursive(true);
     parent->getLog()->Message("Cloning the server repository");
     parent->displayStatus(tr("Cloning the server respository"));
+
+    parent->setProgressIndeterminate();
+    parent->displayStatus("Cloning MIDAS repository...");
+    if(parent->getSynchronizer()->Perform())
+      {
+      std::string text = "Failed to clone the MIDAS repository.";
+      parent->getLog()->Error(text);
+      parent->displayStatus(text.c_str());
+      }
+    else
+      {
+      emit pulledResources();
+      std::string text = "Successfully cloned the MIDAS repository.";
+      parent->getLog()->Message(text);
+      parent->displayStatus(text.c_str());
+      }
+    parent->setProgressEmpty();
     }
   else //pull
     {
-    if(idEdit->text().toStdString() == "")
-      {
-      parent->getLog()->Error("You must specify the server-side ID of the resource to pull.");
-      return;
-      }
-
-    switch(resourceTypeComboBox->currentIndex())
+    std::string typeName;
+    switch(this->resourceTypeIndex)
       {
       case 0: //community
         parent->getSynchronizer()->SetResourceType(midasResourceType::COMMUNITY);
+        typeName = "Community";
         break;
       case 1: //collection
         parent->getSynchronizer()->SetResourceType(midasResourceType::COLLECTION);
+        typeName = "Collection";
         break;
       case 2: //item
         parent->getSynchronizer()->SetResourceType(midasResourceType::ITEM);
+        typeName = "Item";
         break;
       case 3: //bitstream
         parent->getSynchronizer()->SetResourceType(midasResourceType::BITSTREAM);
+        typeName = "Bitstream";
         break;
       default:
         break;
@@ -112,16 +128,22 @@ void PullUI::accept()
     parent->getSynchronizer()->SetResourceHandle(idEdit->text().toStdString());
     parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_PULL);
     parent->getSynchronizer()->SetRecursive(recursiveCheckBox->isChecked());
-    }
 
-  if(parent->getSynchronizer()->Perform())
-    {
-    parent->getLog()->Error("Operation failed");
+    parent->setProgressIndeterminate();
+    std::stringstream text;
+    if(parent->getSynchronizer()->Perform())
+      {
+      text << "Failed to pull " << typeName << " with id=" << this->pullId;
+      parent->getLog()->Error(text.str());
+      }
+    else
+      {
+      emit pulledResources();
+      
+      text << "Successfully pulled " << typeName << " with id=" << this->pullId;
+      parent->getLog()->Message(text.str());
+      }
+    parent->setProgressEmpty();
+    parent->displayStatus(text.str().c_str());
     }
-  else
-    {
-    emit pulledResources();
-    parent->getLog()->Message("Operation complete");
-    }
-  parent->displayStatus(tr(""));
 }

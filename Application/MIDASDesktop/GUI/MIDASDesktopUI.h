@@ -99,6 +99,11 @@ public slots:
   void checkDatabaseSettings();
   // ------------- settings -------------
 
+  // -------------- progress bar ----------
+  void setProgressIndeterminate();
+  void setProgressEmpty();
+  // -------------- progress bar ----------
+
   // ------------- UI updates -------------
   void updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem ); 
   void updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem ); 

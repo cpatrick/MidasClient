@@ -26,6 +26,7 @@ class midasProgressReporter
     virtual void UpdateProgress(double current, double max) = 0;
     virtual void ResetProgress() = 0;
     virtual void SetMessage(std::string message) = 0;
+    virtual void SetIndeterminate() = 0;
 };
 
 #endif

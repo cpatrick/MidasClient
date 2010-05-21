@@ -59,3 +59,7 @@ void midasDotProgressReporter::ResetProgress()
   this->oldLength = 0;
   this->currLength = 0;
 }
+
+void midasDotProgressReporter::SetIndeterminate()
+{
+}

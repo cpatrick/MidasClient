@@ -807,19 +807,19 @@ void MIDASDesktopUI::signOut()
 }
 
 void MIDASDesktopUI::editServerSettings()
-  {
+{
   this->dlg_settingsUI->exec(0); 
-  }
+}
 
 void MIDASDesktopUI::editSearchSettings()
-  {
+{
   this->dlg_settingsUI->exec(1);
-  }
+}
 
 void MIDASDesktopUI::checkDatabaseSettings()
-  {
+{
   this->dlg_settingsUI->exec(2);
-  }
+}
 
 void MIDASDesktopUI::pushResources()
 {
@@ -912,4 +912,14 @@ void MIDASDesktopUI::decorateServerTree()
     {
     this->treeView->decorateByUuid(*i);
     }
+}
+
+void MIDASDesktopUI::setProgressEmpty()
+{
+  this->m_progress->ResetProgress();
+}
+
+void MIDASDesktopUI::setProgressIndeterminate()
+{
+  this->m_progress->SetIndeterminate();
 }
