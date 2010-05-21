@@ -54,11 +54,15 @@ public:
       {
       m_Item->SetId(atoi(m_CurrentValue.c_str()));
       }
-    if(!m_CurrentTag.compare("/rsp/items/data/title"))
+    else if(!m_CurrentTag.compare("/rsp/items/data/title"))
       {
       m_Item->SetTitle(m_CurrentValue.c_str());
       }
-    if(!m_CurrentTag.compare("/rsp/items/data"))
+    else if(!m_CurrentTag.compare("/rsp/items/data/uuid"))
+      {
+      m_Item->SetUuid(m_CurrentValue.c_str());
+      }
+    else if(!m_CurrentTag.compare("/rsp/items/data"))
       {
       m_Collection->AddItem(m_Item);
       }

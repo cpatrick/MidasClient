@@ -62,11 +62,16 @@ public:
     else if(!m_CurrentTag.compare("/rsp/bitstreams/data/id"))
       {
       m_Bitstream->SetId(atoi(m_CurrentValue.c_str()));
-      } 
-     else if(!m_CurrentTag.compare("/rsp/bitstreams/data/size"))
+      }
+    else if(!m_CurrentTag.compare("/rsp/bitstreams/data/size"))
       {
       m_Bitstream->SetSize(m_CurrentValue.c_str());
-      }   
+      }
+    else if(!m_CurrentTag.compare("/rsp/bitstreams/data/uuid"))
+      {
+      m_Bitstream->SetUuid(m_CurrentValue.c_str());
+      }
+
     RestXMLParser::EndElement(name);
     }
     
