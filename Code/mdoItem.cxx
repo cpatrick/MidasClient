@@ -20,6 +20,7 @@ Item::Item()
 {
   m_Id = 0;
   m_ParentCollection = NULL;
+  fetched = false;
 }
   
 /** Destructor */
@@ -40,6 +41,9 @@ void Item::Clear()
   this->m_Abstract = "";
   this->m_Description = "";
   this->m_Uuid = "";
+  this->m_Keywords.clear();
+  this->m_Authors.clear();
+  this->m_Bitstreams.clear();
 }
 
 /** Upload a bitstream to MIDAS */

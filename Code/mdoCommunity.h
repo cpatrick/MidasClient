@@ -88,6 +88,9 @@ public:
   void Clear();
 
   std::string GetTypeName() { return "Community"; }
+
+  bool IsFetched() { return fetched; }
+  void SetFetched(bool val) { fetched = val; }
   
 protected:
 
@@ -99,6 +102,8 @@ protected:
   std::string  m_Copyright;
   std::string  m_IntroductoryText;
   std::string  m_Links;
+
+  bool fetched;
    
   Community*   m_ParentCommunity;
   

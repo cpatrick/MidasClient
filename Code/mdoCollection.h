@@ -74,6 +74,9 @@ public:
   Community* GetParentCommunity() { return m_ParentCommunity; }
   void SetParentCommunity(Community* comm) { m_ParentCommunity = comm; }
   
+  bool IsFetched() { return fetched; }
+  void SetFetched(bool val) { fetched = val; }
+  
 protected:
 
   friend class CollectionXMLParser;
@@ -83,6 +86,8 @@ protected:
   std::string  m_Description;
   std::string  m_Copyright;
   std::string  m_IntroductoryText;
+
+  bool fetched;
   
   Community* m_ParentCommunity;
 

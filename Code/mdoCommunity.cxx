@@ -20,6 +20,7 @@ Community::Community()
 {
   m_Id = 0;
   m_ParentCommunity = NULL;
+  fetched = false;
 }
   
 /** Destructor */

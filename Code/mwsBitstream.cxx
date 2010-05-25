@@ -80,6 +80,11 @@ bool Bitstream::Fetch()
     std::cerr << "Bitstream::Fecth : Bitstream not set" << std::endl;
     return false;
     }
+
+  if(m_Bitstream->IsFetched())
+    {
+    return true;
+    }
     
   if(m_Bitstream->GetId() == 0)
     {
@@ -104,6 +109,7 @@ bool Bitstream::Fetch()
     std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
+  m_Bitstream->SetFetched(true);
   return true;
 }
 

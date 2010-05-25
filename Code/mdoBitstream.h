@@ -52,12 +52,17 @@ public:
   Item* GetParentItem() { return m_ParentItem; }
   void SetParentItem(Item* item) { m_ParentItem = item; }
 
+  bool IsFetched() { return fetched; }
+  void SetFetched(bool val) { fetched = val; }
+
 protected:
 
   std::string  m_Parent;
   std::string  m_Name;
   std::string  m_Size;
   Item*        m_ParentItem;
+
+  bool fetched;
 };
 
 } //end namespace

@@ -61,10 +61,12 @@ public:
   // If the bitstream can be access locally then a new filename is returned
   std::string DownloadBitstream(const char* uuid,const char* filename);
   
-  void SetAuthors(std::vector<std::string> authors) {m_Authors = authors;}
+  void SetAuthors(std::vector<std::string> authors) { m_Authors = authors; }
+  void AddAuthor(std::string author) { m_Authors.push_back(author); }
   std::vector<std::string> & GetAuthors() { return m_Authors; }
 
   void SetKeywords(std::vector<std::string> keywords) {m_Keywords = keywords;}
+  void AddKeyword(std::string keyword) { m_Keywords.push_back(keyword); }
   std::vector<std::string> & GetKeywords() { return m_Keywords; }
 
   // Get the list of bitstreams
@@ -80,6 +82,9 @@ public:
 
   Collection* GetParentCollection() { return m_ParentCollection; }
   void SetParentCollection(Collection* coll) { m_ParentCollection = coll; }
+
+  bool IsFetched() { return fetched; }
+  void SetFetched(bool val) { fetched = val; }
  
 protected:
 
@@ -91,6 +96,8 @@ protected:
   std::string  m_Description;
   std::vector<std::string> m_Authors;
   std::vector<std::string> m_Keywords;
+
+  bool fetched;
 
   std::vector<Bitstream*> m_Bitstreams;
 

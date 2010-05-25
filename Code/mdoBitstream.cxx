@@ -22,6 +22,7 @@ Bitstream::Bitstream()
   m_ParentItem = NULL;
   m_Size = "0";
   m_Name = "";
+  fetched = false;
 }
   
 /** Destructor */

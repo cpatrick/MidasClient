@@ -112,7 +112,12 @@ bool Collection::Fetch()
     {
     std::cerr << "Collection::Fetch() : Collection not set" << std::endl;
     return false;
-    }  
+    }
+
+  if(m_Collection->IsFetched())
+    {
+    return true;
+    }
     
   if(!m_Collection->GetId())
     {
@@ -137,6 +142,7 @@ bool Collection::Fetch()
     std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
+  m_Collection->SetFetched(true);
   return true;
 }
 

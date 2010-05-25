@@ -71,6 +71,14 @@ public:
       {
       m_Bitstream->SetUuid(m_CurrentValue.c_str());
       }
+    else if(!m_CurrentTag.compare("/rsp/authors/data"))
+      {
+      m_Item->AddAuthor(m_CurrentValue);
+      }
+    else if(!m_CurrentTag.compare("/rsp/keywords/data"))
+      {
+      m_Item->AddKeyword(m_CurrentValue);
+      }
 
     RestXMLParser::EndElement(name);
     }
@@ -113,6 +121,11 @@ bool Item::Fetch()
     std::cerr << "Item::Fecth : Item not set" << std::endl;
     return false;
     }
+
+  if(m_Item->IsFetched())
+    {
+    return true;
+    }
     
   if(m_Item->GetId() == 0)
     {
@@ -127,6 +140,7 @@ bool Item::Fetch()
   parser.AddTag("/rsp/abstract",m_Item->GetAbstract());
   parser.AddTag("/rsp/uuid",m_Item->GetUuid());
   parser.AddTag("/rsp/parent",m_Item->GetParent());
+  parser.AddTag("/rsp/description",m_Item->GetDescription());
   
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
   
@@ -137,7 +151,8 @@ bool Item::Fetch()
     std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
-    
+  
+  m_Item->SetFetched(true);
   return true;
 }
 

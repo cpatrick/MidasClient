@@ -460,6 +460,7 @@
        <normaloff>:/icons/earth_network.png</normaloff>:/icons/earth_network.png</iconset>
      </property>
      <addaction name="actionPull_Resource"/>
+     <addaction name="actionOpenURL"/>
     </widget>
     <widget class="QMenu" name="menuClient">
      <property name="title">
@@ -659,6 +660,18 @@
     <string>Pull Resource...</string>
    </property>
   </action>
+  <action name="actionOpenURL">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/earth_connection.png</normaloff>:/icons/earth_connection.png</iconset>
+   </property>
+   <property name="text">
+    <string>View In Browser</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -686,6 +699,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

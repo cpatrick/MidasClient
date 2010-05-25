@@ -200,7 +200,12 @@ bool Community::Fetch()
     {
     std::cerr << "Community::Fetch() : Community not set" << std::endl;
     return false;
-    }  
+    }
+
+  if(m_Community->IsFetched())
+    {
+    return true;
+    }
     
   if(!m_Community->GetId())
     {
@@ -225,6 +230,7 @@ bool Community::Fetch()
     std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
+  m_Community->SetFetched(true);
   return true;
 }
 

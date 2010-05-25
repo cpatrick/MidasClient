@@ -14,6 +14,8 @@
 #include "mwsSettings.h"
 #include "mdoCommunity.h"
 #include "mwsCommunity.h"
+#include "mwsItem.h"
+#include "mwsCollection.h"
 #include "mwsNewResources.h"
 #include "mwsSearch.h"
 #include "midasAuthenticator.h"
@@ -268,16 +270,19 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
   if ( activateAction & ACTION_COMMUNITY  )
     {
     this->actionPull_Resource->setEnabled( value );
+    this->actionOpenURL->setEnabled( value );
     }
 
   if ( activateAction & ACTION_COLLECTION  )
     {
     this->actionPull_Resource->setEnabled( value );
+    this->actionOpenURL->setEnabled( value );
     }
 
   if ( activateAction & ACTION_ITEM  )
     {
     this->actionPull_Resource->setEnabled( value );
+    this->actionOpenURL->setEnabled( value );
     }
 
   if ( activateAction & ACTION_BITSTREAM )
@@ -397,10 +402,6 @@ void MIDASDesktopUI::showLogTab()
 void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem )
 { 
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
-  /*if (!readonly)
-    {
-    options |= QTableWidgetDescriptionItem::Editable; 
-    }*/
 
   midasTreeItemInfoGroupBox->setTitle(tr(" Community description ")); 
 
@@ -410,6 +411,10 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTre
   int i = 0; 
 
   mdo::Community* community = communityTreeItem->getCommunity();
+  mws::Community remote;
+  remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetObject(community);
+  remote.Fetch();
   
   midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
   midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Name", QTableWidgetDescriptionItem::Bold));
@@ -445,11 +450,13 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTre
 void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem )
 {
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
-/*  if (!readonly)
-    {
-    options |= QTableWidgetDescriptionItem::Editable; 
-    }*/
+
   mdo::Collection* collection = collectionTreeItem->getCollection();
+  mws::Collection remote;
+  remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetObject(collection);
+  remote.Fetch();
+
   midasTreeItemInfoGroupBox->setTitle(tr(" Collection description "));
 
   midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) ); 
@@ -479,12 +486,13 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionT
 void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
   {
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
-/*  if (!readonly)
-    {
-    options |= QTableWidgetDescriptionItem::Editable;
-    }
-  */
+
   mdo::Item* item = itemTreeItem->getItem();
+  mws::Item remote;
+  remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetObject(item);
+  remote.Fetch();
+
   midasTreeItemInfoGroupBox->setTitle(tr(" Item description "));
 
   midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) ); 
@@ -581,7 +589,7 @@ void MIDASDesktopUI::displayClientResourceContextMenu( QContextMenuEvent* e )
       }
     else if ( ( bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>( item ) ) != NULL )
       {
-      //add any bitstream contextmenu actions here.
+      //add any bitstream context menu actions here.
       }
     }
   else 
@@ -607,6 +615,7 @@ void MIDASDesktopUI::displayServerResourceContextMenu( QContextMenuEvent* e )
     treeView->selectionModel()->clearSelection(); 
     }
   menu.addAction( this->actionPull_Resource );
+  menu.addAction( this->actionOpenURL );
   menu.exec( e->globalPos() );
 }
 
@@ -854,6 +863,7 @@ void MIDASDesktopUI::search()
 
 void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem * listItem)
 {
+  this->treeTabContainer->setCurrentIndex(0);
   this->treeView->selectByObject(listItem->getObject());
 }
 
