@@ -60,11 +60,10 @@ void CreateMidasItemUI::accept()
     return;
     }
   
-  QModelIndex selected;
   if(this->type == CreateMidasItemUI::ClientItem)
     {
     std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory();
-    selected = this->parent->getTreeViewClient()->getSelectedModelIndex();
+    QModelIndex selected = this->parent->getTreeViewClient()->getSelectedModelIndex();
     MidasCollectionTreeItem* parentColl =
       reinterpret_cast<MidasCollectionTreeItem*>(
       const_cast<MidasTreeItem*>(
@@ -100,24 +99,7 @@ void CreateMidasItemUI::accept()
     }
   else
     {
-    selected = this->parent->getTreeView()->getSelectedModelIndex();
-
-    std::vector<std::string> keywords;
-    kwutils::tokenize( QSTR2STR(this->keywordsEdit->text()), keywords, MIDAS_KEYWORDS_DELIMITER);
-
-    std::vector<std::string> authors;
-    kwutils::tokenize( QSTR2STR(this->authorsEdit->text()), authors, MIDAS_AUTHORS_DELIMITER);
-
-    reinterpret_cast<MidasTreeModel*>(this->parent->getTreeView()->model())
-      ->insertMidasItem(
-      selected, 
-      QSTR2STR(this->titleEdit->text()), 
-      authors, 
-      keywords,
-      QSTR2STR(this->abstractEdit->toPlainText()), 
-      QSTR2STR(this->descriptionEdit->toPlainText()), 
-      QSTR2STR(this->issueDateEdit->date().toString("yyyy-MM-dd")) + " 00:00:00",
-      QSTR2STR(this->linksEdit->text()));
+    //disabled server side creation
     }
   QDialog::accept();
 }

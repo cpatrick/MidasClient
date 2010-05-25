@@ -60,13 +60,12 @@ void CreateMidasCommunityUI::accept()
     return;
     }
 
-  QModelIndex selected = QModelIndex();
   if (this->type >= CreateMidasCommunityUI::ClientCommunity)
     {
     std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory();
     if (this->type == CreateMidasCommunityUI::ClientSubCommunity)
       {
-      selected = this->parent->getTreeViewClient()->getSelectedModelIndex();
+      QModelIndex selected = this->parent->getTreeViewClient()->getSelectedModelIndex();
       MidasCommunityTreeItem* parentComm =
         reinterpret_cast<MidasCommunityTreeItem*>(
         const_cast<MidasTreeItem*>(
@@ -103,16 +102,7 @@ void CreateMidasCommunityUI::accept()
     }
   else //creating a server-side community
     {
-    if (this->type == CreateMidasCommunityUI::SubCommunity)
-      {
-      selected = this->parent->getTreeView()->getSelectedModelIndex(); 
-      }
-
-    reinterpret_cast<MidasTreeModel*>(
-      this->parent->getTreeView()->model())->insertMidasCommunity(selected, 
-      this->nameEdit->text().toStdString(),
-      this->short_descriptionEdit->text().toStdString(),
-      this->linksEdit->text().toStdString());
+    // disabled for now
     }
   QDialog::accept();
   }

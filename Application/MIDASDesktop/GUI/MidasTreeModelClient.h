@@ -47,33 +47,6 @@ public:
                               const std::string& short_description, 
                               const std::string& links_text); 
 
-  void deleteMidasCommunity(const QModelIndex & parent); 
-
-  void updateCommunityProperty(const QModelIndex & index, const std::string& name, const std::string& value);
-
-  void insertMidasCollection(const QModelIndex & parent, 
-                              const std::string& name, 
-                              const std::string& short_description, 
-                              const std::string& links_text, 
-                              bool createDefaultGroup = false); 
-
-  void deleteMidasCollection(const QModelIndex & parent);
-
-  void updateCollectionProperty(const QModelIndex & index, const std::string& name, const std::string& value);
-
-  void insertMidasItem(const QModelIndex & parent, 
-                              const std::string & name, 
-                              const std::vector<std::string> &authors, 
-                              const std::vector<std::string> &keywords, 
-                              const std::string & abstract, 
-                              const std::string & description, 
-                              const std::string & issuedate, 
-                              const std::string & handle); 
-
-  void deleteMidasItem(const QModelIndex & parent); 
-
-  void updateItemProperty(const QModelIndex & index, const std::string& name, const std::string& value);
-
   const inline MidasTreeItem *midasTreeItem(const QModelIndex &index) const 
     {
     return index.isValid() ? reinterpret_cast<const MidasTreeItem*>(index.internalPointer()): NULL;

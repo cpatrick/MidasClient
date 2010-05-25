@@ -79,32 +79,7 @@ void MidasTreeItem::removeAllChild()
 
 MidasTreeItem *MidasTreeItem::child(int row)
 {
-  /* We hack w/ dynamic casting to preserve RTTI data */
-  MidasTreeItem* node = this->childItems.value(row);
-  MidasCommunityTreeItem* comm;
-  MidasCollectionTreeItem* coll;
-  MidasItemTreeItem* item;
-  MidasBitstreamTreeItem* bitstream;
-
-  MidasTreeItem* x;
-  if((comm = dynamic_cast<MidasCommunityTreeItem*>(node)) != NULL)
-    {
-    x = comm;
-    }
-  else if((coll = dynamic_cast<MidasCollectionTreeItem*>(node)) != NULL)
-    {
-    x = coll;
-    }
-  else if((item = dynamic_cast<MidasItemTreeItem*>(node)) != NULL)
-    {
-    x = item;
-    }
-  else if((bitstream = dynamic_cast<MidasBitstreamTreeItem*>(node)) != NULL)
-    {
-    x = bitstream;
-    }
-
-  return x;
+  return this->childItems.value(row);
 }
 
 void MidasTreeItem::setFetchedChildren(bool value)

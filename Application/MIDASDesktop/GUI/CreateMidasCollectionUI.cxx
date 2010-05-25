@@ -53,11 +53,10 @@ void CreateMidasCollectionUI::accept()
     return;
     }
 
-  QModelIndex selected = QModelIndex();
   if(this->type == CreateMidasCollectionUI::ClientCollection)
     {
     std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory();
-    selected = this->parent->getTreeViewClient()->getSelectedModelIndex();
+    QModelIndex selected = this->parent->getTreeViewClient()->getSelectedModelIndex();
     MidasCommunityTreeItem* parentComm =
       reinterpret_cast<MidasCommunityTreeItem*>(
       const_cast<MidasTreeItem*>(
@@ -93,14 +92,7 @@ void CreateMidasCollectionUI::accept()
     }
   else //create collection on the server
     {
-    selected = this->parent->getTreeView()->getSelectedModelIndex(); 
-
-    reinterpret_cast<MidasTreeModel*>(
-      this->parent->getTreeView()->model())->insertMidasCollection(
-      selected, this->nameEdit->text().toStdString(), 
-      this->short_descriptionEdit->text().toStdString(), 
-      this->linksEdit->text().toStdString(), 
-      this->createDefaultGroupCheckBox->isChecked());
+    //disabled for now
     }
   QDialog::accept();
 }

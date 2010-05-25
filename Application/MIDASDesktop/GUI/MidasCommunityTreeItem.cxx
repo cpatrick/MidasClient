@@ -38,7 +38,7 @@ void MidasCommunityTreeItem::populate()
     {
     std::cerr << "Community not set" << std::endl;
     return;
-    } 
+    }
   
   // Add the collections for the community
   std::vector<mdo::Collection*>::const_iterator itCol = m_Community->GetCollections().begin();
