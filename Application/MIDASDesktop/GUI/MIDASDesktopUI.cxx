@@ -166,6 +166,7 @@ MIDASDesktopUI::MIDASDesktopUI() : currentTransferMode(MIDASDesktopUI::NotSet)
   connect( actionEdit_search_settings,    SIGNAL( triggered() ), this, SLOT( editSearchSettings() ) );
   connect( actionPush_Resources,          SIGNAL( triggered() ), this, SLOT( pushResources() ) );
   connect( actionPull_Resource,           SIGNAL( triggered() ), dlg_pullUI, SLOT( exec() ) );
+  connect( actionOpenURL,                 SIGNAL( triggered() ), this, SLOT( viewInBrowser() ) );
 
   connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
   connect( dlg_createProfileUI,
@@ -681,18 +682,55 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
   this->clientTreeViewUpdated();
 }
 
+void MIDASDesktopUI::viewInBrowser()
+{
+  std::string baseUrl = m_url;
+  kwsys::SystemTools::ReplaceString(baseUrl, "/api/rest", "");
+  std::stringstream path;
+  path << baseUrl;
+
+  MidasTreeItem* resource = const_cast<MidasTreeItem*>(
+    treeView->getSelectedMidasTreeItem());
+  MidasCommunityTreeItem* comm = NULL;
+  MidasCollectionTreeItem* coll = NULL;
+  MidasItemTreeItem* item = NULL;
+  MidasBitstreamTreeItem* bitstream = NULL;
+
+  if ((comm = dynamic_cast<MidasCommunityTreeItem*>(resource)) != NULL)
+    {
+    path << "/community/view/" << comm->getCommunity()->GetId();
+    }
+  else if ((coll = dynamic_cast<MidasCollectionTreeItem*>(resource)) != NULL)
+    {
+    path << "/collection/view/" << coll->getCollection()->GetId();
+    }
+  else if ((item = dynamic_cast<MidasItemTreeItem*>(resource)) != NULL)
+    {
+    path << "/item/view/" << item->getItem()->GetId();
+    }
+
+  QUrl url(path.str().c_str());
+  if(!QDesktopServices::openUrl(url))
+    {
+    std::stringstream text;
+    text << "The operating system does not know how to open "
+      << path.str() << std::endl;
+    m_logger->Error(text.str());
+    }
+}
+
 void MIDASDesktopUI::displayStatus(const QString& message)
-  {
+{
   stateLabel->setText(message); 
-  }
+}
 
 void MIDASDesktopUI::resetStatus()
-  {
+{
   stateLabel->setText(""); 
-  }
+}
 
 void MIDASDesktopUI::signInOrOut()
-  {
+{
   if ( !this->m_signIn )
     {
     this->dlg_signInUI->exec(); 
@@ -701,7 +739,7 @@ void MIDASDesktopUI::signInOrOut()
     {
     this->signOut(); 
     }
-  }
+}
 
 void MIDASDesktopUI::signIn()
 {

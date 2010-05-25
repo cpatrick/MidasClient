@@ -112,8 +112,8 @@ const QModelIndex MidasTreeView::getSelectedModelIndex() const
 
 const MidasTreeItem * MidasTreeView::getSelectedMidasTreeItem() const
 {
-  return NULL;
-  //return this->model()->midasTreeItem(this->getSelectedModelIndex()); 
+  return reinterpret_cast<MidasTreeModel*>(
+    this->model())->midasTreeItem(this->getSelectedModelIndex());
 }
 
 void MidasTreeView::updateSelection(const QItemSelection &selected,
