@@ -535,10 +535,10 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionT
 
   midasTreeItemInfoTable->resizeColumnsToContents();
   connect( midasTreeItemInfoTable, SIGNAL( itemChanged ( QTableWidgetItem * ) ), this, SLOT( resourceDescriptionChanged(QTableWidgetItem *) ) ); 
-  }
+}
 
 void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
-  {
+{
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
 
   mdo::Item* item = itemTreeItem->getItem();
@@ -581,36 +581,13 @@ void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
 
   midasTreeItemInfoTable->resizeColumnsToContents();
   connect( midasTreeItemInfoTable, SIGNAL( itemChanged ( QTableWidgetItem * ) ), this, SLOT( resourceDescriptionChanged(QTableWidgetItem *) ) ); 
-  }
+}
 
 void MIDASDesktopUI::clearInfoPanel()
-  {
+{
   midasTreeItemInfoTable->clear();
   midasTreeItemInfoTable->setRowCount( 0 );
-  }
-
-void MIDASDesktopUI::resourceDescriptionChanged(QTableWidgetItem * item )
-  { 
-  QTableWidgetMidasCommunityDescItem * communityItem = NULL; 
-  QTableWidgetMidasCollectionDescItem * collectionItem = NULL; 
-  QTableWidgetMidasItemDescItem * itemItem = NULL; 
-
-  const QModelIndex index = this->treeView->getSelectedModelIndex(); 
-/*
-  if ((communityItem = dynamic_cast<QTableWidgetMidasCommunityDescItem*>( const_cast<QTableWidgetItem*>( item ) ) ) != NULL )
-    {
-    this->getTreeView()->model()->updateCommunityProperty( index, communityItem->getPropertyName(), QSTR2STR(item->text()) ); 
-    }
-  else if ((collectionItem = dynamic_cast<QTableWidgetMidasCollectionDescItem*>( const_cast<QTableWidgetItem*>( item ) ) ) != NULL )
-    {
-    this->getTreeView()->model()->updateCollectionProperty( index, collectionItem->getPropertyName(), QSTR2STR(item->text()) ); 
-    }
-  else if ((itemItem = dynamic_cast<QTableWidgetMidasItemDescItem*>( const_cast<QTableWidgetItem*>( item ) ) ) != NULL )
-    {
-    this->getTreeView()->model()->updateItemProperty( index, itemItem->getPropertyName(), QSTR2STR(item->text()) ); 
-    }
-    */
-  }
+}
 
 void MIDASDesktopUI::displayClientResourceContextMenu( QContextMenuEvent* e )
 {

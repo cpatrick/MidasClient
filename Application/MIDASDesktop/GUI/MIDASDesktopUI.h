@@ -110,7 +110,6 @@ public slots:
   void updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem ); 
   void updateInfoPanel( const MidasItemTreeItem* itemTreeItem ); 
   void clearInfoPanel();
-  void resourceDescriptionChanged(QTableWidgetItem * item ); 
 
   void updateActionState(const MidasTreeItem* item);
   void updateActionStateClient(const MidasTreeItem* item);
