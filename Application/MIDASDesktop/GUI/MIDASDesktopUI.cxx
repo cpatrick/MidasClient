@@ -496,14 +496,11 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTre
   i++;
 
   midasTreeItemInfoTable->resizeColumnsToContents();
-
-  connect( midasTreeItemInfoTable, SIGNAL( itemChanged ( QTableWidgetItem * ) ),
-           this, SLOT( resourceDescriptionChanged(QTableWidgetItem *) ) );
 }
 
 void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem )
 {
-  QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
+  QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
 
   mdo::Collection* collection = collectionTreeItem->getCollection();
   mws::Collection remote;
@@ -513,7 +510,7 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionT
 
   midasTreeItemInfoGroupBox->setTitle(tr(" Collection description "));
 
-  midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) ); 
+  midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) );
   midasTreeItemInfoTable->clearSelection();
   midasTreeItemInfoTable->setRowCount( 3 );
   int i = 0;
