@@ -39,6 +39,7 @@
 #include "SignInUI.h"
 #include "AboutUI.h"
 #include "AddResourceUI.h"
+#include "AutoRefreshUI.h"
 #include "PullUI.h"
 #include "ProcessingStatusUI.h"
 // ------------- Dialogs -------------
@@ -84,7 +85,8 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   trayIcon = new QSystemTrayIcon(this);
   trayIcon->setContextMenu(trayIconMenu);
-  trayIcon->setIcon(QPixmap(":icons/Icon32.ico"));
+  trayIcon->setIcon(QPixmap(":icons/Midas_Desktop_Icon.png"));
+  trayIcon->setToolTip(STR2QSTR(MIDAS_CLIENT_VERSION_STR));
   trayIcon->setVisible(true);
 
   connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
@@ -107,9 +109,9 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_addResourceUI =      new AddResourceUI( this );
   dlg_createProfileUI =    new CreateProfileUI( this );
   dlg_aboutUI =            new AboutUI( this );
+  dlg_autoRefreshUI =      new AutoRefreshUI( this );
   dlg_pullUI =             new PullUI( this );
   ProcessingStatusUI::init( this );
-  
   // ------------- Instantiate and setup UI dialogs -------------
 
   // ------------- Item info panel -------------
@@ -202,9 +204,10 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect( actionChoose_Local_Database, SIGNAL( triggered() ), this, SLOT( chooseLocalDatabase() ) );
 
-  connect( actionSign_In,   SIGNAL( triggered() ), this, SLOT( signInOrOut() ) );
-  connect( actionQuit,      SIGNAL( triggered() ), qApp, SLOT( quit() ) );
-  connect( actionAbout,     SIGNAL( triggered() ), dlg_aboutUI, SLOT( exec() ) );
+  connect( actionSign_In,      SIGNAL( triggered() ), this, SLOT( signInOrOut() ) );
+  connect( actionQuit,         SIGNAL( triggered() ), qApp, SLOT( quit() ) );
+  connect( actionAbout,        SIGNAL( triggered() ), dlg_aboutUI, SLOT( exec() ) );
+  connect( actionAuto_Refresh, SIGNAL( triggered() ), dlg_autoRefreshUI, SLOT( exec() ) );
 
   connect( actionAdd_community, SIGNAL(triggered()), this, SLOT(addCommunity()));
   connect( actionAdd_subcommunity, SIGNAL(triggered()), this, SLOT(addSubcommunity()));
@@ -239,7 +242,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- setup client members and logging ----
 
   // ------------- Handle stored settings -------------
-  QSettings settings("Kitware", "MidasDesktop");
+  QSettings settings("Kitware", "MIDASDesktop");
   std::string lastDatabase =
     settings.value("lastDatabase", "").toString().toStdString();
   this->setLocalDatabase(lastDatabase);
@@ -256,6 +259,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_settingsUI;
   delete dlg_createProfileUI;
   delete dlg_addResourceUI;
+  delete dlg_autoRefreshUI;
   delete dlg_createMidasCommunityUI;
   delete dlg_createMidasSubCommunityUI;
   delete dlg_createMidasCollectionUI;
@@ -822,7 +826,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     this->m_auth->SetDatabase(file);
     this->m_synch->SetDatabase(file);
     this->m_database = new midasDatabaseProxy(file);
-    QSettings settings("Kitware", "MidasDesktop");
+    QSettings settings("Kitware", "MIDASDesktop");
     settings.setValue("lastDatabase", file.c_str());
     settings.sync();
     this->displayStatus(tr("Opened database successfully."));

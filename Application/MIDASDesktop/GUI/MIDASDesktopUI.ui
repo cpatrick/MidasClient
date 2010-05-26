@@ -444,7 +444,7 @@
     <addaction name="actionCreate_Profile"/>
     <addaction name="actionEdit_search_settings"/>
     <addaction name="actionChoose_Local_Database"/>
-    <addaction name="separator"/>
+    <addaction name="actionAuto_Refresh"/>
    </widget>
    <widget class="QMenu" name="menuCommunity">
     <property name="title">
@@ -495,7 +495,7 @@
      <normaloff>:/icons/earth_connection.png</normaloff>:/icons/earth_connection.png</iconset>
    </property>
    <property name="text">
-    <string>Sign In</string>
+    <string>Sign In...</string>
    </property>
    <property name="statusTip">
     <string>Connect to database.</string>
@@ -515,7 +515,7 @@
      <normaloff>:/icons/find.png</normaloff>:/icons/find.png</iconset>
    </property>
    <property name="text">
-    <string>Search</string>
+    <string>Search...</string>
    </property>
    <property name="statusTip">
     <string>Set search parameters.</string>
@@ -539,7 +539,7 @@
      <normaloff>:/icons/dude3.png</normaloff>:/icons/dude3.png</iconset>
    </property>
    <property name="text">
-    <string>Profile</string>
+    <string>Profile...</string>
    </property>
    <property name="statusTip">
     <string>Create a user profile</string>
@@ -551,7 +551,7 @@
      <normaloff>:/icons/workstation_network.png</normaloff>:/icons/workstation_network.png</iconset>
    </property>
    <property name="text">
-    <string>Choose Local Database</string>
+    <string>Choose Local Database...</string>
    </property>
    <property name="statusTip">
     <string>Select the location of the sqlite database</string>
@@ -671,6 +671,15 @@
     <string>View In Browser</string>
    </property>
   </action>
+  <action name="actionAuto_Refresh">
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+   </property>
+   <property name="text">
+    <string>Auto-Refresh...</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -698,6 +707,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

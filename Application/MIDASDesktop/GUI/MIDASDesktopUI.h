@@ -19,6 +19,7 @@ class PullUI;
 class CreateProfileUI;
 class AddResourceUI;
 class AboutUI;
+class AutoRefreshUI;
 class BuyUI;
 class midasSynchronizer;
 class midasAuthenticator;
@@ -164,6 +165,7 @@ private:
   UploadAgreementUI *         dlg_uploadAgreementUI;
   AboutUI *                   dlg_aboutUI;
   AddResourceUI *             dlg_addResourceUI;
+  AutoRefreshUI *             dlg_autoRefreshUI;
   PullUI *                    dlg_pullUI;
   BuyUI *                     dlg_buyUI;
   // ------------- UI Dialogs -------------
