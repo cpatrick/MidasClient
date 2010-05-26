@@ -8,6 +8,7 @@
 #include <QTest>
 #include <QSettings>
 #include <QDesktopServices>
+#include <QMessageBox>
 
 #include <kwsys/SystemTools.hxx>
 
@@ -58,13 +59,39 @@
 #include "mwsWebAPI.h"
 
 // ------------- TreeModel / TreeView -------------
-MIDASDesktopUI::MIDASDesktopUI() : currentTransferMode(MIDASDesktopUI::NotSet)
+MIDASDesktopUI::MIDASDesktopUI()
 {
   setupUi(this); // this sets up GUI
   int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
   srand (time); //init random number generator 
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
   
+  // ------------- Instantiate and setup tray icon -------------
+  minimizeAction = new QAction(tr("Mi&nimize"), this);
+  connect(minimizeAction, SIGNAL(triggered()), this, SLOT(hide()));
+
+  maximizeAction = new QAction(tr("Ma&ximize"), this);
+  connect(maximizeAction, SIGNAL(triggered()), this, SLOT(showMaximized()));
+
+  restoreAction = new QAction(tr("&Restore"), this);
+  connect(restoreAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+
+  trayIconMenu = new QMenu(this);
+  trayIconMenu->addAction(minimizeAction);
+  trayIconMenu->addAction(maximizeAction);
+  trayIconMenu->addAction(restoreAction);
+  trayIconMenu->addSeparator();
+  trayIconMenu->addAction(actionQuit);
+
+  trayIcon = new QSystemTrayIcon(this);
+  trayIcon->setContextMenu(trayIconMenu);
+  trayIcon->setIcon(QPixmap(":icons/Icon32.ico"));
+  trayIcon->setVisible(true);
+
+  connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+    this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+  // ------------- Instantiate and setup tray icon -------------
+
   // ------------- Instantiate and setup UI dialogs -------------
   dlg_createMidasCommunityUI =    new CreateMidasCommunityUI( this );
   dlg_createMidasSubCommunityUI = new CreateMidasCommunityUI( this, CreateMidasCommunityUI::SubCommunity );
@@ -178,7 +205,7 @@ MIDASDesktopUI::MIDASDesktopUI() : currentTransferMode(MIDASDesktopUI::NotSet)
   connect( actionChoose_Local_Database, SIGNAL( triggered() ), this, SLOT( chooseLocalDatabase() ) );
 
   connect( actionSign_In,   SIGNAL( triggered() ), this, SLOT( signInOrOut() ) );
-  connect( actionQuit,      SIGNAL( triggered() ), this, SLOT( close() ) );
+  connect( actionQuit,      SIGNAL( triggered() ), qApp, SLOT( quit() ) );
   connect( actionAbout,     SIGNAL( triggered() ), dlg_aboutUI, SLOT( exec() ) );
 
   connect( actionAdd_community, SIGNAL(triggered()), this, SLOT(addCommunity()));
@@ -220,11 +247,11 @@ MIDASDesktopUI::MIDASDesktopUI() : currentTransferMode(MIDASDesktopUI::NotSet)
   this->setLocalDatabase(lastDatabase);
 
   // ------------- Handle stored settings -------------
- }
+}
 
 /** Destructor */
 MIDASDesktopUI::~MIDASDesktopUI()
-  {
+{
   ProcessingStatusUI::finalize();
   delete dlg_aboutUI;
   delete dlg_signInUI;
@@ -245,15 +272,15 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete m_logger;
   delete m_progress;
   delete m_synch;
-  }
+}
 
 MidasTreeView * MIDASDesktopUI::getTreeView()
-  {
+{
   return this->treeView; 
-  }
+}
 
 void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
-  {
+{
   if ( activateAction & ACTION_CONNECTED )
     {
     this->searchTab->setEnabled( value );
@@ -310,7 +337,37 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
   if ( activateAction & ACTION_CLIENT_BITSTREAM )
     {
     }
-  }
+}
+
+void MIDASDesktopUI::closeEvent(QCloseEvent *event)
+{
+  if (trayIcon->isVisible())
+    {
+    trayIcon->showMessage(tr("MIDASDesktop"),
+     tr("The program will keep running in the "
+     "system tray. To terminate the program, "
+     "choose Quit in the context menu "
+     "of this item"));
+    hide();
+    event->ignore();
+    }
+}
+
+void MIDASDesktopUI::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+  switch (reason)
+    {
+    case QSystemTrayIcon::Trigger:
+      break;
+    case QSystemTrayIcon::DoubleClick:
+      showNormal();
+      break;
+    case QSystemTrayIcon::MiddleClick:
+      break;
+    default:
+      break;
+    }
+}
 
 void MIDASDesktopUI::updateActionState( const MidasTreeItem* item )
 {

@@ -3,6 +3,8 @@
 
 #include <QFlags>
 #include <QProgressBar>
+#include <QSystemTrayIcon>
+#include <QCloseEvent>
 
 #include "ui_MIDASDesktopUI.h"
 
@@ -36,14 +38,6 @@ class MIDASDesktopUI :  public QMainWindow, private Ui::MIDASDesktopWindow
   Q_OBJECT
  
 public:
-
-  enum TransferMode
-    {
-    NotSet   = 0x0,
-    Upload   = 0x1,
-    Download = 0x2,
-    };
-  Q_DECLARE_FLAGS(TransferModes, TransferMode)
 
   enum ActivateAction
     {
@@ -81,6 +75,9 @@ public:
   midasSynchronizer* getSynchronizer() { return m_synch; }
   midasLog* getLog() { return m_logger; }
 
+protected:
+  void closeEvent(QCloseEvent *event);
+
 public slots:
   void signInOrOut();
   void signIn();
@@ -103,6 +100,10 @@ public slots:
   void setProgressIndeterminate();
   void setProgressEmpty();
   // -------------- progress bar ----------
+
+  // ------------- tray icon -------------
+  void iconActivated(QSystemTrayIcon::ActivationReason reason);
+  // ------------- tray icon -------------
 
   // ------------- UI updates -------------
   void updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem ); 
@@ -175,11 +176,14 @@ private:
   QProgressBar *              progressBar;
   // ------------- status bar -------------
 
-  // ------------- transfer -------------
-  TransferModes currentTransferMode;
-  QStringList                 m_FileList;
-  // ------------- transfer -------------
-  QString m_OpenFilesPath;
+  // ------------- tray ----------------
+  QAction *                   minimizeAction;
+  QAction *                   maximizeAction;
+  QAction *                   restoreAction;
+  QAction *                   quitAction;
+  QSystemTrayIcon *           trayIcon;
+  QMenu *                     trayIconMenu;
+  // ------------- tray ----------------
 
   bool                        m_signIn;
   midasDatabaseProxy*         m_database;
@@ -191,7 +195,6 @@ private:
   std::vector<std::string>    m_dirtyUuids;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( MIDASDesktopUI::TransferModes )
 Q_DECLARE_OPERATORS_FOR_FLAGS( MIDASDesktopUI::ActivateActions )
 
 #endif //__MIDASDesktopUI_H
