@@ -918,6 +918,7 @@ void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)
 
   if ( index.isValid() )
     {
+    menu.addAction( this->actionOpenURL );
     menu.addAction( this->actionPull_Resource );
     menu.exec( e->globalPos() );
     }
