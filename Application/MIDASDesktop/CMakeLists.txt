@@ -147,7 +147,6 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/MidasApplication.h
   GUI/MidasResourceDescTable.h
   GUI/MidasSearchResultList.h
-  GUI/MidasItemDelegate.h
   GUI/ProcessingStatusUI.h
 )
 
