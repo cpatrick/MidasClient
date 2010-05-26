@@ -52,7 +52,9 @@ public:
   enum MidasAppSetting
     {
     LAST_URL,
-    LAST_FETCH_TIME
+    LAST_FETCH_TIME,
+    AUTO_REFRESH_INTERVAL,
+    AUTO_REFRESH_SETTING
     };
 
   mds::SQLiteDatabase* GetDatabase();
@@ -67,6 +69,7 @@ public:
 
   std::string GetSetting(MidasAppSetting setting);
   void SetSetting(MidasAppSetting setting, std::string value);
+  void SetSetting(MidasAppSetting setting, int value);
 
   std::string GetName(int type, int id);
 

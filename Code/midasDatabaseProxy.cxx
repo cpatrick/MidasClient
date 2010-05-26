@@ -36,6 +36,10 @@ std::string midasDatabaseProxy::GetKeyName(MidasAppSetting setting)
       return "last_url";
     case LAST_FETCH_TIME:
       return "last_fetch";
+    case AUTO_REFRESH_INTERVAL:
+      return "refresh_interval";
+    case AUTO_REFRESH_SETTING:
+      return "refresh_setting";
     default:
       return "";
     }
@@ -540,6 +544,13 @@ void midasDatabaseProxy::SetSetting(MidasAppSetting setting, std::string value)
   query << "INSERT INTO app_settings (key, value) VALUES ('" << key << "', '"
     << value << "')";
   this->Database->ExecuteQuery(query.str().c_str());
+}
+
+void midasDatabaseProxy::SetSetting(MidasAppSetting setting, int value)
+{
+  std::stringstream s;
+  s << value;
+  this->SetSetting(setting, s.str());
 }
 
 //--------------------------------------------------------------------------
