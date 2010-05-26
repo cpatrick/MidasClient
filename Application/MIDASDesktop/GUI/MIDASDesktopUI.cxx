@@ -769,7 +769,7 @@ void MIDASDesktopUI::chooseLocalDatabase()
 {
   // ------------- display FileDialog -------------
   QString file = QFileDialog::getOpenFileName(
-                                    this, tr("Load Files"),
+                                    this, tr("Choose Database File"),
                                     QDir::current().absolutePath(),
                                     tr("All Files (*)"));
 
@@ -778,8 +778,14 @@ void MIDASDesktopUI::chooseLocalDatabase()
 
 void MIDASDesktopUI::setLocalDatabase(std::string file)
 {
-  if(file == "")
+  if(file == "" || !midasUtils::IsDatabaseValid(file))
     {
+    std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory()
+      + "/midas.db";
+    if(midasUtils::IsDatabaseValid(path))
+      {
+      setLocalDatabase(path);
+      }
     return;
     }
 

@@ -441,9 +441,9 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionChoose_Local_Database"/>
     <addaction name="actionCreate_Profile"/>
     <addaction name="actionEdit_search_settings"/>
+    <addaction name="actionChoose_Local_Database"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuCommunity">
@@ -698,6 +698,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
