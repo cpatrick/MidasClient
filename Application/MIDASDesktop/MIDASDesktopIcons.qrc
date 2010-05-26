@@ -52,5 +52,9 @@
     <file>icons/gnome-fs-regular.png</file>
     <file>icons/ajax-loader.gif</file>
     <file>icons/QuestionMark_48x48.png</file>
+    <file>icons/Midas_Desktop_Icon.png</file>
+    <file>icons/Midas_Desktop_LargeIcon.png</file>
+    <file>icons/Midas_Desktop_Logo.png</file>
+    <file>icons/Midas_Desktop_Splash.png</file>
   </qresource>
 </RCC>
