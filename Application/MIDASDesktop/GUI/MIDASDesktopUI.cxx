@@ -53,7 +53,6 @@
 #include "MidasCollectionTreeItem.h"
 #include "MidasBitstreamTreeItem.h"
 #include "MidasItemTreeItem.h"
-#include "MidasItemDelegate.h"
 #include "Logger.h"
 #include "MidasClientGlobal.h"
 #include "mwsWebAPI.h"
@@ -117,7 +116,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   midasTreeItemInfoTable->horizontalHeader()->setStretchLastSection( true ); 
   midasTreeItemInfoTable->horizontalHeader()->hide();
   midasTreeItemInfoTable->verticalHeader()->hide();
-  midasTreeItemInfoTable->setItemDelegate( new EditTextDelegate );
   // ------------- Item info panel -------------
 
   // ------------- Status bar -------------
@@ -344,10 +342,8 @@ void MIDASDesktopUI::closeEvent(QCloseEvent *event)
   if (trayIcon->isVisible())
     {
     trayIcon->showMessage(tr("MIDASDesktop"),
-     tr("The program will keep running in the "
-     "system tray. To terminate the program, "
-     "choose Quit in the context menu "
-     "of this item"));
+      tr("The program will keep running in the system tray.  To terminate "
+      "the program, choose Quit in the context menu "));
     hide();
     event->ignore();
     }

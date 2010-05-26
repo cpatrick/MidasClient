@@ -99,8 +99,6 @@ set(MIDASDesktopUI_SRCS
   GUI/MidasResourceDescTable.cxx
   GUI/MidasSearchResultList.h
   GUI/MidasSearchResultList.cxx
-  GUI/MidasItemDelegate.h
-  GUI/MidasItemDelegate.cxx
   GUI/ProcessingStatusUI.h
   GUI/ProcessingStatusUI.cxx
 )
