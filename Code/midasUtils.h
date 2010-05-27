@@ -14,12 +14,17 @@
 
 #include "midasStandardIncludes.h"
 
+namespace mdo{
+  class Object;
+};
+
 class midasUtils
 {
 public:
   static std::string GenerateUUID();
   static std::string EscapeForURL(std::string s);
   static bool IsDatabaseValid(std::string path);
+  static mdo::Object* FetchByUuid(std::string uuid);
 };
 
 #endif

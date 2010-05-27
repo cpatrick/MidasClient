@@ -573,7 +573,6 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionT
   i++;
 
   midasTreeItemInfoTable->resizeColumnsToContents();
-  connect( midasTreeItemInfoTable, SIGNAL( itemChanged ( QTableWidgetItem * ) ), this, SLOT( resourceDescriptionChanged(QTableWidgetItem *) ) ); 
 }
 
 void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
@@ -619,7 +618,6 @@ void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
   i++;
 
   midasTreeItemInfoTable->resizeColumnsToContents();
-  connect( midasTreeItemInfoTable, SIGNAL( itemChanged ( QTableWidgetItem * ) ), this, SLOT( resourceDescriptionChanged(QTableWidgetItem *) ) ); 
 }
 
 void MIDASDesktopUI::clearInfoPanel()
@@ -1090,10 +1088,9 @@ void MIDASDesktopUI::decorateServerTree()
       i != m_dirtyUuids.end(); ++i)
     {
     this->treeView->decorateByUuid(*i);
-    //TODO zach implement the FetchByUuid function
-    /*mdo::Object* object = mws::Object::FetchByUuid(*i);
+    mdo::Object* object = midasUtils::FetchByUuid(*i);
     this->treeView->selectByObject(object);
-    delete object;*/
+    delete object;
     }
 }
 
