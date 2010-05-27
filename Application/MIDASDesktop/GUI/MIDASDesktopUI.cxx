@@ -67,19 +67,11 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
   
   // ------------- Instantiate and setup tray icon -------------
-  minimizeAction = new QAction(tr("Mi&nimize"), this);
-  connect(minimizeAction, SIGNAL(triggered()), this, SLOT(hide()));
-
-  maximizeAction = new QAction(tr("Ma&ximize"), this);
-  connect(maximizeAction, SIGNAL(triggered()), this, SLOT(showMaximized()));
-
-  restoreAction = new QAction(tr("&Restore"), this);
-  connect(restoreAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+  showAction = new QAction(tr("&Show MIDASDesktop"), this);
+  connect(showAction, SIGNAL(triggered()), this, SLOT(showNormal()));
 
   trayIconMenu = new QMenu(this);
-  trayIconMenu->addAction(minimizeAction);
-  trayIconMenu->addAction(maximizeAction);
-  trayIconMenu->addAction(restoreAction);
+  trayIconMenu->addAction(showAction);
   trayIconMenu->addSeparator();
   trayIconMenu->addAction(actionQuit);
 
@@ -113,6 +105,13 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_pullUI =             new PullUI( this );
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
+
+  // ------------- Auto Refresh Timer -----------
+  refreshTimer = new QTimer(this);
+  connect(refreshTimer, SIGNAL( timeout() ), treeView, SLOT( Update() ) );
+  connect(dlg_autoRefreshUI, SIGNAL( intervalChanged() ), this, SLOT( setTimerInterval() ) );
+  connect(dlg_autoRefreshUI, SIGNAL( settingChanged() ), this, SLOT( adjustTimerSettings() ) );
+  // ------------- Auto Refresh Timer -----------
 
   // ------------- Item info panel -------------
   midasTreeItemInfoTable->horizontalHeader()->setStretchLastSection( true ); 
@@ -178,13 +177,13 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeView, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
     this, SLOT( displayServerResourceContextMenu(QContextMenuEvent*) ));
 
-  connect(treeView->model(), SIGNAL(serverPolled()), this, SLOT(storeLastPollTime()));
+  connect(treeView->model(), SIGNAL(serverPolled()), this, SLOT( storeLastPollTime()));
 
   connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
     this, SLOT( displayClientResourceContextMenu(QContextMenuEvent*) ));
 
-  connect(dlg_addResourceUI, SIGNAL(addedResource()), this, SLOT( clientTreeViewUpdated() ) );
-  connect(dlg_pullUI, SIGNAL(pulledResources()), this, SLOT( clientTreeViewUpdated() ) );
+  connect(dlg_addResourceUI, SIGNAL(addedResource()), this, SLOT( updateClientTreeView() ) );
+  connect(dlg_pullUI, SIGNAL(pulledResources()), this, SLOT( updateClientTreeView() ) );
   // ------------- setup TreeView signals -------------
 
   // ------------- signal/slot connections -------------
@@ -223,7 +222,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( addResource_Button, SIGNAL( released() ), dlg_addResourceUI, SLOT( exec() ) );
   connect( push_Button, SIGNAL( released() ), this, SLOT( pushResources() ) );
   connect( pull_Button, SIGNAL( released() ), dlg_pullUI, SLOT( exec() ) );
-  connect( refreshButton, SIGNAL( released() ), this, SLOT( serverTreeViewUpdated() ) );
+  connect( refreshButton, SIGNAL( released() ), this, SLOT( updateServerTreeView() ) );
   connect( searchButton, SIGNAL( released() ), this, SLOT( search() ) );
 
   //connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
@@ -239,6 +238,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_auth->SetLog(m_logger);
   this->m_synch->SetLog(m_logger);
   this->m_synch->SetProgressReporter(m_progress);
+  this->m_signIn = false;
   // ------------- setup client members and logging ----
 
   // ------------- Handle stored settings -------------
@@ -269,11 +269,28 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete stateLabel;
   delete connectLabel;
   delete hostLabel;
+  delete refreshTimer;
   delete m_database;
   delete m_auth;
   delete m_logger;
   delete m_progress;
   delete m_synch;
+}
+
+void MIDASDesktopUI::showNormal()
+{
+  trayIcon->setIcon(QPixmap(":icons/Midas_Desktop_Icon.png"));
+
+  if(m_database)
+    {
+    m_database->Open();
+    if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 0)
+      {
+      refreshTimer->stop();
+      }
+    m_database->Close();
+    }
+  QMainWindow::showNormal();
 }
 
 MidasTreeView * MIDASDesktopUI::getTreeView()
@@ -347,9 +364,16 @@ void MIDASDesktopUI::closeEvent(QCloseEvent *event)
     {
     trayIcon->showMessage(tr("MIDASDesktop"),
       tr("The program will keep running in the system tray.  To terminate "
-      "the program, choose Quit in the context menu "));
+      "the program, choose Quit in the menu "));
     hide();
     event->ignore();
+
+    m_database->Open();
+    if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 0)
+      {
+      refreshTimer->start();
+      }
+    m_database->Close();
     }
 }
 
@@ -437,18 +461,32 @@ void MIDASDesktopUI::updateActionStateClient( const MidasTreeItem* item )
     }
 }
 
-void MIDASDesktopUI::clientTreeViewUpdated()
+void MIDASDesktopUI::updateClientTreeView()
 {
   this->treeTabContainer->setCurrentIndex(1);
   this->treeViewClient->Update();
   this->treeViewClient->expandAll();
 }
 
-void MIDASDesktopUI::serverTreeViewUpdated()
+void MIDASDesktopUI::updateServerTreeView()
 {
   this->treeTabContainer->setCurrentIndex(0);
   this->treeView->Update();
   //this->treeView->expandAll();
+}
+
+void MIDASDesktopUI::alertNewResources()
+{
+  disconnect(trayIcon, SIGNAL( messageClicked() ), this, SLOT( showNormal() ) );
+  trayIcon->showMessage(tr("MIDASDesktop - New Resources"),
+    tr("There are new resources on the MIDAS server.  Click this message "
+    "to show the MIDASDesktop window."));
+  
+  if(this->isHidden())
+    {
+    trayIcon->setIcon(QPixmap(":icons/MIDAS_Desktop_Icon_Red_v1.png"));
+    connect(trayIcon, SIGNAL( messageClicked() ), this, SLOT( showNormal() ) );
+    }
 }
 
 void MIDASDesktopUI::showLogTab()
@@ -710,7 +748,7 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
       this->m_logger->Message(text.str());
       }
     }
-  this->clientTreeViewUpdated();
+  this->updateClientTreeView();
 }
 
 void MIDASDesktopUI::viewInBrowser()
@@ -764,11 +802,46 @@ void MIDASDesktopUI::signInOrOut()
 {
   if ( !this->m_signIn )
     {
-    this->dlg_signInUI->exec(); 
+    this->dlg_signInUI->exec();
     }
   else
     {
     this->signOut(); 
+    }
+}
+
+void MIDASDesktopUI::setTimerInterval()
+{
+  m_database->Open();
+  int minutes = atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_INTERVAL).c_str());
+  m_database->Close();
+  refreshTimer->setInterval(minutes * 60 * 1000);
+}
+
+void MIDASDesktopUI::adjustTimerSettings()
+{
+  m_database->Open();
+  int setting = atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str());
+  m_database->Close();
+
+  refreshTimer->stop();
+
+  switch(setting)
+    {
+    case 0:
+      if(this->isHidden() && this->m_signIn)
+        {
+        refreshTimer->start();
+        }
+      break;
+    case 1:
+      if(this->m_signIn)
+        {
+        refreshTimer->start();
+        }
+      break;
+    default:
+      break;
     }
 }
 
@@ -781,6 +854,14 @@ void MIDASDesktopUI::signIn()
   this->getTreeView()->SetWebAPI(mws::WebAPI::Instance());
   this->getTreeView()->Initialize();
   this->activateActions( true, ACTION_CONNECTED );
+
+  // start the refresh timer here if our setting = 1
+  m_database->Open();
+  if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 1)
+    {
+    refreshTimer->start();
+    }
+  m_database->Close();
 
   // Satus bar
   std::string connect = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 
@@ -837,8 +918,10 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     this->addResource_Button->setEnabled(true);
     this->actionAdd_community->setEnabled(true);
     this->treeViewClient->SetLog(m_logger);
-    this->clientTreeViewUpdated();
+    this->updateClientTreeView();
     this->treeViewClient->collapseAll();
+    setTimerInterval();
+    adjustTimerSettings();
     }
   else
     {
@@ -890,6 +973,8 @@ void MIDASDesktopUI::signOut()
   hostLabel->hide();
   this->displayStatus(tr("Logout")); 
   m_signIn = false;
+
+  refreshTimer->stop();
 }
 
 void MIDASDesktopUI::editServerSettings()
@@ -913,8 +998,8 @@ void MIDASDesktopUI::pushResources()
   this->m_synch->SetOperation(midasSynchronizer::OPERATION_PUSH);
   if(this->m_synch->Perform() == 0)
     {
-    this->clientTreeViewUpdated();
-    this->serverTreeViewUpdated();
+    this->updateClientTreeView();
+    this->updateServerTreeView();
     }
   this->progressBar->setValue(0);
   this->displayStatus(tr("Finished pushing locally added resources."));
@@ -987,6 +1072,12 @@ void MIDASDesktopUI::storeLastPollTime()
   newResources.SetSince(m_database->GetSetting(midasDatabaseProxy::LAST_FETCH_TIME));
   newResources.Fetch();
   this->m_dirtyUuids = newResources.GetUuids();
+
+  if(m_dirtyUuids.size())
+    {
+    alertNewResources();
+    }
+
   m_database->SetSetting(midasDatabaseProxy::LAST_FETCH_TIME, newResources.GetTimestamp());
   m_database->Close();
 
@@ -999,6 +1090,10 @@ void MIDASDesktopUI::decorateServerTree()
       i != m_dirtyUuids.end(); ++i)
     {
     this->treeView->decorateByUuid(*i);
+    //TODO zach implement the FetchByUuid function
+    /*mdo::Object* object = mws::Object::FetchByUuid(*i);
+    this->treeView->selectByObject(object);
+    delete object;*/
     }
 }
 

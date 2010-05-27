@@ -19,6 +19,10 @@ public slots:
   int exec();
   virtual void accept();
 
+signals:
+  void intervalChanged();
+  void settingChanged();
+
 private:
   MIDASDesktopUI* m_parent;
 };

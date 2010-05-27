@@ -82,7 +82,7 @@ void CreateMidasCollectionUI::accept()
       {    
       text << "Successfully added collection " << path << ".";
       parent->getLog()->Message(text.str());
-      parent->clientTreeViewUpdated();
+      parent->updateClientTreeView();
       }
     else
       {

@@ -36,19 +36,14 @@ public:
   /** Initialize the tree */
   bool Initialize();
 
-  /** Update the tree */
-  void Update();
-
   /** Clear the tree */
   void Clear(); 
 
   bool isModelIndexSelected() const; 
   //const MidasTreeItem * getMidasTreeItemParent(QModelIndex& selected) const;
   //const std::string getSelectedMidasTreeItemParentId() const; 
-  const QModelIndex getSelectedModelIndex() const; 
-  const MidasTreeItem * getSelectedMidasTreeItem() const; 
-   
-  MidasItemTreeItem * selectedMidasItemTreeItem(); 
+  const QModelIndex getSelectedModelIndex() const;
+  const MidasTreeItem * getSelectedMidasTreeItem() const;
 
 public slots:
   
@@ -57,6 +52,7 @@ public slots:
   void decorateByUuid(std::string uuid);
   void alertFetchedMore();
   void selectByObject(mdo::Object* object);
+  void Update();
 
 signals:
 

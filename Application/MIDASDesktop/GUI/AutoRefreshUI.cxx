@@ -29,7 +29,6 @@ void AutoRefreshUI::reset()
     {
     timeSpinBox->setValue(atoi(interval.c_str()));
     }
-
   enableActions(settingComboBox->currentIndex());
 }
 
@@ -43,16 +42,19 @@ void AutoRefreshUI::enableActions(int index)
 
 int AutoRefreshUI::exec()
 {
-  this->reset(); 
-  return QDialog::exec(); 
+  this->reset();
+  return QDialog::exec();
 }
 
 void AutoRefreshUI::accept()
 {
-
   m_parent->getDatabaseProxy()->Open();
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::AUTO_REFRESH_INTERVAL, timeSpinBox->value());
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING, settingComboBox->currentIndex());
   m_parent->getDatabaseProxy()->Close();
+
+  emit intervalChanged();
+  emit settingChanged();
+
   QDialog::accept();
 }

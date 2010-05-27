@@ -16,13 +16,13 @@
 
 CreateMidasCommunityUI::CreateMidasCommunityUI(MIDASDesktopUI *parent, CreateMidasCommunityUI::Types type):
   QDialog(parent), parent(parent)
-  {
+{
   setupUi(this); // this sets up GUI
   this->setType(type); 
-  }
+}
 
 void CreateMidasCommunityUI::setType(Types type)
-  {
+{
   this->type = type;
   if (type == CreateMidasCommunityUI::SubCommunity)
     {
@@ -36,23 +36,23 @@ void CreateMidasCommunityUI::setType(Types type)
     {
     QWidget::setWindowTitle(tr("Add Sub-community"));
     }
-  }
+}
 
 void CreateMidasCommunityUI::reset()
-  {
+{
   this->nameEdit->clear(); 
   this->short_descriptionEdit->clear(); 
   this->linksEdit->clear(); 
-  }
+}
 
 int CreateMidasCommunityUI::exec()
-  {
+{
   this->reset(); 
   return QDialog::exec(); 
-  }
+}
 
 void CreateMidasCommunityUI::accept()
-  {
+{
   if(this->nameEdit->text() == "")
     {
     parent->getLog()->Error("You must supply a name for the community.");
@@ -92,7 +92,7 @@ void CreateMidasCommunityUI::accept()
       {    
       text << "Successfully added community " << path << ".";
       parent->getLog()->Message(text.str());
-      parent->clientTreeViewUpdated();
+      parent->updateClientTreeView();
       }
     else
       {
@@ -105,4 +105,4 @@ void CreateMidasCommunityUI::accept()
     // disabled for now
     }
   QDialog::accept();
-  }
+}

@@ -89,7 +89,7 @@ void CreateMidasItemUI::accept()
       {    
       text << "Successfully added item " << path << ".";
       parent->getLog()->Message(text.str());
-      parent->clientTreeViewUpdated();
+      parent->updateClientTreeView();
       }
     else
       {

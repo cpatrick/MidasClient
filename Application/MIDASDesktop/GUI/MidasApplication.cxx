@@ -35,7 +35,7 @@ int MidasApplication::exec()
 
   MIDASDesktop->show(); 
 
-  MIDASDesktop->signInOrOut(); 
+  //MIDASDesktop->signInOrOut(); 
 
   int code = QApplication::exec(); 
   delete this->MIDASDesktop; 

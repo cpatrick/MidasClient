@@ -5,6 +5,7 @@
 #include <QProgressBar>
 #include <QSystemTrayIcon>
 #include <QCloseEvent>
+#include <QTimer>
 
 #include "ui_MIDASDesktopUI.h"
 
@@ -80,6 +81,8 @@ protected:
   void closeEvent(QCloseEvent *event);
 
 public slots:
+  void showNormal();
+
   void signInOrOut();
   void signIn();
   void signOut();
@@ -87,14 +90,16 @@ public slots:
                      std::string apiName, std::string apiKey );
   void chooseLocalDatabase();
   void setLocalDatabase(std::string file);
-  void clientTreeViewUpdated();
-  void serverTreeViewUpdated();
+  void updateClientTreeView();
+  void updateServerTreeView();
   void decorateServerTree();
 
   // ------------- settings -------------
   void editServerSettings();
   void editSearchSettings();
   void checkDatabaseSettings();
+  void setTimerInterval();
+  void adjustTimerSettings();
   // ------------- settings -------------
 
   // -------------- progress bar ----------
@@ -104,6 +109,7 @@ public slots:
 
   // ------------- tray icon -------------
   void iconActivated(QSystemTrayIcon::ActivationReason reason);
+  void alertNewResources();
   // ------------- tray icon -------------
 
   // ------------- UI updates -------------
@@ -178,13 +184,15 @@ private:
   // ------------- status bar -------------
 
   // ------------- tray ----------------
-  QAction *                   minimizeAction;
-  QAction *                   maximizeAction;
-  QAction *                   restoreAction;
-  QAction *                   quitAction;
+  QAction *                   showAction;
   QSystemTrayIcon *           trayIcon;
   QMenu *                     trayIconMenu;
   // ------------- tray ----------------
+
+  // ------------- auto-refresh -----------
+  QTimer *                    refreshTimer;
+  // ------------- auto-refresh -----------
+
 
   bool                        m_signIn;
   midasDatabaseProxy*         m_database;

@@ -156,18 +156,6 @@ void MidasTreeView::contextMenuEvent(QContextMenuEvent* e)
   emit midasTreeViewContextMenu(e);
 }
 
-MidasItemTreeItem * MidasTreeView::selectedMidasItemTreeItem()
-{
-  MidasItemTreeItem * itemTreeItem = NULL; 
-  QModelIndexList selected = this->selectedIndexes(); 
-  if(selected.size() > 0)
-    {
-//    MidasTreeItem * item = const_cast<MidasTreeItem*>( this->model()->midasTreeItem(selected.first()) ); 
-//    itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item); 
-    }
-  return itemTreeItem; 
-}
-
 void MidasTreeView::decorateByUuid(std::string uuid)
 {
   this->m_Model->decorateByUuid(uuid);
