@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../MIDASDesktopIcons.qrc">
-    <normaloff>:/icons/Icon16.PNG</normaloff>:/icons/Icon16.PNG</iconset>
+    <normaloff>:/icons/Midas_Desktop_Icon.png</normaloff>:/icons/Midas_Desktop_Icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout">
@@ -707,6 +707,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
