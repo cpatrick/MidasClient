@@ -56,5 +56,8 @@
     <file>icons/Midas_Desktop_LargeIcon.png</file>
     <file>icons/Midas_Desktop_Logo.png</file>
     <file>icons/Midas_Desktop_Splash.png</file>
+    <file>icons/MIDAS_Desktop_Icon_Red_v1.png</file>
+    <file>icons/MIDAS_Desktop_Icon_Red_v2.png</file>
+    <file>icons/MIDAS_Desktop_Icon_Red_v3.png</file>
   </qresource>
 </RCC>
