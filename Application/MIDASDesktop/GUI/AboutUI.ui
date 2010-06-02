@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../MIDASDesktopIcons.qrc">
-    <normaloff>:/icons/Icon32.ico</normaloff>:/icons/Icon32.ico</iconset>
+    <normaloff>:/icons/Midas_Desktop_Icon.png</normaloff>:/icons/Midas_Desktop_Icon.png</iconset>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -78,7 +78,8 @@
  </widget>
  <resources>
   <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>
