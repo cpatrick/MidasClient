@@ -534,6 +534,9 @@
    </property>
   </action>
   <action name="actionCreate_Profile">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/dude3.png</normaloff>:/icons/dude3.png</iconset>
@@ -672,6 +675,9 @@
    </property>
   </action>
   <action name="actionAuto_Refresh">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
@@ -707,6 +713,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

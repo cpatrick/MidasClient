@@ -915,6 +915,8 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     this->clientExpandAllButton->setEnabled(true);
     this->addResource_Button->setEnabled(true);
     this->actionAdd_community->setEnabled(true);
+    this->actionCreate_Profile->setEnabled(true);
+    this->actionAuto_Refresh->setEnabled(true);
     this->treeViewClient->SetLog(m_logger);
     this->updateClientTreeView();
     this->treeViewClient->collapseAll();
