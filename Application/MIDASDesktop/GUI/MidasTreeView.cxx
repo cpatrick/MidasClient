@@ -94,12 +94,12 @@ void MidasTreeView::Clear()
   this->reset(); 
 }
 
- bool MidasTreeView::isModelIndexSelected() const
-   {
-   QItemSelectionModel * selectionModel = this->selectionModel(); 
-   assert(selectionModel != NULL); 
-   return (selectionModel->selectedIndexes().size() > 0); 
-   }
+bool MidasTreeView::isModelIndexSelected() const
+{
+  QItemSelectionModel * selectionModel = this->selectionModel(); 
+  assert(selectionModel != NULL); 
+  return (selectionModel->selectedIndexes().size() > 0); 
+}
 
 const QModelIndex MidasTreeView::getSelectedModelIndex() const
 {
@@ -240,7 +240,10 @@ void MidasTreeView::selectByObject(mdo::Object* object)
     {
     expand(m_Model->getIndexByUuid(*i));
     }
-  selectionModel()->select(m_Model->getIndexByUuid(*(path.begin())),
-    QItemSelectionModel::Select | QItemSelectionModel::Clear);
-  
+  /*QModelIndex index = m_Model->getIndexByUuid(*(path.begin()));
+  if(index.isValid())
+    {
+    selectionModel()->select(index,
+      QItemSelectionModel::Select | QItemSelectionModel::Clear);
+    }*/
 }
