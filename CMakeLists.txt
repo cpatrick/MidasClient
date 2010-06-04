@@ -77,6 +77,7 @@ INCLUDE_DIRECTORIES(${MIDASCPP_SOURCE_DIR}/Utilities)
 INCLUDE_DIRECTORIES(${MIDASCPP_BINARY_DIR}/Utilities/expat)
 INCLUDE_DIRECTORIES(${MIDASCPP_BINARY_DIR}/Utilities/kwsys)
 
+SET(BUILD_TESTING OFF CACHE BOOL "Build MIDAScpp testing")
 SUBDIRS(Code Application Utilities Testing)
 
 #-----------------------------------------------------------------------------
