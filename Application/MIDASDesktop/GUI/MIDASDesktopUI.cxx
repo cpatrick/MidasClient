@@ -77,7 +77,7 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   trayIcon = new QSystemTrayIcon(this);
   trayIcon->setContextMenu(trayIconMenu);
-  trayIcon->setIcon(QPixmap(":icons/Midas_Desktop_Icon.png"));
+  trayIcon->setIcon(QPixmap(":icons/MIDAS_Desktop_Icon.png"));
   trayIcon->setToolTip(STR2QSTR(MIDAS_CLIENT_VERSION_STR));
   trayIcon->setVisible(true);
 
@@ -279,7 +279,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
 
 void MIDASDesktopUI::showNormal()
 {
-  trayIcon->setIcon(QPixmap(":icons/Midas_Desktop_Icon.png"));
+  trayIcon->setIcon(QPixmap(":icons/MIDAS_Desktop_Icon.png"));
 
   if(m_database)
     {
