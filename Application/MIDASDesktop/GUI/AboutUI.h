@@ -15,7 +15,7 @@ public:
 
 
 public slots:
-  void reset(); 
+  void reset();
   int exec();
 
 private:

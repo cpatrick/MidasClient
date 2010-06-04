@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../MIDASDesktopIcons.qrc">
-    <normaloff>:/icons/Midas_Desktop_Icon.png</normaloff>:/icons/Midas_Desktop_Icon.png</iconset>
+    <normaloff>:/icons/MIDAS_Desktop_Icon.png</normaloff>:/icons/MIDAS_Desktop_Icon.png</iconset>
   </property>
   <property name="modal">
    <bool>true</bool>

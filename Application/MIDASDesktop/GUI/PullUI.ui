@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Pull Resource</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../MIDASDesktopIcons.qrc">
+    <normaloff>:/icons/MIDAS_Desktop_Icon.png</normaloff>:/icons/MIDAS_Desktop_Icon.png</iconset>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="6" column="0" colspan="4">
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -62,7 +66,9 @@
   <tabstop>recursiveCheckBox</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

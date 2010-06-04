@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>377</width>
-    <height>229</height>
+    <width>343</width>
+    <height>252</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Edit Profile</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../MIDASDesktopIcons.qrc">
+    <normaloff>:/icons/MIDAS_Desktop_Icon.png</normaloff>:/icons/MIDAS_Desktop_Icon.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -47,17 +51,11 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+      <widget class="QCheckBox" name="anonymousCheckBox">
+       <property name="text">
+        <string>Anonymous user</string>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
+      </widget>
      </item>
     </layout>
    </item>
@@ -214,6 +212,8 @@
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
