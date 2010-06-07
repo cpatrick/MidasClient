@@ -41,6 +41,8 @@ struct midasAuthProfile
   std::string AppName;
   std::string ApiKey;
   std::string User;
+
+  bool IsAnonymous() { return User == ""; }
 };
 
 class midasDatabaseProxy

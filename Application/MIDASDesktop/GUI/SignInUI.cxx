@@ -60,7 +60,8 @@ void SignInUI::accept()
     parent->getAuthenticator()->SetProfile(profileComboBox->currentText().toStdString());
     parent->getDatabaseProxy()->Close();
     parent->getSynchronizer()->GetAuthenticator()->SetProfile(profileComboBox->currentText().toStdString());
-    parent->getLog()->Message("Signed in successfully.");
+    std::stringstream text;
+    parent->getLog()->Message("Signed in successfully with profile.");
 
     emit signedIn();
     }

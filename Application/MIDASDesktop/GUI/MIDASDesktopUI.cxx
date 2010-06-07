@@ -890,12 +890,18 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
 {
   if(file == "" || !midasUtils::IsDatabaseValid(file))
     {
+    std::stringstream text;
+    text << file << " is not a valid MIDAS SQLite database. Defaulting "
+      " to midas.db.";
+    this->m_logger->Message(text.str());
     std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory()
       + "/midas.db";
     if(midasUtils::IsDatabaseValid(path))
       {
       setLocalDatabase(path);
+      return;
       }
+    this->m_logger->Error("No suitable database file found!");
     return;
     }
 

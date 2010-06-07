@@ -26,6 +26,7 @@ public slots:
   int exec();
   virtual void accept();
   void fillData(const QString& profileName);
+  void anonymousChanged(int state);
 
 private:
 

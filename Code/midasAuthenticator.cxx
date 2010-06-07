@@ -30,13 +30,15 @@ midasAuthenticator::~midasAuthenticator()
 //-------------------------------------------------------------------
 bool midasAuthenticator::Login(mws::WebAPI* api)
 {
-  if(this->IsAnonymous())
+  this->Database->Open();
+  midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
+  this->Database->Close();
+  
+  if(profile.IsAnonymous())
     {
     return true;
     }
-    
-  this->Database->Open();
-  midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
+
   if(profile.Name == "")
     {
     std::stringstream text;
@@ -54,7 +56,11 @@ bool midasAuthenticator::Login(mws::WebAPI* api)
 //-------------------------------------------------------------------
 bool midasAuthenticator::IsAnonymous()
 {
-  return this->Profile == "";
+  this->Database->Open();
+  midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
+  this->Database->Close();
+
+  return profile.IsAnonymous();
 }
 
 //-------------------------------------------------------------------
@@ -71,7 +77,23 @@ bool midasAuthenticator::AddAuthProfile(std::string user, std::string appName,
   remote->SetServerUrl(this->ServerURL.c_str());
   remote->GetRestAPI()->SetXMLParser(&parser);
 
-  if(!remote->Login(appName.c_str(), user.c_str(), apiKey.c_str()))
+  if(user == "")
+    {
+    mws::WebAPI::Instance()->SetServerUrl(this->ServerURL.c_str());
+    std::stringstream text;
+    if(mws::WebAPI::Instance()->CheckConnection())
+      {
+      text << "Added anonymous profile " << profileName << std::endl;
+      Log->Message(text.str());
+      }
+    else
+      {
+      text << this->ServerURL << " is not a valid MIDAS Rest API URL";
+      Log->Error(text.str());
+      return false;
+      }
+    }
+  else if(!remote->Login(appName.c_str(), user.c_str(), apiKey.c_str()))
     {
     std::stringstream text;
     text << "Login credentials refused by server." << std::endl;

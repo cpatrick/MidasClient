@@ -6,6 +6,8 @@
 #include "midasAuthenticator.h"
 #include "midasDatabaseProxy.h"
 #include <QString>
+#include <QCheckBox>
+#include <QMessageBox>
 
 CreateProfileUI::CreateProfileUI(MIDASDesktopUI *parent):
   QDialog(parent), parent(parent)
@@ -14,6 +16,8 @@ CreateProfileUI::CreateProfileUI(MIDASDesktopUI *parent):
 
   connect(profileComboBox, SIGNAL( currentIndexChanged(const QString&) ),
     this, SLOT( fillData(const QString&) ) );
+  connect(anonymousCheckBox, SIGNAL( stateChanged(int) ),
+    this, SLOT( anonymousChanged(int) ) );
 }
 
 void CreateProfileUI::init()
@@ -61,7 +65,25 @@ void CreateProfileUI::fillData(const QString& name)
     apiKeyEdit->setText(profile.ApiKey.c_str());
     apiNameEdit->setText(profile.AppName.c_str());
     serverURLEdit->setText(profile.Url.c_str());
+    
+    anonymousCheckBox->setCheckState(
+      profile.User == "" ? Qt::Checked : Qt::Unchecked);
+    anonymousChanged(anonymousCheckBox->checkState());
     }
+}
+
+void CreateProfileUI::anonymousChanged(int state)
+{
+  bool checked = state == Qt::Checked;
+  if(checked)
+    {
+    emailEdit->setText("");
+    apiKeyEdit->setText("");
+    apiNameEdit->setText("");
+    }
+  emailEdit->setEnabled(!checked);
+  apiKeyEdit->setEnabled(!checked);
+  apiNameEdit->setEnabled(!checked);
 }
 
 int CreateProfileUI::exec()
@@ -80,12 +102,17 @@ int CreateProfileUI::exec()
 
 void CreateProfileUI::accept()
 {
+  if(profileNameEdit->text().trimmed().toStdString() == "")
+    {
+    QMessageBox::critical(this, "Error", "You must enter a profile name");
+    return;
+    }
   std::string profileName, email, apiName, apiKey, serverURL;
-  profileName = profileNameEdit->text().toStdString();
-  email = emailEdit->text().toStdString();
-  apiName = apiNameEdit->text().toStdString();
-  apiKey = apiKeyEdit->text().toStdString();
-  serverURL = serverURLEdit->text().toStdString();
+  profileName = profileNameEdit->text().trimmed().toStdString();
+  email = emailEdit->text().trimmed().toStdString();
+  apiName = apiNameEdit->text().trimmed().toStdString();
+  apiKey = apiKeyEdit->text().trimmed().toStdString();
+  serverURL = serverURLEdit->text().trimmed().toStdString();
   QDialog::accept();
 
   emit serverURLSet(serverURL);
