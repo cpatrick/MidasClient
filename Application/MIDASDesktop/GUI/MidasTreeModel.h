@@ -68,6 +68,7 @@ public slots:
   void itemExpanded ( const QModelIndex & index );
   void itemCollapsed ( const QModelIndex & index );
   void decorateByUuid( std::string uuid );
+  void emitLayoutChanged() { emit layoutChanged(); }
 
 private:
   void decorateRecurse( MidasTreeItem* node, std::string uuid);

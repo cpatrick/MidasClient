@@ -240,10 +240,11 @@ void MidasTreeView::selectByObject(mdo::Object* object)
     {
     expand(m_Model->getIndexByUuid(*i));
     }
-  /*QModelIndex index = m_Model->getIndexByUuid(*(path.begin()));
+  m_Model->emitLayoutChanged();
+  QModelIndex index = m_Model->getIndexByUuid(*(path.begin()));
   if(index.isValid())
     {
     selectionModel()->select(index,
       QItemSelectionModel::Select | QItemSelectionModel::Clear);
-    }*/
+    }
 }
