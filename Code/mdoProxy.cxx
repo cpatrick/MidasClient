@@ -101,7 +101,7 @@ std::string Proxy::DownloadBitstream(const char* uuid,const char* filename)
   if(m_Interfaces.size() == 0)
     {
     std::cerr << "Proxy::Load Interface not set" << std::endl;
-    return false;
+    return "";
     }
     
   std::vector<ProxyInterface*>::iterator it = m_Interfaces.begin();

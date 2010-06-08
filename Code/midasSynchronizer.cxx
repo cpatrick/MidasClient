@@ -56,7 +56,6 @@ midasSynchronizer::midasSynchronizer()
   this->DatabaseProxy = NULL;
   this->Authenticator = new midasAuthenticator;
   this->Authenticator->SetLog(this->Log);
-  this->WebAPI = mws::WebAPI::Instance();
   this->ParentId = 0;
 }
 
@@ -170,7 +169,7 @@ std::string midasSynchronizer::GetServerURL()
 
 void midasSynchronizer::SetServerURL(std::string url)
 {
-  this->WebAPI->SetServerUrl(url.c_str());
+  mws::WebAPI::Instance()->SetServerUrl(url.c_str());
   this->Authenticator->SetServerURL(url.c_str());
   this->DatabaseProxy->Open();
   this->DatabaseProxy->SetSetting(midasDatabaseProxy::LAST_URL, url.c_str());
@@ -191,7 +190,7 @@ std::vector<midasStatus> midasSynchronizer::GetStatusEntries()
 int midasSynchronizer::Perform()
 {
   int rc = 0;
-  if(!this->Authenticator->Login(this->WebAPI))
+  if(!this->Authenticator->Login(mws::WebAPI::Instance()))
     {
     std::stringstream text;
     text << "Login failed." << std::endl;
@@ -349,8 +348,8 @@ bool midasSynchronizer::ValidateParentId(int parentId,
   fields << ".get?id=" << parentId;
   
   mws::RestXMLParser parser;
-  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
-  return this->WebAPI->Execute(fields.str().c_str());
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  return mws::WebAPI::Instance()->Execute(fields.str().c_str());
 }
 
 //-------------------------------------------------------------------
@@ -376,7 +375,7 @@ int midasSynchronizer::Clone()
 
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
-  remote.SetWebAPI(this->WebAPI);
+  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(community);
 
   if(!remote.FetchTree())
@@ -443,7 +442,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
   mws::Bitstream remote;
   mdo::Bitstream* bitstream = new mdo::Bitstream;
   bitstream->SetId(atoi(this->ResourceHandle.c_str()));
-  remote.SetWebAPI(this->WebAPI);
+  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(bitstream);
   
   if(!remote.Fetch())
@@ -499,12 +498,12 @@ bool midasSynchronizer::PullBitstream(int parentId)
   
   if(this->Progress)
     {
-    this->WebAPI->GetRestAPI()->SetProgressCallback(
+    mws::WebAPI::Instance()->GetRestAPI()->SetProgressCallback(
       ProgressCallback, this->Progress);
     this->Progress->SetMessage(bitstream->GetName());
     this->Progress->ResetProgress();
     }
-  this->WebAPI->DownloadFile(fields.str().c_str(),
+  mws::WebAPI::Instance()->DownloadFile(fields.str().c_str(),
                              bitstream->GetName().c_str());
 
   this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
@@ -523,7 +522,7 @@ bool midasSynchronizer::PullCollection(int parentId)
   mws::Collection remote;
   mdo::Collection* collection = new mdo::Collection;
   collection->SetId(atoi(this->GetResourceHandle().c_str()));
-  remote.SetWebAPI(this->WebAPI);
+  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(collection);
 
   if(!remote.Fetch())
@@ -614,7 +613,7 @@ bool midasSynchronizer::PullCommunity(int parentId)
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
   community->SetId(atoi(this->ResourceHandle.c_str()));
-  remote.SetWebAPI(this->WebAPI);
+  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(community);
 
   if(!remote.FetchTree())
@@ -716,7 +715,7 @@ bool midasSynchronizer::PullItem(int parentId)
   mws::Item remote;
   mdo::Item* item = new mdo::Item;
   item->SetId(atoi(this->GetResourceHandle().c_str()));
-  remote.SetWebAPI(this->WebAPI);
+  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(item);
 
   if(!remote.Fetch())
@@ -838,7 +837,7 @@ int midasSynchronizer::Push()
         return MIDAS_NO_RTYPE;
       }
 
-    if(this->WebAPI->GetErrorCode() == INVALID_POLICY
+    if(mws::WebAPI::Instance()->GetErrorCode() == INVALID_POLICY
       && this->Authenticator->IsAnonymous())
       {
       std::stringstream text;
@@ -868,8 +867,8 @@ int midasSynchronizer::GetServerParentId(midasResourceType::ResourceType type,
     fields << "midas.resource.get?uuid=" << parentUuid;
     mws::RestXMLParser parser;
     parser.AddTag("/rsp/id", server_parentId);
-    this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
-    this->WebAPI->Execute(fields.str().c_str());
+    mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+    mws::WebAPI::Instance()->Execute(fields.str().c_str());
     parentId = atoi(server_parentId.c_str());
     }
   return parentId;
@@ -914,14 +913,14 @@ bool midasSynchronizer::PushBitstream(int id)
 
   if(this->Progress)
     {
-    this->WebAPI->GetRestAPI()->SetProgressCallback(
+    mws::WebAPI::Instance()->GetRestAPI()->SetProgressCallback(
       ProgressCallback, this->Progress);
     this->Progress->SetMessage(name);
     this->Progress->ResetProgress();
     }
   mws::RestXMLParser parser;
-  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
-  bool ok = this->WebAPI->UploadFile(fields.str().c_str(),
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  bool ok = mws::WebAPI::Instance()->UploadFile(fields.str().c_str(),
                                      record.Path.c_str());
 
   if(ok)
@@ -936,7 +935,7 @@ bool midasSynchronizer::PushBitstream(int id)
     {
     std::stringstream text;
     text << "Failed to push bitstream " << name << ": " <<
-      this->WebAPI->GetErrorMessage() << std::endl;
+      mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     Log->Error(text.str());
     }
   return ok;
@@ -970,9 +969,9 @@ bool midasSynchronizer::PushCollection(int id)
     midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
 
   mws::RestXMLParser parser;
-  this->WebAPI->SetPostData("");
-  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
-  bool success = this->WebAPI->Execute(fields.str().c_str());
+  mws::WebAPI::Instance()->SetPostData("");
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  bool success = mws::WebAPI::Instance()->Execute(fields.str().c_str());
   if(success)
     {
     // Clear dirty flag on the resource
@@ -985,7 +984,7 @@ bool midasSynchronizer::PushCollection(int id)
     {
     std::stringstream text;
     text << "Failed to push collection " << name << ": " <<
-    this->WebAPI->GetErrorMessage() << std::endl;
+    mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     Log->Error(text.str());
     }
   return success;
@@ -1012,9 +1011,9 @@ bool midasSynchronizer::PushCommunity(int id)
     midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
 
   mws::RestXMLParser parser;
-  this->WebAPI->SetPostData("");
-  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
-  bool success = this->WebAPI->Execute(fields.str().c_str());
+  mws::WebAPI::Instance()->SetPostData("");
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  bool success = mws::WebAPI::Instance()->Execute(fields.str().c_str());
   if(success)
     {
     // Clear dirty flag on the resource
@@ -1027,7 +1026,7 @@ bool midasSynchronizer::PushCommunity(int id)
     {
     std::stringstream text; 
     text << "Failed to push community " << name << ": " <<
-    this->WebAPI->GetErrorMessage() << std::endl;
+    mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     Log->Error(text.str());
     }
   return success;
@@ -1061,9 +1060,9 @@ bool midasSynchronizer::PushItem(int id)
     midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
 
   mws::RestXMLParser parser;
-  this->WebAPI->GetRestAPI()->SetXMLParser(&parser);
-  this->WebAPI->SetPostData("");
-  bool success = this->WebAPI->Execute(fields.str().c_str());
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  mws::WebAPI::Instance()->SetPostData("");
+  bool success = mws::WebAPI::Instance()->Execute(fields.str().c_str());
   if(success)
     {
     // Clear dirty flag on the resource
@@ -1076,7 +1075,7 @@ bool midasSynchronizer::PushItem(int id)
     {
     std::stringstream text;
     text << "Failed to push item " << name << ": " <<
-    this->WebAPI->GetErrorMessage() << std::endl;
+    mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     Log->Error(text.str());
     }
   return success;

@@ -236,11 +236,11 @@ void MidasTreeView::selectByObject(mdo::Object* object)
     }
 
   for(std::vector<std::string>::reverse_iterator i = path.rbegin();
-      i != path.rend(); ++i) //TODO rend +/- 1?
+      i != path.rend(); ++i)
     {
     expand(m_Model->getIndexByUuid(*i));
     }
-  m_Model->emitLayoutChanged();
+  m_Model->emitLayoutChanged(); //slight hack to refresh the view
   QModelIndex index = m_Model->getIndexByUuid(*(path.begin()));
   if(index.isValid())
     {

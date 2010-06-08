@@ -28,8 +28,8 @@ class midasDatabaseProxy;
 class midasLog;
 class midasProgressReporter;
 
-class QContextMenuEvent; 
-class MidasTreeItem; 
+class QContextMenuEvent;
+class MidasTreeItem;
 
 extern "C" {
   static int progress_transfer_callback(void* data, double dltotal, double dlnow, double ultotal, double ulnow); 
@@ -39,6 +39,7 @@ class MIDASDesktopUI :  public QMainWindow, private Ui::MIDASDesktopWindow
 {
   Q_OBJECT
  
+  friend class SignInThread;
 public:
 
   enum ActivateAction
@@ -84,7 +85,7 @@ public slots:
   void showNormal();
 
   void signInOrOut();
-  void signIn();
+  void signIn(std::string profile);
   void signOut();
   void createProfile(std::string name, std::string email,
                      std::string apiName, std::string apiKey );

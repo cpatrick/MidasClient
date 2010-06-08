@@ -107,7 +107,6 @@ class midasSynchronizer
     
     // Pull entire subtree of resources that are pulled?
     bool Recursive;
-    mws::WebAPI* WebAPI;
     midasProgressReporter* Progress;
     midasLog* Log;
 

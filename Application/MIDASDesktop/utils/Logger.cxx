@@ -110,25 +110,18 @@ const char *  Logger::toStr(LOG_LEVEL level)
     {
     case Logger::l_LOG:
       return "LOG"; 
-      break;
     case Logger::l_DEBUG:
       return "DEBUG"; 
-      break;
     case Logger::l_INFO:
       return "INFO"; 
-      break;
     case Logger::l_WARNING:
       return "WARNING"; 
-      break;
     case Logger::l_ERROR:
       return "ERROR"; 
-      break;
     case Logger::l_FATAL:
       return "FATAL"; 
-      break;
     default:
       return "UNKNOWN";
-      break;
     }
   }
 
