@@ -9,6 +9,7 @@
 #include <QSettings>
 #include <QDesktopServices>
 #include <QMessageBox>
+#include <QThread>
 
 #include <kwsys/SystemTools.hxx>
 
@@ -42,6 +43,7 @@
 #include "AutoRefreshUI.h"
 #include "PullUI.h"
 #include "ProcessingStatusUI.h"
+#include "RefreshServerTreeThread.h"
 // ------------- Dialogs -------------
 
 // ------------- TreeModel / TreeView -------------
@@ -229,6 +231,10 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- signal/slot connections -------------
 
+  // ------------- thread init -----------------
+  m_RefreshThread = NULL;
+  // ------------- thread init -----------------
+
   // ------------- setup client members and logging ----
   this->m_database = NULL;
   this->m_synch = new midasSynchronizer();
@@ -275,6 +281,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete m_logger;
   delete m_progress;
   delete m_synch;
+  delete m_RefreshThread;
 }
 
 void MIDASDesktopUI::showNormal()
@@ -291,11 +298,6 @@ void MIDASDesktopUI::showNormal()
     m_database->Close();
     }
   QMainWindow::showNormal();
-}
-
-MidasTreeView * MIDASDesktopUI::getTreeView()
-{
-  return this->treeView; 
 }
 
 void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
@@ -471,8 +473,18 @@ void MIDASDesktopUI::updateClientTreeView()
 void MIDASDesktopUI::updateServerTreeView()
 {
   this->treeTabContainer->setCurrentIndex(0);
-  this->treeView->Update();
-  //this->treeView->expandAll();
+  if(m_RefreshThread)
+    {
+    disconnect(m_RefreshThread);
+    }
+  delete m_RefreshThread;
+
+  m_RefreshThread = new RefreshServerTreeThread;
+  m_RefreshThread->SetParentUI(this);
+
+  connect(m_RefreshThread, SIGNAL( enableRefresh(bool) ), refreshButton, SLOT( setEnabled(bool) ) );
+
+  m_RefreshThread->start();
 }
 
 void MIDASDesktopUI::alertNewResources()

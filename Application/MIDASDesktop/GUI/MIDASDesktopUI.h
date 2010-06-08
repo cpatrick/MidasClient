@@ -28,6 +28,8 @@ class midasDatabaseProxy;
 class midasLog;
 class midasProgressReporter;
 
+class RefreshServerTreeThread;
+
 class QContextMenuEvent;
 class MidasTreeItem;
 
@@ -40,6 +42,7 @@ class MIDASDesktopUI :  public QMainWindow, private Ui::MIDASDesktopWindow
   Q_OBJECT
 
   friend class SignInThread;
+  friend class RefreshServerTreeThread;
   friend class SignInUI;
 public:
 
@@ -72,7 +75,7 @@ public:
   void resetStatus();
   // ------------- status bar -------------
 
-  MidasTreeView * getTreeView();
+  MidasTreeView * getTreeView() { return treeView; }
   MidasTreeViewClient * getTreeViewClient() { return treeViewClient; }
   midasDatabaseProxy* getDatabaseProxy() { return m_database; }
   midasAuthenticator* getAuthenticator() { return m_auth; }
@@ -206,6 +209,10 @@ private:
   midasLog*                   m_logger;
   midasProgressReporter*      m_progress;
   std::vector<std::string>    m_dirtyUuids;
+
+  // ----------- threads -----------------
+  RefreshServerTreeThread*    m_RefreshThread;
+  // ----------- threads -----------------
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( MIDASDesktopUI::ActivateActions )

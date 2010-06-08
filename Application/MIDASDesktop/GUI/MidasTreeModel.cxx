@@ -83,6 +83,7 @@ void MidasTreeModel::Populate()
     }
   
   this->endInsertRows();
+  emit layoutChanged();
   emit serverPolled();
 }
 
