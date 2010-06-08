@@ -54,6 +54,6 @@ void GUIProgress::SetIndeterminate()
 void GUIProgress::ResetProgress()
 {
   this->Done = false;
-  this->m_progressBar->setValue(0);
   this->m_progressBar->setMaximum(100);
+  this->m_progressBar->setValue(0);
 }

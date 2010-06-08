@@ -3,7 +3,6 @@
 #include <QPixmap>
 #include <QApplication>
 
-
 #include "MidasTreeItem.h"
 #include "MidasCommunityTreeItem.h"
 #include "MidasCollectionTreeItem.h"

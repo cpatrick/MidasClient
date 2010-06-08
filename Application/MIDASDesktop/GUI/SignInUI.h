@@ -4,6 +4,7 @@
 #include "ui_SignInUI.h"
 
 class MIDASDesktopUI;
+class SignInThread;
 
 class SignInUI :  public QDialog, private Ui::SignInDialog
 {
@@ -12,7 +13,7 @@ class SignInUI :  public QDialog, private Ui::SignInDialog
 public:
 
   SignInUI(MIDASDesktopUI *parent);
-  ~SignInUI(){};
+  ~SignInUI();
 
   void init(); 
 
@@ -28,7 +29,7 @@ public slots:
   void profileCreated(std::string name);
 
 private:
-
+  SignInThread* m_SignInThread;
   MIDASDesktopUI* parent;
   
 };

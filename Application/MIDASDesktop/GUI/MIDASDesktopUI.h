@@ -38,8 +38,9 @@ extern "C" {
 class MIDASDesktopUI :  public QMainWindow, private Ui::MIDASDesktopWindow
 {
   Q_OBJECT
- 
+
   friend class SignInThread;
+  friend class SignInUI;
 public:
 
   enum ActivateAction
@@ -85,7 +86,7 @@ public slots:
   void showNormal();
 
   void signInOrOut();
-  void signIn(std::string profile);
+  void signIn();
   void signOut();
   void createProfile(std::string name, std::string email,
                      std::string apiName, std::string apiKey );
@@ -94,6 +95,8 @@ public slots:
   void updateClientTreeView();
   void updateServerTreeView();
   void decorateServerTree();
+
+  void setTreeTabIndex(int index);
 
   // ------------- settings -------------
   void editServerSettings();

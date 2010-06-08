@@ -1,18 +1,81 @@
 #include "SignInUI.h"
+#include "MIDASDesktopUI.h"
 #include "MidasClientGlobal.h"
 #include "mwsSettings.h"
-#include "MIDASDesktopUI.h"
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"
 #include "midasDatabaseProxy.h"
 #include "midasSynchronizer.h"
 
+#include <QThread>
+
+class SignInThread : public QThread
+{
+public:
+  void SetParentUI(MIDASDesktopUI* parent);
+  void SetProfile(QString profile);
+
+  virtual void run();
+
+private:
+  MIDASDesktopUI* m_Parent;
+  QString         m_Profile;
+};
+
+void SignInThread::SetParentUI(MIDASDesktopUI* parent)
+{
+  this->m_Parent = parent;
+}
+
+void SignInThread::SetProfile(QString profile)
+{
+  this->m_Profile = profile;
+}
+
+void SignInThread::run()
+{
+  m_Parent->getDatabaseProxy()->Open();
+  std::string url = m_Parent->getDatabaseProxy()->GetAuthProfile(m_Profile.toStdString()).Url;
+  m_Parent->getDatabaseProxy()->Close();
+
+  m_Parent->displayStatus(tr("Connecting to server..."));
+  m_Parent->setProgressIndeterminate();
+  if(mws::WebAPI::Instance()->CheckConnection())
+    {
+    m_Parent->setServerURL(url);
+    m_Parent->getDatabaseProxy()->Open();
+    m_Parent->getAuthenticator()->SetProfile(m_Profile.toStdString());
+    m_Parent->getDatabaseProxy()->Close();
+    m_Parent->getSynchronizer()->GetAuthenticator()->SetProfile(m_Profile.toStdString());
+    
+    m_Parent->getTreeView()->SetWebAPI(mws::WebAPI::Instance());
+    m_Parent->getTreeView()->Initialize();
+    
+    std::stringstream text;
+    text << "Signed in with profile " << m_Profile.toStdString();
+    m_Parent->getLog()->Message(text.str());
+    m_Parent->m_signIn = true;
+    }
+  else
+    {
+    m_Parent->getLog()->Error("The URL provided is not a valid MIDAS server Web API.");
+    }
+  m_Parent->displayStatus(tr(""));
+  m_Parent->setProgressEmpty();
+}
+
 /** Constructor */
-SignInUI::SignInUI(MIDASDesktopUI *parent):
+SignInUI::SignInUI(MIDASDesktopUI* parent):
   QDialog(parent), parent(parent)
 {
   setupUi(this);
+  m_SignInThread = NULL;
   connect( createProfileButton, SIGNAL( released() ), this, SLOT( showCreateProfileDialog() ) );
+}
+
+SignInUI::~SignInUI()
+{
+  delete m_SignInThread;
 }
 
 /** */
@@ -47,29 +110,34 @@ int SignInUI::exec()
 /** */
 void SignInUI::accept()
 {
-  parent->getDatabaseProxy()->Open();
-  std::string url = parent->getDatabaseProxy()->GetAuthProfile(
-    profileComboBox->currentText().toStdString()).Url;
-  parent->getDatabaseProxy()->Close();
-
-  mws::WebAPI::Instance()->SetServerUrl(url.c_str());
-  if(mws::WebAPI::Instance()->CheckConnection())
-    {
-    parent->setServerURL(url);
-    parent->getDatabaseProxy()->Open();
-    parent->getAuthenticator()->SetProfile(profileComboBox->currentText().toStdString());
-    parent->getDatabaseProxy()->Close();
-    parent->getSynchronizer()->GetAuthenticator()->SetProfile(profileComboBox->currentText().toStdString());
-    std::stringstream text;
-    parent->getLog()->Message("Signed in successfully with profile.");
-
-    emit signedIn();
-    }
-  else
-    {
-    parent->getLog()->Error("The URL provided is not a valid MIDAS server Web API.");
-    }
+  delete m_SignInThread;
+  m_SignInThread = new SignInThread;
+  m_SignInThread->SetProfile(profileComboBox->currentText());
+  m_SignInThread->SetParentUI(parent);
+  m_SignInThread->start();
   QDialog::accept();
+
+  parent->connectLabel->hide();
+  parent->hostLabel->hide();
+  parent->activateActions( true, MIDASDesktopUI::ACTION_CONNECTED );
+
+  // start the refresh timer here if our setting = 1
+  parent->m_database->Open();
+  if(atoi(parent->m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 1)
+    {
+    parent->refreshTimer->start();
+    }
+  parent->m_database->Close();
+
+  // Satus bar
+  std::string connect = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 
+  parent->connectLabel->setText( connect.c_str() );
+  parent->connectLabel->show();
+  parent->setTreeTabIndex(0);
+    
+  std::string host = "  " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  ";
+  parent->hostLabel->setText( host.c_str() );
+  parent->hostLabel->show();
 }
 
 void SignInUI::profileCreated(std::string name)

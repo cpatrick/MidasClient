@@ -845,34 +845,6 @@ void MIDASDesktopUI::adjustTimerSettings()
 
 void MIDASDesktopUI::signIn()
 {
-  connectLabel->hide();
-  hostLabel->hide();
-  this->displayStatus(tr("Connecting to server..."));
-  this->setProgressIndeterminate();
-  this->getTreeView()->SetWebAPI(mws::WebAPI::Instance());
-  this->getTreeView()->Initialize();
-  this->activateActions( true, ACTION_CONNECTED );
-
-  // start the refresh timer here if our setting = 1
-  m_database->Open();
-  if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 1)
-    {
-    refreshTimer->start();
-    }
-  m_database->Close();
-
-  // Satus bar
-  std::string connect = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 
-  connectLabel->setText( connect.c_str() );
-  connectLabel->show();
-  this->treeTabContainer->setCurrentIndex(0);
-  
-  std::string host = "  " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  ";
-  hostLabel->setText( host.c_str() );
-  hostLabel->show();
-  m_signIn = true; 
-  this->displayStatus(tr(""));
-  this->setProgressEmpty();
 }
 
 void MIDASDesktopUI::chooseLocalDatabase()
@@ -1110,4 +1082,9 @@ void MIDASDesktopUI::setProgressEmpty()
 void MIDASDesktopUI::setProgressIndeterminate()
 {
   this->m_progress->SetIndeterminate();
+}
+
+void MIDASDesktopUI::setTreeTabIndex(int index)
+{
+  this->treeTabContainer->setCurrentIndex(index);
 }
