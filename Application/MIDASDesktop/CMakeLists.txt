@@ -135,14 +135,13 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/AddResourceUI.h
   GUI/SettingsUI.h 
   GUI/UploadAgreementUI.h 
-  GUI/SignInUI.h 
+  GUI/SignInUI.h
   GUI/AboutUI.h
   GUI/AutoRefreshUI.h
   GUI/MidasTreeView.h
   GUI/MidasTreeViewClient.h
   GUI/MidasTreeItem.h
   GUI/MidasTreeModel.h
-  GUI/MidasTreeModelClient.h
   GUI/MidasTreeModelClient.h
   GUI/MidasCommunityTreeItem.h
   GUI/MidasCollectionTreeItem.h
