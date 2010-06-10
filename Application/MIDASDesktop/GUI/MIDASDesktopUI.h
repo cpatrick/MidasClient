@@ -89,7 +89,7 @@ public slots:
   void showNormal();
 
   void signInOrOut();
-  void signIn();
+  void signIn(bool ok);
   void signOut();
   void createProfile(std::string name, std::string email,
                      std::string apiName, std::string apiKey );

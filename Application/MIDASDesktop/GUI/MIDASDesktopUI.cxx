@@ -855,8 +855,21 @@ void MIDASDesktopUI::adjustTimerSettings()
     }
 }
 
-void MIDASDesktopUI::signIn()
+void MIDASDesktopUI::signIn(bool ok)
 {
+  if(ok)
+    {
+    std::stringstream text;
+    text << "Signed in with profile " << m_auth->GetProfile();
+    getLog()->Message(text.str());
+    m_signIn = true;
+    }
+  else
+    {
+    getLog()->Error("The URL provided is not a valid MIDAS server Web API.");
+    }
+  displayStatus(tr(""));
+  setProgressEmpty();
 }
 
 void MIDASDesktopUI::chooseLocalDatabase()

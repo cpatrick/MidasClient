@@ -55,6 +55,8 @@ set(MIDASDesktopUI_SRCS
   GUI/SettingsUI.h
   GUI/SignInUI.cxx
   GUI/SignInUI.h
+  GUI/SignInThread.cxx
+  GUI/SignInThread.h
   GUI/CreateMidasCommunityUI.cxx
   GUI/CreateMidasCommunityUI.h
   GUI/CreateMidasCollectionUI.cxx
@@ -137,6 +139,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/SettingsUI.h 
   GUI/UploadAgreementUI.h 
   GUI/SignInUI.h
+  GUI/SignInThread.h
   GUI/AboutUI.h
   GUI/AutoRefreshUI.h
   GUI/MidasTreeView.h

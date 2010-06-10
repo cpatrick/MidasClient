@@ -1,68 +1,13 @@
 #include "SignInUI.h"
 #include "MIDASDesktopUI.h"
 #include "MidasClientGlobal.h"
+#include "SignInThread.h"
+
 #include "mwsSettings.h"
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"
 #include "midasDatabaseProxy.h"
 #include "midasSynchronizer.h"
-
-#include <QThread>
-
-class SignInThread : public QThread
-{
-public:
-  void SetParentUI(MIDASDesktopUI* parent);
-  void SetProfile(QString profile);
-
-  virtual void run();
-
-private:
-  MIDASDesktopUI* m_Parent;
-  QString         m_Profile;
-};
-
-void SignInThread::SetParentUI(MIDASDesktopUI* parent)
-{
-  this->m_Parent = parent;
-}
-
-void SignInThread::SetProfile(QString profile)
-{
-  this->m_Profile = profile;
-}
-
-void SignInThread::run()
-{
-  m_Parent->getDatabaseProxy()->Open();
-  std::string url = m_Parent->getDatabaseProxy()->GetAuthProfile(m_Profile.toStdString()).Url;
-  m_Parent->getDatabaseProxy()->Close();
-
-  m_Parent->displayStatus(tr("Connecting to server..."));
-  m_Parent->setProgressIndeterminate();
-  if(mws::WebAPI::Instance()->CheckConnection())
-    {
-    m_Parent->setServerURL(url);
-    m_Parent->getDatabaseProxy()->Open();
-    m_Parent->getAuthenticator()->SetProfile(m_Profile.toStdString());
-    m_Parent->getDatabaseProxy()->Close();
-    m_Parent->getSynchronizer()->GetAuthenticator()->SetProfile(m_Profile.toStdString());
-    
-    m_Parent->getTreeView()->SetWebAPI(mws::WebAPI::Instance());
-    m_Parent->getTreeView()->Initialize();
-    
-    std::stringstream text;
-    text << "Signed in with profile " << m_Profile.toStdString();
-    m_Parent->getLog()->Message(text.str());
-    m_Parent->m_signIn = true;
-    }
-  else
-    {
-    m_Parent->getLog()->Error("The URL provided is not a valid MIDAS server Web API.");
-    }
-  m_Parent->displayStatus(tr(""));
-  m_Parent->setProgressEmpty();
-}
 
 /** Constructor */
 SignInUI::SignInUI(MIDASDesktopUI* parent):
@@ -110,10 +55,17 @@ int SignInUI::exec()
 /** */
 void SignInUI::accept()
 {
+  if(m_SignInThread)
+    {
+    disconnect(m_SignInThread);
+    }
   delete m_SignInThread;
   m_SignInThread = new SignInThread;
   m_SignInThread->SetProfile(profileComboBox->currentText());
   m_SignInThread->SetParentUI(parent);
+
+  connect(m_SignInThread, SIGNAL( initialized(bool) ), parent, SLOT( signIn(bool) ) );
+
   m_SignInThread->start();
   QDialog::accept();
 
