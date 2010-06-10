@@ -106,7 +106,7 @@
      <item row="2" column="1">
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>API Name</string>
+        <string>Application Name</string>
        </property>
       </widget>
      </item>
@@ -212,6 +212,7 @@
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

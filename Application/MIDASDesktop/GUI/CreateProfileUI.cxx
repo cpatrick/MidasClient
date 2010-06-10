@@ -50,7 +50,7 @@ void CreateProfileUI::fillData(const QString& name)
     profileNameEdit->setText("");
     emailEdit->setText("");
     apiKeyEdit->setText("");
-    apiNameEdit->setText("");
+    apiNameEdit->setText(this->anonymousCheckBox->isChecked() ? "" : "MIDASDesktop");
     serverURLEdit->setText("");
     }
   else
