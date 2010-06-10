@@ -39,7 +39,6 @@
 #include "UploadAgreementUI.h"
 #include "SignInUI.h"
 #include "AboutUI.h"
-#include "AddResourceUI.h"
 #include "AutoRefreshUI.h"
 #include "PullUI.h"
 #include "ProcessingStatusUI.h"
@@ -100,7 +99,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_settingsUI =         new SettingsUI( this );
   dlg_uploadAgreementUI =  new UploadAgreementUI( this );
   dlg_signInUI =           new SignInUI( this );
-  dlg_addResourceUI =      new AddResourceUI( this );
   dlg_createProfileUI =    new CreateProfileUI( this );
   dlg_aboutUI =            new AboutUI( this );
   dlg_autoRefreshUI =      new AutoRefreshUI( this );
@@ -184,7 +182,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
     this, SLOT( displayClientResourceContextMenu(QContextMenuEvent*) ));
 
-  connect(dlg_addResourceUI, SIGNAL(addedResource()), this, SLOT( updateClientTreeView() ) );
   connect(dlg_pullUI, SIGNAL(pulledResources()), this, SLOT( updateClientTreeView() ) );
   // ------------- setup TreeView signals -------------
 
@@ -221,7 +218,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( searchItemsListWidget, SIGNAL( midasListWidgetContextMenu( QContextMenuEvent * ) ),
     this, SLOT( searchItemContextMenu( QContextMenuEvent * ) ) );
 
-  connect( addResource_Button, SIGNAL( released() ), dlg_addResourceUI, SLOT( exec() ) );
   connect( push_Button, SIGNAL( released() ), this, SLOT( pushResources() ) );
   connect( pull_Button, SIGNAL( released() ), dlg_pullUI, SLOT( exec() ) );
   connect( refreshButton, SIGNAL( released() ), this, SLOT( updateServerTreeView() ) );
@@ -264,7 +260,6 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_signInUI;
   delete dlg_settingsUI;
   delete dlg_createProfileUI;
-  delete dlg_addResourceUI;
   delete dlg_autoRefreshUI;
   delete dlg_createMidasCommunityUI;
   delete dlg_createMidasSubCommunityUI;
@@ -916,7 +911,6 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     this->treeViewClient->setEnabled(true);
     this->clientCollapseAllButton->setEnabled(true);
     this->clientExpandAllButton->setEnabled(true);
-    this->addResource_Button->setEnabled(true);
     this->actionAdd_community->setEnabled(true);
     this->actionCreate_Profile->setEnabled(true);
     this->actionAuto_Refresh->setEnabled(true);

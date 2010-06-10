@@ -35,6 +35,7 @@ class midasAuthenticator
     void SetDatabase(std::string database);
     void SetServerURL(std::string url);
     void SetProfile(std::string profile);
+    std::string GetProfile() { return Profile; }
 
     bool Login(mws::WebAPI* api);
 

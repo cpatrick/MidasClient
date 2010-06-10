@@ -230,7 +230,7 @@
        <item row="0" column="0" rowspan="2">
         <widget class="QTabWidget" name="treeTabContainer">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="serverTab">
           <attribute name="title">
@@ -310,7 +310,7 @@
            <string>Client Tree</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="3" column="0">
+           <item row="3" column="0" colspan="2">
             <widget class="QPushButton" name="push_Button">
              <property name="enabled">
               <bool>false</bool>
@@ -321,20 +321,6 @@
              <property name="icon">
               <iconset resource="../MIDASDesktopIcons.qrc">
                <normaloff>:/icons/nav_left_green.png</normaloff>:/icons/nav_left_green.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QPushButton" name="addResource_Button">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Add Resource</string>
-             </property>
-             <property name="icon">
-              <iconset resource="../MIDASDesktopIcons.qrc">
-               <normaloff>:/icons/add2.png</normaloff>:/icons/add2.png</iconset>
              </property>
             </widget>
            </item>
@@ -713,6 +699,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

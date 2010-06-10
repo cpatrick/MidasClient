@@ -69,8 +69,6 @@ set(MIDASDesktopUI_SRCS
   GUI/UploadAgreementUI.h
   GUI/AboutUI.cxx
   GUI/AboutUI.h
-  GUI/AddResourceUI.cxx
-  GUI/AddResourceUI.h
   GUI/AutoRefreshUI.h
   GUI/AutoRefreshUI.cxx
   GUI/PullUI.cxx
@@ -122,7 +120,6 @@ set(MIDASDesktopUI_UI_SRCS
   GUI/AboutUI.ui
   GUI/ProcessingStatusUI.ui
   GUI/PullUI.ui
-  GUI/AddResourceUI.ui
   GUI/AutoRefreshUI.ui
 )
 
@@ -135,7 +132,6 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/CreateMidasItemUI.h
   GUI/CreateProfileUI.h
   GUI/PullUI.h
-  GUI/AddResourceUI.h
   GUI/SettingsUI.h 
   GUI/UploadAgreementUI.h 
   GUI/SignInUI.h
