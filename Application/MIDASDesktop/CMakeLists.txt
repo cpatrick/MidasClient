@@ -104,8 +104,7 @@ set(MIDASDesktopUI_SRCS
   GUI/ProcessingStatusUI.h
   GUI/ProcessingStatusUI.cxx
   GUI/RefreshServerTreeThread.h
-  GUI/PullThread.h
-  GUI/PushThread.h
+  GUI/SynchronizerThread.h
 )
 
 #set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MidasClient.rc)
@@ -154,7 +153,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/MidasSearchResultList.h
   GUI/ProcessingStatusUI.h
   GUI/RefreshServerTreeThread.h
-  GUI/PullThread.h
+  GUI/SynchronizerThread.h
   GUI/GUIProgress.h
 )
 

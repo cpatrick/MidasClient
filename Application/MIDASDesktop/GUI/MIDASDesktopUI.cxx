@@ -42,8 +42,12 @@
 #include "AutoRefreshUI.h"
 #include "PullUI.h"
 #include "ProcessingStatusUI.h"
-#include "RefreshServerTreeThread.h"
 // ------------- Dialogs -------------
+
+// ------------- Threads -------------
+#include "RefreshServerTreeThread.h"
+#include "SynchronizerThread.h"
+// ------------- Threads -------------
 
 // ------------- TreeModel / TreeView -------------
 #include "MidasTreeItem.h"
@@ -229,6 +233,7 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- thread init -----------------
   m_RefreshThread = NULL;
+  m_SynchronizerThread = NULL;
   // ------------- thread init -----------------
 
   // ------------- setup client members and logging ----
@@ -277,6 +282,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete m_progress;
   delete m_synch;
   delete m_RefreshThread;
+  delete m_SynchronizerThread;
 }
 
 void MIDASDesktopUI::showNormal()

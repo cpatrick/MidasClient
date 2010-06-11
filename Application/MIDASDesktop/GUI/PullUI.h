@@ -4,7 +4,7 @@
 #include "ui_PullUI.h"
 
 class MIDASDesktopUI;
-class PullThread;
+class SynchronizerThread;
 
 class PullUI :  public QDialog, private Ui::PullDialog
 {
@@ -35,7 +35,7 @@ public slots:
 private:
 
   MIDASDesktopUI* m_Parent;
-  PullThread* m_PullThread;
+  SynchronizerThread* m_SynchronizerThread;
   std::string m_TypeName;
   int m_PullId;
   int m_ResourceTypeIndex;

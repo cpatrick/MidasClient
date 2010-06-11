@@ -1,11 +1,14 @@
-#ifndef __PullThread_H
-#define __PullThread_H
+#ifndef __SynchronizerThread_H
+#define __SynchronizerThread_H
 
 #include <QThread>
 #include "MIDASDesktopUI.h"
 #include "midasSynchronizer.h"
 
-class PullThread : public QThread
+/**
+ * Thread for pulling and pushing
+ */
+class SynchronizerThread : public QThread
 {
   Q_OBJECT
 public:

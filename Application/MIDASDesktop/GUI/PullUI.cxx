@@ -1,5 +1,5 @@
 #include "PullUI.h"
-#include "PullThread.h"
+#include "SynchronizerThread.h"
 #include "MidasClientGlobal.h"
 #include "MIDASDesktopUI.h"
 #include "midasAuthenticator.h"
@@ -13,7 +13,7 @@ PullUI::PullUI(MIDASDesktopUI *parent):
   setupUi(this);
   resetState();
 
-  m_PullThread = NULL;
+  m_SynchronizerThread = NULL;
   m_TypeName = "Resource";
 
   connect( cloneRadioButton, SIGNAL( released() ), this, SLOT( radioButtonChanged() ) );
@@ -22,7 +22,7 @@ PullUI::PullUI(MIDASDesktopUI *parent):
 
 PullUI::~PullUI()
 {
-  delete m_PullThread;
+  delete m_SynchronizerThread;
 }
 
 void PullUI::resetState()
@@ -74,14 +74,14 @@ int PullUI::exec()
 /** */
 void PullUI::accept()
 {
-  if(m_PullThread)
+  if(m_SynchronizerThread)
     {
-    disconnect(m_PullThread);
+    disconnect(m_SynchronizerThread);
     }
-  delete m_PullThread;
+  delete m_SynchronizerThread;
 
-  m_PullThread = new PullThread;
-  m_PullThread->SetParentUI(m_Parent);
+  m_SynchronizerThread = new SynchronizerThread;
+  m_SynchronizerThread->SetParentUI(m_Parent);
   
   if(cloneRadioButton->isChecked())
     {
@@ -93,7 +93,7 @@ void PullUI::accept()
     m_Parent->setProgressIndeterminate();
     m_Parent->displayStatus("Cloning MIDAS repository...");
 
-    connect(m_PullThread, SIGNAL( performReturned(bool) ), this, SLOT ( cloned(bool) ) );
+    connect(m_SynchronizerThread, SIGNAL( performReturned(bool) ), this, SLOT ( cloned(bool) ) );
     }
   else //pull
     {
@@ -126,12 +126,12 @@ void PullUI::accept()
 
     m_Parent->setProgressIndeterminate();
 
-    connect(m_PullThread, SIGNAL( performReturned(bool) ), this, SLOT ( pulled(bool) ) );
+    connect(m_SynchronizerThread, SIGNAL( performReturned(bool) ), this, SLOT ( pulled(bool) ) );
     }
-  connect(m_PullThread, SIGNAL( threadComplete() ), m_Parent, SLOT( setProgressEmpty() ) );
-  connect(m_PullThread, SIGNAL( enableActions(bool) ), m_Parent, SLOT( enableActions(bool) ) );
+  connect(m_SynchronizerThread, SIGNAL( threadComplete() ), m_Parent, SLOT( setProgressEmpty() ) );
+  connect(m_SynchronizerThread, SIGNAL( enableActions(bool) ), m_Parent, SLOT( enableActions(bool) ) );
 
-  m_PullThread->start();
+  m_SynchronizerThread->start();
 
   QDialog::accept();
 }

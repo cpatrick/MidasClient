@@ -28,6 +28,7 @@ class midasLog;
 class midasProgressReporter;
 
 class RefreshServerTreeThread;
+class SynchronizerThread;
 
 class QContextMenuEvent;
 class MidasTreeItem;
@@ -209,6 +210,7 @@ private:
 
   // ----------- threads -----------------
   RefreshServerTreeThread*    m_RefreshThread;
+  SynchronizerThread*         m_SynchronizerThread;
   // ----------- threads -----------------
 };
 
