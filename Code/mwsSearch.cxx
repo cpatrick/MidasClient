@@ -86,7 +86,7 @@ public:
           {
           m_Id = atoi(m_CurrentValue.c_str());
           }
-        else if(!strcmp(name,"bitstream_name"))
+        else if(!strcmp(name,"community_name"))
           {
           m_Name = m_CurrentValue;
           }
