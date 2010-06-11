@@ -486,18 +486,9 @@ void MIDASDesktopUI::updateServerTreeView()
   m_RefreshThread->start();
 }
 
-void MIDASDesktopUI::enablePull(bool val)
+void MIDASDesktopUI::enableActions(bool val)
 {
-  this->pull_Button->setEnabled(val);
-  this->actionPull_Resource->setEnabled(val);
-  this->treeView->setEnabled(val);
-}
-
-void MIDASDesktopUI::enablePush(bool val)
-{
-  this->push_Button->setEnabled(val);
-  this->actionPush_Resources->setEnabled(val);
-  this->treeView->setEnabled(val);
+  this->activateActions(val, MIDASDesktopUI::ACTION_CONNECTED);
 }
 
 void MIDASDesktopUI::resetStatus()

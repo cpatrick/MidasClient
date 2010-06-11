@@ -14,14 +14,14 @@ public:
 
   virtual void run()
     {
-    emit enablePull(false);
+    emit enableActions(false);
     emit performReturned(m_Parent->getSynchronizer()->Perform() == 0);
-    emit enablePull(true);
+    emit enableActions(true);
     emit threadComplete();
     }
 
 signals:
-  void enablePull(bool val);
+  void enableActions(bool val);
   void performReturned(bool val);
   void threadComplete();
 

@@ -129,7 +129,7 @@ void PullUI::accept()
     connect(m_PullThread, SIGNAL( performReturned(bool) ), this, SLOT ( pulled(bool) ) );
     }
   connect(m_PullThread, SIGNAL( threadComplete() ), m_Parent, SLOT( setProgressEmpty() ) );
-  connect(m_PullThread, SIGNAL( enablePull(bool) ), m_Parent, SLOT( enablePull(bool) ) );
+  connect(m_PullThread, SIGNAL( enableActions(bool) ), m_Parent, SLOT( enableActions(bool) ) );
 
   m_PullThread->start();
 

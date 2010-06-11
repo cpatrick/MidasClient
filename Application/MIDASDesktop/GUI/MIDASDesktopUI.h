@@ -95,8 +95,7 @@ public slots:
   void updateServerTreeView();
   void decorateServerTree();
 
-  void enablePull(bool val);
-  void enablePush(bool val);
+  void enableActions(bool val);
 
   void setTreeTabIndex(int index);
 
