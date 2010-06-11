@@ -68,28 +68,6 @@ void SignInUI::accept()
 
   m_SignInThread->start();
   QDialog::accept();
-
-  parent->connectLabel->hide();
-  parent->hostLabel->hide();
-  parent->activateActions( true, MIDASDesktopUI::ACTION_CONNECTED );
-
-  // start the refresh timer here if our setting = 1
-  parent->m_database->Open();
-  if(atoi(parent->m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 1)
-    {
-    parent->refreshTimer->start();
-    }
-  parent->m_database->Close();
-
-  // Satus bar
-  std::string connect = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 
-  parent->connectLabel->setText( connect.c_str() );
-  parent->connectLabel->show();
-  parent->setTreeTabIndex(0);
-    
-  std::string host = "  " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  ";
-  parent->hostLabel->setText( host.c_str() );
-  parent->hostLabel->show();
 }
 
 void SignInUI::profileCreated(std::string name)

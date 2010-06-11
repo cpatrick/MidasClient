@@ -854,16 +854,39 @@ void MIDASDesktopUI::signIn(bool ok)
 {
   if(ok)
     {
+    connectLabel->hide();
+    hostLabel->hide();
+    activateActions( true, MIDASDesktopUI::ACTION_CONNECTED );
+
+    // start the refresh timer here if our setting = 1
+    m_database->Open();
+    if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 1)
+      {
+      refreshTimer->start();
+      }
+    m_database->Close();
+
+    // Satus bar
+    std::string connect = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 
+    connectLabel->setText( connect.c_str() );
+    connectLabel->show();
+    setTreeTabIndex(0);
+      
+    std::string host = "  " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  ";
+    hostLabel->setText( host.c_str() );
+    hostLabel->show();
+
     std::stringstream text;
     text << "Signed in with profile " << m_auth->GetProfile();
     getLog()->Message(text.str());
     m_signIn = true;
+    displayStatus(tr(""));
     }
   else
     {
     getLog()->Error("The URL provided is not a valid MIDAS server Web API.");
+    displayStatus(tr("Failed to connect"));
     }
-  displayStatus(tr(""));
   setProgressEmpty();
 }
 

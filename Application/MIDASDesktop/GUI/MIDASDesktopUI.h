@@ -40,9 +40,6 @@ class MIDASDesktopUI :  public QMainWindow, private Ui::MIDASDesktopWindow
 {
   Q_OBJECT
 
-  friend class SignInThread;
-  friend class RefreshServerTreeThread;
-  friend class SignInUI;
 public:
 
   enum ActivateAction
@@ -150,7 +147,7 @@ public slots:
   // ------------- synchronizer ----------------------
 
   // ------------- search -------------
-  void search(); 
+  void search();
   void searchItemClicked(QListWidgetItemMidasItem * item);
   void searchItemContextMenu(QContextMenuEvent * e);
   // ------------- search -------------
