@@ -29,14 +29,13 @@
 
 /** Constructor */
 MidasTreeView::MidasTreeView(QWidget * parent):QTreeView(parent)
-{  
-
+{
   // The tree model
   m_Model = new MidasTreeModel;
   this->setModel(m_Model);
-  
+
   m_WebAPI = NULL;
-  
+
   this->setSelectionMode( QTreeView::SingleSelection );
 
   connect (this, SIGNAL( collapsed(const QModelIndex&)),

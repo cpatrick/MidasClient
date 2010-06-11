@@ -21,7 +21,7 @@ class midasProgressReporter
 {
   public:
     midasProgressReporter() {}
-    ~midasProgressReporter() {}
+    virtual ~midasProgressReporter() {}
 
     virtual void UpdateProgress(double current, double max) = 0;
     virtual void ResetProgress() = 0;

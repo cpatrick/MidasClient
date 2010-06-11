@@ -104,6 +104,8 @@ set(MIDASDesktopUI_SRCS
   GUI/ProcessingStatusUI.h
   GUI/ProcessingStatusUI.cxx
   GUI/RefreshServerTreeThread.h
+  GUI/PullThread.h
+  GUI/PushThread.h
 )
 
 #set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MidasClient.rc)
@@ -152,6 +154,8 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/MidasSearchResultList.h
   GUI/ProcessingStatusUI.h
   GUI/RefreshServerTreeThread.h
+  GUI/PullThread.h
+  GUI/GUIProgress.h
 )
 
 QT4_WRAP_CPP(MIDASDesktopUI_SRCS ${MIDASDesktopUI_MOC_SRCS})

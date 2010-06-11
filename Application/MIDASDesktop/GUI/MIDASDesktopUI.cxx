@@ -235,7 +235,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_database = NULL;
   this->m_synch = new midasSynchronizer();
   this->m_auth = new midasAuthenticator();
-  this->m_progress = reinterpret_cast<midasProgressReporter*>(new GUIProgress(this->progressBar));
+  this->m_progress = new GUIProgress(this->progressBar);
   this->m_logger = new GUILogger(this->log);
   this->m_auth->SetLog(m_logger);
   this->m_synch->SetLog(m_logger);
@@ -484,6 +484,20 @@ void MIDASDesktopUI::updateServerTreeView()
   setProgressIndeterminate();
 
   m_RefreshThread->start();
+}
+
+void MIDASDesktopUI::enablePull(bool val)
+{
+  this->pull_Button->setEnabled(val);
+  this->actionPull_Resource->setEnabled(val);
+  this->treeView->setEnabled(val);
+}
+
+void MIDASDesktopUI::enablePush(bool val)
+{
+  this->push_Button->setEnabled(val);
+  this->actionPush_Resources->setEnabled(val);
+  this->treeView->setEnabled(val);
 }
 
 void MIDASDesktopUI::resetStatus()

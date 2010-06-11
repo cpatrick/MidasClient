@@ -13,23 +13,29 @@
 #define __GUIProgress_H
 
 #include "midasProgressReporter.h"
+#include <QObject>
+#include <QProgressBar>
 
-class QProgressBar;
-
-class GUIProgress : midasProgressReporter
+class GUIProgress : public QObject, public midasProgressReporter
 {
-  public:
-    GUIProgress(QProgressBar* progressBar);
-    ~GUIProgress();
+  Q_OBJECT
+public:
+  GUIProgress(QProgressBar* progressBar);
+  ~GUIProgress();
 
-    void UpdateProgress(double current, double max);
-    void ResetProgress();
-    void SetMessage(std::string message);
-    void SetIndeterminate();
-  protected:
-    QProgressBar* m_progressBar;
+  void UpdateProgress(double current, double max);
+  void ResetProgress();
+  void SetMessage(std::string message);
+  void SetIndeterminate();
 
-    bool Done;
+signals:
+  void UpdateProgressMin(int val);
+  void UpdateProgressMax(int val);
+  void UpdateProgressValue(int val);
+protected:
+  QProgressBar* m_progressBar;
+
+  bool Done;
 };
 
 #endif

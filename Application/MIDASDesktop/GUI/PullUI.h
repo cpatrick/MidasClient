@@ -4,6 +4,7 @@
 #include "ui_PullUI.h"
 
 class MIDASDesktopUI;
+class PullThread;
 
 class PullUI :  public QDialog, private Ui::PullDialog
 {
@@ -12,7 +13,7 @@ class PullUI :  public QDialog, private Ui::PullDialog
 public:
 
   PullUI(MIDASDesktopUI *parent);
-  ~PullUI(){};
+  ~PullUI();
 
   void setPullId(int id);
   void setResourceTypeIndex(int index);
@@ -28,12 +29,16 @@ public slots:
   virtual void accept();
   void radioButtonChanged();
   void resetState();
+  void pulled(bool ok);
+  void cloned(bool ok);
 
 private:
 
-  MIDASDesktopUI* parent;
-  int pullId;
-  int resourceTypeIndex;
+  MIDASDesktopUI* m_Parent;
+  PullThread* m_PullThread;
+  std::string m_TypeName;
+  int m_PullId;
+  int m_ResourceTypeIndex;
   
 };
 
