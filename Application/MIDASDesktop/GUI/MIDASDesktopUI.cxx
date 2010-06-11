@@ -476,10 +476,20 @@ void MIDASDesktopUI::updateServerTreeView()
 
   m_RefreshThread = new RefreshServerTreeThread;
   m_RefreshThread->SetParentUI(this);
-
+  
   connect(m_RefreshThread, SIGNAL( enableRefresh(bool) ), refreshButton, SLOT( setEnabled(bool) ) );
+  connect(m_RefreshThread, SIGNAL( threadComplete() ), this, SLOT( resetStatus() ) );
+
+  displayStatus("Refreshing server tree...");
+  setProgressIndeterminate();
 
   m_RefreshThread->start();
+}
+
+void MIDASDesktopUI::resetStatus()
+{
+  setProgressEmpty();
+  displayStatus("");
 }
 
 void MIDASDesktopUI::alertNewResources()
@@ -796,11 +806,6 @@ void MIDASDesktopUI::viewInBrowser()
 void MIDASDesktopUI::displayStatus(const QString& message)
 {
   stateLabel->setText(message); 
-}
-
-void MIDASDesktopUI::resetStatus()
-{
-  stateLabel->setText(""); 
 }
 
 void MIDASDesktopUI::signInOrOut()

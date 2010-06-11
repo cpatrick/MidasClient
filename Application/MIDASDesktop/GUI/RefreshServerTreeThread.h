@@ -14,16 +14,14 @@ public:
   virtual void run()
     {
     emit enableRefresh(false);
-    m_Parent->displayStatus("Refreshing server tree...");
-    m_Parent->setProgressIndeterminate();
     m_Parent->getTreeView()->Update();
-    m_Parent->setProgressEmpty();
-    m_Parent->displayStatus("");
     emit enableRefresh(true);
+    emit threadComplete();
     }
 
 signals:
   void enableRefresh(bool val);
+  void threadComplete();
 
 private:
   MIDASDesktopUI* m_Parent;

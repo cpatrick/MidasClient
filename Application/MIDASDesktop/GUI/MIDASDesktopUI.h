@@ -66,11 +66,6 @@ public:
 
   void activateActions(bool value, ActivateActions activateAction); 
 
-  // ------------- status bar -------------
-  void displayStatus(const QString& message);
-  void resetStatus();
-  // ------------- status bar -------------
-
   MidasTreeView * getTreeView() { return treeView; }
   MidasTreeViewClient * getTreeViewClient() { return treeViewClient; }
   midasDatabaseProxy* getDatabaseProxy() { return m_database; }
@@ -83,6 +78,11 @@ protected:
 
 public slots:
   void showNormal();
+
+  // ------------- status bar -------------
+  void displayStatus(const QString& message);
+  void resetStatus();
+  // ------------- status bar -------------
 
   void signInOrOut();
   void signIn(bool ok);
