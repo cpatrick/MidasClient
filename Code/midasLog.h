@@ -20,6 +20,9 @@
 class midasLog
 {
   public:
+    midasLog() {}
+    virtual ~midasLog() {}
+
     virtual void Error(std::string text) = 0; 
     virtual void Message(std::string text) = 0;
   private:

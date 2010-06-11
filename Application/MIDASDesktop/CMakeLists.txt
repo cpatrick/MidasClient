@@ -155,6 +155,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/RefreshServerTreeThread.h
   GUI/SynchronizerThread.h
   GUI/GUIProgress.h
+  GUI/GUILogger.h
 )
 
 QT4_WRAP_CPP(MIDASDesktopUI_SRCS ${MIDASDesktopUI_MOC_SRCS})

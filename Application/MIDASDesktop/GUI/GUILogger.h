@@ -13,16 +13,25 @@
 #define __GUILogger_H
 
 #include "midasLog.h"
-#include <QTextEdit>
 
-class GUILogger : public midasLog
+#include <QObject>
+#include <QTextEdit>
+#include <QString>
+#include <QColor>
+
+class GUILogger : public QObject, public midasLog
 {
+  Q_OBJECT
 public:
   GUILogger(QTextEdit* log);
   ~GUILogger();
 
   void Error(std::string text);
   void Message(std::string text);
+
+signals:
+  void Text(const QString& text);
+  void ChangeTextColor(const QColor& text);
 
 private:
   QTextEdit* m_log;

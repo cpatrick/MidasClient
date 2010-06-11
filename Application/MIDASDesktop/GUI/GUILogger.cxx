@@ -9,9 +9,10 @@
 
 =========================================================================*/
 
+#include "GUILogger.h"
+
 #include <QColor>
 #include <QString>
-#include "GUILogger.h"
 
 inline void removeNewLines(std::string& text)
 {
@@ -24,7 +25,11 @@ inline void removeNewLines(std::string& text)
 GUILogger::GUILogger(QTextEdit* log)
 {
   this->m_log = log;
-  //this->m_log->setAutoFormatting(QTextEdit::AutoNone);
+
+  connect(this, SIGNAL(ChangeTextColor(const QColor&)),
+    m_log, SLOT( setTextColor(const QColor&) ) );
+  connect(this, SIGNAL(Text(const QString&)),
+    m_log, SLOT( append(const QString&) ) );
 }
 
 GUILogger::~GUILogger()
@@ -34,15 +39,15 @@ GUILogger::~GUILogger()
 void GUILogger::Error(std::string text)
 {
   removeNewLines(text);
-  this->m_log->setTextColor(QColor(255, 0, 0));
-  this->m_log->append(text.c_str());
-  //emit this->m_log->textChanged();
+
+  emit ChangeTextColor(QColor(255, 0, 0));
+  emit Text(QString(text.c_str()));
 }
 
 void GUILogger::Message(std::string text)
 {
   removeNewLines(text);
-  this->m_log->setTextColor(QColor(0, 0, 0));
-  this->m_log->append(text.c_str());
-  //emit this->m_log->textChanged();
+
+  emit ChangeTextColor(QColor(0, 0, 0));
+  emit Text(QString(text.c_str()));
 }

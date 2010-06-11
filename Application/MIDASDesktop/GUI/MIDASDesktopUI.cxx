@@ -1030,15 +1030,40 @@ void MIDASDesktopUI::checkDatabaseSettings()
 
 void MIDASDesktopUI::pushResources()
 {
-  this->displayStatus(tr("Beginning to push locally added resources..."));
+  this->displayStatus(tr("Pushing locally added resources..."));
+  this->setProgressIndeterminate();
   this->m_synch->SetOperation(midasSynchronizer::OPERATION_PUSH);
-  if(this->m_synch->Perform() == 0)
+
+  if(m_SynchronizerThread)
+    {
+    disconnect(m_SynchronizerThread);
+    }
+  delete m_SynchronizerThread;
+
+  m_SynchronizerThread = new SynchronizerThread;
+  m_SynchronizerThread->SetParentUI(this);
+
+  connect(m_SynchronizerThread, SIGNAL(enableActions(bool) ),
+    this, SLOT(enableActions(bool) ) );
+  connect(m_SynchronizerThread, SIGNAL(performReturned(bool) ),
+    this, SLOT(pushReturned(bool) ) );
+
+  m_SynchronizerThread->start();
+}
+
+void MIDASDesktopUI::pushReturned(bool ok)
+{
+  if(ok)
     {
     this->updateClientTreeView();
     this->updateServerTreeView();
+    this->displayStatus(tr("Finished pushing locally added resources."));
     }
-  this->progressBar->setValue(0);
-  this->displayStatus(tr("Finished pushing locally added resources."));
+  else
+    {
+    this->displayStatus(tr("Failed to push resources to the server."));
+    }
+  this->progressBar->setValue(0); 
 }
 
 void MIDASDesktopUI::search()
