@@ -86,7 +86,7 @@ public:
           {
           m_Id = atoi(m_CurrentValue.c_str());
           }
-        else if(!strcmp(name,"name"))
+        else if(!strcmp(name,"bitstream_name"))
           {
           m_Name = m_CurrentValue;
           }
@@ -104,7 +104,7 @@ public:
           {
           m_Id = atoi(m_CurrentValue.c_str());
           }
-        else if(!strcmp(name,"name"))
+        else if(!strcmp(name,"collection_name"))
           {
           m_Name = m_CurrentValue;
           }
@@ -122,7 +122,7 @@ public:
           {
           m_Id = atoi(m_CurrentValue.c_str());
           }
-        else if(!strcmp(name,"title"))
+        else if(!strcmp(name,"item_name"))
           {
           m_Name = m_CurrentValue;
           }
@@ -140,7 +140,7 @@ public:
           {
           m_Id = atoi(m_CurrentValue.c_str());
           }
-        else if(!strcmp(name,"name"))
+        else if(!strcmp(name,"bitstream_name"))
           {
           m_Name = m_CurrentValue;
           }
