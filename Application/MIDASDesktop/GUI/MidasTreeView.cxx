@@ -243,7 +243,7 @@ void MidasTreeView::selectByObject(mdo::Object* object)
   QModelIndex index = m_Model->getIndexByUuid(*(path.begin()));
   if(index.isValid())
     {
-    selectionModel()->select(index,
-      QItemSelectionModel::Select | QItemSelectionModel::Clear);
+    //selectionModel()->select(index,
+      //QItemSelectionModel::Select | QItemSelectionModel::Clear);
     }
 }
