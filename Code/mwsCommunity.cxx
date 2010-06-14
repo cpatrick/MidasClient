@@ -218,6 +218,8 @@ bool Community::Fetch()
   m_Community->Clear();
   parser.AddTag("/rsp/name",m_Community->GetName());
   parser.AddTag("/rsp/description",m_Community->GetDescription());
+  parser.AddTag("/rsp/copyright",m_Community->GetCopyright());
+  parser.AddTag("/rsp/introductory",m_Community->GetIntroductoryText());
   parser.AddTag("/rsp/uuid",m_Community->GetUuid());
   parser.AddTag("/rsp/parent",m_Community->GetParent());
   
