@@ -65,6 +65,8 @@ set(MIDASDesktopUI_SRCS
   GUI/CreateMidasItemUI.h
   GUI/CreateProfileUI.cxx
   GUI/CreateProfileUI.h
+  GUI/DeleteResourceUI.h
+  GUI/DeleteResourceUI.cxx
   GUI/UploadAgreementUI.cxx
   GUI/UploadAgreementUI.h
   GUI/AboutUI.cxx
@@ -117,6 +119,7 @@ set(MIDASDesktopUI_UI_SRCS
   GUI/CreateMidasCollectionUI.ui
   GUI/CreateMidasItemUI.ui
   GUI/CreateProfileUI.ui
+  GUI/DeleteResourceUI.ui
   GUI/UploadAgreementUI.ui
   GUI/SettingsUI.ui
   GUI/SignInUI.ui
@@ -134,6 +137,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/CreateMidasCollectionUI.h
   GUI/CreateMidasItemUI.h
   GUI/CreateProfileUI.h
+  GUI/DeleteResourceUI.h
   GUI/PullUI.h
   GUI/SettingsUI.h 
   GUI/UploadAgreementUI.h 

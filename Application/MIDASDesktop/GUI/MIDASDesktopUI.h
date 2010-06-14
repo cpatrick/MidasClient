@@ -18,9 +18,9 @@ class CreateMidasItemUI;
 class SignInUI;
 class PullUI;
 class CreateProfileUI;
+class DeleteResourceUI;
 class AboutUI;
 class AutoRefreshUI;
-class BuyUI;
 class midasSynchronizer;
 class midasAuthenticator;
 class midasDatabaseProxy;
@@ -62,7 +62,9 @@ public:
     ACTION_CLIENT_COMMUNITY      = 0x80,
     ACTION_CLIENT_COLLECTION     = 0x100,
     ACTION_CLIENT_ITEM           = 0x200,
-    ACTION_CLIENT_BITSTREAM      = 0x400
+    ACTION_CLIENT_BITSTREAM      = 0x400,
+    ACTION_CLIENT_RESOURCE       = 0x780, //0x80 + 0x100 + 0x200 + 0x400 (any client side resource)
+    ACTION_LOCAL_DATABASE        = 0x800
     }; 
   Q_DECLARE_FLAGS(ActivateActions, ActivateAction)
      
@@ -188,7 +190,7 @@ private:
   AboutUI *                   dlg_aboutUI;
   AutoRefreshUI *             dlg_autoRefreshUI;
   PullUI *                    dlg_pullUI;
-  BuyUI *                     dlg_buyUI;
+  DeleteResourceUI*           dlg_deleteResourceUI;
   // ------------- UI Dialogs -------------
 
   // ------------- status bar -------------

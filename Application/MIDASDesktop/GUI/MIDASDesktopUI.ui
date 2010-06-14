@@ -465,6 +465,7 @@
      <addaction name="actionAdd_bitstream"/>
      <addaction name="separator"/>
      <addaction name="actionPush_Resources"/>
+     <addaction name="actionDelete_Resource"/>
     </widget>
     <addaction name="menuClient"/>
     <addaction name="menuServer"/>
@@ -672,6 +673,21 @@
     <string>Auto-Refresh...</string>
    </property>
   </action>
+  <action name="actionDelete_Resource">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/delete2.png</normaloff>:/icons/delete2.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Resource</string>
+   </property>
+   <property name="statusTip">
+    <string>Delete resource from the local database</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -699,6 +715,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>icons/delete_small.png</file>
     <file>icons/refresh.png</file>
     <file>icons/gpl_folder_red.png</file>
     <file>icons/gpl_document_red.png</file>

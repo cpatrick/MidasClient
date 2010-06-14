@@ -35,6 +35,7 @@
 #include "CreateMidasCollectionUI.h"
 #include "CreateMidasItemUI.h"
 #include "CreateProfileUI.h"
+#include "DeleteResourceUI.h"
 #include "SettingsUI.h"
 #include "UploadAgreementUI.h"
 #include "SignInUI.h"
@@ -109,6 +110,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_aboutUI =            new AboutUI( this );
   dlg_autoRefreshUI =      new AutoRefreshUI( this );
   dlg_pullUI =             new PullUI( this );
+  dlg_deleteResourceUI =   new DeleteResourceUI( this );
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
@@ -217,21 +219,22 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( actionAbout,        SIGNAL( triggered() ), dlg_aboutUI, SLOT( exec() ) );
   connect( actionAuto_Refresh, SIGNAL( triggered() ), dlg_autoRefreshUI, SLOT( exec() ) );
 
-  connect( actionAdd_community, SIGNAL(triggered()), this, SLOT(addCommunity()));
+  connect( actionAdd_community,    SIGNAL(triggered()), this, SLOT(addCommunity()));
   connect( actionAdd_subcommunity, SIGNAL(triggered()), this, SLOT(addSubcommunity()));
-  connect( actionAdd_collection, SIGNAL(triggered()), this, SLOT(addCollection()));
-  connect( actionAdd_item, SIGNAL(triggered()), this, SLOT(addItem()));
-  connect( actionAdd_bitstream, SIGNAL(triggered()), this, SLOT(addBitstream()));
+  connect( actionAdd_collection,   SIGNAL(triggered()), this, SLOT(addCollection()));
+  connect( actionAdd_item,         SIGNAL(triggered()), this, SLOT(addItem()));
+  connect( actionAdd_bitstream,    SIGNAL(triggered()), this, SLOT(addBitstream()));
+  connect( actionDelete_Resource,  SIGNAL(triggered()), dlg_deleteResourceUI, SLOT( exec() ) );
 
   connect( searchItemsListWidget, SIGNAL( midasListWidgetItemClicked( QListWidgetItemMidasItem * ) ),
     this, SLOT( searchItemClicked( QListWidgetItemMidasItem * ) ) );
   connect( searchItemsListWidget, SIGNAL( midasListWidgetContextMenu( QContextMenuEvent * ) ),
     this, SLOT( searchItemContextMenu( QContextMenuEvent * ) ) );
 
-  connect( push_Button, SIGNAL( released() ), this, SLOT( pushResources() ) );
-  connect( pull_Button, SIGNAL( released() ), dlg_pullUI, SLOT( exec() ) );
+  connect( push_Button,   SIGNAL( released() ), this, SLOT( pushResources() ) );
+  connect( pull_Button,   SIGNAL( released() ), dlg_pullUI, SLOT( exec() ) );
   connect( refreshButton, SIGNAL( released() ), this, SLOT( updateServerTreeView() ) );
-  connect( searchButton, SIGNAL( released() ), this, SLOT( search() ) );
+  connect( searchButton,  SIGNAL( released() ), this, SLOT( search() ) );
 
   //connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
 
@@ -310,6 +313,16 @@ void MIDASDesktopUI::showNormal()
 
 void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
 {
+  if ( activateAction & ACTION_LOCAL_DATABASE )
+    {
+    this->treeViewClient->setEnabled( value );
+    this->clientCollapseAllButton->setEnabled( value );
+    this->clientExpandAllButton->setEnabled( value );
+    this->actionAdd_community->setEnabled( value );
+    this->actionCreate_Profile->setEnabled( value );
+    this->actionAuto_Refresh->setEnabled( value );
+    }
+
   if ( activateAction & ACTION_CONNECTED )
     {
     this->searchTab->setEnabled( value );
@@ -366,6 +379,11 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
   if ( activateAction & ACTION_CLIENT_BITSTREAM )
     {
     }
+
+  if( activateAction & ACTION_CLIENT_RESOURCE )
+    {
+    this->actionDelete_Resource->setEnabled( value );
+    }
 }
 
 void MIDASDesktopUI::closeEvent(QCloseEvent *event)
@@ -411,7 +429,7 @@ void MIDASDesktopUI::updateActionState( const MidasTreeItem* item )
   MidasBitstreamTreeItem * bitstreamTreeItem = NULL;
 
   // disable all actions
-  this->activateActions( false, ACTION_ALL_CONNECTED ); 
+  this->activateActions( false, ACTION_ALL_CONNECTED );
 
   if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
     {
@@ -777,6 +795,8 @@ void MIDASDesktopUI::displayClientResourceContextMenu( QContextMenuEvent* e )
       {
       //add any bitstream context menu actions here.
       }
+    menu.addSeparator();
+    menu.addAction( this->actionDelete_Resource );
     }
   else 
     {
@@ -1037,12 +1057,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     settings.sync();
     this->displayStatus(tr("Opened database successfully."));
     this->treeViewClient->SetDatabaseProxy(m_database);
-    this->treeViewClient->setEnabled(true);
-    this->clientCollapseAllButton->setEnabled(true);
-    this->clientExpandAllButton->setEnabled(true);
-    this->actionAdd_community->setEnabled(true);
-    this->actionCreate_Profile->setEnabled(true);
-    this->actionAuto_Refresh->setEnabled(true);
+    this->activateActions(true, MIDASDesktopUI::ACTION_LOCAL_DATABASE);
     this->treeViewClient->SetLog(m_logger);
     this->updateClientTreeView();
     this->treeViewClient->collapseAll();
