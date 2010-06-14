@@ -2,6 +2,7 @@
 #define __MidasTreeView_H
 
 #include <QTreeView>
+#include <QMutex>
 #include <string>
 
 class QItemSelection;
@@ -77,6 +78,7 @@ protected:
   mws::WebAPI*        m_WebAPI;
   MidasTreeModel*     m_Model;
   ExpandTreeThread*   m_ExpandTreeThread;
+  QMutex              m_Mutex;
  };
 
 #endif //__MidasTreeView_H

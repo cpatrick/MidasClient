@@ -33,6 +33,10 @@ class SynchronizerThread;
 class QContextMenuEvent;
 class MidasTreeItem;
 
+namespace mdo {
+  class Object;
+}
+
 extern "C" {
   static int progress_transfer_callback(void* data, double dltotal, double dlnow, double ultotal, double ulnow); 
 }
@@ -95,6 +99,7 @@ public slots:
   void updateClientTreeView();
   void updateServerTreeView();
   void decorateServerTree();
+  void decorateTheObject();
 
   void startedExpandingTree();
   void finishedExpandingTree();
@@ -216,6 +221,8 @@ private:
   RefreshServerTreeThread*    m_RefreshThread;
   SynchronizerThread*         m_SynchronizerThread;
   // ----------- threads -----------------
+
+  mdo::Object*                m_DecorateObject;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( MIDASDesktopUI::ActivateActions )

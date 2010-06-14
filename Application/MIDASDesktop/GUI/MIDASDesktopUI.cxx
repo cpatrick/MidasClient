@@ -70,6 +70,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
   srand (time); //init random number generator 
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
+
+  m_DecorateObject = NULL;
   
   // ------------- Instantiate and setup tray icon -------------
   showAction = new QAction(tr("&Show MIDASDesktop"), this);
@@ -165,7 +167,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeView, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasCommunityTreeItem*) ));
 
-  connect(treeView, SIGNAL(fetchedMore()), this, SLOT( decorateServerTree() ));
+  //connect(treeView, SIGNAL(fetchedMore()), this, SLOT( decorateServerTree() ));
 
   connect(treeView, SIGNAL(midasCollectionTreeItemSelected(const MidasCollectionTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasCollectionTreeItem*) ));
@@ -1149,14 +1151,23 @@ void MIDASDesktopUI::storeLastPollTime()
 
 void MIDASDesktopUI::decorateServerTree()
 {
-  for(std::vector<std::string>::iterator i = m_dirtyUuids.begin();
-      i != m_dirtyUuids.end(); ++i)
+  if(m_dirtyUuids.size())
     {
-    this->treeView->decorateByUuid(*i);
-    mdo::Object* object = midasUtils::FetchByUuid(*i);
-    this->treeView->selectByObject(object);
-    delete object;
+    m_DecorateObject = midasUtils::FetchByUuid(m_dirtyUuids[0]);
+    this->treeView->selectByObject(m_DecorateObject);
+    connect(treeView, SIGNAL(finishedExpandingTree()), this,
+      SLOT(decorateTheObject() ) );
     }
+}
+
+void MIDASDesktopUI::decorateTheObject()
+{
+  this->treeView->decorateByUuid(m_DecorateObject->GetUuid());
+  m_dirtyUuids.erase(m_dirtyUuids.begin());
+  delete m_DecorateObject;
+  disconnect(treeView, SIGNAL(finishedExpandingTree()),
+    this, SLOT(decorateTheObject() ) );
+  decorateServerTree();
 }
 
 void MIDASDesktopUI::setProgressEmpty()

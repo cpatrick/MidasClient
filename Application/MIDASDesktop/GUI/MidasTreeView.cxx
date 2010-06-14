@@ -171,6 +171,7 @@ void MidasTreeView::alertFetchedMore()
 
 void MidasTreeView::selectByObject(mdo::Object* object)
 {
+  //m_Mutex.lock();
   if(m_ExpandTreeThread)
     {
     disconnect(m_ExpandTreeThread);
@@ -196,6 +197,7 @@ void MidasTreeView::selectByObject(mdo::Object* object)
 void MidasTreeView::expansionDone()
 {
   emit finishedExpandingTree();
+  //m_Mutex.unlock();
 }
 
 void MidasTreeView::selectByIndex(const QModelIndex& index)
