@@ -127,9 +127,10 @@ public slots:
   // ------------- tray icon -------------
 
   // ------------- UI updates -------------
-  void updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem ); 
-  void updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem ); 
-  void updateInfoPanel( const MidasItemTreeItem* itemTreeItem ); 
+  void updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem );
+  void updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem );
+  void updateInfoPanel( const MidasItemTreeItem* itemTreeItem );
+  void updateInfoPanel( const MidasBitstreamTreeItem* bitstreamTreeItem );
   void clearInfoPanel();
 
   void updateActionState(const MidasTreeItem* item);

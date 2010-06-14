@@ -10,6 +10,7 @@ class MidasTreeItem;
 class MidasCommunityTreeItem;
 class MidasCollectionTreeItem;
 class MidasItemTreeItem;
+class MidasBitstreamTreeItem;
 class QContextMenuEvent;
 class MidasTreeModel;
 class ExpandTreeThread;
@@ -62,9 +63,10 @@ public slots:
 signals:
 
   void midasTreeItemSelected(const MidasTreeItem* item);
-  void midasCommunityTreeItemSelected(const MidasCommunityTreeItem * item); 
-  void midasCollectionTreeItemSelected(const MidasCollectionTreeItem * item); 
-  void midasItemTreeItemSelected(const MidasItemTreeItem * item); 
+  void midasCommunityTreeItemSelected(const MidasCommunityTreeItem * item);
+  void midasCollectionTreeItemSelected(const MidasCollectionTreeItem * item);
+  void midasItemTreeItemSelected(const MidasItemTreeItem * item);
+  void midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem * item);
   void midasTreeViewContextMenu( QContextMenuEvent * e ); 
   void midasNoTreeItemSelected();
   void fetchedMore();

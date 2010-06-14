@@ -18,7 +18,9 @@ enum MIDASFields
     ITEM_ABSTRACT,
     ITEM_AUTHORS,
     ITEM_KEYWORDS,
-    ITEM_DESCRIPTION
+    ITEM_DESCRIPTION,
+    BITSTREAM_NAME,
+    BITSTREAM_SIZE
     }; 
     
 class QContextMenuEvent; 
@@ -26,6 +28,7 @@ namespace mdo{
   class Community;
   class Collection;
   class Item;
+  class Bitstream;
 }
 
 class QTableWidgetDescriptionItem : public QTableWidgetItem
@@ -87,7 +90,7 @@ public:
 
 private:
   mdo::Collection * modeldata; 
-   MIDASFields m_Field;
+  MIDASFields m_Field;
 }; 
 
 class QTableWidgetMidasItemDescItem : public QTableWidgetDescriptionItem
@@ -106,7 +109,27 @@ public:
 
 private:
   mdo::Item * modeldata;
-   MIDASFields m_Field;
+  MIDASFields m_Field;
+};
+
+class QTableWidgetMidasBitstreamDescItem : public QTableWidgetDescriptionItem
+{
+public:
+  QTableWidgetMidasBitstreamDescItem(mdo::Bitstream * modeldata, const char* text, MIDASFields field,
+    QTableWidgetDescriptionItem::Options options = Tooltip | Editable):
+  QTableWidgetDescriptionItem(text, options), modeldata(modeldata)
+    {
+    m_Field = field;
+    }
+
+  mdo::Bitstream * getModelData()
+    {
+    return this->modeldata;
+    }
+
+private:
+  mdo::Bitstream * modeldata;
+  MIDASFields m_Field;
 };
 
 class MidasResourceDescTable : public QTableWidget

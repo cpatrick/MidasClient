@@ -113,7 +113,7 @@ void ExpandTreeThread::run()
     m_ParentModel->fetchMore(index);
     emit expand(index);
     }
-  //m_ParentModel->emitLayoutChanged(); //slight hack to refresh the view
+
   QModelIndex index = m_ParentModel->getIndexByUuid(*(path.begin()));
   if(index.isValid())
     {

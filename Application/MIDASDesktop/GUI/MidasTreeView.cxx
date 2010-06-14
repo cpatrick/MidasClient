@@ -11,6 +11,7 @@
 #include "MidasCommunityTreeItem.h"
 #include "MidasCollectionTreeItem.h"
 #include "MidasItemTreeItem.h"
+#include "MidasBitstreamTreeItem.h"
 #include "Logger.h"
 #include "Utils.h"
 #include "MidasClientGlobal.h"
@@ -134,6 +135,7 @@ void MidasTreeView::updateSelection(const QItemSelection &selected,
     MidasCommunityTreeItem * communityTreeItem = NULL; 
     MidasCollectionTreeItem * collectionTreeItem = NULL; 
     MidasItemTreeItem * itemTreeItem = NULL; 
+    MidasBitstreamTreeItem * bitstreamTreeItem = NULL;
 
     if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
       {
@@ -146,6 +148,10 @@ void MidasTreeView::updateSelection(const QItemSelection &selected,
     else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
       {
       emit midasItemTreeItemSelected(itemTreeItem); 
+      }
+    else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
+      {
+      emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
       }
     }
   else 

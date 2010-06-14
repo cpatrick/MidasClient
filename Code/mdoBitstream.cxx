@@ -34,6 +34,8 @@ Bitstream::~Bitstream()
 void Bitstream::Clear()
 {
   this->m_Uuid = "";
+  this->m_Size = "";
+  this->m_Name = "";
 }
 
 //------------------------------------------------------------------------

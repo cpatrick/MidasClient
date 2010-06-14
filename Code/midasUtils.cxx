@@ -60,6 +60,39 @@ std::string midasUtils::EscapeForURL(std::string s)
 }
 
 //-------------------------------------------------------------------
+std::string midasUtils::FileSizeString(long bytes)
+{
+  std::stringstream text;
+  double amount;
+  std::string unit;
+
+  if(bytes < 1024)
+    {
+    amount = bytes;
+    unit = "B";
+    }
+  else if(bytes < 1024*1024)
+    {
+    amount = bytes / (1024.0);
+    unit = "KB";
+    }
+  else if(bytes < 1024*1024*1024)
+    {
+    amount = bytes / (1024.0*1024.0);
+    unit = "MB";
+    }
+  else
+    {
+    amount = bytes / (1024.0*1024.0*1024.0);
+    unit = "GB";
+    }
+
+  text.precision(3);
+  text << amount << " " << unit;
+  return text.str();
+}
+
+//-------------------------------------------------------------------
 bool midasUtils::IsDatabaseValid(std::string path)
 {
   if(!kwsys::SystemTools::FileExists(path.c_str(), true))

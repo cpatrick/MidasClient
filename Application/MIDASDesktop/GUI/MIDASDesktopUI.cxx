@@ -178,6 +178,9 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeView, SIGNAL(midasItemTreeItemSelected(const MidasItemTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasItemTreeItem*) ));
 
+  connect(treeView, SIGNAL(midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem*)),
+    this, SLOT( updateInfoPanel(const MidasBitstreamTreeItem*) ) );
+
   connect(treeView, SIGNAL(midasNoTreeItemSelected()),
     dlg_pullUI, SLOT( resetState() ));
 
@@ -202,9 +205,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( actionOpenURL,                 SIGNAL( triggered() ), this, SLOT( viewInBrowser() ) );
 
   connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
-  connect( dlg_createProfileUI,
-    SIGNAL( createdProfile(std::string, std::string, std::string, std::string)), this,
-    SLOT( createProfile(std::string, std::string, std::string, std::string)));
+  connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string)),
+    this, SLOT( createProfile(std::string, std::string, std::string, std::string)));
   connect( dlg_createProfileUI, SIGNAL( serverURLSet(std::string)), this, SLOT( setServerURL(std::string)));
   connect( dlg_signInUI, SIGNAL( createProfileRequest() ), dlg_createProfileUI, SLOT( exec() ) );
 
@@ -621,6 +623,7 @@ void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
 
   midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) ); 
   midasTreeItemInfoTable->clearSelection();
+  
   midasTreeItemInfoTable->setRowCount(5);
   int i = 0;
 
@@ -647,6 +650,36 @@ void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
   midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
   midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Description", QTableWidgetDescriptionItem::Bold));
   midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, item->GetDescription().c_str(), ITEM_DESCRIPTION, options));
+  i++;
+
+  midasTreeItemInfoTable->resizeColumnsToContents();
+}
+
+void MIDASDesktopUI::updateInfoPanel(const MidasBitstreamTreeItem* bitstreamTreeItem)
+{
+  QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
+
+  mdo::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
+  mws::Bitstream remote;
+  remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetObject(bitstream);
+  remote.Fetch();
+
+  midasTreeItemInfoGroupBox->setTitle(tr(" Bitstream description "));
+
+  //midasTreeItemInfoTable->disconnect( SIGNAL( bitstreamChanged ( QTableWidgetItem * ) ) ); 
+  midasTreeItemInfoTable->clearSelection();
+  midasTreeItemInfoTable->setRowCount(2);
+  int i = 0;
+
+  midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+  midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Filename", QTableWidgetDescriptionItem::Bold));
+  midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, bitstream->GetName().c_str(), BITSTREAM_NAME, options));
+  i++;
+
+  midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+  midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Size", QTableWidgetDescriptionItem::Bold));
+  midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, midasUtils::FileSizeString(atol(bitstream->GetSize().c_str())).c_str(), BITSTREAM_SIZE, options));
   i++;
 
   midasTreeItemInfoTable->resizeColumnsToContents();
