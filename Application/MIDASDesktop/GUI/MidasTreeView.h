@@ -4,13 +4,14 @@
 #include <QTreeView>
 #include <string>
 
-class QItemSelection; 
-class MidasTreeItem; 
-class MidasCommunityTreeItem; 
-class MidasCollectionTreeItem; 
-class MidasItemTreeItem; 
-class QContextMenuEvent; 
-class MidasTreeModel; 
+class QItemSelection;
+class MidasTreeItem;
+class MidasCommunityTreeItem;
+class MidasCollectionTreeItem;
+class MidasItemTreeItem;
+class QContextMenuEvent;
+class MidasTreeModel;
+class ExpandTreeThread;
 
 namespace mws{
   class WebAPI;
@@ -54,6 +55,9 @@ public slots:
   void selectByObject(mdo::Object* object);
   void Update();
 
+  void expansionDone();
+  void selectByIndex(const QModelIndex& index);
+
 signals:
 
   void midasTreeItemSelected(const MidasTreeItem* item);
@@ -64,11 +68,15 @@ signals:
   void midasNoTreeItemSelected();
   void fetchedMore();
 
+  void startedExpandingTree();
+  void finishedExpandingTree();
+
 protected:
  
   void contextMenuEvent ( QContextMenuEvent * e );
   mws::WebAPI*        m_WebAPI;
   MidasTreeModel*     m_Model;
+  ExpandTreeThread*   m_ExpandTreeThread;
  };
 
 #endif //__MidasTreeView_H

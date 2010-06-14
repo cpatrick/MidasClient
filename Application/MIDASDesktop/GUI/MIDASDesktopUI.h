@@ -96,6 +96,9 @@ public slots:
   void updateServerTreeView();
   void decorateServerTree();
 
+  void startedExpandingTree();
+  void finishedExpandingTree();
+
   void enableActions(bool val);
 
   void setTreeTabIndex(int index);

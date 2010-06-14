@@ -14,6 +14,8 @@
 #include "Logger.h"
 #include "Utils.h"
 #include "MidasClientGlobal.h"
+#include "ExpandTreeThread.h"
+
 #include "mwsWebAPI.h"
 #include "mwsCommunity.h"
 #include "mwsBitstream.h"
@@ -45,6 +47,7 @@ MidasTreeView::MidasTreeView(QWidget * parent):QTreeView(parent)
   connect (this->model(), SIGNAL( fetchedMore() ),
      this, SLOT( alertFetchedMore() ) );
 
+  m_ExpandTreeThread = NULL;
 
   // define action to be triggered when tree item is selected
   QItemSelectionModel * itemSelectionModel = this->selectionModel(); 
@@ -57,6 +60,7 @@ MidasTreeView::MidasTreeView(QWidget * parent):QTreeView(parent)
 MidasTreeView::~MidasTreeView()
 {
   delete m_Model;
+  delete m_ExpandTreeThread;
 }
 
 /** Set the web API */
@@ -90,7 +94,7 @@ void MidasTreeView::Clear()
 {
   this->m_Model->clear(QModelIndex());
   disconnect(this);
-  this->reset(); 
+  this->reset();
 }
 
 bool MidasTreeView::isModelIndexSelected() const
@@ -167,83 +171,35 @@ void MidasTreeView::alertFetchedMore()
 
 void MidasTreeView::selectByObject(mdo::Object* object)
 {
-  std::vector<std::string> path; //path of uuids to the root
-
-  mdo::Community* comm = NULL;
-  mdo::Collection* coll = NULL;
-  mdo::Item* item = NULL;
-  mdo::Bitstream* bitstream = NULL;
-
-  while(true)
+  if(m_ExpandTreeThread)
     {
-    if((comm = dynamic_cast<mdo::Community*>(object)) != NULL)
-      {
-      mws::Community remote;
-      remote.SetWebAPI(mws::WebAPI::Instance());
-      remote.SetObject(comm);
-      if(path.size() == 0)
-        {
-        remote.Fetch();
-        }
-      remote.FetchParent();
-      object = comm->GetParentCommunity();
-      path.push_back(comm->GetUuid());
-      }
-    else if((coll = dynamic_cast<mdo::Collection*>(object)) != NULL)
-      {
-      mws::Collection remote;
-      remote.SetWebAPI(mws::WebAPI::Instance());
-      remote.SetObject(coll);
-      if(path.size() == 0)
-        {
-        remote.Fetch();
-        }
-      remote.FetchParent();
-      object = coll->GetParentCommunity();
-      path.push_back(coll->GetUuid());
-      }
-    else if((item = dynamic_cast<mdo::Item*>(object)) != NULL)
-      {
-      mws::Item remote;
-      remote.SetWebAPI(mws::WebAPI::Instance());
-      remote.SetObject(item);
-      if(path.size() == 0)
-        {
-        remote.Fetch();
-        }
-      remote.FetchParent();
-      object = item->GetParentCollection();
-      path.push_back(item->GetUuid());
-      }
-    else if((bitstream = dynamic_cast<mdo::Bitstream*>(object)) != NULL)
-      {
-      mws::Bitstream remote;
-      remote.SetWebAPI(mws::WebAPI::Instance());
-      remote.SetObject(bitstream);
-      if(path.size() == 0)
-        {
-        remote.Fetch();
-        }
-      remote.FetchParent();
-      object = bitstream->GetParentItem();
-      path.push_back(bitstream->GetUuid());
-      }
-    if(object == NULL)
-      {
-      break;
-      }
+    disconnect(m_ExpandTreeThread);
     }
+  delete m_ExpandTreeThread;
 
-  for(std::vector<std::string>::reverse_iterator i = path.rbegin();
-      i != path.rend(); ++i)
-    {
-    expand(m_Model->getIndexByUuid(*i));
-    }
-  m_Model->emitLayoutChanged(); //slight hack to refresh the view
-  QModelIndex index = m_Model->getIndexByUuid(*(path.begin()));
-  if(index.isValid())
-    {
-    //selectionModel()->select(index,
-      //QItemSelectionModel::Select | QItemSelectionModel::Clear);
-    }
+  m_ExpandTreeThread = new ExpandTreeThread;
+  m_ExpandTreeThread->SetParentUI(this);
+  m_ExpandTreeThread->SetParentModel(m_Model);
+  m_ExpandTreeThread->SetObject(object);
+
+  connect(m_ExpandTreeThread, SIGNAL(threadComplete()),
+    this, SLOT(expansionDone()));
+  connect(m_ExpandTreeThread, SIGNAL(expand(const QModelIndex&)),
+    this, SLOT(expand(const QModelIndex&)));
+  connect(m_ExpandTreeThread, SIGNAL(select(const QModelIndex&)),
+    this, SLOT(selectByIndex(const QModelIndex&)));
+
+  m_ExpandTreeThread->start();
+  emit startedExpandingTree();
+}
+
+void MidasTreeView::expansionDone()
+{
+  emit finishedExpandingTree();
+}
+
+void MidasTreeView::selectByIndex(const QModelIndex& index)
+{
+  selectionModel()->select(index,
+    QItemSelectionModel::Select | QItemSelectionModel::Clear);
 }

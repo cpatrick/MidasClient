@@ -105,6 +105,8 @@ set(MIDASDesktopUI_SRCS
   GUI/ProcessingStatusUI.cxx
   GUI/RefreshServerTreeThread.h
   GUI/SynchronizerThread.h
+  GUI/ExpandTreeThread.h
+  GUI/ExpandTreeThread.cxx
 )
 
 #set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MidasClient.rc)
@@ -153,6 +155,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/MidasSearchResultList.h
   GUI/ProcessingStatusUI.h
   GUI/RefreshServerTreeThread.h
+  GUI/ExpandTreeThread.h
   GUI/SynchronizerThread.h
   GUI/GUIProgress.h
   GUI/GUILogger.h

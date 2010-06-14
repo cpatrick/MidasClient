@@ -151,6 +151,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- Status bar -------------
 
   // ------------- setup TreeView signals -------------
+
   connect(treeView, SIGNAL(midasTreeItemSelected(const MidasTreeItem*)),
     this, SLOT( updateActionState(const MidasTreeItem*) ));
   connect(treeViewClient, SIGNAL(midasTreeItemSelected(const MidasTreeItem*)),
@@ -183,6 +184,9 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect(treeView->model(), SIGNAL(serverPolled()), this, SLOT( storeLastPollTime()));
 
+  connect(treeView, SIGNAL( startedExpandingTree() ), this, SLOT( startedExpandingTree() ) );
+  connect(treeView, SIGNAL( finishedExpandingTree() ), this, SLOT( finishedExpandingTree() ) );
+
   connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
     this, SLOT( displayClientResourceContextMenu(QContextMenuEvent*) ));
 
@@ -190,8 +194,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- setup TreeView signals -------------
 
   // ------------- signal/slot connections -------------
-  connect( this->dlg_signInUI, SIGNAL(signedIn()), this, SLOT(signIn()) );
-
   connect( actionEdit_search_settings,    SIGNAL( triggered() ), this, SLOT( editSearchSettings() ) );
   connect( actionPush_Resources,          SIGNAL( triggered() ), this, SLOT( pushResources() ) );
   connect( actionPull_Resource,           SIGNAL( triggered() ), dlg_pullUI, SLOT( exec() ) );
@@ -1170,4 +1172,18 @@ void MIDASDesktopUI::setProgressIndeterminate()
 void MIDASDesktopUI::setTreeTabIndex(int index)
 {
   this->treeTabContainer->setCurrentIndex(index);
+}
+
+void MIDASDesktopUI::startedExpandingTree()
+{
+  this->setProgressIndeterminate();
+  this->displayStatus("Finding resource in the server tree...");
+  this->activateActions(false, MIDASDesktopUI::ACTION_CONNECTED);
+}
+
+void MIDASDesktopUI::finishedExpandingTree()
+{
+  this->setProgressEmpty();
+  this->displayStatus("");
+  this->activateActions(true, MIDASDesktopUI::ACTION_CONNECTED);
 }
