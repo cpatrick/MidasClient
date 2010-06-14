@@ -305,6 +305,7 @@ void MIDASDesktopUI::showNormal()
     m_database->Close();
     }
   QMainWindow::showNormal();
+  QMainWindow::activateWindow();
 }
 
 void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
