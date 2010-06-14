@@ -204,4 +204,5 @@ void MidasTreeView::selectByIndex(const QModelIndex& index)
 {
   selectionModel()->select(index,
     QItemSelectionModel::Select | QItemSelectionModel::Clear);
+  scrollTo(index);
 }
