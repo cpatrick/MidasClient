@@ -79,7 +79,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox">
+        <widget class="QCheckBox" name="deleteFileCheckBox">
          <property name="text">
           <string>Also delete the file(s) on disk</string>
          </property>
@@ -105,7 +105,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>checkBox</tabstop>
+  <tabstop>deleteFileCheckBox</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>

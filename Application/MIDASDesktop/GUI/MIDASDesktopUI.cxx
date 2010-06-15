@@ -211,6 +211,7 @@ MIDASDesktopUI::MIDASDesktopUI()
     this, SLOT( createProfile(std::string, std::string, std::string, std::string)));
   connect( dlg_createProfileUI, SIGNAL( serverURLSet(std::string)), this, SLOT( setServerURL(std::string)));
   connect( dlg_signInUI, SIGNAL( createProfileRequest() ), dlg_createProfileUI, SLOT( exec() ) );
+  connect( dlg_deleteResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteLocalResource(bool) ) );
 
   connect( actionChoose_Local_Database, SIGNAL( triggered() ), this, SLOT( chooseLocalDatabase() ) );
 
@@ -1299,4 +1300,15 @@ void MIDASDesktopUI::finishedExpandingTree()
   this->setProgressEmpty();
   this->displayStatus("");
   this->activateActions(true, MIDASDesktopUI::ACTION_CONNECTED);
+}
+
+void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
+{
+  std::string uuid = this->treeViewClient->getSelectedMidasTreeItem()->getUuid();
+  this->m_database->Open();
+  this->m_database->DeleteResource(uuid, deleteFiles);
+  this->m_database->Close();
+  std::stringstream text;
+  text << "Deleted resource with uuid=" << uuid << ".";
+  this->m_logger->Message(text.str());
 }

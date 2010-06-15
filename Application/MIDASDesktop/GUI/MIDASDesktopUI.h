@@ -98,6 +98,7 @@ public slots:
                      std::string apiName, std::string apiKey );
   void chooseLocalDatabase();
   void setLocalDatabase(std::string file);
+  void deleteLocalResource(bool deleteFiles);
   void updateClientTreeView();
   void updateServerTreeView();
   void decorateServerTree();

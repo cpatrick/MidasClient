@@ -87,6 +87,11 @@ public:
   int AddResource(int type, std::string uuid, std::string path,
     std::string name, std::string parentUuid, int serverParent);
 
+  /**
+   * Delete a resource from the database
+   */
+  bool DeleteResource(std::string uuid, bool deleteFiles = false);
+
   bool FillCommunity(mdo::Community* community);
   bool FillCollection(mdo::Collection* collection);
   bool FillItem(mdo::Item* item);

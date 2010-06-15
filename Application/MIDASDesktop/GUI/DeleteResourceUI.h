@@ -17,7 +17,7 @@ public:
   void init(); 
 
 signals:
-  
+  void deleteResource(bool deleteFile);
 
 public slots:
 

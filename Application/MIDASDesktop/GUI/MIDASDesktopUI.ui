@@ -309,7 +309,7 @@
           <attribute name="title">
            <string>Client Tree</string>
           </attribute>
-          <layout class="QGridLayout" name="gridLayout">
+          <layout class="QGridLayout" name="gridLayout_10">
            <item row="3" column="0" colspan="2">
             <widget class="QPushButton" name="push_Button">
              <property name="enabled">

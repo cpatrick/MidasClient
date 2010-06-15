@@ -29,5 +29,6 @@ int DeleteResourceUI::exec()
 /** */
 void DeleteResourceUI::accept()
 {
+  emit deleteResource(this->deleteFileCheckBox->isChecked());
   QDialog::accept();
 }

@@ -732,3 +732,135 @@ void midasDatabaseProxy::Populate(mdo::Item* node, bool checkDirty)
       }
     }
 }
+
+bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
+{
+  midasResourceRecord record = this->GetRecordByUuid(uuid);
+
+  if(!record.Id) return false;
+
+  std::stringstream query;
+  std::vector<int> children;
+
+  switch(record.Type)
+    {
+    case midasResourceType::COMMUNITY:
+      query << "SELECT child_comm_id FROM community2community WHERE "
+        "parent_comm_id='" << record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+
+      while(this->Database->GetNextRow())
+        {
+        children.push_back(this->Database->GetValueAsInt(0));
+        }
+      for(std::vector<int>::iterator i = children.begin();
+          i != children.end(); ++i)
+        {
+        this->DeleteResource(this->GetUuid(midasResourceType::COMMUNITY, *i));
+        }
+
+      query.str(std::string());
+      query << "SELECT collection_id FROM community2collection WHERE "
+        "community_id='" << record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+
+      children.clear();
+      while(this->Database->GetNextRow())
+        {
+        children.push_back(this->Database->GetValueAsInt(0)); 
+        }
+      for(std::vector<int>::iterator i = children.begin();
+          i != children.end(); ++i)
+        {
+        this->DeleteResource(this->GetUuid(midasResourceType::COLLECTION, *i));
+        }
+
+      query.str(std::string());
+      query << "DELETE FROM community2community WHERE parent_comm_id='" <<
+        record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+
+      query.str(std::string());
+      query << "DELETE FROM community2collection WHERE community_id='" <<
+        record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+
+      query.str(std::string());
+      query << "DELETE FROM community WHERE community_id='" <<
+        record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+      break;
+    case midasResourceType::COLLECTION:
+      query << "SELECT item_id FROM collection2item WHERE "
+        "collection_id='" << record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+
+      while(this->Database->GetNextRow())
+        {
+        children.push_back(this->Database->GetValueAsInt(0));
+        }
+      for(std::vector<int>::iterator i = children.begin();
+          i != children.end(); ++i)
+        {
+        this->DeleteResource(this->GetUuid(midasResourceType::ITEM, *i));
+        }
+
+      query.str(std::string());
+      query << "DELETE FROM collection2item WHERE collection_id='" <<
+        record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+
+      query.str(std::string());
+      query << "DELETE FROM collection WHERE collection_id='" <<
+        record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+      break;
+    case midasResourceType::ITEM:
+      query << "SELECT bitstream_id FROM item2bitstream WHERE "
+        "item_id='" << record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+
+      while(this->Database->GetNextRow())
+        {
+        children.push_back(this->Database->GetValueAsInt(0));
+        }
+      for(std::vector<int>::iterator i = children.begin();
+          i != children.end(); ++i)
+        {
+        this->DeleteResource(this->GetUuid(midasResourceType::BITSTREAM, *i));
+        }
+
+      query.str(std::string());
+      query << "DELETE FROM item2bitstream WHERE item_id='" <<
+        record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+
+      query.str(std::string());
+      query << "DELETE FROM item WHERE item_id='" << record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+      break;
+    case midasResourceType::BITSTREAM:
+      query << "DELETE FROM bitstream WHERE bitstream_id='" << record.Id << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+      break;
+    default:
+      return false;
+    }
+
+  query.str(std::string());
+  query << "DELETE FROM resource_uuid WHERE uuid='" << uuid << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  if(deleteFiles)
+    {
+    if(record.Type == midasResourceType::BITSTREAM)
+      {
+      kwsys::SystemTools::RemoveFile(record.Path.c_str());
+      }
+    else
+      {
+      kwsys::SystemTools::RemoveADirectory(record.Path.c_str());
+      }
+    }
+  return true;
+}
