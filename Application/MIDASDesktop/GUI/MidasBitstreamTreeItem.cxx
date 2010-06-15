@@ -32,5 +32,5 @@ QPixmap MidasBitstreamTreeItem::getDecoration()
     role += "_red";
     }
   role += ".png";
-  return QPixmap(role.c_str()).scaledToHeight(TREE_ITEM_ICON_HEIGHT); 
+  return QPixmap(role.c_str()); 
 }

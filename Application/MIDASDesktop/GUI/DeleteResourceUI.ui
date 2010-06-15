@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>365</width>
-    <height>109</height>
+    <height>106</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,9 +52,6 @@
          </property>
          <property name="textFormat">
           <enum>Qt::RichText</enum>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="../MIDASDesktopIcons.qrc">:/icons/delete2.png</pixmap>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -109,6 +106,7 @@
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>

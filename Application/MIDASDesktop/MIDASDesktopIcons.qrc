@@ -12,9 +12,6 @@
     <file>icons/gpl_folder_add.png</file>
     <file>icons/gpl_folder_delete.png</file>
     <file>icons/add2.png</file>
-    <file>icons/check2.png</file>
-    <file>icons/check.png</file>
-    <file>icons/checksmall.png</file>
     <file>icons/delete2.png</file>
     <file>icons/delete.png</file>
     <file>icons/MidasClientLogo.png</file>
@@ -34,18 +31,9 @@
     <file>icons/nav_left_green.png</file>
     <file>icons/nav_right_green.png</file>
     <file>icons/workstation_network.png</file>
-    <file>icons/check2.png</file>
-    <file>icons/check.png</file>
     <file>icons/checksmall.png</file>
     <file>icons/check2.png</file>
     <file>icons/check.png</file>
-    <file>icons/checksmall.png</file>
-    <file>icons/check2.png</file>
-    <file>icons/check.png</file>
-    <file>icons/checksmall.png</file>
-    <file>icons/check2.png</file>
-    <file>icons/check.png</file>
-    <file>icons/checksmall.png</file>
     <file>icons/MidasClientWarning.png</file>
     <file>icons/edit.png</file>
     <file>icons/gnome-fs-directory.png</file>

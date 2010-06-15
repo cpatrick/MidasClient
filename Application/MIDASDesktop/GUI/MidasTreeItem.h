@@ -6,8 +6,6 @@
 #include <QFlags>
 #include <mwsWebAPI.h>
 
-#define TREE_ITEM_ICON_HEIGHT 21
-
 class MidasCommunityTreeItem;
 
 class MidasTreeItem: public QObject

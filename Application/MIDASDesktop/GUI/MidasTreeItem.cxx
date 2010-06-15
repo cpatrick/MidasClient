@@ -146,7 +146,7 @@ QPixmap MidasTreeItem::getDecoration()
     role += "_red";
     }
   role += ".png";
-  return QPixmap(role.c_str()).scaledToHeight(TREE_ITEM_ICON_HEIGHT);
+  return QPixmap(role.c_str());
 }
 
 void MidasTreeItem::setDecorationRole(DecorationRoles role)
