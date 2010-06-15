@@ -228,7 +228,7 @@ bool MidasTreeModel::canFetchMore ( const QModelIndex & parent ) const
 /** Fetch more data */
 void MidasTreeModel::fetchMore ( const QModelIndex & parent )
 {
-  if (!parent.isValid())
+  if (!parent.isValid() || !canFetchMore(parent))
     {
     return;
     }
