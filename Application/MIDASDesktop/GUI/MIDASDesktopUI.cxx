@@ -494,7 +494,6 @@ void MIDASDesktopUI::updateClientTreeView()
 {
   this->treeTabContainer->setCurrentIndex(1);
   this->treeViewClient->Update();
-  this->treeViewClient->expandAll();
 }
 
 void MIDASDesktopUI::updateServerTreeView()
@@ -1308,6 +1307,8 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
   this->m_database->Open();
   this->m_database->DeleteResource(uuid, deleteFiles);
   this->m_database->Close();
+
+  this->updateClientTreeView();
   std::stringstream text;
   text << "Deleted resource with uuid=" << uuid << ".";
   this->m_logger->Message(text.str());

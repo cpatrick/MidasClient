@@ -65,6 +65,7 @@ void MidasTreeModelClient::Populate()
     }
   this->m_Database->Close();
   this->endInsertRows();
+  emit layoutChanged();
 }
 
 bool MidasTreeModelClient::hasChildren( const QModelIndex & parent ) const

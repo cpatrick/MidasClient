@@ -587,15 +587,20 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
                                                             bool buildTree)
 {
   std::vector<mdo::Community*> communities;
-  this->Database->ExecuteQuery("SELECT community_id, name FROM community "
-    "community WHERE community.community_id NOT IN (SELECT child_comm_id "
-    "FROM community2community)");
+  std::stringstream query;
+  query << "SELECT resource_uuid.uuid, community.community_id, community.name "
+    "FROM community, resource_uuid WHERE resource_uuid.resource_id=community.community_id AND "
+    "resource_uuid.resource_type_id='" << midasResourceType::COMMUNITY << "' AND community.community_id "
+    "NOT IN (SELECT child_comm_id FROM community2community)";
+
+  this->Database->ExecuteQuery(query.str().c_str());
 
   while(this->Database->GetNextRow())
     {
     mdo::Community* community = new mdo::Community;
-    community->SetId(this->Database->GetValueAsInt(0));
-    community->SetName(this->Database->GetValueAsString(1));
+    community->SetUuid(this->Database->GetValueAsString(0));
+    community->SetId(this->Database->GetValueAsInt(1));
+    community->SetName(this->Database->GetValueAsString(2));
     communities.push_back(community);
     }
 
@@ -618,7 +623,10 @@ void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool check
       midasResourceType::COMMUNITY, node->GetId())));
     }
   std::stringstream query;
-  query << "SELECT community_id, name FROM community WHERE community_id IN "
+  query << "SELECT community.community_id, community.name, resource_uuid.uuid "
+    "FROM community, resource_uuid WHERE resource_uuid.resource_type_id='"
+    << midasResourceType::COMMUNITY << "' AND resource_uuid.resource_id="
+    "community.community_id AND community.community_id IN "
     "(SELECT child_comm_id FROM community2community WHERE parent_comm_id=" 
     << node->GetId() << ")";
   this->Database->ExecuteQuery(query.str().c_str());
@@ -629,6 +637,7 @@ void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool check
     mdo::Community* community = new mdo::Community;
     community->SetId(this->Database->GetValueAsInt(0));
     community->SetName(this->Database->GetValueAsString(1));
+    community->SetUuid(this->Database->GetValueAsString(2));
     childCommunities.push_back(community);
     }
 
@@ -643,9 +652,11 @@ void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool check
       }
 
     query.str(std::string());
-    query << "SELECT collection_id, name FROM collection WHERE collection_id "
-      "IN (SELECT collection_id FROM community2collection WHERE community_id="
-      << node->GetId() << ")";
+    query << "SELECT collection.collection_id, collection.name, resource_uuid.uuid "
+      "FROM collection, resource_uuid WHERE resource_uuid.resource_type_id='"
+      << midasResourceType::COLLECTION << "' AND resource_uuid.resource_id="
+      "collection.collection_id AND collection.collection_id IN (SELECT collection_id "
+      "FROM community2collection WHERE community_id=" << node->GetId() << ")";
     this->Database->ExecuteQuery(query.str().c_str());
 
     std::vector<mdo::Collection*> collections;
@@ -654,6 +665,7 @@ void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool check
       mdo::Collection* collection = new mdo::Collection;
       collection->SetId(this->Database->GetValueAsInt(0));
       collection->SetName(this->Database->GetValueAsString(1));
+      collection->SetUuid(this->Database->GetValueAsString(2));
       node->AddCollection(collection);
       collections.push_back(collection);
       }
@@ -674,9 +686,10 @@ void midasDatabaseProxy::Populate(mdo::Collection* node, bool recurse, bool chec
       midasResourceType::COLLECTION, node->GetId())));
     }
   std::stringstream query;
-  query << "SELECT item_id, title FROM item WHERE item_id "
-    "IN (SELECT item_id FROM collection2item WHERE collection_id="
-    << node->GetId() << ")";
+  query << "SELECT item.item_id, item.title, resource_uuid.uuid FROM item, resource_uuid "
+    "WHERE resource_uuid.resource_type_id='" << midasResourceType::ITEM << "' AND "
+    "resource_uuid.resource_id=item.item_id AND item.item_id IN (SELECT item_id FROM "
+    "collection2item WHERE collection_id=" << node->GetId() << ")";
   this->Database->ExecuteQuery(query.str().c_str());
 
   std::vector<mdo::Item*> items;
@@ -685,6 +698,7 @@ void midasDatabaseProxy::Populate(mdo::Collection* node, bool recurse, bool chec
     mdo::Item* item = new mdo::Item;
     item->SetId(this->Database->GetValueAsInt(0));
     item->SetTitle(this->Database->GetValueAsString(1));
+    item->SetUuid(this->Database->GetValueAsString(2));
     node->AddItem(item);
     items.push_back(item);
     }
@@ -707,8 +721,10 @@ void midasDatabaseProxy::Populate(mdo::Item* node, bool checkDirty)
       midasResourceType::ITEM, node->GetId())));
     }
   std::stringstream query;
-  query << "SELECT bitstream_id, name FROM bitstream WHERE bitstream_id "
-    "IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
+  query << "SELECT bitstream.bitstream_id, bitstream.name, resource_uuid.uuid "
+    "FROM bitstream, resource_uuid WHERE resource_uuid.resource_id=bitstream.bitstream_id "
+    "AND resource_uuid.resource_type_id='" << midasResourceType::BITSTREAM << "' AND "
+    "bitstream.bitstream_id IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
     << node->GetId() << ")";
   this->Database->ExecuteQuery(query.str().c_str());
 
@@ -718,6 +734,7 @@ void midasDatabaseProxy::Populate(mdo::Item* node, bool checkDirty)
     mdo::Bitstream* bitstream = new mdo::Bitstream;
     bitstream->SetId(this->Database->GetValueAsInt(0));
     bitstream->SetName(this->Database->GetValueAsString(1));
+    bitstream->SetUuid(this->Database->GetValueAsString(2));
     node->AddBitstream(bitstream);
     bitstreams.push_back(bitstream);
     }
