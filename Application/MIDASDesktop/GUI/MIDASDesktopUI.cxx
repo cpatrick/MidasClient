@@ -1170,7 +1170,7 @@ void MIDASDesktopUI::pushReturned(bool ok)
     {
     this->displayStatus(tr("Failed to push resources to the server."));
     }
-  this->progressBar->setValue(0); 
+  this->setProgressEmpty();
 }
 
 void MIDASDesktopUI::search()
