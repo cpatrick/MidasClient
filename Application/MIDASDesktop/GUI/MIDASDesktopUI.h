@@ -29,6 +29,7 @@ class midasProgressReporter;
 
 class RefreshServerTreeThread;
 class SynchronizerThread;
+class SearchThread;
 
 class QContextMenuEvent;
 class MidasTreeItem;
@@ -165,6 +166,7 @@ public slots:
 
   // ------------- search -------------
   void search();
+  void showSearchResults();
   void searchItemClicked(QListWidgetItemMidasItem * item);
   void searchItemContextMenu(QContextMenuEvent * e);
   // ------------- search -------------
@@ -221,10 +223,12 @@ private:
   midasLog*                   m_logger;
   midasProgressReporter*      m_progress;
   std::vector<std::string>    m_dirtyUuids;
+  std::vector<mdo::Object*>   m_SearchResults;
 
   // ----------- threads -----------------
   RefreshServerTreeThread*    m_RefreshThread;
   SynchronizerThread*         m_SynchronizerThread;
+  SearchThread*               m_SearchThread;
   // ----------- threads -----------------
 
   mdo::Object*                m_DecorateObject;

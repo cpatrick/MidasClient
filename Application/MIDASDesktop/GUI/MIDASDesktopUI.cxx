@@ -48,6 +48,7 @@
 // ------------- Threads -------------
 #include "RefreshServerTreeThread.h"
 #include "SynchronizerThread.h"
+#include "SearchThread.h"
 // ------------- Threads -------------
 
 // ------------- TreeModel / TreeView -------------
@@ -244,6 +245,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- thread init -----------------
   m_RefreshThread = NULL;
   m_SynchronizerThread = NULL;
+  m_SearchThread = NULL;
   // ------------- thread init -----------------
 
   // ------------- setup client members and logging ----
@@ -293,6 +295,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete m_synch;
   delete m_RefreshThread;
   delete m_SynchronizerThread;
+  delete m_SearchThread;
 }
 
 void MIDASDesktopUI::showNormal()
@@ -1179,13 +1182,38 @@ void MIDASDesktopUI::search()
   searchItemsListWidget->clear();
   std::vector<std::string> words;
   kwutils::tokenize(searchQueryEdit->text().toStdString(), words);
-  std::vector<mdo::Object*> results = mws::Search::SearchServer(words);
 
-  for(std::vector<mdo::Object*>::iterator i = results.begin();
-      i != results.end(); ++i)
+  if(m_SearchThread)
+    {
+    disconnect(m_SearchThread);
+    }
+  delete m_SearchThread;
+  
+  m_SearchResults.clear();
+
+  m_SearchThread = new SearchThread;
+  m_SearchThread->SetParentUI(this);
+  m_SearchThread->SetWords(words);
+  m_SearchThread->SetResults(&this->m_SearchResults);
+  
+  connect(m_SearchThread, SIGNAL( threadComplete() ),
+    this, SLOT( showSearchResults() ) );
+
+  activateActions(false, ACTION_CONNECTED);
+  displayStatus("Performing search...");
+  setProgressIndeterminate();
+
+  m_SearchThread->start();
+}
+
+void MIDASDesktopUI::showSearchResults()
+{
+  for(std::vector<mdo::Object*>::iterator i = m_SearchResults.begin();
+      i != m_SearchResults.end(); ++i)
     {
     new QListWidgetItemMidasItem(this->searchItemsListWidget, *i);
     }
+  activateActions(true, ACTION_CONNECTED);
   this->resetStatus();
 }
 
