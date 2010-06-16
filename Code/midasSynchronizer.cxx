@@ -935,6 +935,9 @@ bool midasSynchronizer::PushBitstream(int id)
     return false;
     }
 
+  std::stringstream status;
+  status << "Uploading bitstream " << name << "...";
+  this->Log->Status(status.str());
   std::stringstream fields;
   fields << "midas.upload.bitstream?uuid=" << uuid << "&itemid="
     << record.Parent;
@@ -992,6 +995,11 @@ bool midasSynchronizer::PushCollection(int id)
     return false;
     }
 
+  this->Progress->SetIndeterminate();
+  std::stringstream status;
+  status << "Uploading collection " << name << "...";
+  this->Log->Status(status.str());
+
   std::stringstream fields;
   fields << "midas.collection.create?uuid=" << uuid << "&name=" <<
     midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
@@ -1032,6 +1040,11 @@ bool midasSynchronizer::PushCommunity(int id)
     record.Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
       this->DatabaseProxy->GetParentId(midasResourceType::COMMUNITY, id));
     }
+
+  this->Progress->SetIndeterminate();
+  std::stringstream status;
+  status << "Uploading community " << name << "...";
+  this->Log->Status(status.str());
 
   // Create new community on server
   std::stringstream fields;
@@ -1082,6 +1095,11 @@ bool midasSynchronizer::PushItem(int id)
     Log->Error(text.str());
     return false;
     }
+
+  this->Progress->SetIndeterminate();
+  std::stringstream status;
+  status << "Uploading item " << name << "...";
+  this->Log->Status(status.str());
   
   std::stringstream fields;
   fields << "midas.item.create?uuid=" << uuid << "&name=" <<

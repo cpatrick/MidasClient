@@ -865,6 +865,10 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
     }
 
   query.str(std::string());
+  query << "DELETE FROM dirty_resource WHERE uuid='" << uuid << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  query.str(std::string());
   query << "DELETE FROM resource_uuid WHERE uuid='" << uuid << "'";
   this->Database->ExecuteQuery(query.str().c_str());
 

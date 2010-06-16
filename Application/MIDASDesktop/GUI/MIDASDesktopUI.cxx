@@ -1159,10 +1159,11 @@ void MIDASDesktopUI::pushResources()
 
 void MIDASDesktopUI::pushReturned(bool ok)
 {
+  this->updateClientTreeView();
+  this->updateServerTreeView();
+
   if(ok)
     {
-    this->updateClientTreeView();
-    this->updateServerTreeView();
     this->displayStatus(tr("Finished pushing locally added resources."));
     }
   else
