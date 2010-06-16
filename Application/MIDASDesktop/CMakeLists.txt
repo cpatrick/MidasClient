@@ -51,8 +51,6 @@ set(MIDASDesktopUI_SRCS
   main.cxx
   GUI/MIDASDesktopUI.cxx
   GUI/MIDASDesktopUI.h
-  GUI/SettingsUI.cxx
-  GUI/SettingsUI.h
   GUI/SignInUI.cxx
   GUI/SignInUI.h
   GUI/SignInThread.cxx
@@ -123,7 +121,6 @@ set(MIDASDesktopUI_UI_SRCS
   GUI/CreateProfileUI.ui
   GUI/DeleteResourceUI.ui
   GUI/UploadAgreementUI.ui
-  GUI/SettingsUI.ui
   GUI/SignInUI.ui
   GUI/AboutUI.ui
   GUI/ProcessingStatusUI.ui
@@ -141,7 +138,6 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/CreateProfileUI.h
   GUI/DeleteResourceUI.h
   GUI/PullUI.h
-  GUI/SettingsUI.h 
   GUI/UploadAgreementUI.h 
   GUI/SignInUI.h
   GUI/SignInThread.h

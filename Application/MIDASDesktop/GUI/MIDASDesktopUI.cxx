@@ -36,7 +36,6 @@
 #include "CreateMidasItemUI.h"
 #include "CreateProfileUI.h"
 #include "DeleteResourceUI.h"
-#include "SettingsUI.h"
 #include "UploadAgreementUI.h"
 #include "SignInUI.h"
 #include "AboutUI.h"
@@ -104,7 +103,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_createMidasItemUI =         new CreateMidasItemUI( this );
   dlg_addMidasItemUI =            new CreateMidasItemUI( this, CreateMidasItemUI::ClientItem);
 
-  dlg_settingsUI =         new SettingsUI( this );
   dlg_uploadAgreementUI =  new UploadAgreementUI( this );
   dlg_signInUI =           new SignInUI( this );
   dlg_createProfileUI =    new CreateProfileUI( this );
@@ -202,7 +200,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- setup TreeView signals -------------
 
   // ------------- signal/slot connections -------------
-  connect( actionEdit_search_settings,    SIGNAL( triggered() ), this, SLOT( editSearchSettings() ) );
   connect( actionPush_Resources,          SIGNAL( triggered() ), this, SLOT( pushResources() ) );
   connect( actionPull_Resource,           SIGNAL( triggered() ), dlg_pullUI, SLOT( exec() ) );
   connect( actionOpenURL,                 SIGNAL( triggered() ), this, SLOT( viewInBrowser() ) );
@@ -275,7 +272,6 @@ MIDASDesktopUI::~MIDASDesktopUI()
   ProcessingStatusUI::finalize();
   delete dlg_aboutUI;
   delete dlg_signInUI;
-  delete dlg_settingsUI;
   delete dlg_createProfileUI;
   delete dlg_autoRefreshUI;
   delete dlg_createMidasCommunityUI;
@@ -1120,21 +1116,6 @@ void MIDASDesktopUI::signOut()
   m_signIn = false;
 
   refreshTimer->stop();
-}
-
-void MIDASDesktopUI::editServerSettings()
-{
-  this->dlg_settingsUI->exec(0); 
-}
-
-void MIDASDesktopUI::editSearchSettings()
-{
-  this->dlg_settingsUI->exec(1);
-}
-
-void MIDASDesktopUI::checkDatabaseSettings()
-{
-  this->dlg_settingsUI->exec(2);
 }
 
 void MIDASDesktopUI::pushResources()

@@ -11,7 +11,6 @@
 
 class UploadAgreementUI;
 class UpDownLoadUI; 
-class SettingsUI;
 class CreateMidasCommunityUI; 
 class CreateMidasCollectionUI; 
 class CreateMidasItemUI; 
@@ -114,9 +113,6 @@ public slots:
   void setTreeTabIndex(int index);
 
   // ------------- settings -------------
-  void editServerSettings();
-  void editSearchSettings();
-  void checkDatabaseSettings();
   void setTimerInterval();
   void adjustTimerSettings();
   // ------------- settings -------------
@@ -188,7 +184,6 @@ private:
   CreateMidasItemUI *         dlg_addMidasItemUI;
   CreateProfileUI *           dlg_createProfileUI;
   SignInUI *                  dlg_signInUI;
-  SettingsUI *                dlg_settingsUI;
   UpDownLoadUI *              dlg_upDownLoadUI;
   UploadAgreementUI *         dlg_uploadAgreementUI;
   AboutUI *                   dlg_aboutUI;

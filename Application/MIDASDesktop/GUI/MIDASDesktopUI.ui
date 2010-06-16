@@ -230,7 +230,7 @@
        <item row="0" column="0" rowspan="2">
         <widget class="QTabWidget" name="treeTabContainer">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="serverTab">
           <attribute name="title">
@@ -428,8 +428,8 @@
      <string>Settings</string>
     </property>
     <addaction name="actionCreate_Profile"/>
-    <addaction name="actionEdit_search_settings"/>
     <addaction name="actionChoose_Local_Database"/>
+    <addaction name="actionCreate_New_Local_Database"/>
     <addaction name="actionAuto_Refresh"/>
    </widget>
    <widget class="QMenu" name="menuCommunity">
@@ -672,6 +672,9 @@
    <property name="text">
     <string>Auto-Refresh...</string>
    </property>
+   <property name="statusTip">
+    <string>Change auto-refresh settings</string>
+   </property>
   </action>
   <action name="actionDelete_Resource">
    <property name="enabled">
@@ -686,6 +689,14 @@
    </property>
    <property name="statusTip">
     <string>Delete resource from the local database</string>
+   </property>
+  </action>
+  <action name="actionCreate_New_Local_Database">
+   <property name="text">
+    <string>Create New Local Database...</string>
+   </property>
+   <property name="statusTip">
+    <string>Generate a new empty SQLite database</string>
    </property>
   </action>
  </widget>
@@ -715,6 +726,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
