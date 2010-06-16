@@ -15,26 +15,29 @@
 #include "midasLog.h"
 
 #include <QObject>
-#include <QTextEdit>
 #include <QString>
 #include <QColor>
+
+class MIDASDesktopUI;
 
 class GUILogger : public QObject, public midasLog
 {
   Q_OBJECT
 public:
-  GUILogger(QTextEdit* log);
+  GUILogger(MIDASDesktopUI* parent);
   ~GUILogger();
 
   void Error(std::string text);
   void Message(std::string text);
+  void Status(std::string text);
 
 signals:
+  void Status(const QString& text);
   void Text(const QString& text);
   void ChangeTextColor(const QColor& text);
 
 private:
-  QTextEdit* m_log;
+  MIDASDesktopUI* m_Parent;
 };
 
 #endif

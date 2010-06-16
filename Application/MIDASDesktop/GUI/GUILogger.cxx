@@ -10,9 +10,12 @@
 =========================================================================*/
 
 #include "GUILogger.h"
+#include "MIDASDesktopUI.h"
 
 #include <QColor>
 #include <QString>
+#include <QTextEdit>
+
 
 inline void removeNewLines(std::string& text)
 {
@@ -22,14 +25,14 @@ inline void removeNewLines(std::string& text)
   text = qstr.toStdString();
 }
 
-GUILogger::GUILogger(QTextEdit* log)
+GUILogger::GUILogger(MIDASDesktopUI* parent) : m_Parent(parent)
 {
-  this->m_log = log;
-
   connect(this, SIGNAL(ChangeTextColor(const QColor&)),
-    m_log, SLOT( setTextColor(const QColor&) ) );
+    m_Parent->getLogTextEdit(), SLOT( setTextColor(const QColor&) ) );
   connect(this, SIGNAL(Text(const QString&)),
-    m_log, SLOT( append(const QString&) ) );
+    m_Parent->getLogTextEdit(), SLOT( append(const QString&) ) );
+  connect(this, SIGNAL(Status(const QString&)),
+    m_Parent, SLOT( displayStatus(const QString&) ) );
 }
 
 GUILogger::~GUILogger()
@@ -50,4 +53,9 @@ void GUILogger::Message(std::string text)
 
   emit ChangeTextColor(QColor(0, 0, 0));
   emit Text(QString(text.c_str()));
+}
+
+void GUILogger::Status(std::string text)
+{
+  emit Status(QString(text.c_str()));
 }

@@ -251,7 +251,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_synch = new midasSynchronizer();
   this->m_auth = new midasAuthenticator();
   this->m_progress = new GUIProgress(this->progressBar);
-  this->m_logger = new GUILogger(this->log);
+  this->m_logger = new GUILogger(this);
   this->m_auth->SetLog(m_logger);
   this->m_synch->SetLog(m_logger);
   this->m_synch->SetProgressReporter(m_progress);

@@ -25,6 +25,7 @@ class midasLog
 
     virtual void Error(std::string text) = 0; 
     virtual void Message(std::string text) = 0;
+    virtual void Status(std::string text) = 0;
   private:
 };
 

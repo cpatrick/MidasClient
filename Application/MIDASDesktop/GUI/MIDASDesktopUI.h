@@ -79,6 +79,7 @@ public:
   midasAuthenticator* getAuthenticator() { return m_auth; }
   midasSynchronizer* getSynchronizer() { return m_synch; }
   midasLog* getLog() { return m_logger; }
+  QTextEdit* getLogTextEdit() { return log; }
 
 protected:
   void closeEvent(QCloseEvent *event);

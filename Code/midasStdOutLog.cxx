@@ -30,3 +30,8 @@ void midasStdOutLog::Message(std::string text)
   std::cout << text;
 }
 
+void midasStdOutLog::Status(std::string text)
+{
+  //nop
+}
+

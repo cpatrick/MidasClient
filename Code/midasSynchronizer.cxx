@@ -373,11 +373,14 @@ int midasSynchronizer::Clone()
     return MIDAS_NO_URL;
     }
 
+  this->Log->Status("Cloning the MIDAS repository...");
+
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(community);
 
+  this->Progress->SetIndeterminate();
   if(!remote.FetchTree())
     {
     std::stringstream text;
@@ -445,6 +448,8 @@ bool midasSynchronizer::PullBitstream(int parentId)
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(bitstream);
   
+  this->Progress->SetIndeterminate();
+  this->Log->Status("Fetching bitstream information...");
   if(!remote.Fetch())
     {
     std::stringstream text;
@@ -503,6 +508,10 @@ bool midasSynchronizer::PullBitstream(int parentId)
     this->Progress->SetMessage(bitstream->GetName());
     this->Progress->ResetProgress();
     }
+  std::stringstream status;
+  status << "Downloading bitstream " << bitstream->GetName();
+  this->Log->Status(status.str());
+
   mws::WebAPI::Instance()->DownloadFile(fields.str().c_str(),
                              bitstream->GetName().c_str());
 
@@ -525,6 +534,8 @@ bool midasSynchronizer::PullCollection(int parentId)
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(collection);
 
+  this->Progress->SetIndeterminate();
+  this->Log->Status("Fetching collection information...");
   if(!remote.Fetch())
     {
     std::stringstream text;
@@ -534,6 +545,10 @@ bool midasSynchronizer::PullCollection(int parentId)
     this->DatabaseProxy->Close();
     return false;
     }
+
+  std::stringstream status;
+  status << "Pulled collection " << collection->GetName();
+  this->Log->Status(status.str());
 
   // Pull any parents we need
   if(parentId == NO_PARENT)
@@ -616,6 +631,8 @@ bool midasSynchronizer::PullCommunity(int parentId)
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(community);
 
+  this->Progress->SetIndeterminate();
+  this->Log->Status("Fetching community information...");
   if(!remote.FetchTree())
     {
     std::stringstream text;
@@ -625,6 +642,11 @@ bool midasSynchronizer::PullCommunity(int parentId)
     this->DatabaseProxy->Close();
     return false;
     }
+
+  std::stringstream status;
+  status << "Pulled community " << community->GetName();
+  this->Log->Status(status.str());
+
   community = FindInTree(community, atoi(this->ResourceHandle.c_str()));
   if(!community)
     {
@@ -718,6 +740,8 @@ bool midasSynchronizer::PullItem(int parentId)
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(item);
 
+  this->Progress->SetIndeterminate();
+  this->Log->Status("Fetching item information...");
   if(!remote.Fetch())
     {
     std::stringstream text;
@@ -727,6 +751,10 @@ bool midasSynchronizer::PullItem(int parentId)
     this->DatabaseProxy->Close();
     return false;
     }
+
+  std::stringstream status;
+  status << "Pulled item " << item->GetTitle();
+  this->Log->Status(status.str());
 
   // Pull any parents we need
   if(parentId == NO_PARENT)
@@ -1088,4 +1116,5 @@ void midasSynchronizer::Reset()
   this->SetResourceHandle("");
   this->SetResourceType(midasResourceType::NONE);
   this->SetParentId(0);
+  this->Log->Status("");
 }
