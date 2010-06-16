@@ -95,6 +95,9 @@ protected:
   std::string m_ErrorMessage;
   int         m_ErrorCode;
   
+  bool m_FoundXMLTag;
+  std::string m_PreBuffer;
+
   // Current tag
   std::string m_CurrentTag;
   

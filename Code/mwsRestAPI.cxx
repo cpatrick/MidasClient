@@ -93,7 +93,7 @@ bool RestAPI::SetCurlOptions(const char* url,
 
   if(m_Verbose)
     {
-    curl_easy_setopt(m_cURL, CURLOPT_VERBOSE, 1); 
+    curl_easy_setopt(m_cURL, CURLOPT_VERBOSE, 1);
     }
     
   curl_easy_setopt(m_cURL, CURLOPT_NOPROGRESS, this->fprogress == NULL);
@@ -102,7 +102,8 @@ bool RestAPI::SetCurlOptions(const char* url,
 
   curl_easy_setopt(m_cURL, CURLOPT_FOLLOWLOCATION, true);
 
-  if (authentication != "")
+  std::string authStr = authentication;
+  if (authStr != "")
     {
     curl_easy_setopt(m_cURL, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     curl_easy_setopt(m_cURL, CURLOPT_USERPWD,authentication);

@@ -24,6 +24,8 @@ RestXMLParser::RestXMLParser()
   m_ErrorCode = 0;
   m_ErrorMessage = "";
   m_CurrentTag = "";
+  m_FoundXMLTag = false;
+  m_PreBuffer = "";
 }
  
 //----------------------------------------------------------------------------
@@ -80,12 +82,27 @@ bool RestXMLParser::Parse(const char* buffer,unsigned long length)
     {
     return false;
     }
-  int result = XML_Parse(m_Parser, buffer, length, false);
-  if(result==0)
+  if(!m_FoundXMLTag)
     {
-    m_ErrorCode = 1;
-    m_ErrorMessage = "Cannot parse XML";
-    return false;
+    m_PreBuffer.append(buffer);
+    size_t pos;
+    if((pos = m_PreBuffer.find("<?xml")) != std::string::npos)
+      {
+      m_FoundXMLTag = true;
+      m_PreBuffer = m_PreBuffer.substr(pos);
+      buffer = m_PreBuffer.c_str();
+      length = m_PreBuffer.length();
+      }
+    }
+  if(m_FoundXMLTag)
+    {
+    int result = XML_Parse(m_Parser, buffer, length, false);
+    if(result==0)
+      {
+      m_ErrorCode = 1;
+      m_ErrorMessage = "Cannot parse XML";
+      return false;
+      }
     }
   return true;
 }
