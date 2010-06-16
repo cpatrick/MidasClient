@@ -113,7 +113,7 @@ public:
         {
         m_Collection->SetDescription(m_CurrentValue.c_str());
         }
-      if(!strcmp(name,"parent"))
+      if(!strcmp(name,"parentid"))
         {
         m_Collection->SetParent(m_CurrentValue.c_str());
         }
@@ -137,7 +137,7 @@ public:
         {
         m_Community->SetDescription(m_CurrentValue.c_str());
         }
-      if(!strcmp(name,"parent"))
+      if(!strcmp(name,"parentid"))
         {
         m_Community->SetParent(m_CurrentValue.c_str());
         }

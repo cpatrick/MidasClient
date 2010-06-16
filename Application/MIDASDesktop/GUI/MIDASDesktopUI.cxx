@@ -168,8 +168,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeView, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasCommunityTreeItem*) ));
 
-  //connect(treeView, SIGNAL(fetchedMore()), this, SLOT( decorateServerTree() ));
-
   connect(treeView, SIGNAL(midasCollectionTreeItemSelected(const MidasCollectionTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasCollectionTreeItem*) ));
 
@@ -235,7 +233,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( refreshButton, SIGNAL( released() ), this, SLOT( updateServerTreeView() ) );
   connect( searchButton,  SIGNAL( released() ), this, SLOT( search() ) );
 
-  //connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
+  connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
 
   // ------------- signal/slot connections -------------
 
@@ -543,7 +541,8 @@ void MIDASDesktopUI::alertNewResources()
 
 void MIDASDesktopUI::showLogTab()
 {
-  this->logAndSearchTabContainer->setCurrentIndex(1);
+  //this->logAndSearchTabContainer->setCurrentIndex(1);
+  //TODO make a little icon pop up on the log tab (perhaps an exclamation point) denoting new data
 }
 
 /** Show the community information */
