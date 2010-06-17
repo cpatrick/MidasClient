@@ -66,6 +66,9 @@ void SignInUI::accept()
 
   connect(m_SignInThread, SIGNAL( initialized(bool) ), parent, SLOT( signIn(bool) ) );
 
+  parent->displayStatus(tr("Connecting to server..."));
+  parent->setProgressIndeterminate();
+
   m_SignInThread->start();
   QDialog::accept();
 }

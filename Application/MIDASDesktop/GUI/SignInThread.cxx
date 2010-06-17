@@ -22,8 +22,6 @@ void SignInThread::run()
   std::string url = m_Parent->getDatabaseProxy()->GetAuthProfile(m_Profile.toStdString()).Url;
   m_Parent->getDatabaseProxy()->Close();
 
-  m_Parent->displayStatus(tr("Connecting to server..."));
-  m_Parent->setProgressIndeterminate();
   if(mws::WebAPI::Instance()->CheckConnection())
     {
     m_Parent->setServerURL(url);

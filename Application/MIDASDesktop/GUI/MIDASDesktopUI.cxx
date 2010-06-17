@@ -130,7 +130,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   stateLabel    = new QLabel();
   progressBar   = new QProgressBar();
   connectLabel  = new QLabel();
-  hostLabel     = new QLabel();
 
   progressBar->setTextVisible(false);
   //progressBar->setMinimumSize( progressBar->sizeHint() );
@@ -141,16 +140,9 @@ MIDASDesktopUI::MIDASDesktopUI()
   connectLabel->setMinimumSize( connectLabel->sizeHint() );
   connectLabel->clear();
 
-  hostLabel->setAlignment( Qt::AlignCenter );
-  hostLabel->setFrameShape( QFrame::Panel );
-  hostLabel->setFrameShadow( QFrame::Sunken );
-  hostLabel->setMinimumSize( hostLabel->sizeHint() );
-  hostLabel->clear();
-
   statusBar()->addWidget( stateLabel, 1 );
   statusBar()->addWidget( progressBar, 1 );
   statusBar()->addWidget( connectLabel );
-  statusBar()->addWidget( hostLabel );
   // ------------- Status bar -------------
 
   // ------------- setup TreeView signals -------------
@@ -280,7 +272,6 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_pullUI;
   delete stateLabel;
   delete connectLabel;
-  delete hostLabel;
   delete refreshTimer;
   delete m_database;
   delete m_auth;
@@ -979,7 +970,6 @@ void MIDASDesktopUI::signIn(bool ok)
   if(ok)
     {
     connectLabel->hide();
-    hostLabel->hide();
     activateActions( true, MIDASDesktopUI::ACTION_CONNECTED );
 
     // start the refresh timer here if our setting = 1
@@ -995,10 +985,6 @@ void MIDASDesktopUI::signIn(bool ok)
     connectLabel->setText( connect.c_str() );
     connectLabel->show();
     setTreeTabIndex(0);
-      
-    std::string host = "  " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  ";
-    hostLabel->setText( host.c_str() );
-    hostLabel->show();
 
     std::stringstream text;
     text << "Signed in with profile " << m_auth->GetProfile();
@@ -1109,7 +1095,6 @@ void MIDASDesktopUI::signOut()
   treeView->Clear(); 
   this->clearInfoPanel();
   connectLabel->hide();
-  hostLabel->hide();
   this->displayStatus(tr("Logout"));
   this->searchItemsListWidget->clear();
   m_signIn = false;

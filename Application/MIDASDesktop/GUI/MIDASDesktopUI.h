@@ -195,7 +195,6 @@ private:
   // ------------- status bar -------------
   QLabel *                    stateLabel;
   QLabel *                    connectLabel;
-  QLabel *                    hostLabel;
   QProgressBar *              progressBar;
   // ------------- status bar -------------
 
