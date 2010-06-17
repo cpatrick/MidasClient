@@ -62,8 +62,6 @@ void MidasTreeModel::Populate()
 
   std::vector<mdo::Community*> communities = community->GetCommunities();
 
-  this->beginInsertRows(QModelIndex(), 0, communities.size());
-
   std::vector<mdo::Community*>::const_iterator itCom = communities.begin();
   while(itCom != communities.end())
     {
@@ -81,8 +79,6 @@ void MidasTreeModel::Populate()
     m_TopLevelCommunities.append(communityItem);
     itCom++;
     }
-  
-  this->endInsertRows();
   emit layoutChanged();
   emit serverPolled();
 }

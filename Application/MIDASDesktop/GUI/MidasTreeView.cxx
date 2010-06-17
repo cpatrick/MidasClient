@@ -42,11 +42,11 @@ MidasTreeView::MidasTreeView(QWidget * parent):QTreeView(parent)
   this->setSelectionMode( QTreeView::SingleSelection );
 
   connect (this, SIGNAL( collapsed(const QModelIndex&)),
-     this->model(), SLOT(itemCollapsed(const QModelIndex&)) );
+    this->model(), SLOT(itemCollapsed(const QModelIndex&)) );
   connect (this, SIGNAL( expanded(const QModelIndex&)),
-     this->model(), SLOT(itemExpanded (const QModelIndex&)) );
+    this->model(), SLOT(itemExpanded (const QModelIndex&)) );
   connect (this->model(), SIGNAL( fetchedMore() ),
-     this, SLOT( alertFetchedMore() ) );
+    this, SLOT( alertFetchedMore() ) );
 
   m_ExpandTreeThread = NULL;
 

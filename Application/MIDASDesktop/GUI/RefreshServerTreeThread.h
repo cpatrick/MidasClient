@@ -13,15 +13,15 @@ public:
 
   virtual void run()
     {
-    emit enableRefresh(false);
+    emit enableActions(false);
     m_Parent->getTreeView()->Update();
-    emit enableRefresh(true);
+    emit enableActions(true);
     emit threadComplete();
     }
 
 signals:
-  void enableRefresh(bool val);
   void threadComplete();
+  void enableActions(bool val);
 
 private:
   MIDASDesktopUI* m_Parent;
