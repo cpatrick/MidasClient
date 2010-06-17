@@ -429,7 +429,6 @@
     </property>
     <addaction name="actionCreate_Profile"/>
     <addaction name="actionChoose_Local_Database"/>
-    <addaction name="actionCreate_New_Local_Database"/>
     <addaction name="actionAuto_Refresh"/>
    </widget>
    <widget class="QMenu" name="menuCommunity">
@@ -745,6 +744,7 @@
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../../../../../Documents and Settings/Zach Mullen/.designer/MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -792,6 +792,22 @@
     <hint type="destinationlabel">
      <x>893</x>
      <y>672</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>searchQueryEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>searchButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>631</x>
+     <y>431</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>810</x>
+     <y>434</y>
     </hint>
    </hints>
   </connection>
