@@ -9,6 +9,8 @@
 #include "midasDatabaseProxy.h"
 #include "midasSynchronizer.h"
 
+#include <QMessageBox>
+
 /** Constructor */
 SignInUI::SignInUI(MIDASDesktopUI* parent):
   QDialog(parent), parent(parent)
@@ -55,6 +57,12 @@ int SignInUI::exec()
 /** */
 void SignInUI::accept()
 {
+  if(this->profileComboBox->currentText().toStdString() == "")
+    {
+    QMessageBox::critical(this, "Error", "Please select a profile or create a new one");
+    return;
+    }
+
   if(m_SignInThread)
     {
     disconnect(m_SignInThread);
@@ -82,4 +90,9 @@ void SignInUI::profileCreated(std::string name)
 void SignInUI::showCreateProfileDialog()
 {
   emit createProfileRequest();
+}
+
+void SignInUI::removeProfile(std::string name)
+{
+  init();
 }

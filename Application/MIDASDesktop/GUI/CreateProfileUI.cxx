@@ -18,6 +18,8 @@ CreateProfileUI::CreateProfileUI(MIDASDesktopUI *parent):
     this, SLOT( fillData(const QString&) ) );
   connect(anonymousCheckBox, SIGNAL( stateChanged(int) ),
     this, SLOT( anonymousChanged(int) ) );
+  connect(deleteButton, SIGNAL( clicked() ),
+    this, SLOT( deleteProfile() ) );
 }
 
 void CreateProfileUI::init()
@@ -52,6 +54,7 @@ void CreateProfileUI::fillData(const QString& name)
     apiKeyEdit->setText("");
     apiNameEdit->setText(this->anonymousCheckBox->isChecked() ? "" : "MIDASDesktop");
     serverURLEdit->setText("");
+    deleteButton->setEnabled(false);
     }
   else
     {
@@ -69,6 +72,7 @@ void CreateProfileUI::fillData(const QString& name)
     anonymousCheckBox->setCheckState(
       profile.User == "" ? Qt::Checked : Qt::Unchecked);
     anonymousChanged(anonymousCheckBox->checkState());
+    deleteButton->setEnabled(true);
     }
 }
 
@@ -117,4 +121,24 @@ void CreateProfileUI::accept()
 
   emit serverURLSet(serverURL);
   emit createdProfile(profileName, email, apiName, apiKey);
+}
+
+void CreateProfileUI::deleteProfile()
+{
+  std::string profileName = profileComboBox->currentText().toStdString();
+  profileComboBox->removeItem(profileComboBox->currentIndex());
+
+  parent->getDatabaseProxy()->Open();
+  parent->getDatabaseProxy()->DeleteProfile(profileName);
+  parent->getDatabaseProxy()->Close();
+
+  std::stringstream text;
+  text << "Deleted profile " << profileName;
+  this->parent->getLog()->Message(text.str());
+  this->parent->displayStatus(text.str().c_str());
+
+  init();
+
+  QDialog::accept();
+  emit deletedProfile(profileName);
 }

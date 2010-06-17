@@ -196,6 +196,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
   connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string)),
     this, SLOT( createProfile(std::string, std::string, std::string, std::string)));
+  connect( dlg_createProfileUI, SIGNAL( deletedProfile(std::string)),
+    dlg_signInUI, SLOT( removeProfile(std::string)));
   connect( dlg_createProfileUI, SIGNAL( serverURLSet(std::string)), this, SLOT( setServerURL(std::string)));
   connect( dlg_signInUI, SIGNAL( createProfileRequest() ), dlg_createProfileUI, SLOT( exec() ) );
   connect( dlg_deleteResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteLocalResource(bool) ) );

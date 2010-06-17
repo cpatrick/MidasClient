@@ -191,16 +191,22 @@ bool midasDatabaseProxy::AddAuthProfile(std::string user, std::string appName,
                                         std::string apiKey, std::string name,
                                         std::string url)
 {
-  std::stringstream query;
-  query << "DELETE FROM auth_profile WHERE profile_name = '" << name << "'";
-  this->Database->ExecuteQuery(query.str().c_str());
+  this->DeleteProfile(name);
 
-  query.str(std::string());
+  std::stringstream query;
   query << "INSERT INTO auth_profile (profile_name, eperson, apikey, "
     "app_name, url) VALUES ('" << name << "', '" << user << "', '" << apiKey
     << "', '" << appName << "', '" << url << "')";
 
   return this->Database->ExecuteQuery(query.str().c_str());
+}
+
+//-------------------------------------------------------------------------
+void midasDatabaseProxy::DeleteProfile(std::string name)
+{
+  std::stringstream query;
+  query << "DELETE FROM auth_profile WHERE profile_name = '" << name << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
 }
 
 //-------------------------------------------------------------------------

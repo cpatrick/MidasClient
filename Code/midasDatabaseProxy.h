@@ -101,6 +101,7 @@ public:
     std::string apiKey, std::string profileName, std::string url);
   midasAuthProfile GetAuthProfile(std::string name);
   std::vector<std::string> GetAuthProfiles();
+  void DeleteProfile(std::string name);
 
   /**
    * Returns whether or not a resource with the given uuid exists

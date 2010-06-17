@@ -27,6 +27,7 @@ public slots:
   virtual void accept();
   void showCreateProfileDialog();
   void profileCreated(std::string name);
+  void removeProfile(std::string name);
 
 private:
   SignInThread* m_SignInThread;
