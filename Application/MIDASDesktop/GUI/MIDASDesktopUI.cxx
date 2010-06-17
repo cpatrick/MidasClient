@@ -497,6 +497,7 @@ void MIDASDesktopUI::updateServerTreeView()
   m_RefreshThread->SetParentUI(this);
   
   connect(m_RefreshThread, SIGNAL( threadComplete() ), this, SLOT( resetStatus() ) );
+  connect(m_RefreshThread, SIGNAL( threadComplete() ), this, SLOT( clearInfoPanel() ) );
   connect(m_RefreshThread, SIGNAL( enableActions(bool) ), this, SLOT( enableActions(bool) ) );
 
   displayStatus("Refreshing server tree...");
