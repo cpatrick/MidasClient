@@ -169,7 +169,11 @@ public slots:
 
   void setServerURL(std::string);
 
+  // ------------- log ----------------
   void showLogTab();
+  void alertErrorInLog();
+  void clearLogTabIcon(int index);
+  // ------------- log ----------------
 
 private:
 

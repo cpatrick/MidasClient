@@ -132,7 +132,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   connectLabel  = new QLabel();
 
   progressBar->setTextVisible(false);
-  //progressBar->setMinimumSize( progressBar->sizeHint() );
 
   connectLabel->setAlignment( Qt::AlignCenter );
   connectLabel->setFrameShape( QFrame::Panel );
@@ -226,6 +225,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( searchButton,  SIGNAL( released() ), this, SLOT( search() ) );
 
   connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
+  connect( logAndSearchTabContainer, SIGNAL( currentChanged(int) ),
+    this, SLOT( clearLogTabIcon(int) ) );
 
   // ------------- signal/slot connections -------------
 
@@ -1307,4 +1308,20 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
   std::stringstream text;
   text << "Deleted resource with uuid=" << uuid << ".";
   this->m_logger->Message(text.str());
+}
+
+void MIDASDesktopUI::alertErrorInLog()
+{
+  if(this->logAndSearchTabContainer->currentIndex() != 1)
+    {
+    this->logAndSearchTabContainer->setTabIcon(1, QPixmap(":icons/exclamation.png"));
+    }
+}
+
+void MIDASDesktopUI::clearLogTabIcon(int index)
+{
+  if(index == 1)
+    {
+    this->logAndSearchTabContainer->setTabIcon(1, QPixmap());
+    }
 }

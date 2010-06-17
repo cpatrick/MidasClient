@@ -35,6 +35,7 @@ signals:
   void Status(const QString& text);
   void Text(const QString& text);
   void ChangeTextColor(const QColor& text);
+  void ErrorOccurred();
 
 private:
   MIDASDesktopUI* m_Parent;

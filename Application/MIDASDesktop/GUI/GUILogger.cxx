@@ -33,6 +33,8 @@ GUILogger::GUILogger(MIDASDesktopUI* parent) : m_Parent(parent)
     m_Parent->getLogTextEdit(), SLOT( append(const QString&) ) );
   connect(this, SIGNAL(Status(const QString&)),
     m_Parent, SLOT( displayStatus(const QString&) ) );
+  connect(this, SIGNAL(ErrorOccurred()),
+    m_Parent, SLOT( alertErrorInLog() ) );
 }
 
 GUILogger::~GUILogger()
@@ -45,6 +47,7 @@ void GUILogger::Error(std::string text)
 
   emit ChangeTextColor(QColor(255, 0, 0));
   emit Text(QString(text.c_str()));
+  emit ErrorOccurred();
 }
 
 void GUILogger::Message(std::string text)
