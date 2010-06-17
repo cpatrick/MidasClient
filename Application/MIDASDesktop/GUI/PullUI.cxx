@@ -152,6 +152,7 @@ void PullUI::pulled(bool ok)
     m_Parent->getLog()->Message(text.str());
     }
   m_Parent->displayStatus(text.str().c_str());
+  m_Parent->setProgressEmpty();
 }
 
 void PullUI::cloned(bool ok)
