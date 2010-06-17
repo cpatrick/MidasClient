@@ -111,7 +111,7 @@ set(MIDASDesktopUI_SRCS
   GUI/SearchThread.cxx
 )
 
-#set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MidasClient.rc)
+set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MidasClient.rc)
 
 set(MIDASDesktopUI_UI_SRCS
   GUI/MIDASDesktopUI.ui

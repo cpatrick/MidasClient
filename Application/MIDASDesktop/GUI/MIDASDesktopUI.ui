@@ -744,7 +744,7 @@
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../../../../../Documents and Settings/Zach Mullen/.designer/MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>
