@@ -5,6 +5,12 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
+
+IF(NOT CMAKE_BUILD_CURL_SHARED)
+  ADD_DEFINITIONS(-DCURL_STATICLIB)
+ENDIF()
+
+
 # --------------------------------------------------------------------------
 # Sources
 set(MIDASRest_SRCS
