@@ -82,6 +82,7 @@ bool RestXMLParser::Parse(const char* buffer,unsigned long length)
     {
     return false;
     }
+    
   if(!m_FoundXMLTag)
     {
     m_PreBuffer.append(buffer);
@@ -94,7 +95,8 @@ bool RestXMLParser::Parse(const char* buffer,unsigned long length)
       length = m_PreBuffer.length();
       }
     }
-  else
+    
+  if(m_FoundXMLTag)
     {
     int result = XML_Parse(m_Parser, buffer, length, false);
     if(result==0)
