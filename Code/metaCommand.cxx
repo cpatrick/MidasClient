@@ -21,9 +21,7 @@
 #include <string>
 #include <string.h>
 
-#if (METAIO_USE_NAMESPACE)
-namespace METAIO_NAMESPACE {
-#endif
+namespace mds {
 
 MetaCommand::MetaCommand()
 {
@@ -1605,6 +1603,4 @@ MetaCommand::TypeEnumType MetaCommand::StringToType(const char* type)
 
 }
 
-#if (METAIO_USE_NAMESPACE)
 };
-#endif

@@ -15,8 +15,8 @@
 
 =========================================================================*/
 
-#ifndef ITKMetaIO_METACOMMAND_H
-#define ITKMetaIO_METACOMMAND_H
+#ifndef MIDAS_METACOMMAND_H
+#define MIDAS_METACOMMAND_H
 
 
 #ifdef _MSC_VER
@@ -29,19 +29,16 @@
 #include <list>
 #include <map>
 
-#if (METAIO_USE_NAMESPACE)
-namespace METAIO_NAMESPACE {
-#endif
-
 #include <iostream>
 #include <fstream>
 
 #define METAIO_STL std
 #define METAIO_STREAM std
 
+namespace mds {
+
 class MetaCommand
 {
-
 public:
   typedef enum {DATA_NONE,DATA_IN,DATA_OUT}           DataEnumType;
   typedef enum {INT,FLOAT,CHAR,STRING,LIST,FLAG,BOOL} TypeEnumType;
@@ -254,8 +251,5 @@ private:
 
 }; // end of class
 
-#if (METAIO_USE_NAMESPACE)
 };
-#endif
-
 #endif 

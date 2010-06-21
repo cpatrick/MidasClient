@@ -26,9 +26,7 @@
 #include <string>
 #include <fstream>
 
-#if (METAIO_USE_NAMESPACE)
-namespace METAIO_NAMESPACE {
-#endif
+namespace mds {
 
 class MetaOutputStream
 {
@@ -227,8 +225,6 @@ private:
 
 }; // end of class
 
-#if (METAIO_USE_NAMESPACE)
 };
-#endif
 
 #endif 

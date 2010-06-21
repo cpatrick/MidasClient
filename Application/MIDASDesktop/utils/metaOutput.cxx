@@ -32,9 +32,7 @@
 
 #include <typeinfo>
 
-#if (METAIO_USE_NAMESPACE)
-namespace METAIO_NAMESPACE {
-#endif
+namespace mds {
 
 /** Constructor */
 MetaOutput::MetaOutput()
@@ -429,6 +427,4 @@ void MetaOutput::DisableStream(const char* name)
     }
 }
 
-#if (METAIO_USE_NAMESPACE)
 };
-#endif
