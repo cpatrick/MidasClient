@@ -90,9 +90,8 @@ bool WebAPI::Execute(const char* url)
 bool WebAPI::CheckConnection()
 {
   std::string version;
-  mws::RestXMLParser parser;
-  parser.AddTag("/rsp/version", version);
-  this->GetRestAPI()->SetXMLParser(&parser);
+  m_RestXMLParser->ClearTags();
+  m_RestXMLParser->AddTag("/rsp/version", version);
   std::string url = "midas.info";
   if(!this->Execute(url.c_str()))
     {
@@ -168,9 +167,8 @@ bool WebAPI::Login(const char* appname,
                    const char* apikey)
 {
   m_APIToken = "";
-  RestXMLParser parser;
-  parser.AddTag("/rsp/token",m_APIToken);
-  this->GetRestAPI()->SetXMLParser(&parser);
+  m_RestXMLParser->ClearTags();
+  m_RestXMLParser->AddTag("/rsp/token",m_APIToken);
   std::stringstream url;
   url << "midas.login?email=" << email;
   url << "&apikey=" << apikey;
@@ -194,8 +192,8 @@ bool WebAPI::LoginWithPassword(const char* appname,
                                const char* email, 
                                const char* password)
 {
-  RestXMLParser* parser = this->GetRestXMLParser();
-  parser->AddTag("/rsp/token",m_APIToken);
+  m_RestXMLParser->ClearTags();
+  m_RestXMLParser->AddTag("/rsp/token",m_APIToken);
   std::stringstream url;
   url << "midas.login?email=" << email;
   url << "&password=" << password;

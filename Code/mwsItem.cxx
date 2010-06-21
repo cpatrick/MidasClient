@@ -17,6 +17,7 @@
 
 #include "mdoItem.h"
 #include "mdoBitstream.h"
+#include "midasUtils.h"
 
 namespace mws{
 
@@ -168,12 +169,15 @@ unsigned int Item::UploadBitstream(unsigned int itemid, const char* filename)
 {
   std::string bitstreamidstring;
   
-  RestXMLParser* parser = m_WebAPI->GetRestXMLParser();
+  RestXMLParser* parser = m_WebAPI->GetRestXMLParser();  
   parser->ClearTags();
   parser->AddTag("/rsp/id", bitstreamidstring);
-
+    
   std::stringstream url;
   url << "midas.upload.bitstream?itemid=" << itemid;
+  
+  // We need to generate a uuid
+  url <<"&uuid=" << midasUtils::GenerateUUID().c_str();
   if(!m_WebAPI->UploadFile(url.str().c_str(),filename))
     {
     std::cout << m_WebAPI->GetErrorMessage() << std::endl;
