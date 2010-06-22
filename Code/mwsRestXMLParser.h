@@ -84,6 +84,7 @@ public:
 
   // Return the errors messages and code
   const char* GetErrorMessage() {return m_ErrorMessage.c_str();}
+  void SetErrorMessage(std::string message) { m_ErrorMessage = message; }
   int         GetErrorCode() {return m_ErrorCode;}
   
 protected:

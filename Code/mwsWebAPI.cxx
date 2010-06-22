@@ -147,6 +147,7 @@ bool WebAPI::UploadFile(const char* url, const char* filename)
     {
     std::cerr << "Token should be defined to upload to MIDAS.";
     std::cerr << "Please use the Login() function to get a token." << std::endl;
+    this->GetRestXMLParser()->SetErrorMessage("Cannot push using anonymous access.");
     return false;   
     }
   
