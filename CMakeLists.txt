@@ -6,6 +6,8 @@ ENDIF(COMMAND CMAKE_POLICY)
 
 PROJECT(MIDASCPP)
 
+SET(MIDASCPP_VERSION 1.1)
+
 # On Visual Studio 8 MS deprecated C. This removes all 1.276E1265 security
 # warnings
 IF(WIN32)

@@ -1,7 +1,7 @@
 #ifndef __MIDASCLIENTGLOBAL_H
 #define __MIDASCLIENTGLOBAL_H
 
-#define MIDAS_CLIENT_VERSION (STR("1.0 beta"))
+#include <MIDASConfig.h>
 
 #define MIDAS_CLIENT_VERSION_STR (STR("MIDASDesktop ") + MIDAS_CLIENT_VERSION)
 

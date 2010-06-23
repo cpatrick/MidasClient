@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 2.6)
 find_package(Qt4 REQUIRED)
 
 include_directories(
+  "${MIDASCPP_BINARY_DIR}/Code"
   ${QT_INCLUDES}
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}

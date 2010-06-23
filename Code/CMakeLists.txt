@@ -6,10 +6,20 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 
-IF(NOT CMAKE_BUILD_CURL_SHARED)
-  ADD_DEFINITIONS(-DCURL_STATICLIB)
-ENDIF()
+if(NOT CMAKE_BUILD_CURL_SHARED)
+  add_definitions(-DCURL_STATICLIB)
+endif(NOT CMAKE_BUILD_CURL_SHARED)
 
+# Version info
+configure_file(
+  "${MIDASCPP_SOURCE_DIR}/Code/MIDASConfig.h.in"
+  "${MIDASCPP_BINARY_DIR}/Code/MIDASConfig.h"
+  @ONLY
+)
+
+include_directories(
+  "${MIDASCPP_BINARY_DIR}/Code"
+)
 
 # --------------------------------------------------------------------------
 # Sources

@@ -1,0 +1,6 @@
+#ifndef __MIDASCONFIG_H
+#define __MIDASCONFIG_H
+
+#define MIDAS_CLIENT_VERSION (STR("@MIDASCPP_VERSION@"))
+
+#endif
