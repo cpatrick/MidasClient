@@ -1,0 +1,36 @@
+0008835     MIDASDesktop  feature  resolved (zach_mullen)  2010-06-17  Need a way to delete a user profile
+0008832     MIDASDesktop  feature  resolved (zach_mullen)  2010-06-17  When an error appears in the log, show an indication
+0008834     MIDASDesktop  minor  resolved (zach_mullen)  2010-06-17  Application icon
+0008810  1  MIDASDesktop  minor  resolved (zach_mullen)  2010-06-17  Right clicking on server resource tree sometimes shows disabled context menu items
+0008818     MIDASDesktop  minor  resolved (zach_mullen)  2010-06-17  Pressing return after a search text is enter should trigger search
+0008814     MIDASDesktop  minor  resolved (zach_mullen)  2010-06-16  Pulling a community that has parent communities does not pull down the parent communities
+0008812     MIDASDesktop  feature  resolved (zach_mullen)  2010-06-16  Progress bar during search
+0008809     MIDASDesktop  feature  resolved (zach_mullen)  2010-06-16  Status messages from synchronizer
+0008761  3  MIDASDesktop  minor  resolved (zach_mullen)  2010-06-16  When trying to pull several bitstreams were missed
+0008798  1  MIDASDesktop  minor  closed (zach_mullen)  2010-06-16  Still receiving many "Cannot parse XML" notifications on pull
+0008763  2  MIDASDesktop  minor  resolved (zach_mullen)  2010-06-15  MIDASDeskop detects changes pushed from client
+0008799     MIDASDesktop  minor  resolved (zach_mullen)  2010-06-15  Creating sub-resources expands everything in the QTreeView
+0008762  1  MIDASDesktop  feature  resolved (zach_mullen)  2010-06-15  Method for deleting things in the tree views
+0008802  1  MIDASDesktop  minor  resolved (zach_mullen)  2010-06-15  duplicates in the server tree view after update
+0008796  1  MIDASDesktop  minor  resolved (zach_mullen)  2010-06-15  Bitstreams show up as folder and then pages when selected
+0008797  1  MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  Delete fails in the client tree
+0008800     MIDASDesktop  minor  resolved (zach_mullen)  2010-06-15  After failed push because of anonymous login, the progress bar keeps bouncing.
+0008795  1  MIDASDesktop  minor  resolved (zach_mullen)  2010-06-15  Warning from moc when building the project
+0008738     MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  The dashboard config options should only appear if build_testing is on
+0008737     MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  Need anonymous access in the GUI
+0008735  1  MIDASDesktop  major  closed (zach_mullen)  2010-06-15  No Documentation for MIDASDesktop
+0008734  2  MIDASDesktop  major  closed (zach_mullen)  2010-06-15  Build failure on Linux
+0008729  2  MIDASDesktop  major  closed (zach_mullen)  2010-06-15  Progress bar
+0008764  3  MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  Add Resource failure for Item
+0008759  1  MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  Sometimes warnings are thrown when logging in (on the command line)
+0008731  1  MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  API name should be MIDASDesktop by default
+0008787     MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  Bitstream description area
+0008782     MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  Don't display blank metadata in description area
+0008766  2  MIDASDesktop  block  closed (zach_mullen)  2010-06-15  MIDASDesktop blocks on upload and download
+0008765  1  MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  Search returns strange results on bitstream name search
+0008739  1  MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  Need smaller icons in the tree
+0008732     MIDASDesktop  minor  closed (zach_mullen)  2010-06-15  Show MIDASDesktop always on top
+0008767  1  MIDASDesktop  crash  resolved (zach_mullen)  2010-06-11  After an update on the server and a pull from the client, hitting refresh on the server crashes the application
+0008760  1  MIDASDesktop  minor  resolved (zach_mullen)  2010-06-10  Sometimes login fails
+0008758  2  MIDASDesktop  crash  resolved (zach_mullen)  2010-06-10  MIDASDeskop crashes on login... sometimes
+0008730  1  MIDASDesktop  crash  resolved (zach_mullen)  2010-06-04  Wrong tree and crash on bitstream upload
