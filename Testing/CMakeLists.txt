@@ -12,7 +12,7 @@ if(BUILD_TESTING)
     # Setup a mock tree we can add
   configure_file(
     "${MIDASCPP_SOURCE_DIR}/README.txt"
-    "${MIDASCPP_BINARY_DIR}/Testing/${top_level_community_name}/Subcomm/Collection/Item/bitstream.txt"
+    "${MIDASCPP_BINARY_DIR}/Testing/${dashboard_top_level_community_name}/Subcomm/Collection/Item/bitstream.txt"
     COPYONLY)
 
   # Add target to copy our database to the testing dir during build
