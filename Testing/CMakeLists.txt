@@ -31,7 +31,7 @@ if(BUILD_TESTING)
   add_test(deleteAuthProfiles ${sqlite3_command} ${sqlite_db} "DELETE FROM auth_profile;")
 
   # "clone" command tests
-  add_test(testClone ${midascli_command} clone ${dashboard_midas_server_url})
+  add_test(testClone ${midascli_command} --database ${sqlite_db} clone ${dashboard_midas_server_url})
   set_tests_properties(testClone PROPERTIES DEPENDS "cleanDatabase;deleteAuthProfiles")
 
   # "create_profile" command tests

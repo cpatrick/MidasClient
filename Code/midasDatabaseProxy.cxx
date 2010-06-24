@@ -518,7 +518,7 @@ void midasDatabaseProxy::Clean()
   this->Database->ExecuteQuery("DELETE FROM community2collection");
   this->Database->ExecuteQuery("DELETE FROM collection2item");
   this->Database->ExecuteQuery("DELETE FROM item2bitstream");
-  this->Database->ExecuteQuery("DELETE FROM app_settings");
+  //this->Database->ExecuteQuery("DELETE FROM app_settings");
 }
 
 //-------------------------------------------------------------------------
