@@ -483,13 +483,11 @@ void MIDASDesktopUI::updateActionStateClient( const MidasTreeItem* item )
 
 void MIDASDesktopUI::updateClientTreeView()
 {
-  this->treeTabContainer->setCurrentIndex(1);
   this->treeViewClient->Update();
 }
 
 void MIDASDesktopUI::updateServerTreeView()
 {
-  this->treeTabContainer->setCurrentIndex(0);
   if(m_RefreshThread)
     {
     disconnect(m_RefreshThread);
@@ -988,7 +986,6 @@ void MIDASDesktopUI::signIn(bool ok)
     std::string connect = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 
     connectLabel->setText( connect.c_str() );
     connectLabel->show();
-    setTreeTabIndex(0);
 
     std::stringstream text;
     text << "Signed in with profile " << m_auth->GetProfile();
@@ -1188,7 +1185,6 @@ void MIDASDesktopUI::showSearchResults()
 
 void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem * listItem)
 {
-  this->treeTabContainer->setCurrentIndex(0);
   this->treeView->selectByObject(listItem->getObject());
 }
 
@@ -1278,11 +1274,6 @@ void MIDASDesktopUI::setProgressEmpty()
 void MIDASDesktopUI::setProgressIndeterminate()
 {
   this->m_progress->SetIndeterminate();
-}
-
-void MIDASDesktopUI::setTreeTabIndex(int index)
-{
-  this->treeTabContainer->setCurrentIndex(index);
 }
 
 void MIDASDesktopUI::startedExpandingTree()

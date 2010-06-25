@@ -110,8 +110,6 @@ public slots:
 
   void enableActions(bool val);
 
-  void setTreeTabIndex(int index);
-
   // ------------- settings -------------
   void setTimerInterval();
   void adjustTimerSettings();
