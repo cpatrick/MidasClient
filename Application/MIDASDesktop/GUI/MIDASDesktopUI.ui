@@ -18,7 +18,7 @@
     <normaloff>:/icons/MIDAS_Desktop_Icon.png</normaloff>:/icons/MIDAS_Desktop_Icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout">
+   <layout class="QGridLayout" name="gridLayout_central">
     <property name="margin">
      <number>0</number>
     </property>
@@ -27,49 +27,78 @@
     </property>
     <item row="0" column="0">
      <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::Panel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="0" rowspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="1" column="1">
-          <widget class="MidasTreeView" name="treeView">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="acceptDrops">
-            <bool>true</bool>
-           </property>
-          </widget>
+         <item row="0" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>&lt;b&gt;Server&lt;/b&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="refreshButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>22</width>
+               <height>22</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Refresh List</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../MIDASDesktopIcons.qrc">
+               <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
-         <item row="1" column="3">
-          <widget class="MidasTreeViewClient" name="treeViewClient">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="acceptDrops">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="4">
-          <layout class="QVBoxLayout" name="verticalLayout">
+         <item row="0" column="2">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>&lt;b&gt;Client&lt;/b&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
            <item>
             <widget class="QPushButton" name="clientExpandAllButton">
              <property name="enabled">
@@ -108,62 +137,25 @@
              </property>
             </widget>
            </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
           </layout>
          </item>
          <item row="1" column="0">
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="QPushButton" name="refreshButton">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>22</width>
-               <height>22</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Refresh List</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../MIDASDesktopIcons.qrc">
-               <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="MidasTreeView" name="treeView">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="acceptDrops">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
-         <item row="1" column="2">
+         <item row="1" column="1">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
             <spacer name="verticalSpacer_3">
@@ -227,219 +219,212 @@
            </item>
           </layout>
          </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="serverTreeLabel">
-           <property name="text">
-            <string>&lt;b&gt;Server Tree&lt;/b&gt;</string>
+         <item row="1" column="2">
+          <widget class="MidasTreeViewClient" name="treeViewClient">
+           <property name="enabled">
+            <bool>false</bool>
            </property>
-           <property name="textFormat">
-            <enum>Qt::RichText</enum>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QLabel" name="clientTreeLabel">
-           <property name="text">
-            <string>&lt;b&gt;Client Tree&lt;/b&gt;</string>
-           </property>
-           <property name="textFormat">
-            <enum>Qt::RichText</enum>
+           <property name="acceptDrops">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
         </layout>
        </item>
-       <item row="1" column="1">
-        <widget class="QTabWidget" name="logAndSearchTabContainer">
-         <property name="tabPosition">
-          <enum>QTabWidget::South</enum>
+       <item>
+        <widget class="QSplitter" name="rightSplitter">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <property name="currentIndex">
-          <number>1</number>
-         </property>
-         <widget class="QWidget" name="searchTab">
-          <attribute name="title">
-           <string>Search</string>
-          </attribute>
-          <layout class="QGridLayout" name="gridLayout_3">
+         <widget class="QGroupBox" name="midasTreeItemInfoGroupBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="title">
+           <string> Description </string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
            <item row="0" column="0">
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <item>
-              <widget class="QLabel" name="label_8">
-               <property name="minimumSize">
-                <size>
-                 <width>24</width>
-                 <height>24</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>24</width>
-                 <height>24</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap resource="../MIDASDesktopIcons.qrc">:/icons/find.png</pixmap>
-               </property>
-               <property name="scaledContents">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="searchQueryEdit">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="searchButton">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Search</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item row="1" column="0">
-            <widget class="MidasSearchResultList" name="searchItemsListWidget">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
+            <widget class="MidasResourceDescTable" name="midasTreeItemInfoTable">
              <property name="toolTip">
-              <string>List of items retrieved using the provided search query</string>
+              <string>Community, Collection or Item detailed information.</string>
+             </property>
+             <property name="tabKeyNavigation">
+              <bool>false</bool>
              </property>
              <property name="alternatingRowColors">
               <bool>true</bool>
              </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::SingleSelection</enum>
+             </property>
              <property name="selectionBehavior">
               <enum>QAbstractItemView::SelectRows</enum>
              </property>
+             <property name="gridStyle">
+              <enum>Qt::NoPen</enum>
+             </property>
+             <property name="columnCount">
+              <number>2</number>
+             </property>
+             <column/>
+             <column/>
             </widget>
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="tab_7">
-          <attribute name="title">
-           <string>Log</string>
-          </attribute>
-          <layout class="QGridLayout" name="gridLayout_8">
-           <item row="0" column="0" colspan="2">
-            <widget class="QTextEdit" name="log">
-             <property name="toolTip">
-              <string/>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="clearLogButton">
-             <property name="text">
-              <string>Clear Log</string>
-             </property>
-             <property name="icon">
-              <iconset resource="../MIDASDesktopIcons.qrc">
-               <normaloff>:/icons/delete.png</normaloff>:/icons/delete.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+         <widget class="QTabWidget" name="logAndSearchTabContainer">
+          <property name="tabPosition">
+           <enum>QTabWidget::South</enum>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="searchTab">
+           <attribute name="title">
+            <string>Search</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QLabel" name="label_8">
+                <property name="minimumSize">
+                 <size>
+                  <width>24</width>
+                  <height>24</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>24</width>
+                  <height>24</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="pixmap">
+                 <pixmap resource="../MIDASDesktopIcons.qrc">:/icons/find.png</pixmap>
+                </property>
+                <property name="scaledContents">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="searchQueryEdit">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="searchButton">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Search</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="MidasSearchResultList" name="searchItemsListWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>List of items retrieved using the provided search query</string>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_7">
+           <attribute name="title">
+            <string>Log</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="0" column="0" colspan="2">
+             <widget class="QTextEdit" name="log">
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="clearLogButton">
+              <property name="text">
+               <string>Clear Log</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../MIDASDesktopIcons.qrc">
+                <normaloff>:/icons/delete.png</normaloff>:/icons/delete.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="midasTreeItemInfoGroupBox">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="title">
-          <string> Description </string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="MidasResourceDescTable" name="midasTreeItemInfoTable">
-            <property name="toolTip">
-             <string>Community, Collection or Item detailed information.</string>
-            </property>
-            <property name="tabKeyNavigation">
-             <bool>false</bool>
-            </property>
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
-            <property name="selectionMode">
-             <enum>QAbstractItemView::SingleSelection</enum>
-            </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
-            </property>
-            <property name="gridStyle">
-             <enum>Qt::NoPen</enum>
-            </property>
-            <property name="columnCount">
-             <number>2</number>
-            </property>
-            <column/>
-            <column/>
-           </widget>
-          </item>
-         </layout>
         </widget>
        </item>
       </layout>
@@ -793,73 +778,9 @@
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>clientExpandAllButton</sender>
-   <signal>released()</signal>
-   <receiver>treeViewClient</receiver>
-   <slot>expandAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>515</x>
-     <y>74</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>472</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>clientCollapseAllButton</sender>
-   <signal>released()</signal>
-   <receiver>treeViewClient</receiver>
-   <slot>collapseAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>523</x>
-     <y>103</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>485</x>
-     <y>391</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>clearLogButton</sender>
-   <signal>released()</signal>
-   <receiver>log</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1002</x>
-     <y>744</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>893</x>
-     <y>672</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>searchQueryEdit</sender>
-   <signal>returnPressed()</signal>
-   <receiver>searchButton</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>631</x>
-     <y>431</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>810</x>
-     <y>434</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>testDataBaseModel()</slot>
  </slots>
