@@ -171,23 +171,6 @@
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="push_Button">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="toolTip">
-              <string>Push Resources</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../MIDASDesktopIcons.qrc">
-               <normaloff>:/icons/nav_left_green.png</normaloff>:/icons/nav_left_green.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="pull_Button">
              <property name="enabled">
               <bool>false</bool>
@@ -201,6 +184,23 @@
              <property name="icon">
               <iconset resource="../MIDASDesktopIcons.qrc">
                <normaloff>:/icons/nav_right_green.png</normaloff>:/icons/nav_right_green.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="push_Button">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Push Resources</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../MIDASDesktopIcons.qrc">
+               <normaloff>:/icons/nav_left_green.png</normaloff>:/icons/nav_left_green.png</iconset>
              </property>
             </widget>
            </item>
