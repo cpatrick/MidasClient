@@ -813,6 +813,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>clearLogButton</sender>
+   <signal>clicked()</signal>
+   <receiver>log</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1022</x>
+     <y>749</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>909</x>
+     <y>603</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>testDataBaseModel()</slot>
