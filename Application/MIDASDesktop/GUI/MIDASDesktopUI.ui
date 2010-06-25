@@ -18,7 +18,7 @@
     <normaloff>:/icons/MIDAS_Desktop_Icon.png</normaloff>:/icons/MIDAS_Desktop_Icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_central">
+   <layout class="QGridLayout">
     <property name="margin">
      <number>0</number>
     </property>
@@ -780,7 +780,40 @@
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>clientExpandAllButton</sender>
+   <signal>clicked()</signal>
+   <receiver>treeViewClient</receiver>
+   <slot>expandAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>713</x>
+     <y>43</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>581</x>
+     <y>85</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clientCollapseAllButton</sender>
+   <signal>clicked()</signal>
+   <receiver>treeViewClient</receiver>
+   <slot>collapseAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>751</x>
+     <y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>732</x>
+     <y>70</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>testDataBaseModel()</slot>
  </slots>
