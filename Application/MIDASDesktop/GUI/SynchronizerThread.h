@@ -18,14 +18,14 @@ public:
   virtual void run()
     {
     emit enableActions(false);
-    emit performReturned(m_Parent->getSynchronizer()->Perform() == 0);
+    emit performReturned(m_Parent->getSynchronizer()->Perform());
     emit enableActions(true);
     emit threadComplete();
     }
 
 signals:
   void enableActions(bool val);
-  void performReturned(bool val);
+  void performReturned(int rc);
   void threadComplete();
 
 private:

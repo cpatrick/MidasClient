@@ -21,6 +21,21 @@
 #include "mwsWebAPI.h"
 #include "mdoCommunity.h"
 
+//The following define error codes returned by midas functions
+#define MIDAS_OK               0
+#define MIDAS_INVALID_PATH    -1
+#define MIDAS_BAD_FILE_TYPE   -2
+#define MIDAS_DUPLICATE_PATH  -3
+#define MIDAS_NO_URL          -4
+#define MIDAS_LOGIN_FAILED    -5
+#define MIDAS_BAD_OP          -6
+#define MIDAS_WEB_API_FAILED  -7
+#define MIDAS_NO_RTYPE        -8
+#define MIDAS_FAILURE         -9
+#define MIDAS_INVALID_PARENT -10
+#define MIDAS_EMPTY_FILE     -11
+#define MIDAS_CANCELED       -12
+
 class midasSynchronizer
 {
   public:
@@ -71,6 +86,8 @@ class midasSynchronizer
 
     int Perform();
 
+    void Cancel();
+
   protected:
     int Add();
     int Clone();
@@ -107,6 +124,7 @@ class midasSynchronizer
     
     // Pull entire subtree of resources that are pulled?
     bool Recursive;
+    bool ShouldCancel;
     midasProgressReporter* Progress;
     midasLog* Log;
 

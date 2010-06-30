@@ -130,6 +130,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   stateLabel    = new QLabel();
   progressBar   = new QProgressBar();
   connectLabel  = new QLabel();
+  cancelButton  = new QPushButton();
 
   progressBar->setTextVisible(false);
 
@@ -139,8 +140,14 @@ MIDASDesktopUI::MIDASDesktopUI()
   connectLabel->setMinimumSize( connectLabel->sizeHint() );
   connectLabel->clear();
 
+  cancelButton->setText("Cancel");
+  cancelButton->setIcon(QPixmap(":icons/delete2.png"));
+  cancelButton->setEnabled(false);
+  cancelButton->setMaximumHeight(21);
+
   statusBar()->addWidget( stateLabel, 1 );
   statusBar()->addWidget( progressBar, 1 );
+  statusBar()->addWidget( cancelButton );
   statusBar()->addWidget( connectLabel );
   // ------------- Status bar -------------
 
@@ -225,6 +232,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( pull_Button,   SIGNAL( released() ), dlg_pullUI, SLOT( exec() ) );
   connect( refreshButton, SIGNAL( released() ), this, SLOT( updateServerTreeView() ) );
   connect( searchButton,  SIGNAL( released() ), this, SLOT( search() ) );
+  connect( cancelButton,  SIGNAL( released() ), this, SLOT( cancel() ) );
 
   connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
   connect( logAndSearchTabContainer, SIGNAL( currentChanged(int) ),
@@ -275,6 +283,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_pullUI;
   delete stateLabel;
   delete connectLabel;
+  delete cancelButton;
   delete refreshTimer;
   delete m_database;
   delete m_auth;
@@ -510,6 +519,12 @@ void MIDASDesktopUI::updateServerTreeView()
 void MIDASDesktopUI::enableActions(bool val)
 {
   this->activateActions(val, MIDASDesktopUI::ACTION_CONNECTED);
+  this->cancelButton->setEnabled(!val);
+}
+
+void MIDASDesktopUI::cancel()
+{
+  this->m_synch->Cancel();
 }
 
 void MIDASDesktopUI::resetStatus()
@@ -534,8 +549,7 @@ void MIDASDesktopUI::alertNewResources()
 
 void MIDASDesktopUI::showLogTab()
 {
-  //this->logAndSearchTabContainer->setCurrentIndex(1);
-  //TODO make a little icon pop up on the log tab (perhaps an exclamation point) denoting new data
+  // Put anything that should happen whenever new text appears in the log.
 }
 
 /** Show the community information */

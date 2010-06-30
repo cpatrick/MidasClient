@@ -29,8 +29,8 @@ public slots:
   virtual void accept();
   void radioButtonChanged();
   void resetState();
-  void pulled(bool ok);
-  void cloned(bool ok);
+  void pulled(int rc);
+  void cloned(int rc);
 
 private:
 

@@ -3,6 +3,7 @@
 
 #include <QFlags>
 #include <QProgressBar>
+#include <QPushButton>
 #include <QSystemTrayIcon>
 #include <QCloseEvent>
 #include <QTimer>
@@ -86,6 +87,8 @@ protected:
 
 public slots:
   void showNormal();
+
+  void cancel();
 
   // ------------- status bar -------------
   void displayStatus(const QString& message);
@@ -198,6 +201,7 @@ private:
   QLabel *                    stateLabel;
   QLabel *                    connectLabel;
   QProgressBar *              progressBar;
+  QPushButton *               cancelButton;
   // ------------- status bar -------------
 
   // ------------- tray ----------------

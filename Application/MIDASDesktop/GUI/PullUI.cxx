@@ -93,7 +93,7 @@ void PullUI::accept()
     m_Parent->setProgressIndeterminate();
     m_Parent->displayStatus("Cloning MIDAS repository...");
 
-    connect(m_SynchronizerThread, SIGNAL( performReturned(bool) ), this, SLOT ( cloned(bool) ) );
+    connect(m_SynchronizerThread, SIGNAL( performReturned(int) ), this, SLOT ( cloned(int) ) );
     }
   else //pull
     {
@@ -126,7 +126,7 @@ void PullUI::accept()
 
     m_Parent->setProgressIndeterminate();
 
-    connect(m_SynchronizerThread, SIGNAL( performReturned(bool) ), this, SLOT ( pulled(bool) ) );
+    connect(m_SynchronizerThread, SIGNAL( performReturned(int) ), this, SLOT ( pulled(int) ) );
     }
   connect(m_SynchronizerThread, SIGNAL( threadComplete() ), m_Parent, SLOT( setProgressEmpty() ) );
   connect(m_SynchronizerThread, SIGNAL( enableActions(bool) ), m_Parent, SLOT( enableActions(bool) ) );
@@ -136,38 +136,48 @@ void PullUI::accept()
   QDialog::accept();
 }
 
-void PullUI::pulled(bool ok)
+void PullUI::pulled(int rc)
 {
   std::stringstream text;
-  if(!ok)
+  if(rc == MIDAS_OK)
+    {
+    text << "Successfully pulled " << m_TypeName << " with id=" << m_PullId;
+    m_Parent->getLog()->Message(text.str());
+    }
+  else if(rc == MIDAS_CANCELED)
+    {
+    text << "Pull canceled by user";
+    m_Parent->getLog()->Message(text.str());
+    }
+  else
     {
     text << "Failed to pull " << m_TypeName << " with id=" << m_PullId;
     m_Parent->getLog()->Error(text.str());
     }
-  else
-    {
-    emit pulledResources();
-
-    text << "Successfully pulled " << m_TypeName << " with id=" << m_PullId;
-    m_Parent->getLog()->Message(text.str());
-    }
+  emit pulledResources();
   m_Parent->displayStatus(text.str().c_str());
   m_Parent->setProgressEmpty();
 }
 
-void PullUI::cloned(bool ok)
+void PullUI::cloned(int rc)
 {
   std::string text;
-  if(!ok)
+  if(rc == MIDAS_OK)
+    {
+    text = "Successfully cloned the MIDAS repository.";
+    m_Parent->getLog()->Message(text);
+    }
+  else if(rc == MIDAS_CANCELED)
+    {
+    text = "Clone canceled by user";
+    m_Parent->getLog()->Message(text);
+    }
+  else
     {
     text = "Failed to clone the MIDAS repository.";
     m_Parent->getLog()->Error(text);
     }
-  else
-    {
-    emit pulledResources();
-    text = "Successfully cloned the MIDAS repository.";
-    m_Parent->getLog()->Message(text);
-    }
+  emit pulledResources();
   m_Parent->displayStatus(text.c_str());
+  m_Parent->setProgressEmpty();
 }

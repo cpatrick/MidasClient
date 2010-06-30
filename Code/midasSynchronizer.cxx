@@ -30,23 +30,10 @@
 
 #define NO_PARENT -1
 
-//The following define error codes returned by midas functions
-#define MIDAS_OK               0
-#define MIDAS_INVALID_PATH    -1
-#define MIDAS_BAD_FILE_TYPE   -2
-#define MIDAS_DUPLICATE_PATH  -3
-#define MIDAS_NO_URL          -4
-#define MIDAS_LOGIN_FAILED    -5
-#define MIDAS_BAD_OP          -6
-#define MIDAS_WEB_API_FAILED  -7
-#define MIDAS_NO_RTYPE        -8
-#define MIDAS_FAILURE         -9
-#define MIDAS_INVALID_PARENT -10
-#define MIDAS_EMPTY_FILE     -11
-
 midasSynchronizer::midasSynchronizer()
 {
   this->Recursive = false;
+  this->ShouldCancel = false;
   this->Operation = OPERATION_NONE;
   this->ResourceType = midasResourceType::NONE;
   this->ServerURL = "";
@@ -222,6 +209,10 @@ int midasSynchronizer::Perform()
       break;
     }
   CHANGE_DIR(temp.c_str());
+  if(this->ShouldCancel)
+    {
+    rc = MIDAS_CANCELED;
+    }
   this->Reset();
   return rc;
 }
@@ -442,6 +433,10 @@ int midasSynchronizer::Pull()
 //-------------------------------------------------------------------
 bool midasSynchronizer::PullBitstream(int parentId)
 {
+  if(this->ShouldCancel)
+    {
+    return false;
+    }
   mws::Bitstream remote;
   mdo::Bitstream* bitstream = new mdo::Bitstream;
   bitstream->SetId(atoi(this->ResourceHandle.c_str()));
@@ -526,6 +521,10 @@ bool midasSynchronizer::PullBitstream(int parentId)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PullCollection(int parentId)
 {
+  if(this->ShouldCancel)
+    {
+    return false;
+    }
   this->DatabaseProxy->Open();
 
   mws::Collection remote;
@@ -623,6 +622,10 @@ mdo::Community* FindInTree(mdo::Community* root, int id)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PullCommunity(int parentId)
 {
+  if(this->ShouldCancel)
+    {
+    return false;
+    }
   this->DatabaseProxy->Open();
 
   mws::Community remote;
@@ -732,6 +735,10 @@ void midasSynchronizer::RecurseCommunities(int parentId,
 //-------------------------------------------------------------------
 bool midasSynchronizer::PullItem(int parentId)
 {
+  if(this->ShouldCancel)
+    {
+    return false;
+    }
   this->DatabaseProxy->Open();
 
   mws::Item remote;
@@ -1130,9 +1137,16 @@ bool midasSynchronizer::PushItem(int id)
 //-------------------------------------------------------------------
 void midasSynchronizer::Reset()
 {
+  this->ShouldCancel = false;
   this->SetOperation(midasSynchronizer::OPERATION_NONE);
   this->SetResourceHandle("");
   this->SetResourceType(midasResourceType::NONE);
   this->SetParentId(0);
   this->Log->Status("");
+}
+
+//-------------------------------------------------------------------
+void midasSynchronizer::Cancel()
+{
+  this->ShouldCancel = true;
 }
