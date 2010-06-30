@@ -158,7 +158,7 @@ public slots:
 
   // ------------- synchronizer ----------------------
   void pushResources();
-  void pushReturned(bool val);
+  void pushReturned(int rc);
   // ------------- synchronizer ----------------------
 
   // ------------- search -------------

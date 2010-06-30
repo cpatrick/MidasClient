@@ -1134,25 +1134,34 @@ void MIDASDesktopUI::pushResources()
 
   connect(m_SynchronizerThread, SIGNAL(enableActions(bool) ),
     this, SLOT(enableActions(bool) ) );
-  connect(m_SynchronizerThread, SIGNAL(performReturned(bool) ),
-    this, SLOT(pushReturned(bool) ) );
+  connect(m_SynchronizerThread, SIGNAL(performReturned(int) ),
+    this, SLOT(pushReturned(int) ) );
 
   m_SynchronizerThread->start();
 }
 
-void MIDASDesktopUI::pushReturned(bool ok)
+void MIDASDesktopUI::pushReturned(int rc)
 {
   this->updateClientTreeView();
   this->updateServerTreeView();
 
-  if(ok)
+  std::stringstream text;
+  if(rc == MIDAS_OK)
     {
-    this->displayStatus(tr("Finished pushing locally added resources."));
+    text << "Finished pushing locally added resources.";
+    this->getLog()->Message(text.str());
+    }
+  else if(rc == MIDAS_CANCELED)
+    {
+    text << "Push canceled by user.";
+    this->getLog()->Message(text.str());
     }
   else
     {
-    this->displayStatus(tr("Failed to push resources to the server."));
+    text << "Failed to push resources to the server.";
+    this->getLog()->Error(text.str());
     }
+  this->displayStatus(text.str().c_str());
   this->setProgressEmpty();
 }
 

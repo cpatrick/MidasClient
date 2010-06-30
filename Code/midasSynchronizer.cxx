@@ -912,6 +912,10 @@ int midasSynchronizer::GetServerParentId(midasResourceType::ResourceType type,
 //-------------------------------------------------------------------
 bool midasSynchronizer::PushBitstream(int id)
 {
+  if(this->ShouldCancel)
+    {
+    return false;
+    }
   std::string uuid = this->DatabaseProxy->GetUuid(
     midasResourceType::BITSTREAM, id);
   std::string name = this->DatabaseProxy->GetName(
@@ -982,6 +986,10 @@ bool midasSynchronizer::PushBitstream(int id)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PushCollection(int id)
 {
+  if(this->ShouldCancel)
+    {
+    return false;
+    }
   std::string uuid = this->DatabaseProxy->GetUuid(
     midasResourceType::COLLECTION, id);
   std::string name = this->DatabaseProxy->GetName(
@@ -1036,6 +1044,10 @@ bool midasSynchronizer::PushCollection(int id)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PushCommunity(int id)
 {
+  if(this->ShouldCancel)
+    {
+    return false;
+    }
   std::string uuid = this->DatabaseProxy->GetUuid(
     midasResourceType::COMMUNITY, id);
   std::string name = this->DatabaseProxy->GetName(
@@ -1083,6 +1095,10 @@ bool midasSynchronizer::PushCommunity(int id)
 //-------------------------------------------------------------------
 bool midasSynchronizer::PushItem(int id)
 {
+  if(this->ShouldCancel)
+    {
+    return false;
+    }
   std::string uuid = this->DatabaseProxy->GetUuid(
     midasResourceType::ITEM, id);
   std::string name = this->DatabaseProxy->GetName(
