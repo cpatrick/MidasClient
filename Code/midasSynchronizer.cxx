@@ -177,6 +177,7 @@ std::vector<midasStatus> midasSynchronizer::GetStatusEntries()
 int midasSynchronizer::Perform()
 {
   int rc = 0;
+  this->ShouldCancel = false;
   if(!this->Authenticator->Login(mws::WebAPI::Instance()))
     {
     std::stringstream text;
