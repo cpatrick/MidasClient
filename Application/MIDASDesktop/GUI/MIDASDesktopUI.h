@@ -151,8 +151,8 @@ public slots:
   void addBitstream();
   void addBitstreams(const MidasItemTreeItem* parentItem,
                      const QStringList & files);
-  void openBitstream(int id);
   void viewInBrowser();
+  void viewDirectory();
   void storeLastPollTime();
   // ------------- resource manipulation -------------
 

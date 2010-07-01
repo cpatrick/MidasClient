@@ -161,7 +161,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeViewClient, SIGNAL(bitstreamsDropped(const MidasItemTreeItem*, const QStringList&)),
     this, SLOT( addBitstreams(const MidasItemTreeItem*, const QStringList&)));
 
-  connect(treeViewClient, SIGNAL(bitstreamOpenRequest(int)), this, SLOT(openBitstream(int)));
+  connect(treeViewClient, SIGNAL( bitstreamOpenRequest() ), this, SLOT( viewDirectory() ) );
 
   connect(treeView, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasCommunityTreeItem*) ));
@@ -183,14 +183,13 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect(treeView, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
     this, SLOT( displayServerResourceContextMenu(QContextMenuEvent*) ));
+  connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
+    this, SLOT( displayClientResourceContextMenu(QContextMenuEvent*) ));
 
   connect(treeView->model(), SIGNAL(serverPolled()), this, SLOT( storeLastPollTime()));
 
   connect(treeView, SIGNAL( startedExpandingTree() ), this, SLOT( startedExpandingTree() ) );
-  connect(treeView, SIGNAL( finishedExpandingTree() ), this, SLOT( finishedExpandingTree() ) );
-
-  connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
-    this, SLOT( displayClientResourceContextMenu(QContextMenuEvent*) ));
+  connect(treeView, SIGNAL( finishedExpandingTree() ), this, SLOT( finishedExpandingTree() ) ); 
 
   connect(dlg_pullUI, SIGNAL(pulledResources()), this, SLOT( updateClientTreeView() ) );
   // ------------- setup TreeView signals -------------
@@ -222,6 +221,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( actionAdd_item,         SIGNAL(triggered()), this, SLOT(addItem()));
   connect( actionAdd_bitstream,    SIGNAL(triggered()), this, SLOT(addBitstream()));
   connect( actionDelete_Resource,  SIGNAL(triggered()), dlg_deleteResourceUI, SLOT( exec() ) );
+  connect( actionView_Directory,   SIGNAL(triggered()), this, SLOT(viewDirectory()));
 
   connect( searchItemsListWidget, SIGNAL( midasListWidgetItemClicked( QListWidgetItemMidasItem * ) ),
     this, SLOT( searchItemClicked( QListWidgetItemMidasItem * ) ) );
@@ -384,6 +384,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
   if( activateAction & ACTION_CLIENT_RESOURCE )
     {
     this->actionDelete_Resource->setEnabled( value );
+    this->actionView_Directory->setEnabled( value );
     }
 }
 
@@ -798,14 +799,15 @@ void MIDASDesktopUI::displayClientResourceContextMenu( QContextMenuEvent* e )
       }
     else if ( ( bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>( item ) ) != NULL )
       {
-      //add any bitstream context menu actions here.
+      // put any bitstream-only actions here
       }
     menu.addSeparator();
+    menu.addAction( this->actionView_Directory );
     menu.addAction( this->actionDelete_Resource );
     }
   else 
     {
-    treeView->selectionModel()->clearSelection(); 
+    treeView->selectionModel()->clearSelection();
     menu.addAction( this->actionAdd_community );
     menu.addAction( this->actionPush_Resources );
     }
@@ -892,6 +894,26 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
   this->updateClientTreeView();
 }
 
+void MIDASDesktopUI::viewDirectory()
+{
+  MidasTreeItem* resource = const_cast<MidasTreeItem*>(
+    treeViewClient->getSelectedMidasTreeItem());
+
+  m_database->Open();
+  std::string path = m_database->GetRecordByUuid(resource->getUuid()).Path;
+  m_database->Close();
+
+  path = "file:" + path;
+  QUrl url(path.c_str());
+  if(!QDesktopServices::openUrl(url))
+    {
+    std::stringstream text;
+    text << "The operating system does not know how to open "
+      << path << std::endl;
+    m_logger->Error(text.str());
+    }
+}
+
 void MIDASDesktopUI::viewInBrowser()
 {
   std::string baseUrl = m_url;
@@ -904,7 +926,6 @@ void MIDASDesktopUI::viewInBrowser()
   MidasCommunityTreeItem* comm = NULL;
   MidasCollectionTreeItem* coll = NULL;
   MidasItemTreeItem* item = NULL;
-  MidasBitstreamTreeItem* bitstream = NULL;
 
   if ((comm = dynamic_cast<MidasCommunityTreeItem*>(resource)) != NULL)
     {
@@ -1221,31 +1242,6 @@ void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)
     menu.addAction( this->actionOpenURL );
     menu.addAction( this->actionPull_Resource );
     menu.exec( e->globalPos() );
-    }
-}
-
-void MIDASDesktopUI::openBitstream(int id)
-{
-  if(!this->m_database)
-    {
-    return;
-    }
-  m_database->Open();
-  std::string path = m_database->GetRecordByUuid(
-    m_database->GetUuid(midasResourceType::BITSTREAM, id)).Path;
-  m_database->Close();
-
-  if(path != "")
-    {
-    path = "file:" + path;
-    QUrl url(path.c_str());
-    if(!QDesktopServices::openUrl(url))
-      {
-      std::stringstream text;
-      text << "The operating system does not know how to open "
-        << path << std::endl;
-      m_logger->Error(text.str());
-      }
     }
 }
 

@@ -3,6 +3,7 @@
 
 #include <QTreeView>
 #include <QMutex>
+#include <QPoint>
 #include <string>
 
 class QItemSelection;
@@ -48,6 +49,9 @@ public:
   const QModelIndex getSelectedModelIndex() const;
   const MidasTreeItem * getSelectedMidasTreeItem() const;
 
+  void mousePressEvent(QMouseEvent* event);
+  void mouseMoveEvent(QMouseEvent* event);
+
 public slots:
   
   void updateSelection(const QItemSelection &selected,
@@ -81,6 +85,7 @@ protected:
   MidasTreeModel*     m_Model;
   ExpandTreeThread*   m_ExpandTreeThread;
   QMutex              m_Mutex;
+  QPoint              m_DragStart;
  };
 
 #endif //__MidasTreeView_H

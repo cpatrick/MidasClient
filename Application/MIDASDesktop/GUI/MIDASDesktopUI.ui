@@ -515,6 +515,8 @@
      <addaction name="separator"/>
      <addaction name="actionPush_Resources"/>
      <addaction name="actionDelete_Resource"/>
+     <addaction name="separator"/>
+     <addaction name="actionView_Directory"/>
     </widget>
     <addaction name="menuClient"/>
     <addaction name="menuServer"/>
@@ -748,6 +750,32 @@
     <string>Generate a new empty SQLite database</string>
    </property>
   </action>
+  <action name="actionView_Directory">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/find.png</normaloff>:/icons/find.png</iconset>
+   </property>
+   <property name="text">
+    <string>View In Filesystem Browser</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the directory in the system directory browser</string>
+   </property>
+  </action>
+  <action name="actionOpen_Bitstream">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Open Bitstream</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the corresponding file</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -798,6 +826,8 @@
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../../../../../Documents and Settings/Zach Mullen/.designer/MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>

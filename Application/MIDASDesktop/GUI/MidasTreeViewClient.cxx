@@ -178,7 +178,7 @@ void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent *event)
 
   if ((bitstream = dynamic_cast<MidasBitstreamTreeItem*>(node)) != NULL)
     {
-    emit bitstreamOpenRequest(bitstream->getBitstream()->GetId());
+    emit bitstreamOpenRequest();
     }
   else
     {

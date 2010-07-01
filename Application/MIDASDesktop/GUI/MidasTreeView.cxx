@@ -4,6 +4,8 @@
 #include <QItemSelection>
 #include <QContextMenuEvent>
 #include <QModelIndex>
+#include <QPixmap>
+#include <QMimeData>
 
 #include "MIDASDesktopUI.h"
 #include "MidasTreeItem.h"
@@ -209,4 +211,32 @@ void MidasTreeView::selectByIndex(const QModelIndex& index)
   selectionModel()->select(index,
     QItemSelectionModel::Select | QItemSelectionModel::Clear);
   scrollTo(index);
+}
+
+void MidasTreeView::mousePressEvent(QMouseEvent* event)
+{
+  if(event->button() == Qt::LeftButton)
+    {
+    m_DragStart = event->pos();
+    }
+  QTreeView::mousePressEvent(event);
+}
+
+void MidasTreeView::mouseMoveEvent(QMouseEvent* event)
+{
+  if (!(event->buttons() & Qt::LeftButton))
+    {
+    return;
+    }
+  if ((event->pos() - m_DragStart).manhattanLength()
+    < QApplication::startDragDistance())
+    {
+    return;
+    }
+
+  QDrag* drag = new QDrag(this);
+  QMimeData* mimeData = new QMimeData;
+  drag->setPixmap(QPixmap(":icons/gpl_folder.png"));
+  drag->setMimeData(mimeData);
+  Qt::DropAction dropAction = drag->start();
 }

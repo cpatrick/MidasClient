@@ -38,99 +38,99 @@
 
 class midasSynchronizer
 {
-  public:
-    midasSynchronizer();
-    ~midasSynchronizer();
+public:
+  midasSynchronizer();
+  ~midasSynchronizer();
 
-    enum SynchOperation {
-      OPERATION_NONE = 0,
-      OPERATION_ADD,
-      OPERATION_CLEAN,
-      OPERATION_CLONE,
-      OPERATION_PULL,
-      OPERATION_PUSH
-      };
+  enum SynchOperation {
+    OPERATION_NONE = 0,
+    OPERATION_ADD,
+    OPERATION_CLEAN,
+    OPERATION_CLONE,
+    OPERATION_PULL,
+    OPERATION_PUSH
+    };
 
-    void SetLog(midasLog* log);
-    midasLog* GetLog();
-    void DeleteLog();
+  void SetLog(midasLog* log);
+  midasLog* GetLog();
+  void DeleteLog();
 
-    void SetParentId(int id);
-    int GetParentId();
+  void SetParentId(int id);
+  int GetParentId();
 
-    void SetOperation(SynchOperation op);
-    SynchOperation GetOperation();
+  void SetOperation(SynchOperation op);
+  SynchOperation GetOperation();
 
-    void SetResourceType(int type);
-    int GetResourceType();
+  void SetResourceType(int type);
+  int GetResourceType();
 
-    void SetDatabase(std::string path);
-    std::string GetDatabase();
+  void SetDatabase(std::string path);
+  std::string GetDatabase();
 
-    void SetServerURL(std::string url);
-    std::string GetServerURL();
+  void SetServerURL(std::string url);
+  std::string GetServerURL();
 
-    void SetProgressReporter(midasProgressReporter* progress);
-    midasProgressReporter* GetProgressReporter();
-    void DeleteProgressReporter();
+  void SetProgressReporter(midasProgressReporter* progress);
+  midasProgressReporter* GetProgressReporter();
+  void DeleteProgressReporter();
 
-    void SetResourceHandle(std::string handle);
-    std::string GetResourceHandle();
+  void SetResourceHandle(std::string handle);
+  std::string GetResourceHandle();
 
-    void SetRecursive(bool recursive);
-    bool GetRecursive();
+  void SetRecursive(bool recursive);
+  bool GetRecursive();
 
-    std::vector<midasStatus> GetStatusEntries();
+  std::vector<midasStatus> GetStatusEntries();
 
-    midasAuthenticator* GetAuthenticator();
+  midasAuthenticator* GetAuthenticator();
 
-    int Perform();
+  int Perform();
 
-    void Cancel();
+  void Cancel();
 
-  protected:
-    int Add();
-    int Clone();
-    int Push();
-    int Pull();
-    int Clean();
+protected:
+  int Add();
+  int Clone();
+  int Push();
+  int Pull();
+  int Clean();
 
-    bool PullBitstream(int parentId);
-    bool PullCollection(int parentId);
-    bool PullCommunity(int parentId);
-    bool PullItem(int parentId);
+  bool PullBitstream(int parentId);
+  bool PullCollection(int parentId);
+  bool PullCommunity(int parentId);
+  bool PullItem(int parentId);
 
-    // Helper function to convert client side parent ID to server side one
-    int GetServerParentId(midasResourceType::ResourceType type, int parentId);
-    bool PushBitstream(int id);
-    bool PushCollection(int id);
-    bool PushCommunity(int id);
-    bool PushItem(int id);
+  // Helper function to convert client side parent ID to server side one
+  int GetServerParentId(midasResourceType::ResourceType type, int parentId);
+  bool PushBitstream(int id);
+  bool PushCollection(int id);
+  bool PushCommunity(int id);
+  bool PushItem(int id);
 
-    void RecurseCommunities(int parentId, mdo::Community* community);
+  void RecurseCommunities(int parentId, mdo::Community* community);
 
-    bool ValidateParentId(int parentId, midasResourceType::ResourceType type);
+  bool ValidateParentId(int parentId, midasResourceType::ResourceType type);
 
-    // Reset the synchronizer to its starting state
-    void Reset();
+  // Reset the synchronizer to its starting state
+  void Reset();
 
-    SynchOperation Operation;
-    int ResourceType;
-    int ParentId;
-    int LastId;
-    std::string ServerURL;
-    std::string ResourceHandle;
-    std::string LastDir;
-    
-    // Pull entire subtree of resources that are pulled?
-    bool Recursive;
-    bool ShouldCancel;
-    midasProgressReporter* Progress;
-    midasLog* Log;
+  SynchOperation Operation;
+  int ResourceType;
+  int ParentId;
+  int LastId;
+  std::string ServerURL;
+  std::string ResourceHandle;
+  std::string LastDir;
 
-    std::string Database;
-    midasDatabaseProxy* DatabaseProxy;
-    midasAuthenticator* Authenticator;
+  // Pull entire subtree of resources that are pulled?
+  bool Recursive;
+  bool ShouldCancel;
+  midasProgressReporter* Progress;
+  midasLog* Log;
+
+  std::string Database;
+  midasDatabaseProxy* DatabaseProxy;
+  midasAuthenticator* Authenticator;
 };
 
 #endif

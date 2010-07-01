@@ -57,7 +57,7 @@ signals:
   void midasTreeViewContextMenu( QContextMenuEvent * e ); 
   void midasNoTreeItemSelected();
   void bitstreamsDropped(const MidasItemTreeItem* parentItem, const QStringList & files);
-  void bitstreamOpenRequest(int id);
+  void bitstreamOpenRequest();
 
 protected:
   virtual void dragEnterEvent ( QDragEnterEvent * event );

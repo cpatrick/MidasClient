@@ -36,7 +36,6 @@ void PullUI::resetState()
 void PullUI::radioButtonChanged()
 {
   bool val = pullRadioButton->isChecked();
-  
   recursiveCheckBox->setEnabled(val);
 }
 
@@ -82,7 +81,7 @@ void PullUI::accept()
 
   m_SynchronizerThread = new SynchronizerThread;
   m_SynchronizerThread->SetParentUI(m_Parent);
-  
+
   if(cloneRadioButton->isChecked())
     {
     m_Parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_CLONE);
