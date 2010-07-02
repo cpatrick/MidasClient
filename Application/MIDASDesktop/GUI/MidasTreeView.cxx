@@ -234,9 +234,23 @@ void MidasTreeView::mouseMoveEvent(QMouseEvent* event)
     return;
     }
 
+  QModelIndex index = this->indexAt(m_DragStart);
+  if(!index.isValid())
+    {
+    event->setAccepted(false);
+    return;
+    }
+
+  MidasTreeItem* resource =
+    const_cast<MidasTreeItem*>(m_Model->midasTreeItem(index));
+
   QDrag* drag = new QDrag(this);
   QMimeData* mimeData = new QMimeData;
-  drag->setPixmap(QPixmap(":icons/gpl_folder.png"));
+  std::stringstream data;
+  data << resource->getType() << " " << resource->getId();
+  
+  mimeData->setData("MIDAS/resource", QString(data.str().c_str()).toAscii());
+  drag->setPixmap(resource->getDecoration());
   drag->setMimeData(mimeData);
   Qt::DropAction dropAction = drag->start();
 }

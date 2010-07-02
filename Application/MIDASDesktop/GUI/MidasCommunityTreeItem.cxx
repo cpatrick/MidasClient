@@ -1,5 +1,6 @@
 #include "MidasCommunityTreeItem.h"
 #include "MidasCollectionTreeItem.h"
+#include "midasStandardIncludes.h"
 
 #include <mdoCommunity.h>
 #include <iostream>
@@ -19,6 +20,11 @@ MidasCommunityTreeItem::~MidasCommunityTreeItem()
 void MidasCommunityTreeItem::setCommunity(mdo::Community* community)
 {
   m_Community = community;
+}
+
+int MidasCommunityTreeItem::getType() const
+{
+  return midasResourceType::COMMUNITY;
 }
 
 int MidasCommunityTreeItem::getId() const

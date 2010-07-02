@@ -16,7 +16,10 @@ public:
   ~PullUI();
 
   void setPullId(int id);
-  void setResourceTypeIndex(int index);
+  void setResourceType(int type);
+  void setPull();
+  void setClone();
+  void setRecursive(bool value);
 
   void init(); 
 
@@ -38,7 +41,7 @@ private:
   SynchronizerThread* m_SynchronizerThread;
   std::string m_TypeName;
   int m_PullId;
-  int m_ResourceTypeIndex;
+  int m_ResourceType;
   
 };
 

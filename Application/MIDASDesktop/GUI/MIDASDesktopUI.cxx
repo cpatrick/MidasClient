@@ -160,6 +160,8 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect(treeViewClient, SIGNAL(bitstreamsDropped(const MidasItemTreeItem*, const QStringList&)),
     this, SLOT( addBitstreams(const MidasItemTreeItem*, const QStringList&)));
+  connect(treeViewClient, SIGNAL(resourceDropped(int, int)),
+    this, SLOT( pullRecursive(int, int) ) );
 
   connect(treeViewClient, SIGNAL( bitstreamOpenRequest() ), this, SLOT( viewDirectory() ) );
 
@@ -437,25 +439,25 @@ void MIDASDesktopUI::updateActionState( const MidasTreeItem* item )
     {
     this->activateActions( true, ACTION_COMMUNITY );
     this->dlg_pullUI->setPullId(communityTreeItem->getCommunity()->GetId());
-    this->dlg_pullUI->setResourceTypeIndex(0);
+    this->dlg_pullUI->setResourceType(midasResourceType::COMMUNITY);
     }
   else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
     {
     this->activateActions( true, ACTION_COLLECTION );
     this->dlg_pullUI->setPullId(collectionTreeItem->getCollection()->GetId());
-    this->dlg_pullUI->setResourceTypeIndex(1);
+    this->dlg_pullUI->setResourceType(midasResourceType::COLLECTION);
     }
   else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
     {
     this->activateActions( true, ACTION_ITEM | ACTION_BITSTREAM );
     this->dlg_pullUI->setPullId(itemTreeItem->getItem()->GetId());
-    this->dlg_pullUI->setResourceTypeIndex(2);
+    this->dlg_pullUI->setResourceType(midasResourceType::ITEM);
     }
   else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
     {
     this->activateActions( true, ACTION_BITSTREAM );
     this->dlg_pullUI->setPullId(bitstreamTreeItem->getBitstream()->GetId());
-    this->dlg_pullUI->setResourceTypeIndex(3);
+    this->dlg_pullUI->setResourceType(midasResourceType::BITSTREAM);
     }
 }
 
@@ -1335,5 +1337,19 @@ void MIDASDesktopUI::clearLogTabIcon(int index)
   if(index == 1)
     {
     this->logAndSearchTabContainer->setTabIcon(1, QPixmap());
+    }
+}
+
+void MIDASDesktopUI::pullRecursive(int type, int id)
+{
+  if(QMessageBox::question(this, "Confirm Pull",
+     "Are you sure you want to pull the selected resource and all of its children?",
+     QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok)
+    {
+    dlg_pullUI->setPull();
+    dlg_pullUI->setRecursive(true);
+    dlg_pullUI->setResourceType(type);
+    dlg_pullUI->setPullId(id);
+    dlg_pullUI->accept();
     }
 }

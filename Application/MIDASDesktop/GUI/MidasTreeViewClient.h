@@ -58,6 +58,7 @@ signals:
   void midasNoTreeItemSelected();
   void bitstreamsDropped(const MidasItemTreeItem* parentItem, const QStringList & files);
   void bitstreamOpenRequest();
+  void resourceDropped(int type, int id);
 
 protected:
   virtual void dragEnterEvent ( QDragEnterEvent * event );

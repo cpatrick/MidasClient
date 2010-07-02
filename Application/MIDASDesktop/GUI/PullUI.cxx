@@ -28,9 +28,26 @@ PullUI::~PullUI()
 void PullUI::resetState()
 {
   this->m_PullId = 0;
-  this->m_ResourceTypeIndex = 0;
+  this->m_ResourceType = 0;
   this->cloneRadioButton->setChecked(true);
   emit radioButtonChanged();
+}
+
+void PullUI::setClone()
+{
+  cloneRadioButton->setChecked(true);
+  pullRadioButton->setChecked(false);
+}
+
+void PullUI::setPull()
+{
+  cloneRadioButton->setChecked(false);
+  pullRadioButton->setChecked(true);
+}
+
+void PullUI::setRecursive(bool value)
+{
+  recursiveCheckBox->setChecked(value);
 }
 
 void PullUI::radioButtonChanged()
@@ -44,9 +61,9 @@ void PullUI::setPullId(int id)
   m_PullId = id;
 }
 
-void PullUI::setResourceTypeIndex(int index)
+void PullUI::setResourceType(int type)
 {
-  m_ResourceTypeIndex = index;
+  m_ResourceType = type;
 }
 
 /** */
@@ -96,21 +113,21 @@ void PullUI::accept()
     }
   else //pull
     {
-    switch(m_ResourceTypeIndex)
+    switch(m_ResourceType)
       {
-      case 0: //community
+      case midasResourceType::COMMUNITY:
         m_Parent->getSynchronizer()->SetResourceType(midasResourceType::COMMUNITY);
         m_TypeName = "Community";
         break;
-      case 1: //collection
+      case midasResourceType::COLLECTION:
         m_Parent->getSynchronizer()->SetResourceType(midasResourceType::COLLECTION);
         m_TypeName = "Collection";
         break;
-      case 2: //item
+      case midasResourceType::ITEM:
         m_Parent->getSynchronizer()->SetResourceType(midasResourceType::ITEM);
         m_TypeName = "Item";
         break;
-      case 3: //bitstream
+      case midasResourceType::BITSTREAM:
         m_Parent->getSynchronizer()->SetResourceType(midasResourceType::BITSTREAM);
         m_TypeName = "Bitstream";
         break;

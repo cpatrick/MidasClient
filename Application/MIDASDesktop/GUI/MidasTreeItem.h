@@ -45,9 +45,10 @@ public:
   int row() const;
   MidasTreeItem *parent();
   const MidasTreeItem *parent() const;
-  bool isValid() const; 
+  bool isValid() const;
 
   virtual int getId() const = 0;
+  virtual int getType() const = 0;
   virtual std::string getUuid() const = 0;
   virtual int childCount() const;
   virtual void populate();

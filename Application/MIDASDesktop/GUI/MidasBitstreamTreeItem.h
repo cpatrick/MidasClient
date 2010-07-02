@@ -18,6 +18,7 @@ public:
   
   virtual QPixmap getDecoration();
 
+  int getType() const;
   int getId() const;
   std::string getUuid() const;
 

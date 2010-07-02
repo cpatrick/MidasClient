@@ -2,6 +2,7 @@
 #include "MidasItemTreeItem.h"
 #include "mdoItem.h"
 #include "mdoCollection.h"
+#include "midasStandardIncludes.h"
 #include <QPixmap>
 #include <QStyle>
 
@@ -12,6 +13,11 @@ MidasTreeItem(itemData, parent)
 
 MidasCollectionTreeItem::~MidasCollectionTreeItem()
 {
+}
+
+int MidasCollectionTreeItem::getType() const
+{
+  return midasResourceType::COLLECTION;
 }
 
 int MidasCollectionTreeItem::getId() const

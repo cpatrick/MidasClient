@@ -1,6 +1,7 @@
 #include "MidasBitstreamTreeItem.h"
 #include "MidasClientGlobal.h"
 #include "mdoBitstream.h"
+#include "midasStandardIncludes.h"
 #include <QPixmap>
 #include <QStyle>
 
@@ -12,6 +13,11 @@ MidasTreeItem(itemData, parent)
 
 MidasBitstreamTreeItem::~MidasBitstreamTreeItem()
 {
+}
+
+int MidasBitstreamTreeItem::getType() const
+{
+  return midasResourceType::BITSTREAM;
 }
 
 int MidasBitstreamTreeItem::getId() const

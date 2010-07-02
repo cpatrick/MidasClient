@@ -17,6 +17,7 @@ public:
   ~MidasCollectionTreeItem();
   virtual void populate();
 
+  int getType() const;
   int getId() const;
   std::string getUuid() const;
 

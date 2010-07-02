@@ -22,11 +22,12 @@
 
 /** Constructor */
 MidasTreeViewClient::MidasTreeViewClient(QWidget * parent):QTreeView(parent)
-{  
-
+{
   // The tree model
   m_Model = new MidasTreeModelClient;
   this->setModel(m_Model);
+
+  this->setAcceptDrops(true);
   
   this->setSelectionMode( QTreeView::SingleSelection );
 
@@ -158,18 +159,6 @@ MidasItemTreeItem * MidasTreeViewClient::selectedMidasItemTreeItem()
   return itemTreeItem; 
 }
 
-void MidasTreeViewClient::dragEnterEvent( QDragEnterEvent * event )
-{
-  if (event && event->mimeData())
-    {
-    const QMimeData * md = event->mimeData();
-    if ( md->hasUrls() )
-      {
-      event->acceptProposedAction();
-      }
-    }
-}
-
 void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent *event)
 {
   MidasBitstreamTreeItem* bitstream = NULL;
@@ -186,32 +175,57 @@ void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent *event)
     }
 }
 
+void MidasTreeViewClient::dragEnterEvent( QDragEnterEvent * event )
+{
+  if (event && event->mimeData())
+    {
+    const QMimeData * md = event->mimeData();
+    if ( md->hasUrls() || md->hasFormat("MIDAS/resource"))
+      {
+      event->acceptProposedAction();
+      }
+    }
+}
+
 void MidasTreeViewClient::dragLeaveEvent( QDragLeaveEvent * event )
 {
 }
 
 void MidasTreeViewClient::dragMoveEvent( QDragMoveEvent * event )
 {
-  MidasItemTreeItem* item = NULL;
-  MidasTreeItem* node = const_cast<MidasTreeItem*>(
-    m_Model->midasTreeItem(this->indexAt(event->pos())));
-
   selectionModel()->clearSelection();
   selectionModel()->select(this->indexAt(event->pos()), QItemSelectionModel::Select | QItemSelectionModel::Rows);
-  
-  if ((item = dynamic_cast<MidasItemTreeItem*>(node)) != NULL)
+
+  if(event->mimeData()->hasUrls())
     {
-    event->acceptProposedAction();
+    MidasItemTreeItem* item = NULL;
+    MidasTreeItem* node = const_cast<MidasTreeItem*>(
+      m_Model->midasTreeItem(this->indexAt(event->pos())));
+    
+    if ((item = dynamic_cast<MidasItemTreeItem*>(node)) != NULL)
+      {
+      event->acceptProposedAction();
+      }
+    else
+      {
+      event->setAccepted(false);
+      }
     }
-  else
+  else if(event->mimeData()->hasFormat("MIDAS/resource"))
     {
-    event->setAccepted(false);
+    event->setAccepted(!indexAt(event->pos()).isValid());
     }
 }
 
 void MidasTreeViewClient::dropEvent( QDropEvent * event )
 {
-  if (event && event->mimeData())
+  if (!event || !event->mimeData())
+    {
+    event->setAccepted(false);
+    return;
+    }
+  const QMimeData* md = event->mimeData();
+  if (md->hasUrls())
     {
     MidasItemTreeItem* item = NULL;
     MidasTreeItem* node = const_cast<MidasTreeItem*>(
@@ -219,21 +233,28 @@ void MidasTreeViewClient::dropEvent( QDropEvent * event )
 
     if ((item = dynamic_cast<MidasItemTreeItem*>(node)) != NULL)
       {
-      const QMimeData * md = event->mimeData();
-      if ( md->hasUrls() )
+      QStringList files;
+      foreach (QUrl url, md->urls())
         {
-        QStringList files;
-        foreach (QUrl url, md->urls())
+        QFileInfo info(url.toLocalFile());
+        if (info.exists() && info.isFile())
           {
-          QFileInfo info(url.toLocalFile());
-          if (info.exists() && info.isFile())
-            {
-            files << url.toLocalFile();
-            }
+          files << url.toLocalFile();
           }
-        emit bitstreamsDropped( item, files );
-        event->acceptProposedAction();
         }
+      emit bitstreamsDropped( item, files );
+      event->acceptProposedAction();
       }
+    }
+  else if(md->hasFormat("MIDAS/resource"))
+    {
+    QString data = QString(md->data("MIDAS/resource"));
+    std::vector<std::string> tokens;
+    kwutils::tokenize(data.toStdString(), tokens);
+
+    int type = atoi( tokens[0].c_str() );
+    int id   = atoi( tokens[1].c_str() );
+    emit resourceDropped(type, id);
+    event->acceptProposedAction();
     }
 }
