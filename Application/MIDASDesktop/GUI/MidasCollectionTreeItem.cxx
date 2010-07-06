@@ -59,5 +59,6 @@ void MidasCollectionTreeItem::populate(QModelIndex parent)
       item->setDecorationRole(MidasTreeItem::Dirty);
       }
     i++;
+    row++;
     }
 }

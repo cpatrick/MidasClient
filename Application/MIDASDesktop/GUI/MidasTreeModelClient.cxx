@@ -44,17 +44,20 @@ void MidasTreeModelClient::Populate()
     {
     QList<QVariant> columnData;
     columnData << (*i)->GetName().c_str();
-    QModelIndex index = this->index(row, 0);
 
     MidasCommunityTreeItem* communityItem = new MidasCommunityTreeItem(columnData, this, NULL);
     communityItem->setCommunity(*i);
+    m_TopLevelCommunities.append(communityItem);
+
+    QModelIndex index = this->index(row, 0);
+    registerResource((*i)->GetUuid(), index);
+
     communityItem->populate(index);
     communityItem->setTopLevelCommunities(&m_TopLevelCommunities);
     if((*i)->IsDirty())
       {
       communityItem->setDecorationRole(MidasTreeItem::Dirty);
       }
-    m_TopLevelCommunities.append(communityItem);
     row++;
     }
   this->m_Database->Close();
