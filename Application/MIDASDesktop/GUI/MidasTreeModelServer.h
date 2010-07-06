@@ -32,26 +32,13 @@ public:
   ~MidasTreeModelServer();
 
   void SetWebAPI(mws::WebAPI* api);
-  virtual void Populate();
+  void Populate();
 
-  QVariant data(const QModelIndex &index, int role) const;
-  Qt::ItemFlags flags(const QModelIndex &index) const;
-  QVariant headerData(int section, Qt::Orientation orientation,
-                     int role = Qt::DisplayRole) const;
-
-  QModelIndex parent(const QModelIndex &index) const;
   bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const; 
-  int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-  void fetchMore ( const QModelIndex & parent ); 
-  bool canFetchMore ( const QModelIndex & parent ) const;
+  void fetchMore ( const QModelIndex & parent );
   void fetchCollection(MidasCollectionTreeItem* parent);
   void fetchItem(MidasItemTreeItem* parent);
-
-  const inline MidasTreeItem *midasTreeItem(const QModelIndex &index) const
-    {
-    return index.isValid() ? reinterpret_cast<const MidasTreeItem*>(index.internalPointer()): NULL;
-    }
 
 signals:
   void serverPolled();

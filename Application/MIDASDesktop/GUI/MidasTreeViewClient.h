@@ -46,6 +46,8 @@ public slots:
   void Update();
   void updateSelection(const QItemSelection &selected,
     const QItemSelection &deselected);
+  void expandAll();
+  void collapseAll();
 
 signals:
 

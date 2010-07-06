@@ -261,3 +261,15 @@ void MidasTreeViewClient::dropEvent( QDropEvent * event )
     event->acceptProposedAction();
     }
 }
+
+void MidasTreeViewClient::expandAll()
+{
+  m_Model->expandAllResources();
+  MidasTreeView::expandAll();
+}
+
+void MidasTreeViewClient::collapseAll()
+{
+  m_Model->clearExpandedList();
+  MidasTreeView::collapseAll();
+}

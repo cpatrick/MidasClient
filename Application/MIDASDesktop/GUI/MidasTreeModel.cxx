@@ -2,6 +2,7 @@
 #include "MidasTreeItem.h"
 #include "MidasCommunityTreeItem.h"
 #include "mdoCommunity.h"
+#include <QPixmap>
 
 MidasTreeModel::MidasTreeModel(QObject *parent) : QAbstractItemModel(parent)
 {
@@ -104,4 +105,103 @@ int MidasTreeModel::rowCount(const QModelIndex &parent) const
     }
   parentItem = static_cast<MidasTreeItem*>(parent.internalPointer());
   return parentItem->childCount();
+}
+
+int MidasTreeModel::columnCount(const QModelIndex &parent) const
+{
+  if (parent.isValid())
+    {
+    return static_cast<MidasTreeItem*>(parent.internalPointer())->columnCount();
+    }
+  return 1;
+}
+
+QVariant MidasTreeModel::data(const QModelIndex &index, int role) const
+{
+  if (!index.isValid())
+    {
+    return QVariant();
+    }
+  MidasTreeItem *item = static_cast<MidasTreeItem*>(index.internalPointer());
+  if ( role == Qt::DisplayRole )
+    {
+    return item->data(index.column());
+    }
+  else if ( role == Qt::DecorationRole )
+    {
+    return item->getDecoration();
+    }
+  else 
+    {
+    return QVariant();
+    }
+}
+
+Qt::ItemFlags MidasTreeModel::flags(const QModelIndex &index) const
+{
+  if (!index.isValid())
+    {
+    return 0;
+    }
+
+  return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+}
+
+QModelIndex MidasTreeModel::parent(const QModelIndex &index) const
+  {
+  if (!index.isValid())
+    {
+    return QModelIndex();
+    }
+
+  MidasTreeItem *childItem = static_cast<MidasTreeItem*>(index.internalPointer());
+  MidasTreeItem *parentItem = childItem->parent();
+
+  if (parentItem == NULL)
+    {
+    return QModelIndex();
+    }
+  return createIndex(parentItem->row(), 0, parentItem);
+}
+
+QVariant MidasTreeModel::headerData(int section, 
+                                    Qt::Orientation orientation,
+                                    int role) const
+{
+  /*if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+    {
+    return m_TopLevelCommunities.data(section);
+    }
+    */
+  return QVariant();
+}
+
+bool MidasTreeModel::canFetchMore ( const QModelIndex & parent ) const
+{
+  if ( !parent.isValid() )
+    {
+    return false;
+    }
+  const MidasTreeItem* item = (this->midasTreeItem(parent)); 
+  return !item->isFetchedChildren(); 
+}
+
+void MidasTreeModel::fetchMore ( const QModelIndex & parent )
+{
+}
+
+void MidasTreeModel::clearExpandedList()
+{
+  m_ExpandedList.clear();
+}
+
+void MidasTreeModel::expandAllResources()
+{
+  m_ExpandedList.clear();
+  
+  for(std::map<std::string, QModelIndex>::iterator i = m_IndexMap.begin();
+      i != m_IndexMap.end(); ++i)
+    {
+    m_ExpandedList.insert(i->first);
+    }
 }
