@@ -427,47 +427,31 @@ void MIDASDesktopUI::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 void MIDASDesktopUI::updateActionState( const MidasTreeItem* item )
 {
-  MidasCommunityTreeItem * communityTreeItem = NULL; 
-  MidasCollectionTreeItem * collectionTreeItem = NULL; 
-  MidasItemTreeItem * itemTreeItem = NULL; 
-  MidasBitstreamTreeItem * bitstreamTreeItem = NULL;
-
   // disable all actions
   this->activateActions( false, ACTION_ALL_CONNECTED );
+  this->dlg_pullUI->setPullId(item->getId());
+  this->dlg_pullUI->setResourceType(item->getType());
 
-  if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  if (item->getType() == midasResourceType::COMMUNITY)
     {
     this->activateActions( true, ACTION_COMMUNITY );
-    this->dlg_pullUI->setPullId(communityTreeItem->getCommunity()->GetId());
-    this->dlg_pullUI->setResourceType(midasResourceType::COMMUNITY);
     }
-  else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  else if (item->getType() == midasResourceType::COLLECTION)
     {
     this->activateActions( true, ACTION_COLLECTION );
-    this->dlg_pullUI->setPullId(collectionTreeItem->getCollection()->GetId());
-    this->dlg_pullUI->setResourceType(midasResourceType::COLLECTION);
     }
-  else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  else if (item->getType() == midasResourceType::ITEM)
     {
     this->activateActions( true, ACTION_ITEM | ACTION_BITSTREAM );
-    this->dlg_pullUI->setPullId(itemTreeItem->getItem()->GetId());
-    this->dlg_pullUI->setResourceType(midasResourceType::ITEM);
     }
-  else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  else if (item->getType() == midasResourceType::BITSTREAM)
     {
     this->activateActions( true, ACTION_BITSTREAM );
-    this->dlg_pullUI->setPullId(bitstreamTreeItem->getBitstream()->GetId());
-    this->dlg_pullUI->setResourceType(midasResourceType::BITSTREAM);
     }
 }
 
 void MIDASDesktopUI::updateActionStateClient( const MidasTreeItem* item )
 {
-  MidasCommunityTreeItem * communityTreeItem = NULL;
-  MidasCollectionTreeItem * collectionTreeItem = NULL;
-  MidasItemTreeItem * itemTreeItem = NULL;
-  MidasBitstreamTreeItem * bitstreamTreeItem = NULL;
-
   // disable all actions
   this->activateActions( false, ACTION_ALL_CONNECTED );
   this->activateActions( false, ACTION_CLIENT_COMMUNITY
@@ -475,19 +459,19 @@ void MIDASDesktopUI::updateActionStateClient( const MidasTreeItem* item )
                               | ACTION_CLIENT_ITEM
                               | ACTION_CLIENT_BITSTREAM );
 
-  if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  if (item->getType() == midasResourceType::COMMUNITY)
     {
     this->activateActions( true, ACTION_CLIENT_COMMUNITY );
     }
-  else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  else if (item->getType() == midasResourceType::COLLECTION)
     {
     this->activateActions( true, ACTION_CLIENT_COLLECTION );
     }
-  else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  else if (item->getType() == midasResourceType::ITEM)
     {
     this->activateActions( true, ACTION_CLIENT_ITEM );
     }
-  else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  else if (item->getType() == midasResourceType::BITSTREAM)
     {
     this->activateActions( true, ACTION_CLIENT_BITSTREAM );
     }
