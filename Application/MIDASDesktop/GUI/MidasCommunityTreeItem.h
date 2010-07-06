@@ -13,7 +13,7 @@ class MidasCommunityTreeItem : public MidasTreeItem
 
 public:
 
-  MidasCommunityTreeItem(const QList<QVariant> &itemData, MidasTreeItem *parent = 0);
+  MidasCommunityTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent = 0);
   ~MidasCommunityTreeItem();
   virtual void populate(QModelIndex parent);
 

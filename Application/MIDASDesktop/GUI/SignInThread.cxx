@@ -30,8 +30,8 @@ void SignInThread::run()
     m_Parent->getDatabaseProxy()->Close();
     m_Parent->getSynchronizer()->GetAuthenticator()->SetProfile(m_Profile.toStdString());
     
-    m_Parent->getTreeView()->SetWebAPI(mws::WebAPI::Instance());
-    m_Parent->getTreeView()->Initialize();
+    m_Parent->getTreeViewServer()->SetWebAPI(mws::WebAPI::Instance());
+    m_Parent->getTreeViewServer()->Initialize();
 
     emit initialized(true);
     }

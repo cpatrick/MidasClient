@@ -1,6 +1,7 @@
 #include "MidasCommunityTreeItem.h"
 #include "MidasCollectionTreeItem.h"
 #include "midasStandardIncludes.h"
+#include "MidasTreeModel.h"
 
 #include <mdoCommunity.h>
 #include <iostream>
@@ -8,8 +9,8 @@
 #include <QStyle>
 #include <QModelIndex>
 
-MidasCommunityTreeItem::MidasCommunityTreeItem(const QList<QVariant> &itemData, MidasTreeItem *parent, MidasTreeModel* model):
-MidasTreeItem(itemData, parent)
+MidasCommunityTreeItem::MidasCommunityTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem* parent):
+MidasTreeItem(itemData, model, parent)
 {
   m_Community = NULL;
 }
@@ -54,11 +55,12 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
     {
     QList<QVariant> name;
     name << (*itCol)->GetName().c_str();
-    MidasCollectionTreeItem* collection = new MidasCollectionTreeItem(name, this);
+    MidasCollectionTreeItem* collection = new MidasCollectionTreeItem(name, m_Model, this);
     collection->setCollection(*itCol);
 
-    QModelIndex index = index(
-    
+    this->appendChild(collection);
+    QModelIndex index = m_Model->index(row, 0, parent);
+    m_Model->registerResource((*itCol)->GetUuid(), index);
 
     if(this->isDynamicFetch())
       {
@@ -67,14 +69,13 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
       }
     else
       {
-      collection->populate();
+      collection->populate(index);
       }
 
     if((*itCol)->IsDirty())
       {
       collection->setDecorationRole(MidasTreeItem::Dirty);
       }
-    this->appendChild(collection);
     itCol++;
     row++;
     }
@@ -85,10 +86,12 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
     {
     QList<QVariant> name;
     name << (*itCom)->GetName().c_str();
-    MidasCommunityTreeItem* community = new MidasCommunityTreeItem(name, this);
+    MidasCommunityTreeItem* community = new MidasCommunityTreeItem(name, m_Model, this);
     community->setCommunity(*itCom);
 
-    QModelIndex index(row, 0, parent);
+    this->appendChild(community);
+    QModelIndex index = m_Model->index(row, 0, parent);
+    m_Model->registerResource((*itCom)->GetUuid(), index);
 
     if(this->isDynamicFetch())
       {
@@ -99,7 +102,6 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
       {
       community->setDecorationRole(MidasTreeItem::Dirty);
       }
-    this->appendChild(community);
     itCom++;
     row++;
     }

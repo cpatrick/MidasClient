@@ -1,4 +1,4 @@
-#include "MidasTreeModel.h"
+#include "MidasTreeModelServer.h"
 
 #include <QPixmap>
 #include <QApplication>
@@ -22,11 +22,11 @@
 #include <mdoCommunity.h>
 #include <mwsCommunity.h>
 
-MidasTreeModel::MidasTreeModel(QObject *parent) : QAbstractItemModel(parent)
+MidasTreeModelServer::MidasTreeModelServer(QObject *parent) : MidasTreeModel(parent)
 {
 }
 
-void MidasTreeModel::clear(const QModelIndex &index)
+void MidasTreeModelServer::clear(const QModelIndex &index)
 {
   for(QList<MidasCommunityTreeItem*>::iterator i = m_TopLevelCommunities.begin();
       i != m_TopLevelCommunities.end(); ++i)
@@ -36,18 +36,18 @@ void MidasTreeModel::clear(const QModelIndex &index)
   this->m_TopLevelCommunities.clear();
 }
 
-MidasTreeModel::~MidasTreeModel()
+MidasTreeModelServer::~MidasTreeModelServer()
 {
 }
 
 /** Set the web API */
-void MidasTreeModel::SetWebAPI(mws::WebAPI* api)
+void MidasTreeModelServer::SetWebAPI(mws::WebAPI* api)
 {
   m_WebAPI = api;
 }
 
 /** Populate the tree */
-void MidasTreeModel::Populate()
+void MidasTreeModelServer::Populate()
 {
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
@@ -63,6 +63,7 @@ void MidasTreeModel::Populate()
   std::vector<mdo::Community*> communities = community->GetCommunities();
 
   std::vector<mdo::Community*>::const_iterator itCom = communities.begin();
+  int row = 0;
   while(itCom != communities.end())
     {
     // Set the name of the community
@@ -70,20 +71,25 @@ void MidasTreeModel::Populate()
     columnData << (*itCom)->GetName().c_str();
     
     // Add the community
-    MidasCommunityTreeItem* communityItem = new MidasCommunityTreeItem(columnData, NULL);
+    MidasCommunityTreeItem* communityItem = new MidasCommunityTreeItem(columnData, this, NULL);
     communityItem->setCommunity(*itCom);
     communityItem->setDynamicFetch(true);
-    communityItem->populate();
+
+    QModelIndex index = this->index(row, 0);
+    registerResource((*itCom)->GetUuid(), index);
+
+    communityItem->populate(index);
     communityItem->setTopLevelCommunities(&m_TopLevelCommunities);
     
     m_TopLevelCommunities.append(communityItem);
     itCom++;
+    row++;
     }
   emit layoutChanged();
   emit serverPolled();
 }
 
-bool MidasTreeModel::hasChildren( const QModelIndex & parent ) const
+bool MidasTreeModelServer::hasChildren( const QModelIndex & parent ) const
 {
   if (!parent.isValid())
     {
@@ -100,7 +106,7 @@ bool MidasTreeModel::hasChildren( const QModelIndex & parent ) const
     }
 }
 
-int MidasTreeModel::columnCount(const QModelIndex &parent) const
+int MidasTreeModelServer::columnCount(const QModelIndex &parent) const
 {
   if (parent.isValid())
     {
@@ -109,7 +115,7 @@ int MidasTreeModel::columnCount(const QModelIndex &parent) const
   return 1;
 }
 
-QVariant MidasTreeModel::data(const QModelIndex &index, int role) const
+QVariant MidasTreeModelServer::data(const QModelIndex &index, int role) const
 {
   if (!index.isValid())
     {
@@ -130,7 +136,7 @@ QVariant MidasTreeModel::data(const QModelIndex &index, int role) const
     }
 }
 
-Qt::ItemFlags MidasTreeModel::flags(const QModelIndex &index) const
+Qt::ItemFlags MidasTreeModelServer::flags(const QModelIndex &index) const
 {
   if (!index.isValid())
     {
@@ -140,7 +146,7 @@ Qt::ItemFlags MidasTreeModel::flags(const QModelIndex &index) const
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-QVariant MidasTreeModel::headerData(int section, 
+QVariant MidasTreeModelServer::headerData(int section, 
                                     Qt::Orientation orientation,
                                     int role) const
 {
@@ -152,33 +158,7 @@ QVariant MidasTreeModel::headerData(int section,
   return QVariant();
 }
 
-QModelIndex MidasTreeModel::index(int row, 
-                                  int column, const 
-                                  QModelIndex &parent) const
-{
-  if (!hasIndex(row, column, parent))
-    {
-    return QModelIndex();
-    }
-
-  if (!parent.isValid())
-    {
-    return createIndex(row, column, m_TopLevelCommunities[row]);
-    }
-    
-  MidasTreeItem* parentItem = static_cast<MidasTreeItem*>(parent.internalPointer());
-  MidasTreeItem* childItem = parentItem->child(row);
-  if (childItem)
-    {
-    return createIndex(row, column, childItem);
-    }
-  else
-    {
-    return QModelIndex();
-    }
-}
-
-QModelIndex MidasTreeModel::parent(const QModelIndex &index) const
+QModelIndex MidasTreeModelServer::parent(const QModelIndex &index) const
   {
   if (!index.isValid())
     {
@@ -195,7 +175,7 @@ QModelIndex MidasTreeModel::parent(const QModelIndex &index) const
   return createIndex(parentItem->row(), 0, parentItem);
 }
 
-int MidasTreeModel::rowCount(const QModelIndex &parent) const
+int MidasTreeModelServer::rowCount(const QModelIndex &parent) const
 {
   MidasTreeItem *parentItem;
   if (parent.column() > 0)
@@ -211,7 +191,7 @@ int MidasTreeModel::rowCount(const QModelIndex &parent) const
   return parentItem->childCount();
 }
 
-bool MidasTreeModel::canFetchMore ( const QModelIndex & parent ) const
+bool MidasTreeModelServer::canFetchMore ( const QModelIndex & parent ) const
   {
   if ( !parent.isValid() )
     {
@@ -222,7 +202,7 @@ bool MidasTreeModel::canFetchMore ( const QModelIndex & parent ) const
   }
 
 /** Fetch more data */
-void MidasTreeModel::fetchMore ( const QModelIndex & parent )
+void MidasTreeModelServer::fetchMore ( const QModelIndex & parent )
 {
   if (!parent.isValid() || !canFetchMore(parent))
     {
@@ -246,7 +226,7 @@ void MidasTreeModel::fetchMore ( const QModelIndex & parent )
 }
 
 //-------------------------------------------------------------------------
-void MidasTreeModel::fetchCollection(MidasCollectionTreeItem* parent)
+void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
 {
   mws::Collection remote;
   mdo::Collection* collection = parent->getCollection();
@@ -264,7 +244,7 @@ void MidasTreeModel::fetchCollection(MidasCollectionTreeItem* parent)
     {
     QList<QVariant> name;
     name << (*i)->GetTitle().c_str();
-    MidasItemTreeItem* item = new MidasItemTreeItem(name, parent);
+    MidasItemTreeItem* item = new MidasItemTreeItem(name, this, parent);
     item->setItem(*i);
     item->setDynamicFetch(true);
     item->setFetchedChildren(false);
@@ -274,7 +254,7 @@ void MidasTreeModel::fetchCollection(MidasCollectionTreeItem* parent)
 }
 
 //-------------------------------------------------------------------------
-void MidasTreeModel::fetchItem(MidasItemTreeItem* parent)
+void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
 {
   mws::Item remote;
   mdo::Item* item = parent->getItem();
@@ -287,34 +267,38 @@ void MidasTreeModel::fetchItem(MidasItemTreeItem* parent)
     return;
     }
 
+  int row = 0;
   for(std::vector<mdo::Bitstream*>::const_iterator i = item->GetBitstreams().begin();
       i != item->GetBitstreams().end(); ++i)
     {
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
-    MidasBitstreamTreeItem* bitstream = new MidasBitstreamTreeItem(name, parent);
+    MidasBitstreamTreeItem* bitstream = new MidasBitstreamTreeItem(name, this, parent);
     bitstream->setBitstream(*i);
     parent->appendChild(bitstream);
+    QModelIndex index = this->index(row, 0, getIndexByUuid(parent->getUuid()));
+    registerResource((*i)->GetUuid(), index);
+    row++;
     }
   emit layoutChanged();
 }
 
 //-------------------------------------------------------------------------
-void MidasTreeModel::itemExpanded ( const QModelIndex & index )
+void MidasTreeModelServer::itemExpanded ( const QModelIndex & index )
 {
   MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
   item->setDecorationRole(MidasTreeItem::Expanded);
 }
 
 //-------------------------------------------------------------------------
-void MidasTreeModel::itemCollapsed ( const QModelIndex & index )
+void MidasTreeModelServer::itemCollapsed ( const QModelIndex & index )
 {
   MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
   item->setDecorationRole(MidasTreeItem::Collapsed);
 }
 
 //-------------------------------------------------------------------------
-void MidasTreeModel::decorateByUuid(std::string uuid)
+void MidasTreeModelServer::decorateByUuid(std::string uuid)
 {
   for(QList<MidasCommunityTreeItem*>::iterator i = m_TopLevelCommunities.begin();
       i != this->m_TopLevelCommunities.end(); ++i)
@@ -324,7 +308,7 @@ void MidasTreeModel::decorateByUuid(std::string uuid)
 }
 
 //-------------------------------------------------------------------------
-void MidasTreeModel::decorateRecurse(MidasTreeItem* node, std::string uuid)
+void MidasTreeModelServer::decorateRecurse(MidasTreeItem* node, std::string uuid)
 {
   if(node->getUuid() == uuid)
     {
@@ -335,36 +319,4 @@ void MidasTreeModel::decorateRecurse(MidasTreeItem* node, std::string uuid)
     {
     decorateRecurse(node->child(i), uuid);
     }
-}
-
-QModelIndex MidasTreeModel::getIndexByUuid(std::string uuid)
-{
-  QModelIndex value;
-  for(QList<MidasCommunityTreeItem*>::iterator i = m_TopLevelCommunities.begin();
-      i != this->m_TopLevelCommunities.end(); ++i)
-    {
-    MidasTreeItem* node = reinterpret_cast<MidasTreeItem*>(*i);
-    value = getIndexRecurse(node, uuid, QModelIndex());
-    if(value.isValid()) break;
-    }
-  return value;
-}
-
-QModelIndex MidasTreeModel::getIndexRecurse(MidasTreeItem* node,
-                                            std::string uuid,
-                                            QModelIndex parent)
-{
-  if(node->getUuid() == uuid)
-    {
-    return parent.isValid() ? index(node->row(), 0, parent) :
-      index(node->row(), 0);
-    }
-  QModelIndex value;
-  for(int i = 0; i < node->childCount(); i++)
-    {
-    value = getIndexRecurse(node->child(i), uuid,
-      index(node->row(), 0, parent));
-    if(value.isValid()) break;
-    }
-  return value;
 }

@@ -21,7 +21,7 @@
 #include <iostream>
 
 /** Constructor */
-MidasTreeViewClient::MidasTreeViewClient(QWidget * parent):QTreeView(parent)
+MidasTreeViewClient::MidasTreeViewClient(QWidget * parent):MidasTreeView(parent)
 {
   // The tree model
   m_Model = new MidasTreeModelClient;

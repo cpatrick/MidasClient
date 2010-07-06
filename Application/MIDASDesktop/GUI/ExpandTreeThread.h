@@ -6,8 +6,8 @@
 #include <QThread>
 #include <QModelIndex>
 
-class MidasTreeView;
-class MidasTreeModel;
+class MidasTreeViewServer;
+class MidasTreeModelServer;
 
 namespace mdo {
   class Object;
@@ -20,8 +20,8 @@ public:
   ExpandTreeThread();
   ~ExpandTreeThread();
 
-  void SetParentUI(MidasTreeView* parent);
-  void SetParentModel(MidasTreeModel* parent);
+  void SetParentUI(MidasTreeViewServer* parent);
+  void SetParentModel(MidasTreeModelServer* parent);
   void SetObject(mdo::Object* object);
 
   virtual void run();
@@ -32,8 +32,8 @@ signals:
   void select(const QModelIndex& index);
 
 private:
-  MidasTreeView*  m_ParentUI;
-  MidasTreeModel* m_ParentModel;
+  MidasTreeViewServer*  m_ParentUI;
+  MidasTreeModelServer* m_ParentModel;
   mdo::Object*    m_Object;
 };
 

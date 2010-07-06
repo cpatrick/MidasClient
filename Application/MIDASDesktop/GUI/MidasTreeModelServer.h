@@ -1,6 +1,7 @@
-#ifndef __MidasTreeModel_H
-#define __MidasTreeModel_H
+#ifndef __MidasTreeModelServer_H
+#define __MidasTreeModelServer_H
 
+#include "MidasTreeModel.h"
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
@@ -21,14 +22,14 @@ class MidasCommunityTreeItem;
 class MidasCollectionTreeItem;
 class MidasItemTreeItem;
 
-class MidasTreeModel : public QAbstractItemModel
+class MidasTreeModelServer : public MidasTreeModel
 {
   Q_OBJECT
 
 public:
 
-  MidasTreeModel(QObject *parent = 0);
-  ~MidasTreeModel();
+  MidasTreeModelServer(QObject *parent = 0);
+  ~MidasTreeModelServer();
 
   void SetWebAPI(mws::WebAPI* api);
   virtual void Populate();
@@ -39,10 +40,6 @@ public:
   Qt::ItemFlags flags(const QModelIndex &index) const;
   QVariant headerData(int section, Qt::Orientation orientation,
                      int role = Qt::DisplayRole) const;
-  QModelIndex index(int row, int column,
-                   const QModelIndex &parent = QModelIndex()) const;
-
-  QModelIndex getIndexByUuid(std::string uuid);
 
   QModelIndex parent(const QModelIndex &index) const;
   bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const; 
@@ -72,11 +69,8 @@ public slots:
 
 private:
   void decorateRecurse( MidasTreeItem* node, std::string uuid);
-  QModelIndex getIndexRecurse(MidasTreeItem* node, std::string uuid,
-                              QModelIndex parent);
 
   mws::WebAPI*                     m_WebAPI;
-  QList<MidasCommunityTreeItem*>   m_TopLevelCommunities;
 };
 
-#endif //__MidasTreeModel_H
+#endif //__MidasTreeModelServer_H

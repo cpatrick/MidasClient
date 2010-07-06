@@ -7,8 +7,8 @@
 #include <QPixmap>
 #include <QStyle>
 
-MidasItemTreeItem::MidasItemTreeItem(const QList<QVariant> &itemData, MidasTreeItem *parent):
-MidasTreeItem(itemData, parent)
+MidasItemTreeItem::MidasItemTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent):
+MidasTreeItem(itemData, model, parent)
 {
   //this->fetchedChildren = true; 
 }
@@ -32,7 +32,7 @@ std::string MidasItemTreeItem::getUuid() const
   return m_Item->GetUuid();
 }
 
-void MidasItemTreeItem::populate()
+void MidasItemTreeItem::populate(QModelIndex parent)
 {
   if(!m_Item)
     {
@@ -41,19 +41,25 @@ void MidasItemTreeItem::populate()
     }
 
   // Add the bitstreams for the item
+  int row = 0;
   std::vector<mdo::Bitstream*>::const_iterator i = m_Item->GetBitstreams().begin();
   while(i != m_Item->GetBitstreams().end())
     {
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
-    MidasBitstreamTreeItem* bitstream = new MidasBitstreamTreeItem(name, this);
+    MidasBitstreamTreeItem* bitstream = new MidasBitstreamTreeItem(name, m_Model, this);
     bitstream->setBitstream(*i);
+    this->appendChild(bitstream);
+    QModelIndex index = m_Model->index(row, 0, parent);
+    m_Model->registerResource((*i)->GetUuid(), index);
+
     if((*i)->IsDirty())
       {
       bitstream->setDecorationRole(MidasTreeItem::Dirty);
       }
-    this->appendChild(bitstream);
+    bitstream->populate(index);
     i++;
+    row++;
     }
   this->setFetchedChildren( true );
 }

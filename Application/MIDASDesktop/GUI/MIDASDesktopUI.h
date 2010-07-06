@@ -11,7 +11,6 @@
 #include "ui_MIDASDesktopUI.h"
 
 class UploadAgreementUI;
-class UpDownLoadUI; 
 class CreateMidasCommunityUI; 
 class CreateMidasCollectionUI; 
 class CreateMidasItemUI; 
@@ -190,7 +189,6 @@ private:
   CreateMidasItemUI *         dlg_addMidasItemUI;
   CreateProfileUI *           dlg_createProfileUI;
   SignInUI *                  dlg_signInUI;
-  UpDownLoadUI *              dlg_upDownLoadUI;
   UploadAgreementUI *         dlg_uploadAgreementUI;
   AboutUI *                   dlg_aboutUI;
   AutoRefreshUI *             dlg_autoRefreshUI;

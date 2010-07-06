@@ -6,8 +6,8 @@
 #include <QPixmap>
 #include <QStyle>
 
-MidasCollectionTreeItem::MidasCollectionTreeItem(const QList<QVariant> &itemData, MidasTreeItem *parent): 
-MidasTreeItem(itemData, parent)
+MidasCollectionTreeItem::MidasCollectionTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent): 
+MidasTreeItem(itemData, model, parent)
 {
 }
 
@@ -30,7 +30,7 @@ std::string MidasCollectionTreeItem::getUuid() const
   return m_Collection->GetUuid();
 }
 
-void MidasCollectionTreeItem::populate()
+void MidasCollectionTreeItem::populate(QModelIndex parent)
 {
   if(!m_Collection)
     {
@@ -39,19 +39,25 @@ void MidasCollectionTreeItem::populate()
     }
 
   // Add the items for the collection
+  int row = 0;
   std::vector<mdo::Item*>::const_iterator i = m_Collection->GetItems().begin();
   while(i != m_Collection->GetItems().end())
     {
     QList<QVariant> name;
     name << (*i)->GetTitle().c_str();
-    MidasItemTreeItem* item = new MidasItemTreeItem(name, this);
+    MidasItemTreeItem* item = new MidasItemTreeItem(name, m_Model, this);
     item->setItem(*i);
-    item->populate();
+    this->appendChild(item);
+
+    QModelIndex index = m_Model->index(row, 0, parent);
+    m_Model->registerResource((*i)->GetUuid(), index);
+
+    item->populate(index);
+
     if((*i)->IsDirty())
       {
       item->setDecorationRole(MidasTreeItem::Dirty);
       }
-    this->appendChild(item);
     i++;
     }
 }

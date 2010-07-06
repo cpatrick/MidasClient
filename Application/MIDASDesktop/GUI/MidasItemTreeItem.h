@@ -13,9 +13,9 @@ class MidasItemTreeItem : public MidasTreeItem
 Q_OBJECT
 
 public:
-  MidasItemTreeItem(const QList<QVariant> &itemData, MidasTreeItem *parent = 0); 
+  MidasItemTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent = 0); 
   virtual ~MidasItemTreeItem();
-  virtual void populate();
+  virtual void populate(QModelIndex parent);
 
   int getType() const;
   int getId() const;

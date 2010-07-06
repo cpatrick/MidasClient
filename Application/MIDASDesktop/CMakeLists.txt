@@ -78,16 +78,20 @@ set(MIDASDesktopUI_SRCS
   GUI/GUILogger.h
   GUI/GUIProgress.cxx
   GUI/GUIProgress.h
-  GUI/MidasTreeView.cxx
   GUI/MidasTreeView.h
+  GUI/MidasTreeView.cxx
+  GUI/MidasTreeViewServer.cxx
+  GUI/MidasTreeViewServer.h
   GUI/MidasTreeViewClient.cxx
   GUI/MidasTreeViewClient.h
   GUI/MidasTreeItem.cxx
-  GUI/MidasTreeItem.h
-  GUI/MidasTreeModel.cxx
   GUI/MidasTreeModel.h
+  GUI/MidasTreeModel.cxx
+  GUI/MidasTreeModelServer.cxx
+  GUI/MidasTreeModelServer.h
   GUI/MidasTreeModelClient.cxx
   GUI/MidasTreeModelClient.h
+  GUI/MidasTreeItem.h
   GUI/MidasCommunityTreeItem.cxx
   GUI/MidasCommunityTreeItem.h
   GUI/MidasCollectionTreeItem.h
@@ -146,9 +150,11 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/AboutUI.h
   GUI/AutoRefreshUI.h
   GUI/MidasTreeView.h
+  GUI/MidasTreeViewServer.h
   GUI/MidasTreeViewClient.h
   GUI/MidasTreeItem.h
   GUI/MidasTreeModel.h
+  GUI/MidasTreeModelServer.h
   GUI/MidasTreeModelClient.h
   GUI/MidasCommunityTreeItem.h
   GUI/MidasCollectionTreeItem.h

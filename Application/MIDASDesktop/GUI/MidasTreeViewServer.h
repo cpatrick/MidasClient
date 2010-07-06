@@ -1,7 +1,7 @@
 #ifndef __MidasTreeViewServer_H
 #define __MidasTreeViewServer_H
 
-#include <QTreeView>
+#include "MidasTreeView.h"
 #include <QMutex>
 #include <QPoint>
 #include <string>
@@ -13,7 +13,7 @@ class MidasCollectionTreeItem;
 class MidasItemTreeItem;
 class MidasBitstreamTreeItem;
 class QContextMenuEvent;
-class MidasTreeModel;
+class MidasTreeModelServer;
 class ExpandTreeThread;
 
 namespace mws{
@@ -24,7 +24,7 @@ namespace mdo{
   class Object;
 }
 
-class MidasTreeViewServer : public QTreeView
+class MidasTreeViewServer : public MidasTreeView
 {
   Q_OBJECT
 
@@ -81,11 +81,11 @@ signals:
 protected:
  
   void contextMenuEvent ( QContextMenuEvent * e );
-  mws::WebAPI*        m_WebAPI;
-  MidasTreeModel*     m_Model;
-  ExpandTreeThread*   m_ExpandTreeThread;
-  QMutex              m_Mutex;
-  QPoint              m_DragStart;
+  mws::WebAPI*          m_WebAPI;
+  MidasTreeModelServer* m_Model;
+  ExpandTreeThread*     m_ExpandTreeThread;
+  QMutex                m_Mutex;
+  QPoint                m_DragStart;
  };
 
 #endif //__MidasTreeViewServer_H

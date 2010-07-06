@@ -1,6 +1,6 @@
 #include "ExpandTreeThread.h"
-#include "MidasTreeView.h"
-#include "MidasTreeModel.h"
+#include "MidasTreeViewServer.h"
+#include "MidasTreeModelServer.h"
 #include "mdoObject.h"
 #include "mdoCommunity.h"
 #include "mdoCollection.h"
@@ -22,12 +22,12 @@ ExpandTreeThread::~ExpandTreeThread()
 {
 }
 
-void ExpandTreeThread::SetParentUI(MidasTreeView* parent)
+void ExpandTreeThread::SetParentUI(MidasTreeViewServer* parent)
 {
   m_ParentUI = parent;
 }
 
-void ExpandTreeThread::SetParentModel(MidasTreeModel* parent)
+void ExpandTreeThread::SetParentModel(MidasTreeModelServer* parent)
 {
   m_ParentModel = parent;
 }

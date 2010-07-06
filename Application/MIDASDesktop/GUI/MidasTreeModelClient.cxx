@@ -16,7 +16,7 @@
 #include "midasLog.h"
 #include "mdoCommunity.h"
 
-MidasTreeModelClient::MidasTreeModelClient(QObject *parent) : QAbstractItemModel(parent)
+MidasTreeModelClient::MidasTreeModelClient(QObject *parent) : MidasTreeModel(parent)
 {
   this->AlterList = true;
 }
@@ -54,10 +54,9 @@ void MidasTreeModelClient::Populate()
     {
     QList<QVariant> columnData;
     columnData << (*i)->GetName().c_str();
-    QModelIndex index(row, 0);
+    QModelIndex index = this->index(row, 0);
 
-    MidasCommunityTreeItem* communityItem = new MidasCommunityTreeItem(columnData, NULL);
-    communityItem->setIndexMap(m_IndexMap);
+    MidasCommunityTreeItem* communityItem = new MidasCommunityTreeItem(columnData, this, NULL);
     communityItem->setCommunity(*i);
     communityItem->populate(index);
     communityItem->setTopLevelCommunities(&m_TopLevelCommunities);
@@ -134,32 +133,6 @@ QVariant MidasTreeModelClient::headerData(int section,
     }
     */
   return QVariant();
-}
-
-QModelIndex MidasTreeModelClient::index(int row, 
-                                  int column, const 
-                                  QModelIndex &parent) const
-{
-  if (!hasIndex(row, column, parent))
-    {
-    return QModelIndex();
-    }
-
-  if (!parent.isValid())
-    {
-    return createIndex(row, column, m_TopLevelCommunities[row]);
-    }
-    
-  MidasTreeItem* parentItem = static_cast<MidasTreeItem*>(parent.internalPointer());
-  MidasTreeItem* childItem = parentItem->child(row);
-  if (childItem)
-    {
-    return createIndex(row, column, childItem);
-    }
-  else
-    {
-    return QModelIndex();
-    }
 }
 
 QModelIndex MidasTreeModelClient::parent(const QModelIndex &index) const
@@ -263,17 +236,5 @@ void MidasTreeModelClient::RestoreExpandedState()
       //(Probably no longer exists due to deletion)
       m_ExpandedList.erase(*i);
       }
-    }
-}
-
-QModelIndex MidasTreeModelClient::getIndexByUuid(std::string uuid)
-{
-  if(m_IndexMap.find(uuid) != m_IndexMap.end())
-    {
-    return m_IndexMap[uuid];
-    }
-  else
-    {
-    return QModelIndex();
     }
 }

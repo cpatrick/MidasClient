@@ -1,7 +1,7 @@
 #ifndef __MidasTreeViewClient_H
 #define __MidasTreeViewClient_H
 
-#include <QTreeView>
+#include "MidasTreeView.h"
 #include <string>
 
 class QItemSelection;
@@ -15,7 +15,7 @@ class MidasTreeModelClient;
 class midasDatabaseProxy;
 class midasLog;
 
-class MidasTreeViewClient : public QTreeView
+class MidasTreeViewClient : public MidasTreeView
 {
   Q_OBJECT
 

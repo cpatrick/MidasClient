@@ -11,10 +11,11 @@
 #include <QStyle>
 #include <QTime>
 
-MidasTreeItem::MidasTreeItem(const QList<QVariant> &itemData, MidasTreeItem *parent):
+MidasTreeItem::MidasTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent):
   lifespan(600),  
   parentItem(parent), itemData(itemData),
-  decorationRole(Collapsed)
+  decorationRole(Collapsed),
+  m_Model(model)
 {
   m_WebAPI = NULL;
   timestamp = QTime::currentTime().second();
@@ -52,10 +53,6 @@ bool MidasTreeItem::isValid() const
 {
   uint current = QTime::currentTime().second();
   return (this->timestamp + this->lifespan > current); 
-}
-
-void MidasTreeItem::populate()
-{
 }
 
 void MidasTreeItem::appendChild(MidasTreeItem *item)

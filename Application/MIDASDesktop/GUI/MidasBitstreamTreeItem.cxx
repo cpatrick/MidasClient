@@ -1,12 +1,13 @@
 #include "MidasBitstreamTreeItem.h"
 #include "MidasClientGlobal.h"
+#include "MidasTreeModel.h"
 #include "mdoBitstream.h"
 #include "midasStandardIncludes.h"
 #include <QPixmap>
 #include <QStyle>
 
-MidasBitstreamTreeItem::MidasBitstreamTreeItem(const QList<QVariant> &itemData, MidasTreeItem *parent):
-MidasTreeItem(itemData, parent)
+MidasBitstreamTreeItem::MidasBitstreamTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent):
+MidasTreeItem(itemData, model, parent)
 {
   //this->fetchedChildren = true; 
 }
@@ -28,6 +29,10 @@ int MidasBitstreamTreeItem::getId() const
 std::string MidasBitstreamTreeItem::getUuid() const
 {
   return m_Bitstream->GetUuid();
+}
+
+void MidasBitstreamTreeItem::populate(QModelIndex parent)
+{
 }
 
 QPixmap MidasBitstreamTreeItem::getDecoration()

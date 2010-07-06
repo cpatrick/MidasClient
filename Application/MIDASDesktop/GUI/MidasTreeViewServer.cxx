@@ -9,7 +9,7 @@
 
 #include "MIDASDesktopUI.h"
 #include "MidasTreeItem.h"
-#include "MidasTreeModel.h"
+#include "MidasTreeModelServer.h"
 #include "MidasCommunityTreeItem.h"
 #include "MidasCollectionTreeItem.h"
 #include "MidasItemTreeItem.h"
@@ -33,10 +33,10 @@
 #include <iostream>
 
 /** Constructor */
-MidasTreeViewServer::MidasTreeViewServer(QWidget * parent):QTreeView(parent)
+MidasTreeViewServer::MidasTreeViewServer(QWidget * parent):MidasTreeView(parent)
 {
   // The tree model
-  m_Model = new MidasTreeModel;
+  m_Model = new MidasTreeModelServer;
   this->setModel(m_Model);
 
   m_WebAPI = NULL;
@@ -118,7 +118,7 @@ const QModelIndex MidasTreeViewServer::getSelectedModelIndex() const
 
 const MidasTreeItem * MidasTreeViewServer::getSelectedMidasTreeItem() const
 {
-  return reinterpret_cast<MidasTreeModel*>(
+  return reinterpret_cast<MidasTreeModelServer*>(
     this->model())->midasTreeItem(this->getSelectedModelIndex());
 }
 

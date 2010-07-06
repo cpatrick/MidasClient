@@ -1,6 +1,7 @@
 #ifndef __MidasTreeItem_H
 #define __MidasTreeItem_H
 
+#include "MidasTreeModel.h"
 #include <QList>
 #include <QVariant>
 #include <QFlags>
@@ -23,8 +24,10 @@ public:
     };
   Q_DECLARE_FLAGS(DecorationRoles, DecorationRole)
 
-  MidasTreeItem(const QList<QVariant> &itemData, MidasTreeItem *parent = 0);
+  MidasTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent = 0);
   virtual ~MidasTreeItem();
+
+  virtual void populate(QModelIndex parent) = 0;
 
   bool operator==(const MidasTreeItem* other) const;
 
@@ -52,7 +55,6 @@ public:
   virtual int getType() const = 0;
   virtual std::string getUuid() const = 0;
   virtual int childCount() const;
-  virtual void populate(QModelIndex parent);
 
   virtual QPixmap getDecoration();
   void setDecorationRole(DecorationRoles role);
@@ -63,9 +65,9 @@ public:
   void setTopLevelCommunities(QList<MidasCommunityTreeItem*>* tlc) { m_TopLevelCommunities = tlc; }
 
 protected:
-
   DecorationRoles decorationRole;
   mws::WebAPI*    m_WebAPI;
+  MidasTreeModel* m_Model;
   QList<MidasTreeItem*> childItems;
   QList<QVariant> itemData;
   MidasTreeItem *parentItem;
