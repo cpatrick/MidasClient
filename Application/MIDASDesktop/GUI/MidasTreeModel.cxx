@@ -65,3 +65,43 @@ QModelIndex MidasTreeModel::index(int row,
     return QModelIndex();
     }
 }
+
+
+void MidasTreeModel::restoreExpandedState()
+{
+  //copy list so we can remove while iterating
+  std::set<std::string> copy = m_ExpandedList;
+  for(std::set<std::string>::iterator i = copy.begin();
+      i != copy.end(); ++i)
+    {
+    QModelIndex index = this->getIndexByUuid(*i);
+    if(index.isValid())
+      {
+      this->AlterList = false;
+      emit expand(index);
+      this->AlterList = true;
+      }
+    else
+      {
+      //If we can't resolve the list item, we should remove it from the list.
+      //(Probably no longer exists due to deletion)
+      m_ExpandedList.erase(*i);
+      }
+    }
+}
+
+int MidasTreeModel::rowCount(const QModelIndex &parent) const
+{
+  MidasTreeItem *parentItem;
+  if (parent.column() > 0)
+    {
+    return 0;
+    }
+    
+  if (!parent.isValid())
+    {
+    return m_TopLevelCommunities.size();
+    }
+  parentItem = static_cast<MidasTreeItem*>(parent.internalPointer());
+  return parentItem->childCount();
+}

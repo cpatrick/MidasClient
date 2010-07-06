@@ -165,22 +165,6 @@ QModelIndex MidasTreeModelServer::parent(const QModelIndex &index) const
   return createIndex(parentItem->row(), 0, parentItem);
 }
 
-int MidasTreeModelServer::rowCount(const QModelIndex &parent) const
-{
-  MidasTreeItem *parentItem;
-  if (parent.column() > 0)
-    {
-    return 0;
-    }
-    
-  if (!parent.isValid())
-    {
-    return m_TopLevelCommunities.size();
-    }
-  parentItem = static_cast<MidasTreeItem*>(parent.internalPointer());
-  return parentItem->childCount();
-}
-
 bool MidasTreeModelServer::canFetchMore ( const QModelIndex & parent ) const
   {
   if ( !parent.isValid() )

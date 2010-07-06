@@ -41,7 +41,6 @@ public:
 
   QModelIndex parent(const QModelIndex &index) const;
   bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const; 
-  int rowCount(const QModelIndex &parent = QModelIndex()) const;
   int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
   void fetchMore ( const QModelIndex & parent ); 

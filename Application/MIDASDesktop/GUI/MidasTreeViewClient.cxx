@@ -71,7 +71,7 @@ void MidasTreeViewClient::Update()
 bool MidasTreeViewClient::Initialize()
 {
   m_Model->Populate();
-  m_Model->RestoreExpandedState();
+  m_Model->restoreExpandedState();
   return true;
 }
 
