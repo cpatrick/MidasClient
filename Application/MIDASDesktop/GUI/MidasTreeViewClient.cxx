@@ -35,6 +35,8 @@ MidasTreeViewClient::MidasTreeViewClient(QWidget * parent):QTreeView(parent)
      this->model(), SLOT(itemCollapsed(const QModelIndex&)) );
   connect (this, SIGNAL( expanded(const QModelIndex&)),
      this->model(), SLOT(itemExpanded (const QModelIndex&)) );
+  connect (m_Model, SIGNAL( expand(const QModelIndex&) ),
+    this, SLOT( expand(const QModelIndex&) ) );
 
   // define action to be triggered when tree item is selected
   QItemSelectionModel * itemSelectionModel = this->selectionModel();
@@ -69,6 +71,7 @@ void MidasTreeViewClient::Update()
 bool MidasTreeViewClient::Initialize()
 {
   m_Model->Populate();
+  m_Model->RestoreExpandedState();
   return true;
 }
 

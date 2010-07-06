@@ -67,6 +67,7 @@ protected:
   virtual void dropEvent( QDropEvent * event );
   virtual void mouseDoubleClickEvent( QMouseEvent * event);
   void contextMenuEvent ( QContextMenuEvent * e );
+
   MidasTreeModelClient* m_Model;
  };
 

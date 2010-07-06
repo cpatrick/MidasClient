@@ -1,4 +1,4 @@
-#include "MidasTreeView.h"
+#include "MidasTreeViewServer.h"
 
 #include <QtGui>
 #include <QItemSelection>
@@ -33,7 +33,7 @@
 #include <iostream>
 
 /** Constructor */
-MidasTreeView::MidasTreeView(QWidget * parent):QTreeView(parent)
+MidasTreeViewServer::MidasTreeViewServer(QWidget * parent):QTreeView(parent)
 {
   // The tree model
   m_Model = new MidasTreeModel;
@@ -60,21 +60,21 @@ MidasTreeView::MidasTreeView(QWidget * parent):QTreeView(parent)
 }
 
 /** Destructor */
-MidasTreeView::~MidasTreeView()
+MidasTreeViewServer::~MidasTreeViewServer()
 {
   delete m_Model;
   delete m_ExpandTreeThread;
 }
 
 /** Set the web API */
-void MidasTreeView::SetWebAPI(mws::WebAPI* api)
+void MidasTreeViewServer::SetWebAPI(mws::WebAPI* api)
 {
   m_Model->SetWebAPI(api);
   m_WebAPI = api;
 }
 
 /** Initialize the tree */
-bool MidasTreeView::Initialize()
+bool MidasTreeViewServer::Initialize()
 {
   if(!m_WebAPI)
     {
@@ -86,28 +86,28 @@ bool MidasTreeView::Initialize()
   return true;
 }
 
-void MidasTreeView::Update()
+void MidasTreeViewServer::Update()
 {
   this->Clear();
   this->Initialize();
 }
 
 /** Clear */
-void MidasTreeView::Clear()
+void MidasTreeViewServer::Clear()
 {
   this->m_Model->clear(QModelIndex());
   disconnect(this);
   this->reset();
 }
 
-bool MidasTreeView::isModelIndexSelected() const
+bool MidasTreeViewServer::isModelIndexSelected() const
 {
   QItemSelectionModel * selectionModel = this->selectionModel(); 
   assert(selectionModel != NULL); 
   return (selectionModel->selectedIndexes().size() > 0); 
 }
 
-const QModelIndex MidasTreeView::getSelectedModelIndex() const
+const QModelIndex MidasTreeViewServer::getSelectedModelIndex() const
 {
   QItemSelectionModel * selectionModel = this->selectionModel(); 
   assert(selectionModel != NULL); 
@@ -116,13 +116,13 @@ const QModelIndex MidasTreeView::getSelectedModelIndex() const
   return selectedIndexes.first();
 }
 
-const MidasTreeItem * MidasTreeView::getSelectedMidasTreeItem() const
+const MidasTreeItem * MidasTreeViewServer::getSelectedMidasTreeItem() const
 {
   return reinterpret_cast<MidasTreeModel*>(
     this->model())->midasTreeItem(this->getSelectedModelIndex());
 }
 
-void MidasTreeView::updateSelection(const QItemSelection &selected,
+void MidasTreeViewServer::updateSelection(const QItemSelection &selected,
                                     const QItemSelection &deselected)
 {
   assert(this->selectionMode() == QTreeView::SingleSelection); 
@@ -162,22 +162,22 @@ void MidasTreeView::updateSelection(const QItemSelection &selected,
     }
 }
 
-void MidasTreeView::contextMenuEvent(QContextMenuEvent* e)
+void MidasTreeViewServer::contextMenuEvent(QContextMenuEvent* e)
 {
-  emit midasTreeViewContextMenu(e);
+  emit MidasTreeViewServerContextMenu(e);
 }
 
-void MidasTreeView::decorateByUuid(std::string uuid)
+void MidasTreeViewServer::decorateByUuid(std::string uuid)
 {
   this->m_Model->decorateByUuid(uuid);
 }
 
-void MidasTreeView::alertFetchedMore()
+void MidasTreeViewServer::alertFetchedMore()
 {
   emit fetchedMore();
 }
 
-void MidasTreeView::selectByObject(mdo::Object* object)
+void MidasTreeViewServer::selectByObject(mdo::Object* object)
 {
   if(m_ExpandTreeThread)
     {
@@ -201,19 +201,19 @@ void MidasTreeView::selectByObject(mdo::Object* object)
   emit startedExpandingTree();
 }
 
-void MidasTreeView::expansionDone()
+void MidasTreeViewServer::expansionDone()
 {
   emit finishedExpandingTree();
 }
 
-void MidasTreeView::selectByIndex(const QModelIndex& index)
+void MidasTreeViewServer::selectByIndex(const QModelIndex& index)
 {
   selectionModel()->select(index,
     QItemSelectionModel::Select | QItemSelectionModel::Clear);
   scrollTo(index);
 }
 
-void MidasTreeView::mousePressEvent(QMouseEvent* event)
+void MidasTreeViewServer::mousePressEvent(QMouseEvent* event)
 {
   if(event->button() == Qt::LeftButton)
     {
@@ -222,7 +222,7 @@ void MidasTreeView::mousePressEvent(QMouseEvent* event)
   QTreeView::mousePressEvent(event);
 }
 
-void MidasTreeView::mouseMoveEvent(QMouseEvent* event)
+void MidasTreeViewServer::mouseMoveEvent(QMouseEvent* event)
 {
   if (!(event->buttons() & Qt::LeftButton))
     {

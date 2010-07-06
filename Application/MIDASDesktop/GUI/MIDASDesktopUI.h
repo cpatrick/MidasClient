@@ -74,7 +74,7 @@ public:
 
   void activateActions(bool value, ActivateActions activateAction); 
 
-  MidasTreeView * getTreeView() { return treeView; }
+  MidasTreeViewServer * getTreeViewServer() { return treeViewServer; }
   MidasTreeViewClient * getTreeViewClient() { return treeViewClient; }
   midasDatabaseProxy* getDatabaseProxy() { return m_database; }
   midasAuthenticator* getAuthenticator() { return m_auth; }

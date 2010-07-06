@@ -15,7 +15,7 @@ public:
 
   MidasCommunityTreeItem(const QList<QVariant> &itemData, MidasTreeItem *parent = 0);
   ~MidasCommunityTreeItem();
-  virtual void populate();
+  virtual void populate(QModelIndex parent);
 
   int getType() const;
   int getId() const;

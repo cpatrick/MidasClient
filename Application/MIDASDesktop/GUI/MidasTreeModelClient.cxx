@@ -18,6 +18,7 @@
 
 MidasTreeModelClient::MidasTreeModelClient(QObject *parent) : QAbstractItemModel(parent)
 {
+  this->AlterList = true;
 }
 
 MidasTreeModelClient::~MidasTreeModelClient()
@@ -47,21 +48,25 @@ void MidasTreeModelClient::Populate()
     this->m_Database->GetTopLevelCommunities(true);
   
   this->beginInsertRows(QModelIndex(), 0, topLevelCommunities.size());
+  int row = 0;
   for(std::vector<mdo::Community*>::iterator i = topLevelCommunities.begin();
       i != topLevelCommunities.end(); ++i)
     {
     QList<QVariant> columnData;
     columnData << (*i)->GetName().c_str();
+    QModelIndex index(row, 0);
 
     MidasCommunityTreeItem* communityItem = new MidasCommunityTreeItem(columnData, NULL);
+    communityItem->setIndexMap(m_IndexMap);
     communityItem->setCommunity(*i);
-    communityItem->populate();
+    communityItem->populate(index);
     communityItem->setTopLevelCommunities(&m_TopLevelCommunities);
     if((*i)->IsDirty())
       {
       communityItem->setDecorationRole(MidasTreeItem::Dirty);
       }
     m_TopLevelCommunities.append(communityItem);
+    row++;
     }
   this->m_Database->Close();
   this->endInsertRows();
@@ -223,10 +228,52 @@ void MidasTreeModelClient::itemExpanded ( const QModelIndex & index )
 {
   MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
   item->setDecorationRole(MidasTreeItem::Expanded);
+  
+  if(this->AlterList)
+    {
+    m_ExpandedList.insert(item->getUuid());
+    }
 }
 
 void MidasTreeModelClient::itemCollapsed ( const QModelIndex & index )
 {
   MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
   item->setDecorationRole(MidasTreeItem::Collapsed);
+  
+  m_ExpandedList.erase(item->getUuid());
+}
+
+void MidasTreeModelClient::RestoreExpandedState()
+{
+  //copy list so we can remove while iterating
+  std::set<std::string> copy = m_ExpandedList;
+  for(std::set<std::string>::iterator i = copy.begin();
+      i != copy.end(); ++i)
+    {
+    QModelIndex index = this->getIndexByUuid(*i);
+    if(index.isValid())
+      {
+      this->AlterList = false;
+      emit expand(index);
+      this->AlterList = true;
+      }
+    else
+      {
+      //If we can't resolve the list item, we should remove it from the list.
+      //(Probably no longer exists due to deletion)
+      m_ExpandedList.erase(*i);
+      }
+    }
+}
+
+QModelIndex MidasTreeModelClient::getIndexByUuid(std::string uuid)
+{
+  if(m_IndexMap.find(uuid) != m_IndexMap.end())
+    {
+    return m_IndexMap[uuid];
+    }
+  else
+    {
+    return QModelIndex();
+    }
 }

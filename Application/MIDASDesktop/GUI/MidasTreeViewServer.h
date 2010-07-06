@@ -1,5 +1,5 @@
-#ifndef __MidasTreeView_H
-#define __MidasTreeView_H
+#ifndef __MidasTreeViewServer_H
+#define __MidasTreeViewServer_H
 
 #include <QTreeView>
 #include <QMutex>
@@ -24,15 +24,15 @@ namespace mdo{
   class Object;
 }
 
-class MidasTreeView : public QTreeView
+class MidasTreeViewServer : public QTreeView
 {
   Q_OBJECT
 
 public:
   
   /** Constructor */
-  MidasTreeView(QWidget * parent = 0); 
-  ~MidasTreeView();
+  MidasTreeViewServer(QWidget * parent = 0); 
+  ~MidasTreeViewServer();
 
   /** Set the web API */
   void SetWebAPI(mws::WebAPI* api);
@@ -71,7 +71,7 @@ signals:
   void midasCollectionTreeItemSelected(const MidasCollectionTreeItem * item);
   void midasItemTreeItemSelected(const MidasItemTreeItem * item);
   void midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem * item);
-  void midasTreeViewContextMenu( QContextMenuEvent * e ); 
+  void MidasTreeViewServerContextMenu( QContextMenuEvent * e ); 
   void midasNoTreeItemSelected();
   void fetchedMore();
 
@@ -88,4 +88,4 @@ protected:
   QPoint              m_DragStart;
  };
 
-#endif //__MidasTreeView_H
+#endif //__MidasTreeViewServer_H

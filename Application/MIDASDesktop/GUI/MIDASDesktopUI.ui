@@ -156,7 +156,7 @@
               </layout>
              </item>
              <item row="1" column="0">
-              <widget class="MidasTreeView" name="treeView">
+              <widget class="MidasTreeViewServer" name="treeViewServer">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -779,9 +779,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MidasTreeView</class>
+   <class>MidasTreeViewServer</class>
    <extends>QTreeView</extends>
-   <header>MidasTreeView.h</header>
+   <header>MidasTreeViewServer.h</header>
   </customwidget>
   <customwidget>
    <class>MidasSearchResultList</class>

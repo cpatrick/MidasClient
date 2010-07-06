@@ -4,6 +4,7 @@
 #include <QList>
 #include <QVariant>
 #include <QFlags>
+#include <QModelIndex>
 #include <mwsWebAPI.h>
 
 class MidasCommunityTreeItem;
@@ -51,7 +52,7 @@ public:
   virtual int getType() const = 0;
   virtual std::string getUuid() const = 0;
   virtual int childCount() const;
-  virtual void populate();
+  virtual void populate(QModelIndex parent);
 
   virtual QPixmap getDecoration();
   void setDecorationRole(DecorationRoles role);
@@ -65,9 +66,6 @@ protected:
 
   DecorationRoles decorationRole;
   mws::WebAPI*    m_WebAPI;
-
-private:
-
   QList<MidasTreeItem*> childItems;
   QList<QVariant> itemData;
   MidasTreeItem *parentItem;
@@ -76,7 +74,6 @@ private:
   uint lifespan;
   bool fetchedChildren;
   bool dynamicFetch;
-  
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS( MidasTreeItem::DecorationRoles )
 

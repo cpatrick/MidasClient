@@ -14,7 +14,7 @@ public:
   virtual void run()
     {
     emit enableActions(false);
-    m_Parent->getTreeView()->Update();
+    m_Parent->getTreeViewServer()->Update();
     emit enableActions(true);
     emit threadComplete();
     }
