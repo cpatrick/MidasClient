@@ -33,8 +33,6 @@ public:
 
   void SetWebAPI(mws::WebAPI* api);
   virtual void Populate();
-  
-  void clear(const QModelIndex &index); 
 
   QVariant data(const QModelIndex &index, int role) const;
   Qt::ItemFlags flags(const QModelIndex &index) const;

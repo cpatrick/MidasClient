@@ -95,7 +95,7 @@ void MidasTreeViewServer::Update()
 /** Clear */
 void MidasTreeViewServer::Clear()
 {
-  this->m_Model->clear(QModelIndex());
+  this->m_Model->clear();
   disconnect(this);
   this->reset();
 }
@@ -164,7 +164,7 @@ void MidasTreeViewServer::updateSelection(const QItemSelection &selected,
 
 void MidasTreeViewServer::contextMenuEvent(QContextMenuEvent* e)
 {
-  emit MidasTreeViewServerContextMenu(e);
+  emit midasTreeViewServerContextMenu(e);
 }
 
 void MidasTreeViewServer::decorateByUuid(std::string uuid)

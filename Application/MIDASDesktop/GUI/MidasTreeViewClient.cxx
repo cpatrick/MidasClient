@@ -78,7 +78,7 @@ bool MidasTreeViewClient::Initialize()
 /** Clear */
 void MidasTreeViewClient::Clear()
 {
-  this->m_Model->clear(QModelIndex());
+  this->m_Model->clear();
   disconnect(this);
   this->reset();
 }

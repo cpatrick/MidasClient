@@ -30,16 +30,6 @@ void MidasTreeModelClient::SetLog(midasLog* log)
   this->m_Log = log;
 }
 
-void MidasTreeModelClient::clear(const QModelIndex &index)
-{
-  for(QList<MidasCommunityTreeItem*>::iterator i = m_TopLevelCommunities.begin();
-      i != m_TopLevelCommunities.end(); ++i)
-    {
-    delete (*i)->getCommunity();
-    }
-  this->m_TopLevelCommunities.clear();
-}
-
 /** Populate the tree */
 void MidasTreeModelClient::Populate()
 {

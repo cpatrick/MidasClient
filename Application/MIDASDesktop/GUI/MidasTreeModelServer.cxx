@@ -26,16 +26,6 @@ MidasTreeModelServer::MidasTreeModelServer(QObject *parent) : MidasTreeModel(par
 {
 }
 
-void MidasTreeModelServer::clear(const QModelIndex &index)
-{
-  for(QList<MidasCommunityTreeItem*>::iterator i = m_TopLevelCommunities.begin();
-      i != m_TopLevelCommunities.end(); ++i)
-    {
-    delete (*i)->getCommunity();
-    }
-  this->m_TopLevelCommunities.clear();
-}
-
 MidasTreeModelServer::~MidasTreeModelServer()
 {
 }

@@ -71,7 +71,7 @@ signals:
   void midasCollectionTreeItemSelected(const MidasCollectionTreeItem * item);
   void midasItemTreeItemSelected(const MidasItemTreeItem * item);
   void midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem * item);
-  void MidasTreeViewServerContextMenu( QContextMenuEvent * e ); 
+  void midasTreeViewServerContextMenu( QContextMenuEvent * e ); 
   void midasNoTreeItemSelected();
   void fetchedMore();
 

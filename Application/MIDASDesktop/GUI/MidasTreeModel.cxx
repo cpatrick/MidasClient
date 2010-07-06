@@ -1,6 +1,7 @@
 #include "MidasTreeModel.h"
 #include "MidasTreeItem.h"
 #include "MidasCommunityTreeItem.h"
+#include "mdoCommunity.h"
 
 MidasTreeModel::MidasTreeModel(QObject *parent) : QAbstractItemModel(parent)
 {
@@ -11,14 +12,20 @@ MidasTreeModel::~MidasTreeModel()
 {
 }
 
+void MidasTreeModel::clear()
+{
+  for(QList<MidasCommunityTreeItem*>::iterator i = m_TopLevelCommunities.begin();
+      i != m_TopLevelCommunities.end(); ++i)
+    {
+    delete (*i)->getCommunity();
+    }
+  m_TopLevelCommunities.clear();
+  m_IndexMap.clear();
+}
+
 void MidasTreeModel::registerResource(std::string uuid, QModelIndex index)
 {
   m_IndexMap[uuid] = index;
-}
-
-void MidasTreeModel::clearIndexMap()
-{
-  m_IndexMap.clear();
 }
 
 QModelIndex MidasTreeModel::getIndexByUuid(std::string uuid)

@@ -28,8 +28,6 @@ public:
   void SetLog(midasLog* log);
   void Populate();
   void RestoreExpandedState();
-  
-  void clear(const QModelIndex &index); 
 
   QVariant data(const QModelIndex &index, int role) const;
   Qt::ItemFlags flags(const QModelIndex &index) const;

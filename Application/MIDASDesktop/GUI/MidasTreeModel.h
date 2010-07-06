@@ -17,9 +17,9 @@ public:
 
   void registerResource(std::string uuid, QModelIndex index);
   QModelIndex getIndexByUuid(std::string uuid);
-  void clearIndexMap();
 
   virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+  virtual void clear();
 
 protected:
   std::map<std::string, QModelIndex> m_IndexMap;
