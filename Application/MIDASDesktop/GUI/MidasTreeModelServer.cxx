@@ -184,20 +184,6 @@ void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
 }
 
 //-------------------------------------------------------------------------
-void MidasTreeModelServer::itemExpanded ( const QModelIndex & index )
-{
-  MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
-  item->setDecorationRole(MidasTreeItem::Expanded);
-}
-
-//-------------------------------------------------------------------------
-void MidasTreeModelServer::itemCollapsed ( const QModelIndex & index )
-{
-  MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
-  item->setDecorationRole(MidasTreeItem::Collapsed);
-}
-
-//-------------------------------------------------------------------------
 void MidasTreeModelServer::decorateByUuid(std::string uuid)
 {
   for(QList<MidasCommunityTreeItem*>::iterator i = m_TopLevelCommunities.begin();
@@ -218,5 +204,17 @@ void MidasTreeModelServer::decorateRecurse(MidasTreeItem* node, std::string uuid
   for(int i = 0; i < node->childCount(); i++)
     {
     decorateRecurse(node->child(i), uuid);
+    }
+}
+
+//-------------------------------------------------------------------------
+void MidasTreeModelServer::itemExpanded ( const QModelIndex & index )
+{
+  MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
+  item->setDecorationRole(MidasTreeItem::Expanded);
+
+  if(this->AlterList && item->getType() == midasResourceType::COMMUNITY)
+    {
+    m_ExpandedList.insert(item->getUuid());
     }
 }

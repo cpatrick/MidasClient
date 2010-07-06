@@ -47,6 +47,8 @@ MidasTreeViewServer::MidasTreeViewServer(QWidget * parent):MidasTreeView(parent)
     this->model(), SLOT(itemCollapsed(const QModelIndex&)) );
   connect (this, SIGNAL( expanded(const QModelIndex&)),
     this->model(), SLOT(itemExpanded (const QModelIndex&)) );
+  connect (m_Model, SIGNAL( expand(const QModelIndex&) ),
+    this, SLOT( expand(const QModelIndex&) ) );
   connect (this->model(), SIGNAL( fetchedMore() ),
     this, SLOT( alertFetchedMore() ) );
 
@@ -83,6 +85,7 @@ bool MidasTreeViewServer::Initialize()
     } 
   
   m_Model->Populate();
+  m_Model->restoreExpandedState();
   return true;
 }
 

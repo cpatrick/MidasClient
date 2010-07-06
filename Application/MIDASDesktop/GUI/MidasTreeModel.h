@@ -47,6 +47,10 @@ public:
 signals:
   void expand(const QModelIndex&);
 
+public slots:
+  virtual void itemExpanded ( const QModelIndex & index );
+  virtual void itemCollapsed ( const QModelIndex & index );
+
 protected:
   std::map<std::string, QModelIndex> m_IndexMap;
   std::set<std::string>              m_ExpandedList;

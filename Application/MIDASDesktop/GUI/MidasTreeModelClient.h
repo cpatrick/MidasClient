@@ -30,11 +30,6 @@ public:
 
   bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
 
-public slots:
-
-  void itemExpanded ( const QModelIndex & index );
-  void itemCollapsed ( const QModelIndex & index );
-
 private:
   midasLog*            m_Log;
   midasDatabaseProxy*  m_Database;

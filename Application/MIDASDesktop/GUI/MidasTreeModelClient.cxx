@@ -75,22 +75,3 @@ bool MidasTreeModelClient::hasChildren( const QModelIndex & parent ) const
   const MidasTreeItem * item = (MidasTreeItem*)midasTreeItem(parent);
   return item->childCount();
 }
-
-void MidasTreeModelClient::itemExpanded ( const QModelIndex & index )
-{
-  MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
-  item->setDecorationRole(MidasTreeItem::Expanded);
-  
-  if(this->AlterList)
-    {
-    m_ExpandedList.insert(item->getUuid());
-    }
-}
-
-void MidasTreeModelClient::itemCollapsed ( const QModelIndex & index )
-{
-  MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
-  item->setDecorationRole(MidasTreeItem::Collapsed);
-  
-  m_ExpandedList.erase(item->getUuid());
-}
