@@ -64,6 +64,7 @@ void MidasTreeModelServer::Populate()
     MidasCommunityTreeItem* communityItem = new MidasCommunityTreeItem(columnData, this, NULL);
     communityItem->setCommunity(*itCom);
     communityItem->setDynamicFetch(true);
+    m_TopLevelCommunities.append(communityItem);
 
     QModelIndex index = this->index(row, 0);
     registerResource((*itCom)->GetUuid(), index);
@@ -71,7 +72,6 @@ void MidasTreeModelServer::Populate()
     communityItem->populate(index);
     communityItem->setTopLevelCommunities(&m_TopLevelCommunities);
     
-    m_TopLevelCommunities.append(communityItem);
     itCom++;
     row++;
     }
@@ -229,6 +229,7 @@ void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
     return;
     }
 
+  int row = 0;
   for(std::vector<mdo::Item*>::const_iterator i = collection->GetItems().begin();
       i != collection->GetItems().end(); ++i)
     {
@@ -239,6 +240,10 @@ void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
     item->setDynamicFetch(true);
     item->setFetchedChildren(false);
     parent->appendChild(item);
+
+    QModelIndex index = this->index(row, 0, getIndexByUuid(parent->getUuid()));
+    registerResource((*i)->GetUuid(), index);
+    row++;
     }
   emit layoutChanged();
 }
