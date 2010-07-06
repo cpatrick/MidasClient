@@ -54,7 +54,7 @@ public slots:
 private:
   void decorateRecurse( MidasTreeItem* node, std::string uuid);
 
-  mws::WebAPI*                     m_WebAPI;
+  mws::WebAPI* m_WebAPI;
 };
 
 #endif //__MidasTreeModelServer_H
