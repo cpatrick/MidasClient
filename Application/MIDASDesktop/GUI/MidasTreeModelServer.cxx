@@ -52,9 +52,9 @@ void MidasTreeModelServer::Populate()
 
   std::vector<mdo::Community*> communities = community->GetCommunities();
 
-  std::vector<mdo::Community*>::const_iterator itCom = communities.begin();
   int row = 0;
-  while(itCom != communities.end())
+  for(std::vector<mdo::Community*>::const_iterator itCom = communities.begin();
+      itCom != communities.end(); ++itCom)
     {
     // Set the name of the community
     QList<QVariant> columnData;
@@ -72,7 +72,6 @@ void MidasTreeModelServer::Populate()
     communityItem->populate(index);
     communityItem->setTopLevelCommunities(&m_TopLevelCommunities);
     
-    itCom++;
     row++;
     }
   emit layoutChanged();
@@ -186,24 +185,12 @@ void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
 //-------------------------------------------------------------------------
 void MidasTreeModelServer::decorateByUuid(std::string uuid)
 {
-  for(QList<MidasCommunityTreeItem*>::iterator i = m_TopLevelCommunities.begin();
-      i != this->m_TopLevelCommunities.end(); ++i)
-    {
-    decorateRecurse(reinterpret_cast<MidasTreeItem*>(*i), uuid);
-    }
-}
+  QModelIndex index = getIndexByUuid(uuid);
 
-//-------------------------------------------------------------------------
-void MidasTreeModelServer::decorateRecurse(MidasTreeItem* node, std::string uuid)
-{
-  if(node->getUuid() == uuid)
+  if(index.isValid())
     {
+    MidasTreeItem* node = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
     node->setDecorationRole(MidasTreeItem::Dirty);
-    return;
-    }
-  for(int i = 0; i < node->childCount(); i++)
-    {
-    decorateRecurse(node->child(i), uuid);
     }
 }
 

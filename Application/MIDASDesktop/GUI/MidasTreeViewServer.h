@@ -20,10 +20,6 @@ namespace mws{
   class WebAPI;
 }
 
-namespace mdo{
-  class Object;
-}
-
 class MidasTreeViewServer : public MidasTreeView
 {
   Q_OBJECT
@@ -56,9 +52,9 @@ public slots:
   
   void updateSelection(const QItemSelection &selected,
     const QItemSelection &deselected);
+  void selectByUuid(std::string uuid);
   void decorateByUuid(std::string uuid);
   void alertFetchedMore();
-  void selectByObject(mdo::Object* object);
   void Update();
 
   void expansionDone();

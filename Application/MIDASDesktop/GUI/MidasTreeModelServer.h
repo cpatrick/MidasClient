@@ -51,7 +51,6 @@ public slots:
   void emitLayoutChanged() { emit layoutChanged(); }
 
 private:
-  void decorateRecurse( MidasTreeItem* node, std::string uuid);
 
   mws::WebAPI* m_WebAPI;
 };

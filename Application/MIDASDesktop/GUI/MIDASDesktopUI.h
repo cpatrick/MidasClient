@@ -105,7 +105,7 @@ public slots:
   void updateClientTreeView();
   void updateServerTreeView();
   void decorateServerTree();
-  void decorateTheObject();
+  void decorateCallback();
 
   void startedExpandingTree();
   void finishedExpandingTree();
@@ -229,8 +229,6 @@ private:
   SynchronizerThread*         m_SynchronizerThread;
   SearchThread*               m_SearchThread;
   // ----------- threads -----------------
-
-  mdo::Object*                m_DecorateObject;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( MIDASDesktopUI::ActivateActions )

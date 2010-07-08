@@ -180,7 +180,7 @@ void MidasTreeViewServer::alertFetchedMore()
   emit fetchedMore();
 }
 
-void MidasTreeViewServer::selectByObject(mdo::Object* object)
+void MidasTreeViewServer::selectByUuid(std::string uuid)
 {
   if(m_ExpandTreeThread)
     {
@@ -191,7 +191,7 @@ void MidasTreeViewServer::selectByObject(mdo::Object* object)
   m_ExpandTreeThread = new ExpandTreeThread;
   m_ExpandTreeThread->SetParentUI(this);
   m_ExpandTreeThread->SetParentModel(m_Model);
-  m_ExpandTreeThread->SetObject(object);
+  m_ExpandTreeThread->SetUuid(uuid);
 
   connect(m_ExpandTreeThread, SIGNAL(threadComplete()),
     this, SLOT(expansionDone()));
@@ -251,7 +251,7 @@ void MidasTreeViewServer::mouseMoveEvent(QMouseEvent* event)
   QMimeData* mimeData = new QMimeData;
   std::stringstream data;
   data << resource->getType() << " " << resource->getId();
-  
+
   mimeData->setData("MIDAS/resource", QString(data.str().c_str()).toAscii());
   drag->setPixmap(resource->getDecoration());
   drag->setMimeData(mimeData);

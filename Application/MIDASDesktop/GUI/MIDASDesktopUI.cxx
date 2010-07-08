@@ -71,8 +71,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
   srand (time); //init random number generator 
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
-
-  m_DecorateObject = NULL;
   
   // ------------- Instantiate and setup tray icon -------------
   showAction = new QAction(tr("&Show MIDASDesktop"), this);
@@ -1215,7 +1213,7 @@ void MIDASDesktopUI::showSearchResults()
 
 void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem * listItem)
 {
-  this->treeViewServer->selectByObject(listItem->getObject());
+  this->treeViewServer->selectByUuid(listItem->getObject()->GetUuid());
 }
 
 void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)
@@ -1238,6 +1236,7 @@ void MIDASDesktopUI::storeLastPollTime()
   newResources.SetSince(m_database->GetSetting(midasDatabaseProxy::LAST_FETCH_TIME));
   newResources.Fetch();
   this->m_dirtyUuids = newResources.GetUuids();
+  std::reverse(m_dirtyUuids.begin(), m_dirtyUuids.end());
 
   if(m_dirtyUuids.size())
     {
@@ -1254,20 +1253,18 @@ void MIDASDesktopUI::decorateServerTree()
 {
   if(m_dirtyUuids.size())
     {
-    m_DecorateObject = midasUtils::FetchByUuid(m_dirtyUuids[0]);
-    this->treeViewServer->selectByObject(m_DecorateObject);
-    connect(treeViewServer, SIGNAL(finishedExpandingTree()), this,
-      SLOT(decorateTheObject() ) );
+    connect(treeViewServer, SIGNAL( finishedExpandingTree() ),
+      this, SLOT( decorateCallback() ) );
+    this->treeViewServer->selectByUuid(m_dirtyUuids[0]);
     }
 }
 
-void MIDASDesktopUI::decorateTheObject()
+void MIDASDesktopUI::decorateCallback()
 {
-  this->treeViewServer->decorateByUuid(m_DecorateObject->GetUuid());
+  this->treeViewServer->decorateByUuid(m_dirtyUuids[0]);
   m_dirtyUuids.erase(m_dirtyUuids.begin());
-  delete m_DecorateObject;
-  disconnect(treeViewServer, SIGNAL(finishedExpandingTree()),
-    this, SLOT(decorateTheObject() ) );
+  disconnect(treeViewServer, SIGNAL( finishedExpandingTree() ),
+    this, SLOT( decorateCallback() ) );
   decorateServerTree();
 }
 

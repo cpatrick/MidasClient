@@ -50,6 +50,8 @@ set(MIDASRest_SRCS
   mwsCommunity.cxx
   mwsNewResources.h
   mwsNewResources.cxx
+  mwsTreePath.h
+  mwsTreePath.cxx
   mwsDicom.h
   mwsDicom.cxx
   mwsItem.h

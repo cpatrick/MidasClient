@@ -9,10 +9,6 @@
 class MidasTreeViewServer;
 class MidasTreeModelServer;
 
-namespace mdo {
-  class Object;
-}
-
 class ExpandTreeThread : public QThread
 {
   Q_OBJECT
@@ -22,7 +18,7 @@ public:
 
   void SetParentUI(MidasTreeViewServer* parent);
   void SetParentModel(MidasTreeModelServer* parent);
-  void SetObject(mdo::Object* object);
+  void SetUuid(std::string uuid);
 
   virtual void run();
 
@@ -34,7 +30,7 @@ signals:
 private:
   MidasTreeViewServer*  m_ParentUI;
   MidasTreeModelServer* m_ParentModel;
-  mdo::Object*    m_Object;
+  std::string           m_Uuid;
 };
 
 #endif
