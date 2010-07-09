@@ -159,7 +159,7 @@ void midasSynchronizer::SetServerURL(std::string url)
   mws::WebAPI::Instance()->SetServerUrl(url.c_str());
   this->Authenticator->SetServerURL(url.c_str());
   this->DatabaseProxy->Open();
-  this->DatabaseProxy->SetSetting(midasDatabaseProxy::LAST_URL, url.c_str());
+  this->DatabaseProxy->SetSetting(midasDatabaseProxy::LAST_URL, url);
   this->DatabaseProxy->Close();
   this->ServerURL = url;
 }

@@ -70,8 +70,8 @@ set(MIDASDesktopUI_SRCS
   GUI/UploadAgreementUI.h
   GUI/AboutUI.cxx
   GUI/AboutUI.h
-  GUI/AutoRefreshUI.h
-  GUI/AutoRefreshUI.cxx
+  GUI/PreferencesUI.h
+  GUI/PreferencesUI.cxx
   GUI/PullUI.cxx
   GUI/PullUI.h
   GUI/GUILogger.cxx
@@ -129,7 +129,7 @@ set(MIDASDesktopUI_UI_SRCS
   GUI/AboutUI.ui
   GUI/ProcessingStatusUI.ui
   GUI/PullUI.ui
-  GUI/AutoRefreshUI.ui
+  GUI/PreferencesUI.ui
 )
 
 set(MIDASDesktopUI_RCCS MIDASDesktopIcons.qrc)
@@ -147,7 +147,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/SignInThread.h
   GUI/SearchThread.h
   GUI/AboutUI.h
-  GUI/AutoRefreshUI.h
+  GUI/PreferencesUI.h
   GUI/MidasTreeView.h
   GUI/MidasTreeViewServer.h
   GUI/MidasTreeViewClient.h

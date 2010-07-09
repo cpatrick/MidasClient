@@ -19,7 +19,7 @@ class PullUI;
 class CreateProfileUI;
 class DeleteResourceUI;
 class AboutUI;
-class AutoRefreshUI;
+class PreferencesUI;
 class midasSynchronizer;
 class midasAuthenticator;
 class midasDatabaseProxy;
@@ -191,7 +191,7 @@ private:
   SignInUI *                  dlg_signInUI;
   UploadAgreementUI *         dlg_uploadAgreementUI;
   AboutUI *                   dlg_aboutUI;
-  AutoRefreshUI *             dlg_autoRefreshUI;
+  PreferencesUI *             dlg_preferencesUI;
   PullUI *                    dlg_pullUI;
   DeleteResourceUI*           dlg_deleteResourceUI;
   // ------------- UI Dialogs -------------

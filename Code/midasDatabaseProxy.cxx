@@ -40,6 +40,8 @@ std::string midasDatabaseProxy::GetKeyName(MidasAppSetting setting)
       return "refresh_interval";
     case AUTO_REFRESH_SETTING:
       return "refresh_setting";
+    case ROOT_DIR:
+      return "root_dir";
     default:
       return "";
     }
@@ -538,6 +540,18 @@ std::string midasDatabaseProxy::GetSetting(MidasAppSetting setting)
   return value;
 }
 
+int midasDatabaseProxy::GetSettingInt(MidasAppSetting setting)
+{
+  std::string val = this->GetSetting(setting);
+  return atoi(val.c_str());
+}
+
+bool midasDatabaseProxy::GetSettingBool(MidasAppSetting setting)
+{
+  std::string val = this->GetSetting(setting);
+  return atoi(val.c_str()) != 0;
+}
+
 //-------------------------------------------------------------------------
 void midasDatabaseProxy::SetSetting(MidasAppSetting setting, std::string value)
 {
@@ -558,6 +572,11 @@ void midasDatabaseProxy::SetSetting(MidasAppSetting setting, int value)
   std::stringstream s;
   s << value;
   this->SetSetting(setting, s.str());
+}
+
+void midasDatabaseProxy::SetSetting(MidasAppSetting setting, bool value)
+{
+  this->SetSetting(setting, value ? 1 : 0);
 }
 
 //--------------------------------------------------------------------------

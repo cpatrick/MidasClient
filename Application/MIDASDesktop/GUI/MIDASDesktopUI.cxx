@@ -39,7 +39,7 @@
 #include "UploadAgreementUI.h"
 #include "SignInUI.h"
 #include "AboutUI.h"
-#include "AutoRefreshUI.h"
+#include "PreferencesUI.h"
 #include "PullUI.h"
 #include "ProcessingStatusUI.h"
 // ------------- Dialogs -------------
@@ -105,7 +105,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_signInUI =           new SignInUI( this );
   dlg_createProfileUI =    new CreateProfileUI( this );
   dlg_aboutUI =            new AboutUI( this );
-  dlg_autoRefreshUI =      new AutoRefreshUI( this );
+  dlg_preferencesUI =      new PreferencesUI( this );
   dlg_pullUI =             new PullUI( this );
   dlg_deleteResourceUI =   new DeleteResourceUI( this );
   ProcessingStatusUI::init( this );
@@ -114,8 +114,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- Auto Refresh Timer -----------
   refreshTimer = new QTimer(this);
   connect(refreshTimer, SIGNAL( timeout() ), treeViewServer, SLOT( Update() ) );
-  connect(dlg_autoRefreshUI, SIGNAL( intervalChanged() ), this, SLOT( setTimerInterval() ) );
-  connect(dlg_autoRefreshUI, SIGNAL( settingChanged() ), this, SLOT( adjustTimerSettings() ) );
+  connect(dlg_preferencesUI, SIGNAL( intervalChanged() ), this, SLOT( setTimerInterval() ) );
+  connect(dlg_preferencesUI, SIGNAL( settingChanged() ), this, SLOT( adjustTimerSettings() ) );
   // ------------- Auto Refresh Timer -----------
 
   // ------------- Item info panel -------------
@@ -213,7 +213,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( actionSign_In,      SIGNAL( triggered() ), this, SLOT( signInOrOut() ) );
   connect( actionQuit,         SIGNAL( triggered() ), qApp, SLOT( quit() ) );
   connect( actionAbout,        SIGNAL( triggered() ), dlg_aboutUI, SLOT( exec() ) );
-  connect( actionAuto_Refresh, SIGNAL( triggered() ), dlg_autoRefreshUI, SLOT( exec() ) );
+  connect( actionPreferences,  SIGNAL( triggered() ), dlg_preferencesUI, SLOT( exec() ) );
 
   connect( actionAdd_community,    SIGNAL(triggered()), this, SLOT(addCommunity()));
   connect( actionAdd_subcommunity, SIGNAL(triggered()), this, SLOT(addSubcommunity()));
@@ -274,7 +274,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_aboutUI;
   delete dlg_signInUI;
   delete dlg_createProfileUI;
-  delete dlg_autoRefreshUI;
+  delete dlg_preferencesUI;
   delete dlg_createMidasCommunityUI;
   delete dlg_createMidasSubCommunityUI;
   delete dlg_createMidasCollectionUI;
@@ -321,7 +321,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     this->clientExpandAllButton->setEnabled( value );
     this->actionAdd_community->setEnabled( value );
     this->actionCreate_Profile->setEnabled( value );
-    this->actionAuto_Refresh->setEnabled( value );
+    this->actionPreferences->setEnabled( value );
     }
 
   if ( activateAction & ACTION_CONNECTED )

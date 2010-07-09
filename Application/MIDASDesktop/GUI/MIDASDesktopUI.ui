@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1085</width>
+    <width>970</width>
     <height>813</height>
    </rect>
   </property>
@@ -455,7 +455,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1085</width>
+     <width>970</width>
      <height>20</height>
     </rect>
    </property>
@@ -477,9 +477,9 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionCreate_Profile"/>
     <addaction name="actionChoose_Local_Database"/>
-    <addaction name="actionAuto_Refresh"/>
+    <addaction name="actionCreate_Profile"/>
+    <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuCommunity">
     <property name="title">
@@ -712,16 +712,16 @@
     <string>View In Browser</string>
    </property>
   </action>
-  <action name="actionAuto_Refresh">
+  <action name="actionPreferences">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="../MIDASDesktopIcons.qrc">
-     <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+     <normaloff>:/icons/edit.png</normaloff>:/icons/edit.png</iconset>
    </property>
    <property name="text">
-    <string>Auto-Refresh...</string>
+    <string>Preferences...</string>
    </property>
    <property name="statusTip">
     <string>Change auto-refresh settings</string>
@@ -776,6 +776,14 @@
     <string>Open the corresponding file</string>
    </property>
   </action>
+  <action name="actionClient_Settings">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Preferences...</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -827,7 +835,7 @@
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../../../../../Documents and Settings/Zach Mullen/.designer/MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>

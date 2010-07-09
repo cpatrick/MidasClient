@@ -56,7 +56,8 @@ public:
     LAST_URL,
     LAST_FETCH_TIME,
     AUTO_REFRESH_INTERVAL,
-    AUTO_REFRESH_SETTING
+    AUTO_REFRESH_SETTING,
+    ROOT_DIR
     };
 
   mds::SQLiteDatabase* GetDatabase();
@@ -70,8 +71,12 @@ public:
   void Clean();
 
   std::string GetSetting(MidasAppSetting setting);
+  int GetSettingInt(MidasAppSetting setting);
+  bool GetSettingBool(MidasAppSetting setting);
+
   void SetSetting(MidasAppSetting setting, std::string value);
   void SetSetting(MidasAppSetting setting, int value);
+  void SetSetting(MidasAppSetting setting, bool value);
 
   std::string GetName(int type, int id);
 

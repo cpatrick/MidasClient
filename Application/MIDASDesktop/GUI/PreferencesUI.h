@@ -1,20 +1,21 @@
-#ifndef __AutoRefreshUI_H
-#define __AutoRefreshUI_H
+#ifndef __PreferencesUI_H
+#define __PreferencesUI_H
  
-#include "ui_AutoRefreshUI.h"
+#include "ui_PreferencesUI.h"
 
 class MIDASDesktopUI;
 
-class AutoRefreshUI :  public QDialog, private Ui::AutoRefreshDialog
+class PreferencesUI :  public QDialog, private Ui::PreferencesDialog
 {
   Q_OBJECT
  
 public:
-  AutoRefreshUI(MIDASDesktopUI *parent);
-  ~AutoRefreshUI(){}
+  PreferencesUI(MIDASDesktopUI *parent);
+  ~PreferencesUI(){}
 
 public slots:
   void enableActions(int index);
+  void selectWorkingDir();
   void reset(); 
   int exec();
   virtual void accept();
