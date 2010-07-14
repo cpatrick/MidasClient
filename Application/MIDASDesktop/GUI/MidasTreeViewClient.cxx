@@ -53,113 +53,17 @@ MidasTreeViewClient::~MidasTreeViewClient()
 
 void MidasTreeViewClient::SetDatabaseProxy(midasDatabaseProxy* proxy)
 {
-  this->m_Model->SetDatabase(proxy);
+  reinterpret_cast<MidasTreeModelClient*>(m_Model)->SetDatabase(proxy);
 }
 
 void MidasTreeViewClient::SetLog(midasLog* log)
 {
-  this->m_Model->SetLog(log);
-}
-
-void MidasTreeViewClient::Update()
-{
-  this->Clear();
-  this->Initialize();
-}
-
-/** Initialize the tree */
-bool MidasTreeViewClient::Initialize()
-{
-  m_Model->Populate();
-  m_Model->restoreExpandedState();
-  return true;
-}
-
-/** Clear */
-void MidasTreeViewClient::Clear()
-{
-  this->m_Model->clear();
-  disconnect(this);
-  this->reset();
-}
-
-bool MidasTreeViewClient::isModelIndexSelected() const
-{
-  QItemSelectionModel * selectionModel = this->selectionModel();
-  assert(selectionModel != NULL);
-  return (selectionModel->selectedIndexes().size() > 0);
-}
-
-const QModelIndex MidasTreeViewClient::getSelectedModelIndex() const
-{
-  QItemSelectionModel * selectionModel = this->selectionModel();
-  assert(selectionModel != NULL);
-  QModelIndexList selectedIndexes = selectionModel->selectedIndexes();
-  assert(selectedIndexes.size() == 1);
-  return selectedIndexes.first();
-}
-
-const MidasTreeItem * MidasTreeViewClient::getSelectedMidasTreeItem() const
-{
-  return reinterpret_cast<MidasTreeModelClient*>(
-    this->model())->midasTreeItem(this->getSelectedModelIndex());
-}
-
-void MidasTreeViewClient::updateSelection(const QItemSelection &selected,
-                                    const QItemSelection &deselected)
-{
-  assert(this->selectionMode() == QTreeView::SingleSelection);
-
-  QModelIndex index;
-  QModelIndexList items = selected.indexes();
-  if (items.size() > 0)
-    {
-    MidasTreeItem * item = const_cast<MidasTreeItem*>( m_Model->midasTreeItem(items.first()) );
-    emit midasTreeItemSelected(item);
-
-    MidasCommunityTreeItem * communityTreeItem = NULL;
-    MidasCollectionTreeItem * collectionTreeItem = NULL;
-    MidasItemTreeItem * itemTreeItem = NULL;
-    MidasBitstreamTreeItem * bitstreamTreeItem = NULL;
-
-    if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
-      {
-      emit midasCommunityTreeItemSelected(communityTreeItem);
-      }
-    else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
-      {
-      emit midasCollectionTreeItemSelected(collectionTreeItem);
-      }
-    else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
-      {
-      emit midasItemTreeItemSelected(itemTreeItem);
-      }
-    else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL )
-      {
-      emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
-      }
-    }
-  else 
-    {
-    emit midasNoTreeItemSelected(); 
-    }
+  reinterpret_cast<MidasTreeModelClient*>(m_Model)->SetLog(log);
 }
 
 void MidasTreeViewClient::contextMenuEvent( QContextMenuEvent * e )
 {
   emit midasTreeViewContextMenu( e );
-}
-
-MidasItemTreeItem * MidasTreeViewClient::selectedMidasItemTreeItem()
-{
-  MidasItemTreeItem * itemTreeItem = NULL; 
-  QModelIndexList selected = this->selectedIndexes(); 
-  if(selected.size() > 0)
-    {
-//    MidasTreeItem * item = const_cast<MidasTreeItem*>( this->model()->midasTreeItem(selected.first()) ); 
-//    itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item); 
-    }
-  return itemTreeItem; 
 }
 
 void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent *event)

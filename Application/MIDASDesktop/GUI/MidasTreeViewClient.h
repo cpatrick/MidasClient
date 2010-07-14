@@ -25,39 +25,16 @@ public:
   MidasTreeViewClient(QWidget * parent = 0);
   ~MidasTreeViewClient();
 
-  /** Initialize the tree */
-  bool Initialize();
-
   void SetDatabaseProxy(midasDatabaseProxy* proxy);
   void SetLog(midasLog* log);
 
-  /** Clear the tree */
-  void Clear();
-
-  bool isModelIndexSelected() const; 
-  //const MidasTreeItem * getMidasTreeItemParent(QModelIndex& selected) const;
-  //const std::string getSelectedMidasTreeItemParentId() const; 
-  const QModelIndex getSelectedModelIndex() const; 
-  const MidasTreeItem * getSelectedMidasTreeItem() const; 
-   
-  MidasItemTreeItem * selectedMidasItemTreeItem(); 
-
 public slots:
-  void Update();
-  void updateSelection(const QItemSelection &selected,
-    const QItemSelection &deselected);
   void expandAll();
   void collapseAll();
 
 signals:
 
-  void midasTreeItemSelected(const MidasTreeItem* item);
-  void midasCommunityTreeItemSelected(const MidasCommunityTreeItem * item);
-  void midasCollectionTreeItemSelected(const MidasCollectionTreeItem * item);
-  void midasItemTreeItemSelected(const MidasItemTreeItem * item);
-  void midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem * item);
   void midasTreeViewContextMenu( QContextMenuEvent * e ); 
-  void midasNoTreeItemSelected();
   void bitstreamsDropped(const MidasItemTreeItem* parentItem, const QStringList & files);
   void bitstreamOpenRequest();
   void resourceDropped(int type, int id);
@@ -69,8 +46,6 @@ protected:
   virtual void dropEvent( QDropEvent * event );
   virtual void mouseDoubleClickEvent( QMouseEvent * event);
   void contextMenuEvent ( QContextMenuEvent * e );
-
-  MidasTreeModelClient* m_Model;
  };
 
 #endif //__MidasTreeViewClient_H

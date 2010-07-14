@@ -71,98 +71,8 @@ MidasTreeViewServer::~MidasTreeViewServer()
 /** Set the web API */
 void MidasTreeViewServer::SetWebAPI(mws::WebAPI* api)
 {
-  m_Model->SetWebAPI(api);
+  reinterpret_cast<MidasTreeModelServer*>(m_Model)->SetWebAPI(api);
   m_WebAPI = api;
-}
-
-/** Initialize the tree */
-bool MidasTreeViewServer::Initialize()
-{
-  if(!m_WebAPI)
-    {
-    std::cerr << "WebAPI not set" << std::endl;
-    return false;
-    } 
-  
-  m_Model->Populate();
-  m_Model->restoreExpandedState();
-  return true;
-}
-
-void MidasTreeViewServer::Update()
-{
-  this->Clear();
-  this->Initialize();
-}
-
-/** Clear */
-void MidasTreeViewServer::Clear()
-{
-  this->m_Model->clear();
-  disconnect(this);
-  this->reset();
-}
-
-bool MidasTreeViewServer::isModelIndexSelected() const
-{
-  QItemSelectionModel * selectionModel = this->selectionModel(); 
-  assert(selectionModel != NULL); 
-  return (selectionModel->selectedIndexes().size() > 0); 
-}
-
-const QModelIndex MidasTreeViewServer::getSelectedModelIndex() const
-{
-  QItemSelectionModel * selectionModel = this->selectionModel(); 
-  assert(selectionModel != NULL); 
-  QModelIndexList selectedIndexes = selectionModel->selectedIndexes(); 
-  assert(selectedIndexes.size() == 1); 
-  return selectedIndexes.first();
-}
-
-const MidasTreeItem * MidasTreeViewServer::getSelectedMidasTreeItem() const
-{
-  return reinterpret_cast<MidasTreeModelServer*>(
-    this->model())->midasTreeItem(this->getSelectedModelIndex());
-}
-
-void MidasTreeViewServer::updateSelection(const QItemSelection &selected,
-                                    const QItemSelection &deselected)
-{
-  assert(this->selectionMode() == QTreeView::SingleSelection); 
-
-  QModelIndex index;
-  QModelIndexList items = selected.indexes();
-  if (items.size() > 0)
-    {
-    MidasTreeItem * item = const_cast<MidasTreeItem*>( m_Model->midasTreeItem(items.first()) ); 
-    emit midasTreeItemSelected(item); 
-
-    MidasCommunityTreeItem * communityTreeItem = NULL; 
-    MidasCollectionTreeItem * collectionTreeItem = NULL; 
-    MidasItemTreeItem * itemTreeItem = NULL; 
-    MidasBitstreamTreeItem * bitstreamTreeItem = NULL;
-
-    if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
-      {
-      emit midasCommunityTreeItemSelected(communityTreeItem); 
-      }
-    else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
-      {
-      emit midasCollectionTreeItemSelected(collectionTreeItem); 
-      }
-    else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
-      {
-      emit midasItemTreeItemSelected(itemTreeItem); 
-      }
-    else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
-      {
-      emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
-      }
-    }
-  else 
-    {
-    emit midasNoTreeItemSelected(); 
-    }
 }
 
 void MidasTreeViewServer::contextMenuEvent(QContextMenuEvent* e)
@@ -172,7 +82,7 @@ void MidasTreeViewServer::contextMenuEvent(QContextMenuEvent* e)
 
 void MidasTreeViewServer::decorateByUuid(std::string uuid)
 {
-  this->m_Model->decorateByUuid(uuid);
+  reinterpret_cast<MidasTreeModelServer*>(m_Model)->decorateByUuid(uuid);
 }
 
 void MidasTreeViewServer::alertFetchedMore()
@@ -190,7 +100,7 @@ void MidasTreeViewServer::selectByUuid(std::string uuid)
 
   m_ExpandTreeThread = new ExpandTreeThread;
   m_ExpandTreeThread->SetParentUI(this);
-  m_ExpandTreeThread->SetParentModel(m_Model);
+  m_ExpandTreeThread->SetParentModel(reinterpret_cast<MidasTreeModelServer*>(m_Model));
   m_ExpandTreeThread->SetUuid(uuid);
 
   connect(m_ExpandTreeThread, SIGNAL(threadComplete()),

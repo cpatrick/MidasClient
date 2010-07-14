@@ -79,6 +79,7 @@ set(MIDASDesktopUI_SRCS
   GUI/GUIProgress.cxx
   GUI/GUIProgress.h
   GUI/MidasTreeView.h
+  GUI/MidasTreeView.cxx
   GUI/MidasTreeViewServer.cxx
   GUI/MidasTreeViewServer.h
   GUI/MidasTreeViewClient.cxx
