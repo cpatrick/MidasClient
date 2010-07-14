@@ -3,6 +3,7 @@
 
 #include <QTreeView>
 #include <QItemSelection>
+#include <QContextMenuEvent>
 
 class MidasTreeItem;
 class MidasCommunityTreeItem;
@@ -34,12 +35,17 @@ signals:
   void midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem * item);
   void midasNoTreeItemSelected();
 
+  void midasTreeViewContextMenu( QContextMenuEvent * e );
+
 public slots:
   virtual void Update();
   virtual void updateSelection(const QItemSelection &selected,
     const QItemSelection &deselected);
 
 protected:
+  virtual void contextMenuEvent (QContextMenuEvent * e);
+  virtual void fetchItemData(MidasTreeItem* item) = 0;
+
   MidasTreeModel* m_Model;
 };
 

@@ -165,23 +165,33 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect(treeViewServer, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasCommunityTreeItem*) ));
+  connect(treeViewClient, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
+    this, SLOT( updateInfoPanel(const MidasCommunityTreeItem*) ));
 
   connect(treeViewServer, SIGNAL(midasCollectionTreeItemSelected(const MidasCollectionTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasCollectionTreeItem*) ));
-
-  connect(treeViewServer, SIGNAL(midasNoTreeItemSelected()),
-    this, SLOT( clearInfoPanel() ));
+  connect(treeViewClient, SIGNAL(midasCollectionTreeItemSelected(const MidasCollectionTreeItem*)),
+    this, SLOT( updateInfoPanel(const MidasCollectionTreeItem*) ));
 
   connect(treeViewServer, SIGNAL(midasItemTreeItemSelected(const MidasItemTreeItem*)),
+    this, SLOT( updateInfoPanel(const MidasItemTreeItem*) ));
+  connect(treeViewClient, SIGNAL(midasItemTreeItemSelected(const MidasItemTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasItemTreeItem*) ));
 
   connect(treeViewServer, SIGNAL(midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasBitstreamTreeItem*) ) );
+  connect(treeViewClient, SIGNAL(midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem*)),
+    this, SLOT( updateInfoPanel(const MidasBitstreamTreeItem*) ) );
+
+  connect(treeViewServer, SIGNAL(midasNoTreeItemSelected()),
+    this, SLOT( clearInfoPanel() ));
+  connect(treeViewClient, SIGNAL(midasNoTreeItemSelected()),
+    this, SLOT( clearInfoPanel() ));
 
   connect(treeViewServer, SIGNAL(midasNoTreeItemSelected()),
     dlg_pullUI, SLOT( resetState() ));
 
-  connect(treeViewServer, SIGNAL(midasTreeViewServerContextMenu(QContextMenuEvent*)),
+  connect(treeViewServer, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
     this, SLOT( displayServerResourceContextMenu(QContextMenuEvent*) ));
   connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
     this, SLOT( displayClientResourceContextMenu(QContextMenuEvent*) ));
@@ -322,13 +332,13 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     this->actionAdd_community->setEnabled( value );
     this->actionCreate_Profile->setEnabled( value );
     this->actionPreferences->setEnabled( value );
+    this->midasTreeItemInfoGroupBox->setEnabled( value );
     }
 
   if ( activateAction & ACTION_CONNECTED )
     {
     this->searchTab->setEnabled( value );
     this->treeViewServer->setEnabled( value );
-    this->midasTreeItemInfoGroupBox->setEnabled( value );
     this->pull_Button->setEnabled( value );
     this->push_Button->setEnabled( value );
     this->actionPush_Resources->setEnabled( value );
@@ -548,10 +558,6 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTre
   midasTreeItemInfoTable->clearSelection();
 
   mdo::Community* community = communityTreeItem->getCommunity();
-  mws::Community remote;
-  remote.SetWebAPI(mws::WebAPI::Instance());
-  remote.SetObject(community);
-  remote.Fetch();
 
   int i = 0;
 
@@ -611,10 +617,6 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionT
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
 
   mdo::Collection* collection = collectionTreeItem->getCollection();
-  mws::Collection remote;
-  remote.SetWebAPI(mws::WebAPI::Instance());
-  remote.SetObject(collection);
-  remote.Fetch();
 
   midasTreeItemInfoGroupBox->setTitle(tr(" Collection description "));
 
@@ -652,10 +654,6 @@ void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
 
   mdo::Item* item = itemTreeItem->getItem();
-  mws::Item remote;
-  remote.SetWebAPI(mws::WebAPI::Instance());
-  remote.SetObject(item);
-  remote.Fetch();
 
   midasTreeItemInfoGroupBox->setTitle(tr(" Item description "));
 
@@ -721,10 +719,6 @@ void MIDASDesktopUI::updateInfoPanel(const MidasBitstreamTreeItem* bitstreamTree
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
 
   mdo::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
-  mws::Bitstream remote;
-  remote.SetWebAPI(mws::WebAPI::Instance());
-  remote.SetObject(bitstream);
-  remote.Fetch();
 
   midasTreeItemInfoGroupBox->setTitle(tr(" Bitstream description "));
 

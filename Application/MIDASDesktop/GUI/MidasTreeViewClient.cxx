@@ -17,19 +17,18 @@
 #include "MidasClientGlobal.h"
 #include "mwsCommunity.h"
 #include "mdoBitstream.h"
+#include "midasDatabaseProxy.h"
 #include "midasLog.h"
 #include <iostream>
 
-/** Constructor */
 MidasTreeViewClient::MidasTreeViewClient(QWidget * parent):MidasTreeView(parent)
 {
-  // The tree model
   m_Model = new MidasTreeModelClient;
-  this->setModel(m_Model);
+  m_Database = NULL;
 
-  this->setAcceptDrops(true);
-  
-  this->setSelectionMode( QTreeView::SingleSelection );
+  this->setModel(m_Model);
+  this->setAcceptDrops(true); 
+  this->setSelectionMode(QTreeView::SingleSelection);
 
   connect (this, SIGNAL( collapsed(const QModelIndex&)),
      this->model(), SLOT(itemCollapsed(const QModelIndex&)) );
@@ -45,7 +44,6 @@ MidasTreeViewClient::MidasTreeViewClient(QWidget * parent):MidasTreeView(parent)
      this, SLOT(updateSelection(const QItemSelection&, const QItemSelection& )));
 }
 
-/** Destructor */
 MidasTreeViewClient::~MidasTreeViewClient()
 {
   delete m_Model;
@@ -54,16 +52,12 @@ MidasTreeViewClient::~MidasTreeViewClient()
 void MidasTreeViewClient::SetDatabaseProxy(midasDatabaseProxy* proxy)
 {
   reinterpret_cast<MidasTreeModelClient*>(m_Model)->SetDatabase(proxy);
+  this->m_Database = proxy;
 }
 
 void MidasTreeViewClient::SetLog(midasLog* log)
 {
   reinterpret_cast<MidasTreeModelClient*>(m_Model)->SetLog(log);
-}
-
-void MidasTreeViewClient::contextMenuEvent( QContextMenuEvent * e )
-{
-  emit midasTreeViewContextMenu( e );
 }
 
 void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent *event)
@@ -176,4 +170,51 @@ void MidasTreeViewClient::collapseAll()
 {
   m_Model->clearExpandedList();
   MidasTreeView::collapseAll();
+}
+
+void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
+{
+  MidasTreeModelClient* model = reinterpret_cast<MidasTreeModelClient*>(m_Model);
+
+  MidasCommunityTreeItem* communityTreeItem = NULL;
+  MidasCollectionTreeItem* collectionTreeItem = NULL;
+  MidasItemTreeItem* itemTreeItem = NULL;
+  MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
+
+  if((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
+    {
+    mdo::Community* community = communityTreeItem->getCommunity();
+    m_Database->Open();
+    m_Database->FillCommunity(community);
+    m_Database->Close();
+
+    emit midasCommunityTreeItemSelected(communityTreeItem);
+    }
+  else if((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
+    {
+    mdo::Collection* collection = collectionTreeItem->getCollection();
+    m_Database->Open();
+    m_Database->FillCollection(collection);
+    m_Database->Close();
+
+    emit midasCollectionTreeItemSelected(collectionTreeItem);
+    }
+  else if((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
+    {
+    mdo::Item* item = itemTreeItem->getItem();
+    m_Database->Open();
+    m_Database->FillItem(item);
+    m_Database->Close();
+
+    emit midasItemTreeItemSelected(itemTreeItem);
+    }
+  else if((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
+    {
+    mdo::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
+    m_Database->Open();
+    m_Database->FillBitstream(bitstream);
+    m_Database->Close();
+
+    emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
+    }
 }

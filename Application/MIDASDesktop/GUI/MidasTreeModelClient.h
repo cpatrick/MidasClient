@@ -25,6 +25,7 @@ public:
   ~MidasTreeModelClient();
 
   void SetDatabase(midasDatabaseProxy* database) { this->m_Database = database; }
+
   void SetLog(midasLog* log);
   void Populate();
 

@@ -18,28 +18,8 @@ void MidasTreeView::updateSelection(const QItemSelection &selected,
     {
     MidasTreeItem* item = const_cast<MidasTreeItem*>(m_Model->midasTreeItem(items.first()));
     emit midasTreeItemSelected(item);
-
-    MidasCommunityTreeItem * communityTreeItem = NULL;
-    MidasCollectionTreeItem * collectionTreeItem = NULL;
-    MidasItemTreeItem * itemTreeItem = NULL;
-    MidasBitstreamTreeItem * bitstreamTreeItem = NULL;
-
-    if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
-      {
-      emit midasCommunityTreeItemSelected(communityTreeItem);
-      }
-    else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
-      {
-      emit midasCollectionTreeItemSelected(collectionTreeItem);
-      }
-    else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
-      {
-      emit midasItemTreeItemSelected(itemTreeItem);
-      }
-    else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
-      {
-      emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
-      }
+    
+    fetchItemData(item);
     }
   else 
     {
@@ -81,4 +61,9 @@ void MidasTreeView::Initialize()
 {
   m_Model->Populate();
   m_Model->restoreExpandedState();
+}
+
+void MidasTreeView::contextMenuEvent(QContextMenuEvent * e)
+{
+  emit midasTreeViewContextMenu( e );
 }

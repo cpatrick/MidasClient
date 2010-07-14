@@ -32,10 +32,8 @@
 #include "midasUtils.h"
 #include <iostream>
 
-/** Constructor */
 MidasTreeViewServer::MidasTreeViewServer(QWidget * parent):MidasTreeView(parent)
 {
-  // The tree model
   m_Model = new MidasTreeModelServer;
   this->setModel(m_Model);
 
@@ -61,23 +59,16 @@ MidasTreeViewServer::MidasTreeViewServer(QWidget * parent):MidasTreeView(parent)
      this, SLOT(updateSelection(const QItemSelection&, const QItemSelection& )));
 }
 
-/** Destructor */
 MidasTreeViewServer::~MidasTreeViewServer()
 {
   delete m_Model;
   delete m_ExpandTreeThread;
 }
 
-/** Set the web API */
 void MidasTreeViewServer::SetWebAPI(mws::WebAPI* api)
 {
   reinterpret_cast<MidasTreeModelServer*>(m_Model)->SetWebAPI(api);
   m_WebAPI = api;
-}
-
-void MidasTreeViewServer::contextMenuEvent(QContextMenuEvent* e)
-{
-  emit midasTreeViewServerContextMenu(e);
 }
 
 void MidasTreeViewServer::decorateByUuid(std::string uuid)
@@ -166,4 +157,53 @@ void MidasTreeViewServer::mouseMoveEvent(QMouseEvent* event)
   drag->setPixmap(resource->getDecoration());
   drag->setMimeData(mimeData);
   Qt::DropAction dropAction = drag->start();
+}
+
+void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
+{
+  MidasCommunityTreeItem* communityTreeItem = NULL;
+  MidasCollectionTreeItem* collectionTreeItem = NULL;
+  MidasItemTreeItem* itemTreeItem = NULL;
+  MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
+
+  if((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
+    {
+    mdo::Community* community = communityTreeItem->getCommunity();
+    mws::Community remote;
+    remote.SetWebAPI(mws::WebAPI::Instance());
+    remote.SetObject(community);
+    remote.Fetch();
+
+    emit midasCommunityTreeItemSelected(communityTreeItem);
+    }
+  else if((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
+    {
+    mdo::Collection* collection = collectionTreeItem->getCollection();
+    mws::Collection remote;
+    remote.SetWebAPI(mws::WebAPI::Instance());
+    remote.SetObject(collection);
+    remote.Fetch();
+
+    emit midasCollectionTreeItemSelected(collectionTreeItem);
+    }
+  else if((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
+    {
+    mdo::Item* item = itemTreeItem->getItem();
+    mws::Item remote;
+    remote.SetWebAPI(mws::WebAPI::Instance());
+    remote.SetObject(item);
+    remote.Fetch();
+
+    emit midasItemTreeItemSelected(itemTreeItem);
+    }
+  else if((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
+    {
+    mdo::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
+    mws::Bitstream remote;
+    remote.SetWebAPI(mws::WebAPI::Instance());
+    remote.SetObject(bitstream);
+    remote.Fetch();
+
+    emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
+    }
 }

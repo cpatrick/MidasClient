@@ -6,12 +6,6 @@
 #include <QPoint>
 #include <string>
 
-class MidasTreeItem;
-class MidasCommunityTreeItem;
-class MidasCollectionTreeItem;
-class MidasItemTreeItem;
-class MidasBitstreamTreeItem;
-class QContextMenuEvent;
 class MidasTreeModelServer;
 class ExpandTreeThread;
 
@@ -44,16 +38,14 @@ public slots:
   void selectByIndex(const QModelIndex& index);
 
 signals:
-
-  void midasTreeViewServerContextMenu( QContextMenuEvent * e );
   void fetchedMore();
 
   void startedExpandingTree();
   void finishedExpandingTree();
 
 protected:
- 
-  void contextMenuEvent ( QContextMenuEvent * e );
+  void fetchItemData(MidasTreeItem* item);
+
   mws::WebAPI*          m_WebAPI;
   ExpandTreeThread*     m_ExpandTreeThread;
   QMutex                m_Mutex;
