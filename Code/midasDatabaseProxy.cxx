@@ -194,10 +194,17 @@ bool midasDatabaseProxy::SaveInfo(mdo::Item* item)
   query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
     << "VALUES ('" << item->GetId() << "','64','" << item->GetTitle() << "')";
   ok &= this->Database->ExecuteQuery(query.str().c_str());
-  query.str(std::string());
 
-  //TODO add authors and keywords here as well.
+  for(std::vector<std::string>::iterator i = item->GetAuthors().begin();
+      i != item->GetAuthors().end(); ++i)
+    {
+    query.str(std::string());
+    query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
+      << "VALUES ('" << item->GetId() << "','3','" << *i << "')";
+    ok &= this->Database->ExecuteQuery(query.str().c_str());
+    }
 
+  //TODO add keywords too
   return ok;
 }
 
