@@ -188,6 +188,14 @@ int midasSynchronizer::Perform()
     }
 
   std::string temp = WORKING_DIR();
+  this->DatabaseProxy->Open();
+  std::string wdir = this->DatabaseProxy->GetSetting(midasDatabaseProxy::ROOT_DIR);
+  this->DatabaseProxy->Close();
+
+  if(wdir != "")
+    {
+    CHANGE_DIR(wdir.c_str());
+    }
   switch(this->Operation)
     {
     case OPERATION_ADD:
