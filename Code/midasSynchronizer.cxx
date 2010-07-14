@@ -519,9 +519,11 @@ bool midasSynchronizer::PullBitstream(int parentId)
   mws::WebAPI::Instance()->DownloadFile(fields.str().c_str(),
                              bitstream->GetName().c_str());
 
-  this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
+  int id = this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
     bitstream->GetUuid(), WORKING_DIR() + "/" + bitstream->GetName(),
     bitstream->GetName(), midasResourceType::ITEM, parentId, 0);
+  bitstream->SetId(id);
+  this->DatabaseProxy->SaveInfo(bitstream);
   this->DatabaseProxy->Close();
   
   return true;
@@ -578,6 +580,8 @@ bool midasSynchronizer::PullCollection(int parentId)
   int id = this->DatabaseProxy->AddResource(midasResourceType::COLLECTION,
     collection->GetUuid(), WORKING_DIR() + "/" + collection->GetName(),
     collection->GetName(), midasResourceType::COMMUNITY, parentId, 0);
+  collection->SetId(id);
+  this->DatabaseProxy->SaveInfo(collection);
   this->DatabaseProxy->Close();
   this->LastId = id;
 
@@ -669,6 +673,8 @@ bool midasSynchronizer::PullCommunity(int parentId)
     this->DatabaseProxy->Close();
     return false;
     }
+  remote.SetObject(community);
+  remote.Fetch();
 
   // Pull any parents we need
   if(parentId == NO_PARENT && community->GetParentId())
@@ -698,6 +704,8 @@ bool midasSynchronizer::PullCommunity(int parentId)
   int id = this->DatabaseProxy->AddResource(midasResourceType::COMMUNITY,
     community->GetUuid(), WORKING_DIR() + "/" + community->GetName(),
     community->GetName(), midasResourceType::COMMUNITY, parentId, 0);
+  community->SetId(id);
+  this->DatabaseProxy->SaveInfo(community);
   this->DatabaseProxy->Close();
   this->LastId = id;
 
@@ -803,6 +811,8 @@ bool midasSynchronizer::PullItem(int parentId)
   int id = this->DatabaseProxy->AddResource(midasResourceType::ITEM,
     item->GetUuid(), WORKING_DIR() + "/" + title, item->GetTitle(),
     midasResourceType::COLLECTION, parentId, 0);
+  item->SetId(id);
+  this->DatabaseProxy->SaveInfo(item);
   this->DatabaseProxy->Close();
   this->LastId = id;
 

@@ -289,6 +289,8 @@ const char* SQLiteDatabase::GetValueAsString(unsigned int column)
       {
       case SQLITE_TEXT:
         return (const char*)sqlite3_column_text(m_Statement, column);
+      case SQLITE_NULL:
+        return "";
       }
     }
   

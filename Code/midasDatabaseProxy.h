@@ -97,10 +97,15 @@ public:
    */
   bool DeleteResource(std::string uuid, bool deleteFiles = false);
 
-  bool FillCommunity(mdo::Community* community);
-  bool FillCollection(mdo::Collection* collection);
-  bool FillItem(mdo::Item* item);
-  bool FillBitstream(mdo::Bitstream* bitstream);
+  bool SaveInfo(mdo::Community* community);
+  bool SaveInfo(mdo::Collection* collection);
+  bool SaveInfo(mdo::Item* item);
+  bool SaveInfo(mdo::Bitstream* bitstream);
+
+  void FetchInfo(mdo::Community* community);
+  void FetchInfo(mdo::Collection* collection);
+  void FetchInfo(mdo::Item* item);
+  void FetchInfo(mdo::Bitstream* bitstream);
 
   bool AddAuthProfile(std::string user, std::string appName,
     std::string apiKey, std::string profileName, std::string url);

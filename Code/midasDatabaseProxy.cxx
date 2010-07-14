@@ -54,25 +54,122 @@ mds::SQLiteDatabase* midasDatabaseProxy::GetDatabase()
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::FillCommunity(mdo::Community* community)
+void midasDatabaseProxy::FetchInfo(mdo::Community* community)
+{
+  if(community->IsFetched())
+    {
+    return;
+    }
+  std::stringstream query;
+  query << "SELECT short_description, introductory_text, copyright_text "
+    "FROM community WHERE community_id='" << community->GetId() << "'";
+
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  while(this->Database->GetNextRow())
+    {
+    community->SetDescription(this->Database->GetValueAsString(0));
+    community->SetIntroductoryText(this->Database->GetValueAsString(1));
+    community->SetCopyright(this->Database->GetValueAsString(2));
+    }
+  community->SetFetched(true);
+}
+
+//-------------------------------------------------------------------------
+void midasDatabaseProxy::FetchInfo(mdo::Collection* collection)
+{
+  if(collection->IsFetched())
+    {
+    return;
+    }
+  std::stringstream query;
+  query << "SELECT short_description, introductory_text, copyright_text "
+    "FROM collection WHERE collection_id='" << collection->GetId() << "'";
+
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  while(this->Database->GetNextRow())
+    {
+    collection->SetDescription(this->Database->GetValueAsString(0));
+    collection->SetIntroductoryText(this->Database->GetValueAsString(1));
+    collection->SetCopyright(this->Database->GetValueAsString(2));
+    }
+  collection->SetFetched(true);
+}
+
+void midasDatabaseProxy::FetchInfo(mdo::Bitstream* bitstream)
+{
+  if(bitstream->IsFetched())
+    {
+    return;
+    }
+  std::stringstream query;
+  query << "SELECT size_bytes FROM bitstream WHERE bitstream_id='"
+    << bitstream->GetId() << "'";
+
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  while(this->Database->GetNextRow())
+    {
+    std::stringstream val;
+    val << this->Database->GetValueAsInt(0);
+    bitstream->SetSize(val.str());
+    }
+  bitstream->SetFetched(true);
+}
+
+//-------------------------------------------------------------------------
+void midasDatabaseProxy::FetchInfo(mdo::Item* item)
+{
+  if(item->IsFetched())
+    {
+    return;
+    }
+
+  std::stringstream query;
+  query << "SELECT text_value FROM metadatavalue WHERE item_id='"
+    << item->GetId() << "' AND metadata_field_id='27'";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  while(this->Database->GetNextRow())
+    {
+    item->SetAbstract(this->Database->GetValueAsString(0));
+    }
+
+  query.str(std::string());
+  query << "SELECT text_value FROM metadatavalue WHERE item_id='"
+    << item->GetId() << "' AND metadata_field_id='3'";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  while(this->Database->GetNextRow())
+    {
+    item->AddAuthor(this->Database->GetValueAsString(0));
+    }
+  
+  //TODO fetch keywords here too
+  item->SetFetched(true);
+}
+
+//-------------------------------------------------------------------------
+bool midasDatabaseProxy::SaveInfo(mdo::Community* community)
 {
   std::stringstream query;
-  query << "UPDATE community SET " << 
-    "short_description='" << community->GetDescription() << "', '" <<
-    "introductory_text='" << community->GetIntroductoryText() << "', '" <<
-    "copyright_text='" << community->GetCopyright() << "'" <<
-    " WHERE community_id='" << community->GetId() << "'";
+  query << "UPDATE community SET " <<
+    "short_description='" << community->GetDescription() << "', "
+    "introductory_text='" << community->GetIntroductoryText() << "', "
+    "copyright_text='" << community->GetCopyright() << "' WHERE "
+    "community_id='" << community->GetId() << "'";
 
   return this->Database->ExecuteQuery(query.str().c_str());
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::FillCollection(mdo::Collection* coll)
+bool midasDatabaseProxy::SaveInfo(mdo::Collection* coll)
 {
   std::stringstream query;
   query << "UPDATE collection SET " << 
-    "short_description='" << coll->GetDescription() << "', '" <<
-    "introductory_text='" << coll->GetIntroductoryText() << "', '" <<
+    "short_description='" << coll->GetDescription() << "', "
+    "introductory_text='" << coll->GetIntroductoryText() << "', "
     "copyright_text='" << coll->GetCopyright() << "'" <<
     " WHERE collection_id='" << coll->GetId() << "'";
 
@@ -80,10 +177,14 @@ bool midasDatabaseProxy::FillCollection(mdo::Collection* coll)
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::FillItem(mdo::Item* item)
+bool midasDatabaseProxy::SaveInfo(mdo::Item* item)
 {
   bool ok = true;
   std::stringstream query;
+  query << "DELETE FROM metadatavalue WHERE item_id='" << item->GetId() << "'";
+  this->Database->ExecuteQuery(query.str().c_str());
+  query.str(std::string());
+
   query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
     << "VALUES ('" << item->GetId() << "','27','" << item->GetAbstract()
     << "')";
@@ -95,14 +196,19 @@ bool midasDatabaseProxy::FillItem(mdo::Item* item)
   ok &= this->Database->ExecuteQuery(query.str().c_str());
   query.str(std::string());
 
+  //TODO add authors and keywords here as well.
+
   return ok;
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::FillBitstream(mdo::Bitstream* bitstream)
+bool midasDatabaseProxy::SaveInfo(mdo::Bitstream* bitstream)
 {
-  //TODO implement
-  return true;
+  std::stringstream query;
+  query << "UPDATE bitstream SET size_bytes='" << bitstream->GetSize()
+    << "' WHERE bitstream_id='" << bitstream->GetId() << "'";
+
+  return this->Database->ExecuteQuery(query.str().c_str());
 }
 
 //-------------------------------------------------------------------------
