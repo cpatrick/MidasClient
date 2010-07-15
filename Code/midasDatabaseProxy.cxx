@@ -146,7 +146,26 @@ void midasDatabaseProxy::FetchInfo(mdo::Item* item)
     item->AddAuthor(this->Database->GetValueAsString(0));
     }
   
-  //TODO fetch keywords here too
+  query.str(std::string());
+  query << "SELECT text_value FROM metadatavalue WHERE item_id='"
+    << item->GetId() << "' AND metadata_field_id='57'";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  while(this->Database->GetNextRow())
+    {
+    item->AddKeyword(this->Database->GetValueAsString(0));
+    }
+
+  query.str(std::string());
+  query << "SELECT text_value FROM metadatavalue WHERE item_id='"
+    << item->GetId() << "' AND metadata_field_id='26'";
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  while(this->Database->GetNextRow())
+    {
+    item->SetDescription(this->Database->GetValueAsString(0));
+    }
+
   item->SetFetched(true);
 }
 
@@ -183,16 +202,21 @@ bool midasDatabaseProxy::SaveInfo(mdo::Item* item)
   std::stringstream query;
   query << "DELETE FROM metadatavalue WHERE item_id='" << item->GetId() << "'";
   this->Database->ExecuteQuery(query.str().c_str());
+  
   query.str(std::string());
-
   query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
     << "VALUES ('" << item->GetId() << "','27','" << item->GetAbstract()
     << "')";
   ok &= this->Database->ExecuteQuery(query.str().c_str());
+ 
   query.str(std::string());
-
   query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
     << "VALUES ('" << item->GetId() << "','64','" << item->GetTitle() << "')";
+  ok &= this->Database->ExecuteQuery(query.str().c_str());
+
+  query.str(std::string());
+  query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
+    << "VALUES ('" << item->GetId() << "','26','" << item->GetDescription() << "')";
   ok &= this->Database->ExecuteQuery(query.str().c_str());
 
   for(std::vector<std::string>::iterator i = item->GetAuthors().begin();
@@ -204,7 +228,14 @@ bool midasDatabaseProxy::SaveInfo(mdo::Item* item)
     ok &= this->Database->ExecuteQuery(query.str().c_str());
     }
 
-  //TODO add keywords too
+  for(std::vector<std::string>::iterator i = item->GetKeywords().begin();
+      i != item->GetKeywords().end(); ++i)
+    {
+    query.str(std::string());
+    query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
+      << "VALUES ('" << item->GetId() << "','57','" << *i << "')";
+    ok &= this->Database->ExecuteQuery(query.str().c_str());
+    }
   return ok;
 }
 
