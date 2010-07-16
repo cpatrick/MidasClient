@@ -82,6 +82,11 @@ void midasSynchronizer::SetLog(midasLog* log)
   this->Authenticator->SetLog(log);
 }
 
+midasDatabaseProxy* midasSynchronizer::GetDatabase()
+{
+  return this->DatabaseProxy;
+}
+
 midasLog* midasSynchronizer::GetLog()
 {
   return this->Log;

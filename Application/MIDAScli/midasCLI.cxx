@@ -10,6 +10,8 @@
 =========================================================================*/
 
 #include "midasCLI.h"
+#include "midasSynchronizer.h"
+#include "midasDatabaseProxy.h"
 #include "midasDotProgressReporter.h"
 #include "midasStatus.h"
 #include "midasStdOutLog.h"
@@ -80,6 +82,11 @@ int midasCLI::Perform(std::vector<std::string> args)
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParsePull(postOpArgs);
       break;
+      }
+    else if(args[i] == "set_root_dir")
+      {
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      return this->SetRootDir(postOpArgs);
       }
     else if(args[i] == "status")
       {
@@ -340,6 +347,30 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
 }
 
 //-------------------------------------------------------------------
+int midasCLI::SetRootDir(std::vector<std::string> args)
+{
+  if(!args.size())
+    {
+    this->PrintCommandHelp("set_root_dir");
+    return -1;
+    }
+
+  std::string root_dir = args[0];
+  if(!kwsys::SystemTools::FileIsDirectory(root_dir.c_str()))
+    {
+    std::cerr << "Failed: \"" << root_dir << "\" does not refer to a valid "
+      "directory." << std::endl;
+    return -1;
+    }
+  this->Synchronizer->GetDatabase()->Open();
+  this->Synchronizer->GetDatabase()->SetSetting(
+    midasDatabaseProxy::ROOT_DIR, root_dir);
+  this->Synchronizer->GetDatabase()->Close();
+  std::cout << "Changed root directory to " << root_dir << "." << std::endl;
+  return 0;
+}
+
+//-------------------------------------------------------------------
 bool midasCLI::ParseStatus(std::vector<std::string> args)
 {
   std::vector<midasStatus> stats = this->Synchronizer->GetStatusEntries();
@@ -385,6 +416,8 @@ void midasCLI::PrintUsage()
     " pull             Copy part of a MIDAS database locally."
     << std::endl <<
     " push             Copy local resources to a MIDAS server."
+    << std::endl <<
+    " set_root_dir     Set where resources should be pulled to on disk."
     << std::endl << std::endl << "Use MIDAScli --help COMMAND for "
     "help with individual commands." << std::endl;
 }
@@ -445,5 +478,9 @@ void midasCLI::PrintCommandHelp(std::string command)
       << std::endl << 
       " --app-name APPNAME   The application name for the given key"
       << std::endl;
+    }
+  else if(command == "set_root_dir")
+    {
+    std::cout << "Usage: MIDAScli ... set_root_dir DIR" << std::endl;
     }
 }

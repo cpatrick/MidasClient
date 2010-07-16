@@ -65,7 +65,7 @@ public:
   int GetResourceType();
 
   void SetDatabase(std::string path);
-  std::string GetDatabase();
+  midasDatabaseProxy* GetDatabase();
 
   void SetServerURL(std::string url);
   std::string GetServerURL();

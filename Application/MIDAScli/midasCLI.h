@@ -12,7 +12,9 @@
 #ifndef MIDASCLI_H
 #define MIDASCLI_H
 
-#include <midasSynchronizer.h>
+#include "midasStandardIncludes.h"
+
+class midasSynchronizer;
 
 class midasCLI
 {
@@ -31,7 +33,8 @@ class midasCLI
     bool ParsePull(std::vector<std::string> args);
     bool ParsePush(std::vector<std::string> args);
     bool ParseStatus(std::vector<std::string> args);
-
+    
+    int SetRootDir(std::vector<std::string> args);
     int PerformCreateProfile(std::vector<std::string> args);
 
     midasSynchronizer* Synchronizer;
