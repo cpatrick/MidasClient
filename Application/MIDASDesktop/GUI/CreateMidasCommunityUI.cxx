@@ -55,14 +55,21 @@ void CreateMidasCommunityUI::accept()
 {
   if(this->nameEdit->text() == "")
     {
-    parent->getLog()->Error("You must supply a name for the community.");
+    parent->GetLog()->Error("You must supply a name for the community.");
     QDialog::accept();
     return;
     }
 
   if (this->type >= CreateMidasCommunityUI::ClientCommunity)
     {
-    std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory();
+    parent->getDatabaseProxy()->Open();
+    std::string path = parent->getDatabaseProxy()->GetSetting(midasDatabaseProxy::ROOT_DIR);
+
+    if(path == "")
+      {
+      path = kwsys::SystemTools::GetCurrentWorkingDirectory();
+      }
+
     if (this->type == CreateMidasCommunityUI::ClientSubCommunity)
       {
       QModelIndex selected = this->parent->getTreeViewClient()->getSelectedModelIndex();
@@ -91,13 +98,13 @@ void CreateMidasCommunityUI::accept()
     if(parent->getSynchronizer()->Perform() == 0)
       {    
       text << "Successfully added community " << path << ".";
-      parent->getLog()->Message(text.str());
+      parent->GetLog()->Message(text.str());
       parent->updateClientTreeView();
       }
     else
       {
       text << "Failed to add community at " << path << ".";
-      parent->getLog()->Error(text.str());
+      parent->GetLog()->Error(text.str());
       }
     }
   else //creating a server-side community

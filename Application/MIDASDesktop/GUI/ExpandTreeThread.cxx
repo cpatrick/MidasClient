@@ -3,29 +3,17 @@
 #include "MidasTreeModelServer.h"
 #include "mwsTreePath.h"
 
-ExpandTreeThread::ExpandTreeThread()
+ExpandTreeThread::ExpandTreeThread(MidasTreeViewServer* view,
+                                   MidasTreeModelServer* model,
+                                   std::string uuid):
+m_ParentUI(view),
+m_ParentModel(model),
+m_Uuid(uuid)
 {
-  m_ParentUI = NULL;
-  m_ParentModel = NULL;
 }
 
 ExpandTreeThread::~ExpandTreeThread()
 {
-}
-
-void ExpandTreeThread::SetParentUI(MidasTreeViewServer* parent)
-{
-  m_ParentUI = parent;
-}
-
-void ExpandTreeThread::SetParentModel(MidasTreeModelServer* parent)
-{
-  m_ParentModel = parent;
-}
-
-void ExpandTreeThread::SetUuid(std::string uuid)
-{
-  m_Uuid = uuid;
 }
 
 void ExpandTreeThread::run()

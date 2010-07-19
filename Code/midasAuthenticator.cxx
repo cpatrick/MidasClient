@@ -166,9 +166,3 @@ void midasAuthenticator::SetProfile(std::string profile)
   this->Profile = profile;
   this->ClearToken();
 }
-
-//-------------------------------------------------------------------
-void midasAuthenticator::SetLog(midasLog* log)
-{
-  this->Log = log;
-}

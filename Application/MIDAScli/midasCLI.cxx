@@ -24,14 +24,15 @@ midasCLI::midasCLI()
   this->Synchronizer->SetProgressReporter(
     reinterpret_cast<midasProgressReporter*>(
     new midasDotProgressReporter(30)));
-  this->Synchronizer->SetLog(new midasStdOutLog());
+  this->SetLog(new midasStdOutLog());
+  this->Synchronizer->SetLog(this->GetLog());
   int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
   srand (time); //init random number generator 
 }
 
 midasCLI::~midasCLI()
 {
-  this->Synchronizer->DeleteLog();
+  delete this->Log;
   delete this->Synchronizer;
 }
 

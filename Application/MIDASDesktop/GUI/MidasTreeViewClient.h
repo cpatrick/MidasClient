@@ -6,7 +6,6 @@
 
 class MidasTreeModelClient;
 class midasDatabaseProxy;
-class midasLog;
 
 class MidasTreeViewClient : public MidasTreeView
 {
@@ -18,7 +17,6 @@ public:
   ~MidasTreeViewClient();
 
   void SetDatabaseProxy(midasDatabaseProxy* proxy);
-  void SetLog(midasLog* log);
 
 public slots:
   void expandAll();

@@ -3,6 +3,7 @@
 #include "MIDASDesktopUI.h"
 #include "MidasClientGlobal.h"
 #include "midasDatabaseProxy.h"
+#include "UnifyTreeThread.h"
 #include <QString>
 #include <QFileDialog>
 
@@ -10,10 +11,18 @@ PreferencesUI::PreferencesUI(MIDASDesktopUI *parent):
   QDialog(parent), m_parent(parent)
 {
   setupUi(this);
+
+  m_UnifyTreeThread = NULL;
+
   connect(settingComboBox, SIGNAL(currentIndexChanged(int)), this,
     SLOT( enableActions(int) ) );
   connect(workingDirBrowseButton, SIGNAL(released()), this,
     SLOT( selectWorkingDir() ) );
+}
+
+PreferencesUI::~PreferencesUI()
+{
+  delete m_UnifyTreeThread;
 }
 
 void PreferencesUI::reset()
@@ -25,6 +34,8 @@ void PreferencesUI::reset()
     midasDatabaseProxy::AUTO_REFRESH_SETTING);
   std::string path = m_parent->getDatabaseProxy()->GetSetting(
     midasDatabaseProxy::ROOT_DIR);
+  m_UnifiedTree = m_parent->getDatabaseProxy()->GetSettingBool(
+    midasDatabaseProxy::UNIFIED_TREE);
   m_parent->getDatabaseProxy()->Close();
 
   if(index != "")
@@ -42,6 +53,7 @@ void PreferencesUI::reset()
     path = kwsys::SystemTools::GetCurrentWorkingDirectory();
     }
 
+  copyResourcesCheckBox->setChecked(m_UnifiedTree);
   workingDirEdit->setText(path.c_str());
 }
 
@@ -86,6 +98,25 @@ void PreferencesUI::accept()
   m_parent->getDatabaseProxy()->Open();
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::AUTO_REFRESH_INTERVAL, timeSpinBox->value());
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING, settingComboBox->currentIndex());
+  m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::UNIFIED_TREE, copyResourcesCheckBox->isChecked());
+
+  if(copyResourcesCheckBox->isChecked() && !m_UnifiedTree)
+    {
+    if(m_UnifyTreeThread)
+      {
+      disconnect(m_UnifyTreeThread);
+      }
+    delete m_UnifyTreeThread;
+
+    m_UnifyTreeThread = new UnifyTreeThread(m_parent);
+    
+    connect(m_UnifyTreeThread, SIGNAL(threadComplete()), this, SLOT(unifyTreeDone()));
+
+    m_parent->displayStatus("Copying resources into a single tree...");
+    m_parent->setProgressIndeterminate();
+
+    m_UnifyTreeThread->start();
+    }
 
   if(kwsys::SystemTools::FileIsDirectory(workingDirEdit->text().toAscii()))
     {

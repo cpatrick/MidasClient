@@ -6,9 +6,12 @@
 #include "midasSynchronizer.h"
 #include "mwsWebAPI.h"
 
-void SignInThread::SetParentUI(MIDASDesktopUI* parent)
+SignInThread::SignInThread(MIDASDesktopUI* parent) : m_Parent(parent)
 {
-  this->m_Parent = parent;
+}
+
+SignInThread::~SignInThread()
+{
 }
 
 void SignInThread::SetProfile(QString profile)

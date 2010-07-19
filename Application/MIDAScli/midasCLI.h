@@ -13,10 +13,11 @@
 #define MIDASCLI_H
 
 #include "midasStandardIncludes.h"
+#include "midasLogAware.h"
 
 class midasSynchronizer;
 
-class midasCLI
+class midasCLI : public midasLogAware
 {
   public:
     midasCLI();

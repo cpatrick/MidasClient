@@ -9,23 +9,26 @@
 
 =========================================================================*/
 
-#ifndef MIDASLOG_H
-#define MIDASLOG_H
+#ifndef MIDASLOGAWARE_H
+#define MIDASLOGAWARE_H
 
 #include "midasStandardIncludes.h"
+#include "midasLog.h"
 
 /**
- * Class for logging messages
+ * A class that needs access to the log should extend this class
  */
-class midasLog
+class midasLogAware
 {
-  public:
-    midasLog() {}
-    virtual ~midasLog() {}
+public:
+  midasLogAware() { Log = NULL; }
+  virtual ~midasLogAware() {}
 
-    virtual void Error(std::string text) = 0; 
-    virtual void Message(std::string text) = 0;
-    virtual void Status(std::string text) = 0;
+  virtual midasLog* GetLog() { return Log; }
+  virtual void SetLog(midasLog* log) { Log = log; }
+
+protected:
+  midasLog* Log;
 };
 
 #endif

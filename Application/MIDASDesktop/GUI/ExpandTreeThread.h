@@ -13,12 +13,10 @@ class ExpandTreeThread : public QThread
 {
   Q_OBJECT
 public:
-  ExpandTreeThread();
+  ExpandTreeThread(MidasTreeViewServer* view,
+                   MidasTreeModelServer* model,
+                   std::string uuid);
   ~ExpandTreeThread();
-
-  void SetParentUI(MidasTreeViewServer* parent);
-  void SetParentModel(MidasTreeModelServer* parent);
-  void SetUuid(std::string uuid);
 
   virtual void run();
 

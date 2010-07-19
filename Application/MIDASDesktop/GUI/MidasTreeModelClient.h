@@ -10,7 +10,6 @@
 #include <vector>
 
 class midasDatabaseProxy;
-class midasLog;
 
 class MidasTreeItem;
 class MidasCommunityTreeItem;
@@ -26,13 +25,11 @@ public:
 
   void SetDatabase(midasDatabaseProxy* database) { this->m_Database = database; }
 
-  void SetLog(midasLog* log);
   void Populate();
 
   bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
 
 private:
-  midasLog*            m_Log;
   midasDatabaseProxy*  m_Database;
 };
 

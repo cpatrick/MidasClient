@@ -68,9 +68,8 @@ void SignInUI::accept()
     disconnect(m_SignInThread);
     }
   delete m_SignInThread;
-  m_SignInThread = new SignInThread;
+  m_SignInThread = new SignInThread(parent);
   m_SignInThread->SetProfile(profileComboBox->currentText());
-  m_SignInThread->SetParentUI(parent);
 
   connect(m_SignInThread, SIGNAL( initialized(bool) ), parent, SLOT( signIn(bool) ) );
 

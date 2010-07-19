@@ -15,6 +15,7 @@
 #include "midasStandardIncludes.h"
 #include "midasStatus.h"
 #include "mdsSQLiteDatabase.h"
+#include "midasLogAware.h"
 
 namespace mdo
 {
@@ -45,7 +46,7 @@ struct midasAuthProfile
   bool IsAnonymous() { return User == ""; }
 };
 
-class midasDatabaseProxy
+class midasDatabaseProxy : public midasLogAware
 {
 public:
   midasDatabaseProxy(std::string database);
@@ -57,7 +58,8 @@ public:
     LAST_FETCH_TIME,
     AUTO_REFRESH_INTERVAL,
     AUTO_REFRESH_SETTING,
-    ROOT_DIR
+    ROOT_DIR,
+    UNIFIED_TREE
     };
 
   mds::SQLiteDatabase* GetDatabase();
@@ -145,6 +147,12 @@ public:
   void Populate(mdo::Collection* node, bool recurse = true,
                 bool checkDirty = true);
   void Populate(mdo::Item* node, bool checkDirty = true);
+
+  /** 
+   * If any resources are located outside the current root on disk,
+   * this will copy them underneath it and update their stored path
+   */
+  void UnifyTree();
 protected:
   void InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);

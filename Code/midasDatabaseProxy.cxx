@@ -42,6 +42,8 @@ std::string midasDatabaseProxy::GetKeyName(MidasAppSetting setting)
       return "refresh_setting";
     case ROOT_DIR:
       return "root_dir";
+    case UNIFIED_TREE:
+      return "unified_tree";
     default:
       return "";
     }
@@ -1054,4 +1056,9 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       }
     }
   return true;
+}
+
+void midasDatabaseProxy::UnifyTree()
+{
+  //TODO implement
 }

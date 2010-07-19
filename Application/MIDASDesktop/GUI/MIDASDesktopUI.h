@@ -9,6 +9,7 @@
 #include <QTimer>
 
 #include "ui_MIDASDesktopUI.h"
+#include "midasLogAware.h"
 
 class UploadAgreementUI;
 class CreateMidasCommunityUI; 
@@ -23,7 +24,6 @@ class PreferencesUI;
 class midasSynchronizer;
 class midasAuthenticator;
 class midasDatabaseProxy;
-class midasLog;
 class midasProgressReporter;
 
 class RefreshServerTreeThread;
@@ -41,7 +41,7 @@ extern "C" {
   static int progress_transfer_callback(void* data, double dltotal, double dlnow, double ultotal, double ulnow); 
 }
 
-class MIDASDesktopUI :  public QMainWindow, private Ui::MIDASDesktopWindow
+class MIDASDesktopUI :  public QMainWindow, public midasLogAware, private Ui::MIDASDesktopWindow
 {
   Q_OBJECT
 
@@ -78,7 +78,6 @@ public:
   midasDatabaseProxy* getDatabaseProxy() { return m_database; }
   midasAuthenticator* getAuthenticator() { return m_auth; }
   midasSynchronizer* getSynchronizer() { return m_synch; }
-  midasLog* getLog() { return m_logger; }
   QTextEdit* getLogTextEdit() { return log; }
 
 protected:
@@ -219,7 +218,6 @@ private:
   midasAuthenticator*         m_auth;
   midasSynchronizer*          m_synch;
   std::string                 m_url;
-  midasLog*                   m_logger;
   midasProgressReporter*      m_progress;
   std::vector<std::string>    m_dirtyUuids;
   std::vector<mdo::Object*>   m_SearchResults;

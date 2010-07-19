@@ -103,7 +103,7 @@ void PullUI::accept()
     {
     m_Parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_CLONE);
     m_Parent->getSynchronizer()->SetRecursive(true);
-    m_Parent->getLog()->Message("Cloning the server repository");
+    m_Parent->GetLog()->Message("Cloning the server repository");
     m_Parent->displayStatus(tr("Cloning the server respository"));
 
     m_Parent->setProgressIndeterminate();
@@ -158,17 +158,17 @@ void PullUI::pulled(int rc)
   if(rc == MIDAS_OK)
     {
     text << "Successfully pulled " << m_TypeName << " with id=" << m_PullId;
-    m_Parent->getLog()->Message(text.str());
+    m_Parent->GetLog()->Message(text.str());
     }
   else if(rc == MIDAS_CANCELED)
     {
     text << "Pull canceled by user";
-    m_Parent->getLog()->Message(text.str());
+    m_Parent->GetLog()->Message(text.str());
     }
   else
     {
     text << "Failed to pull " << m_TypeName << " with id=" << m_PullId;
-    m_Parent->getLog()->Error(text.str());
+    m_Parent->GetLog()->Error(text.str());
     }
   emit pulledResources();
   m_Parent->displayStatus(text.str().c_str());
@@ -181,17 +181,17 @@ void PullUI::cloned(int rc)
   if(rc == MIDAS_OK)
     {
     text = "Successfully cloned the MIDAS repository.";
-    m_Parent->getLog()->Message(text);
+    m_Parent->GetLog()->Message(text);
     }
   else if(rc == MIDAS_CANCELED)
     {
     text = "Clone canceled by user";
-    m_Parent->getLog()->Message(text);
+    m_Parent->GetLog()->Message(text);
     }
   else
     {
     text = "Failed to clone the MIDAS repository.";
-    m_Parent->getLog()->Error(text);
+    m_Parent->GetLog()->Error(text);
     }
   emit pulledResources();
   m_Parent->displayStatus(text.c_str());

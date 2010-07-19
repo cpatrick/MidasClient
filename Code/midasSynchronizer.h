@@ -17,7 +17,7 @@
 #include "midasDatabaseProxy.h"
 #include "midasAuthenticator.h"
 #include "midasStatus.h"
-#include "midasLog.h"
+#include "midasLogAware.h"
 #include "mwsWebAPI.h"
 #include "mdoCommunity.h"
 
@@ -36,7 +36,7 @@
 #define MIDAS_EMPTY_FILE     -11
 #define MIDAS_CANCELED       -12
 
-class midasSynchronizer
+class midasSynchronizer : public midasLogAware
 {
 public:
   midasSynchronizer();
@@ -52,8 +52,6 @@ public:
     };
 
   void SetLog(midasLog* log);
-  midasLog* GetLog();
-  void DeleteLog();
 
   void SetParentId(int id);
   int GetParentId();
@@ -126,7 +124,6 @@ protected:
   bool Recursive;
   bool ShouldCancel;
   midasProgressReporter* Progress;
-  midasLog* Log;
 
   std::string Database;
   midasDatabaseProxy* DatabaseProxy;

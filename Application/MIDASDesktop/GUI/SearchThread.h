@@ -14,7 +14,9 @@ class SearchThread : public QThread
 {
   Q_OBJECT
 public:
-  void SetParentUI(MIDASDesktopUI* parent);
+  SearchThread(MIDASDesktopUI* parent);
+  ~SearchThread();
+
   void SetWords(std::vector<std::string> words);
   void SetResults(std::vector<mdo::Object*>* results);
 

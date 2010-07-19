@@ -134,7 +134,7 @@ void CreateProfileUI::deleteProfile()
 
   std::stringstream text;
   text << "Deleted profile " << profileName;
-  this->parent->getLog()->Message(text.str());
+  this->parent->GetLog()->Message(text.str());
   this->parent->displayStatus(text.str().c_str());
 
   init();

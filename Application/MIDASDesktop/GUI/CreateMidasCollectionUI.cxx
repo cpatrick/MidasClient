@@ -48,7 +48,7 @@ void CreateMidasCollectionUI::accept()
 {
   if(this->nameEdit->text() == "")
     {
-    parent->getLog()->Error("You must supply a name for the collection.");
+    parent->GetLog()->Error("You must supply a name for the collection.");
     QDialog::accept();
     return;
     }
@@ -81,13 +81,13 @@ void CreateMidasCollectionUI::accept()
     if(parent->getSynchronizer()->Perform() == 0)
       {    
       text << "Successfully added collection " << path << ".";
-      parent->getLog()->Message(text.str());
+      parent->GetLog()->Message(text.str());
       parent->updateClientTreeView();
       }
     else
       {
       text << "Failed to add collection at " << path << ".";
-      parent->getLog()->Error(text.str());
+      parent->GetLog()->Error(text.str());
       }
     }
   else //create collection on the server

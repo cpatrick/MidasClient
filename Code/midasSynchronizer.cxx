@@ -87,16 +87,6 @@ midasDatabaseProxy* midasSynchronizer::GetDatabase()
   return this->DatabaseProxy;
 }
 
-midasLog* midasSynchronizer::GetLog()
-{
-  return this->Log;
-}
-
-void midasSynchronizer::DeleteLog()
-{
-  delete this->Log;
-}
-
 void midasSynchronizer::SetProgressReporter(midasProgressReporter* progress)
 {
   this->Progress = progress;

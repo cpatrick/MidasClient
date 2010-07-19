@@ -10,7 +10,9 @@ class SignInThread : public QThread
 {
   Q_OBJECT
 public:
-  void SetParentUI(MIDASDesktopUI* parent);
+  SignInThread(MIDASDesktopUI* parent);
+  ~SignInThread();
+
   void SetProfile(QString profile);
 
   virtual void run();

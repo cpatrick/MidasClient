@@ -4,6 +4,7 @@
 #include "ui_PreferencesUI.h"
 
 class MIDASDesktopUI;
+class UnifyTreeThread;
 
 class PreferencesUI :  public QDialog, private Ui::PreferencesDialog
 {
@@ -11,7 +12,7 @@ class PreferencesUI :  public QDialog, private Ui::PreferencesDialog
  
 public:
   PreferencesUI(MIDASDesktopUI *parent);
-  ~PreferencesUI(){}
+  ~PreferencesUI();
 
 public slots:
   void enableActions(int index);
@@ -26,6 +27,9 @@ signals:
 
 private:
   MIDASDesktopUI* m_parent;
+
+  bool m_UnifiedTree;
+  UnifyTreeThread* m_UnifyTreeThread;
 };
 
 #endif

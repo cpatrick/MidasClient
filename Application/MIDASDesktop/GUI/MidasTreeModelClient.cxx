@@ -9,11 +9,9 @@
 #include "MidasCollectionTreeItem.h"
 #include "MidasItemTreeItem.h"
 
-#include "Logger.h"
 #include "Utils.h"
 #include <iostream>
 #include "midasDatabaseProxy.h"
-#include "midasLog.h"
 #include "mdoCommunity.h"
 
 MidasTreeModelClient::MidasTreeModelClient(QObject *parent) : MidasTreeModel(parent)
@@ -25,18 +23,13 @@ MidasTreeModelClient::~MidasTreeModelClient()
 {
 }
 
-void MidasTreeModelClient::SetLog(midasLog* log)
-{
-  this->m_Log = log;
-}
-
 /** Populate the tree */
 void MidasTreeModelClient::Populate()
 {
   this->m_Database->Open();
   std::vector<mdo::Community*> topLevelCommunities =
     this->m_Database->GetTopLevelCommunities(true);
-  
+
   this->beginInsertRows(QModelIndex(), 0, topLevelCommunities.size());
   int row = 0;
   for(std::vector<mdo::Community*>::iterator i = topLevelCommunities.begin();

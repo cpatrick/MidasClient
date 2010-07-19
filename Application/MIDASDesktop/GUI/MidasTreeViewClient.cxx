@@ -55,11 +55,6 @@ void MidasTreeViewClient::SetDatabaseProxy(midasDatabaseProxy* proxy)
   this->m_Database = proxy;
 }
 
-void MidasTreeViewClient::SetLog(midasLog* log)
-{
-  reinterpret_cast<MidasTreeModelClient*>(m_Model)->SetLog(log);
-}
-
 void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent *event)
 {
   MidasBitstreamTreeItem* bitstream = NULL;

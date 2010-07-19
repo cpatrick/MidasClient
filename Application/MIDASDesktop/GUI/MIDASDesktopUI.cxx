@@ -261,9 +261,9 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_synch = new midasSynchronizer();
   this->m_auth = new midasAuthenticator();
   this->m_progress = new GUIProgress(this->progressBar);
-  this->m_logger = new GUILogger(this);
-  this->m_auth->SetLog(m_logger);
-  this->m_synch->SetLog(m_logger);
+  this->Log = new GUILogger(this);
+  this->m_auth->SetLog(Log);
+  this->m_synch->SetLog(Log);
   this->m_synch->SetProgressReporter(m_progress);
   this->m_signIn = false;
   // ------------- setup client members and logging ----
@@ -297,7 +297,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete refreshTimer;
   delete m_database;
   delete m_auth;
-  delete m_logger;
+  delete Log;
   delete m_progress;
   delete m_synch;
   delete m_RefreshThread;
@@ -866,7 +866,7 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
       std::stringstream text;
       text << "Added bitstream " << name << " under item " << 
         parentItem->getItem()->GetTitle() << ".";
-      this->m_logger->Message(text.str());
+      this->GetLog()->Message(text.str());
       }
     }
   this->updateClientTreeView();
@@ -888,7 +888,7 @@ void MIDASDesktopUI::viewDirectory()
     std::stringstream text;
     text << "The operating system does not know how to open "
       << path << std::endl;
-    m_logger->Error(text.str());
+    GetLog()->Error(text.str());
     }
 }
 
@@ -924,7 +924,7 @@ void MIDASDesktopUI::viewInBrowser()
     std::stringstream text;
     text << "The operating system does not know how to open "
       << path.str() << std::endl;
-    m_logger->Error(text.str());
+    GetLog()->Error(text.str());
     }
 }
 
@@ -1002,13 +1002,13 @@ void MIDASDesktopUI::signIn(bool ok)
 
     std::stringstream text;
     text << "Signed in with profile " << m_auth->GetProfile();
-    getLog()->Message(text.str());
+    GetLog()->Message(text.str());
     m_signIn = true;
     displayStatus(tr(""));
     }
   else
     {
-    getLog()->Error("The URL provided is not a valid MIDAS server Web API.");
+    GetLog()->Error("The URL provided is not a valid MIDAS server Web API.");
     displayStatus(tr("Failed to connect"));
     }
   setProgressEmpty();
@@ -1032,7 +1032,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     std::stringstream text;
     text << file << " is not a valid MIDAS SQLite database. Defaulting "
       " to midas.db.";
-    this->m_logger->Message(text.str());
+    GetLog()->Message(text.str());
     std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory()
       + "/midas.db";
     if(midasUtils::IsDatabaseValid(path))
@@ -1040,7 +1040,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
       setLocalDatabase(path);
       return;
       }
-    this->m_logger->Error("No suitable database file found!");
+    GetLog()->Error("No suitable database file found!");
     return;
     }
 
@@ -1056,7 +1056,6 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     this->displayStatus(tr("Opened database successfully."));
     this->treeViewClient->SetDatabaseProxy(m_database);
     this->activateActions(true, MIDASDesktopUI::ACTION_LOCAL_DATABASE);
-    this->treeViewClient->SetLog(m_logger);
     this->updateClientTreeView();
     this->treeViewClient->collapseAll();
     setTimerInterval();
@@ -1067,7 +1066,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     std::stringstream text;
     text << "The path " << file << " does not refer to a valid MidasDesktop "
       "database.";
-    m_logger->Error(text.str());
+    GetLog()->Error(text.str());
     }
 }
 
@@ -1148,17 +1147,17 @@ void MIDASDesktopUI::pushReturned(int rc)
   if(rc == MIDAS_OK)
     {
     text << "Finished pushing locally added resources.";
-    this->getLog()->Message(text.str());
+    this->GetLog()->Message(text.str());
     }
   else if(rc == MIDAS_CANCELED)
     {
     text << "Push canceled by user.";
-    this->getLog()->Message(text.str());
+    this->GetLog()->Message(text.str());
     }
   else
     {
     text << "Failed to push resources to the server.";
-    this->getLog()->Error(text.str());
+    this->GetLog()->Error(text.str());
     }
   this->displayStatus(text.str().c_str());
   this->setProgressEmpty();
@@ -1179,8 +1178,7 @@ void MIDASDesktopUI::search()
   
   m_SearchResults.clear();
 
-  m_SearchThread = new SearchThread;
-  m_SearchThread->SetParentUI(this);
+  m_SearchThread = new SearchThread(this);
   m_SearchThread->SetWords(words);
   m_SearchThread->SetResults(&this->m_SearchResults);
   
@@ -1296,7 +1294,7 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
   this->updateClientTreeView();
   std::stringstream text;
   text << "Deleted resource with uuid=" << uuid << ".";
-  this->m_logger->Message(text.str());
+  GetLog()->Message(text.str());
 }
 
 void MIDASDesktopUI::alertErrorInLog()

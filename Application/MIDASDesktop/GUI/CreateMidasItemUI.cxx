@@ -6,6 +6,7 @@
 
 #include "MIDASDesktopUI.h"
 #include "mwsSettings.h"
+#include "mdoItem.h"
 #include "midasSynchronizer.h"
 #include "Utils.h"
 
@@ -55,7 +56,7 @@ void CreateMidasItemUI::accept()
 {
   if(this->titleEdit->text() == "")
     {
-    parent->getLog()->Error("You must supply a title for the item.");
+    parent->GetLog()->Error("You must supply a title for the item.");
     QDialog::accept();
     return;
     }
@@ -88,13 +89,13 @@ void CreateMidasItemUI::accept()
     if(parent->getSynchronizer()->Perform() == 0)
       {    
       text << "Successfully added item " << path << ".";
-      parent->getLog()->Message(text.str());
+      parent->GetLog()->Message(text.str());
       parent->updateClientTreeView();
       }
     else
       {
       text << "Failed to add item at " << path << ".";
-      parent->getLog()->Error(text.str());
+      parent->GetLog()->Error(text.str());
       }
     }
   else

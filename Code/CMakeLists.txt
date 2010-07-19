@@ -87,6 +87,7 @@ set(MIDASSynch_SRCS
   midasDotProgressReporter.cxx
   midasDotProgressReporter.h
   midasLog.h
+  midasLogAware.h
   midasProgressReporter.h
   midasStandardIncludes.h
   midasStatus.cxx

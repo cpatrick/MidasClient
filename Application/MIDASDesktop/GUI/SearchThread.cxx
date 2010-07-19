@@ -4,9 +4,13 @@
 #include "mwsSearch.h"
 #include "mdoObject.h"
 
-void SearchThread::SetParentUI(MIDASDesktopUI* parent)
+SearchThread::SearchThread(MIDASDesktopUI* parent)
 {
-  this->m_Parent = parent;
+  m_Parent = parent;
+}
+
+SearchThread::~SearchThread()
+{
 }
 
 void SearchThread::SetWords(std::vector<std::string> words)
