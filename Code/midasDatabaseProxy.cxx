@@ -1060,5 +1060,73 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
 
 void midasDatabaseProxy::UnifyTree()
 {
-  
+  std::vector<mdo::Community*> topLevel = this->GetTopLevelCommunities(true);
+
+  for(std::vector<mdo::Community*>::iterator i = topLevel.begin();
+      i != topLevel.end(); ++i)
+    {
+    this->MergeOnDisk(*i);
+    }
+}
+
+void midasDatabaseProxy::MergeOnDisk(mdo::Community* comm)
+{
+  std::vector<mdo::Community*>::const_iterator i =
+    comm->GetCommunities().begin();
+  for(; i != comm->GetCommunities().end(); ++i)
+    {
+    //TODO copy community directory under parent
+    MergeOnDisk(*i);
+    }
+
+  std::vector<mdo::Collection*>::const_iterator j =
+    comm->GetCollections().begin();
+  for(; j != comm->GetCollections().end(); ++j)
+    {
+    //TODO copy collection directory under parent
+    MergeOnDisk(*j);
+    }
+}
+
+void midasDatabaseProxy::MergeOnDisk(mdo::Collection* coll)
+{
+  std::vector<mdo::Item*>::const_iterator i =
+    coll->GetItems().begin();
+  for(; i != coll->GetItems().end(); ++i)
+    {
+    MergeOnDisk(*i);
+    }
+}
+
+void midasDatabaseProxy::MergeOnDisk(mdo::Item* item)
+{
+  std::string itemPath = this->GetRecordByUuid(item->GetUuid()).Path;
+  kwsys::SystemTools::ConvertToUnixSlashes(itemPath);
+
+  for(std::vector<mdo::Bitstream*>::const_iterator i =
+      item->GetBitstreams().begin(); i != item->GetBitstreams().end(); ++i)
+    {
+    std::string path = this->GetRecordByUuid((*i)->GetUuid()).Path;
+    std::string copyTo = itemPath + "/" + this->EscapedName(
+      (*i)->GetName());
+    kwsys::SystemTools::CopyAFile(path.c_str(),
+      copyTo.c_str());
+    
+    if(!kwsys::SystemTools::ComparePath(path.c_str(), copyTo.c_str()))
+      {
+      std::stringstream query;
+      query << "UPDATE resource_uuid SET path='" << copyTo <<
+        "' WHERE uuid='" << (*i)->GetUuid() << "'";
+      this->Database->ExecuteQuery(query.str().c_str());
+      }
+    }
+}
+
+std::string midasDatabaseProxy::EscapedName(std::string name)
+{
+  std::string rep = name;
+  kwsys::SystemTools::ReplaceString(rep, " ", "_");
+  kwsys::SystemTools::ReplaceString(rep, "\t", "_");
+
+  return rep;
 }

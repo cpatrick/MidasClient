@@ -153,6 +153,11 @@ public:
    * this will copy them underneath it and update their stored path
    */
   void UnifyTree();
+
+  /**
+   * Replaces spaces in a resource's name with underscores for storing on disk
+   */
+  std::string EscapedName(std::string name);
 protected:
   void InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);
@@ -161,6 +166,10 @@ protected:
   int InsertCollection(std::string name);
   int InsertCommunity(std::string name);
   int InsertItem(std::string name);
+
+  void MergeOnDisk(mdo::Community* comm);
+  void MergeOnDisk(mdo::Collection* coll);
+  void MergeOnDisk(mdo::Item* item);
 
   std::string GetKeyName(MidasAppSetting setting);
 
