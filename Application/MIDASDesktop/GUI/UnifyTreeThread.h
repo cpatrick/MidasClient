@@ -16,8 +16,7 @@ public:
   virtual void run();
 
 signals:
-  void threadComplete(bool ok);
-  void message(const QString& val);
+  void threadComplete();
 
 private:
   MIDASDesktopUI* m_Parent;

@@ -1060,5 +1060,5 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
 
 void midasDatabaseProxy::UnifyTree()
 {
-  //TODO implement
+  
 }

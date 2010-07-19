@@ -17,6 +17,7 @@ public:
 public slots:
   void enableActions(int index);
   void selectWorkingDir();
+  void unifyTreeDone();
   void reset(); 
   int exec();
   virtual void accept();

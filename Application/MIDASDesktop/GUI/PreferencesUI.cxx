@@ -100,6 +100,15 @@ void PreferencesUI::accept()
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING, settingComboBox->currentIndex());
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::UNIFIED_TREE, copyResourcesCheckBox->isChecked());
 
+  if(kwsys::SystemTools::FileIsDirectory(workingDirEdit->text().toAscii()))
+    {
+    m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::ROOT_DIR, workingDirEdit->text().toStdString());
+    }
+  m_parent->getDatabaseProxy()->Close();
+
+  emit intervalChanged();
+  emit settingChanged();
+
   if(copyResourcesCheckBox->isChecked() && !m_UnifiedTree)
     {
     if(m_UnifyTreeThread)
@@ -118,14 +127,12 @@ void PreferencesUI::accept()
     m_UnifyTreeThread->start();
     }
 
-  if(kwsys::SystemTools::FileIsDirectory(workingDirEdit->text().toAscii()))
-    {
-    m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::ROOT_DIR, workingDirEdit->text().toStdString());
-    }
-  m_parent->getDatabaseProxy()->Close();
-
-  emit intervalChanged();
-  emit settingChanged();
-
   QDialog::accept();
+}
+
+void PreferencesUI::unifyTreeDone()
+{
+  m_parent->displayStatus("Finished unifying resources on disk.");
+  m_parent->GetLog()->Message("Finished unifying resources on disk.");
+  m_parent->setProgressEmpty();
 }
