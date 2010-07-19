@@ -1107,7 +1107,7 @@ void midasDatabaseProxy::MergeOnDisk(mdo::Item* item)
       item->GetBitstreams().begin(); i != item->GetBitstreams().end(); ++i)
     {
     std::string path = this->GetRecordByUuid((*i)->GetUuid()).Path;
-    std::string copyTo = itemPath + "/" + this->EscapedName(
+    std::string copyTo = itemPath + "/" + midasUtils::EscapeName(
       (*i)->GetName());
     kwsys::SystemTools::CopyAFile(path.c_str(),
       copyTo.c_str());
@@ -1120,13 +1120,4 @@ void midasDatabaseProxy::MergeOnDisk(mdo::Item* item)
       this->Database->ExecuteQuery(query.str().c_str());
       }
     }
-}
-
-std::string midasDatabaseProxy::EscapedName(std::string name)
-{
-  std::string rep = name;
-  kwsys::SystemTools::ReplaceString(rep, " ", "_");
-  kwsys::SystemTools::ReplaceString(rep, "\t", "_");
-
-  return rep;
 }

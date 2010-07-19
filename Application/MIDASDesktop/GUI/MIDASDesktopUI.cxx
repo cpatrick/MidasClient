@@ -846,7 +846,7 @@ void MIDASDesktopUI::addBitstream()
 }
 
 void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
-                               const QStringList & files)
+                                   const QStringList & files)
 {
   for(QStringList::const_iterator i = files.begin(); i != files.end(); ++i)
     {
@@ -854,6 +854,15 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
     std::string name = kwsys::SystemTools::GetFilenameName(path.c_str());
     std::string uuid = midasUtils::GenerateUUID();
     this->m_database->Open();
+    
+    if(m_database->GetSettingBool(midasDatabaseProxy::UNIFIED_TREE))
+      {
+      std::string copyTo = m_database->GetRecordByUuid(parentItem->getUuid()).Path;
+      copyTo += "/" + name;
+      kwsys::SystemTools::CopyAFile(path.c_str(), copyTo.c_str());
+      path = copyTo;
+      }
+
     std::string parentUuid = this->m_database->GetUuid(
       midasResourceType::ITEM, parentItem->getItem()->GetId());
     int id = this->m_database->AddResource(midasResourceType::BITSTREAM, uuid, 

@@ -269,10 +269,15 @@ int midasSynchronizer::Add()
   std::string uuid = midasUtils::GenerateUUID();
 
   std::string name = kwsys::SystemTools::GetFilenameName(path);
-  std::string parentDir = 
+  std::string parentDir =
     kwsys::SystemTools::GetParentDirectory(path.c_str());
 
   this->DatabaseProxy->Open();
+  if(this->ParentId)
+    {
+    std::string copyTo = 
+    path = copyTo;
+    }
   if(this->DatabaseProxy->GetUuidFromPath(path) != "")
     {
     std::stringstream text;

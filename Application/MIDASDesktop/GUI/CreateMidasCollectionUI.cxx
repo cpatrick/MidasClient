@@ -55,7 +55,6 @@ void CreateMidasCollectionUI::accept()
 
   if(this->type == CreateMidasCollectionUI::ClientCollection)
     {
-    std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory();
     QModelIndex selected = this->parent->getTreeViewClient()->getSelectedModelIndex();
     MidasCommunityTreeItem* parentComm =
       reinterpret_cast<MidasCommunityTreeItem*>(
@@ -64,7 +63,7 @@ void CreateMidasCollectionUI::accept()
       this->parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
     parent->getDatabaseProxy()->Open();
-    path = parent->getDatabaseProxy()->GetRecordByUuid(
+    std::string path = parent->getDatabaseProxy()->GetRecordByUuid(
       parent->getDatabaseProxy()->GetUuid(
       midasResourceType::COMMUNITY,
       parentComm->getCommunity()->GetId())).Path;

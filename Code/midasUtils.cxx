@@ -60,6 +60,15 @@ std::string midasUtils::EscapeForURL(std::string s)
 }
 
 //-------------------------------------------------------------------
+std::string midasUtils::EscapeName(std::string name)
+{
+  kwsys::SystemTools::ReplaceString(name, " ", "_");
+  kwsys::SystemTools::ReplaceString(name, "\t", "_");
+
+  return name;
+}
+
+//-------------------------------------------------------------------
 std::string midasUtils::FileSizeString(long bytes)
 {
   std::stringstream text;

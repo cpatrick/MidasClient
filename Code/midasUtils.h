@@ -23,6 +23,7 @@ class midasUtils
 public:
   static std::string GenerateUUID();
   static std::string EscapeForURL(std::string s);
+  static std::string EscapeName(std::string name);
   static std::string FileSizeString(long bytes);
   static bool IsDatabaseValid(std::string path);
   static mdo::Object* FetchByUuid(std::string uuid);
