@@ -15,7 +15,7 @@ QTableWidgetDescriptionItem::QTableWidgetDescriptionItem(const char* text,
     boldfont.setBold(true);
     this->setFont(boldfont); 
     }
-  this->setTextAlignment(Qt::AlignRight);
+  this->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
   if ( !(options & Editable) )
     {
     this->setFlags(~Qt::ItemFlags(Qt::ItemIsEditable));

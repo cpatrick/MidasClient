@@ -56,6 +56,7 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
     QList<QVariant> name;
     name << (*itCol)->GetName().c_str();
     MidasCollectionTreeItem* collection = new MidasCollectionTreeItem(name, m_Model, this);
+    collection->setClientResource(m_ClientResource);
     collection->setCollection(*itCol);
 
     this->appendChild(collection);

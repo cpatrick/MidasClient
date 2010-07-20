@@ -21,6 +21,7 @@ MidasTreeItem::MidasTreeItem(const QList<QVariant> &itemData, MidasTreeModel* mo
   timestamp = QTime::currentTime().second();
   this->fetchedChildren = true;
   this->dynamicFetch = false;
+  m_ClientResource = false;
 }
 
 MidasTreeItem::~MidasTreeItem()

@@ -51,6 +51,9 @@ public:
   const MidasTreeItem *parent() const;
   bool isValid() const;
 
+  bool isClientResource() const { return m_ClientResource; }
+  void setClientResource(bool val) { m_ClientResource = val; }
+
   virtual int getId() const = 0;
   virtual int getType() const = 0;
   virtual std::string getUuid() const = 0;
@@ -76,6 +79,7 @@ protected:
   uint lifespan;
   bool fetchedChildren;
   bool dynamicFetch;
+  bool m_ClientResource;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS( MidasTreeItem::DecorationRoles )
 

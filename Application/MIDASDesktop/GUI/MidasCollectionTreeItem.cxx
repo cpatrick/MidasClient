@@ -46,6 +46,7 @@ void MidasCollectionTreeItem::populate(QModelIndex parent)
     QList<QVariant> name;
     name << (*i)->GetTitle().c_str();
     MidasItemTreeItem* item = new MidasItemTreeItem(name, m_Model, this);
+    item->setClientResource(m_ClientResource);
     item->setItem(*i);
     this->appendChild(item);
 

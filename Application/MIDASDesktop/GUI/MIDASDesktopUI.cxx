@@ -124,6 +124,9 @@ MIDASDesktopUI::MIDASDesktopUI()
   midasTreeItemInfoTable->verticalHeader()->hide();
   // ------------- Item info panel -------------
 
+  saveButton = new QPushButton();
+  saveButton->setText("Save");
+
   // ------------- Status bar -------------
   stateLabel    = new QLabel();
   progressBar   = new QProgressBar();
@@ -238,11 +241,12 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( searchItemsListWidget, SIGNAL( midasListWidgetContextMenu( QContextMenuEvent * ) ),
     this, SLOT( searchItemContextMenu( QContextMenuEvent * ) ) );
 
-  connect( push_Button,   SIGNAL( released() ), this, SLOT( pushResources() ) );
-  connect( pull_Button,   SIGNAL( released() ), dlg_pullUI, SLOT( exec() ) );
-  connect( refreshButton, SIGNAL( released() ), this, SLOT( updateServerTreeView() ) );
-  connect( searchButton,  SIGNAL( released() ), this, SLOT( search() ) );
-  connect( cancelButton,  SIGNAL( released() ), this, SLOT( cancel() ) );
+  connect( push_Button,    SIGNAL( released() ), this, SLOT( pushResources() ) );
+  connect( pull_Button,    SIGNAL( released() ), dlg_pullUI, SLOT( exec() ) );
+  connect( refreshButton,  SIGNAL( released() ), this, SLOT( updateServerTreeView() ) );
+  connect( searchButton,   SIGNAL( released() ), this, SLOT( search() ) );
+  connect( cancelButton,   SIGNAL( released() ), this, SLOT( cancel() ) );
+  connect( editInfoButton, SIGNAL( released() ), this, SLOT( editInfo() ) );
 
   connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
   connect( logAndSearchTabContainer, SIGNAL( currentChanged(int) ),
@@ -294,6 +298,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete stateLabel;
   delete connectLabel;
   delete cancelButton;
+  delete saveButton;
   delete refreshTimer;
   delete m_database;
   delete m_auth;
@@ -547,30 +552,53 @@ void MIDASDesktopUI::showLogTab()
   // Put anything that should happen whenever new text appears in the log.
 }
 
-/** Show the community information */
 void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem )
+{
+  infoPanel(const_cast<MidasCommunityTreeItem*>(communityTreeItem), false);
+}
+
+void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem )
+{
+  infoPanel(const_cast<MidasCollectionTreeItem*>(collectionTreeItem), false);
+}
+
+void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
+{
+  infoPanel(const_cast<MidasItemTreeItem*>(itemTreeItem), false);
+}
+
+void MIDASDesktopUI::updateInfoPanel( const MidasBitstreamTreeItem* bitstreamTreeItem )
+{
+  infoPanel(const_cast<MidasBitstreamTreeItem*>(bitstreamTreeItem), false);
+}
+
+/** Show the community information */
+void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool edit)
 { 
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
+  if(edit) options |= QTableWidgetDescriptionItem::Editable;
 
-  midasTreeItemInfoGroupBox->setTitle(tr(" Community description ")); 
-
+  midasTreeItemInfoGroupBox->setTitle(edit ? " Edit community info " : " Community description "); 
+  midasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
   midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) );
   midasTreeItemInfoTable->clearSelection();
 
   mdo::Community* community = communityTreeItem->getCommunity();
 
+  enableResourceEditing(communityTreeItem->isClientResource() && !edit);
+
   int i = 0;
 
-  if(community->GetName() != "") i++;
-  if(community->GetDescription() != "") i++;
-  if(community->GetIntroductoryText() != "") i++;
-  if(community->GetCopyright() != "") i++;
-  if(community->GetLinks() != "") i++;
+  if(community->GetName() != "" || edit) i++;
+  if(community->GetDescription() != "" || edit) i++;
+  if(community->GetIntroductoryText() != "" || edit) i++;
+  if(community->GetCopyright() != "" || edit) i++;
+  if(community->GetLinks() != "" || edit) i++;
 
   midasTreeItemInfoTable->setRowCount( i );
   i = 0; 
   
-  if(community->GetName() != "")
+  if(community->GetName() != "" || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Name", QTableWidgetDescriptionItem::Bold));
@@ -578,7 +606,7 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTre
     i++; 
     }
 
-  if(community->GetDescription() != "")
+  if(community->GetDescription() != "" || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Description", QTableWidgetDescriptionItem::Bold));
@@ -586,7 +614,7 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTre
     i++;
     }
 
-  if(community->GetIntroductoryText() != "")
+  if(community->GetIntroductoryText() != "" || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Introductory", QTableWidgetDescriptionItem::Bold));
@@ -594,7 +622,7 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTre
     i++;
     }
   
-  if(community->GetCopyright() != "")
+  if(community->GetCopyright() != "" || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Copyright", QTableWidgetDescriptionItem::Bold));
@@ -602,35 +630,39 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTre
     i++;
     }
 
-  if(community->GetLinks() != "")
+  if(community->GetLinks() != "" || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Links", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCommunityDescItem(community, community->GetLinks().c_str(), COMMUNITY_LINKS, options));
     i++;
     }
+
   midasTreeItemInfoTable->resizeColumnsToContents();
 }
 
-void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem )
+void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool edit)
 {
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
+  if(edit) options |= QTableWidgetDescriptionItem::Editable;
 
   mdo::Collection* collection = collectionTreeItem->getCollection();
 
-  midasTreeItemInfoGroupBox->setTitle(tr(" Collection description "));
-
+  midasTreeItemInfoGroupBox->setTitle(edit ? " Edit collection info " : " Collection description ");
+  midasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
   midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) );
   midasTreeItemInfoTable->clearSelection();
-  
+
+  enableResourceEditing(collectionTreeItem->isClientResource() && !edit);
+
   int i = 0;
-  if(collection->GetName() != "") i++;
-  if(collection->GetDescription() != "") i++;
+  if(collection->GetName() != "" || edit) i++;
+  if(collection->GetDescription() != "" || edit) i++;
   
   midasTreeItemInfoTable->setRowCount( i );
   i = 0;
 
-  if(collection->GetName() != "")
+  if(collection->GetName() != "" || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Name", QTableWidgetDescriptionItem::Bold));
@@ -638,7 +670,7 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionT
     i++;
     }
 
-  if(collection->GetDescription() != "")
+  if(collection->GetDescription() != "" || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Description", QTableWidgetDescriptionItem::Bold));
@@ -649,29 +681,32 @@ void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionT
   midasTreeItemInfoTable->resizeColumnsToContents();
 }
 
-void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
+void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
 {
-  QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
+  QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
+  if(edit) options |= QTableWidgetDescriptionItem::Editable;
 
   mdo::Item* item = itemTreeItem->getItem();
 
-  midasTreeItemInfoGroupBox->setTitle(tr(" Item description "));
-
+  midasTreeItemInfoGroupBox->setTitle(edit? " Edit item info " : " Item description ");
+  midasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
   midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) ); 
   midasTreeItemInfoTable->clearSelection();
+
+  enableResourceEditing(itemTreeItem->isClientResource() && !edit);
   
   int i = 0;
   
-  if(item->GetTitle() != "") i++;
-  if(item->GetAuthors().size()) i++;
-  if(item->GetKeywords().size()) i++;
-  if(item->GetAbstract() != "") i++;
-  if(item->GetDescription() != "") i++;
+  if(item->GetTitle() != "" || edit) i++;
+  if(item->GetAuthors().size() || edit) i++;
+  if(item->GetKeywords().size() || edit) i++;
+  if(item->GetAbstract() != "" || edit) i++;
+  if(item->GetDescription() != "" || edit) i++;
 
   midasTreeItemInfoTable->setRowCount(i);
   i = 0;
 
-  if(item->GetTitle() != "")
+  if(item->GetTitle() != "" || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Title", QTableWidgetDescriptionItem::Bold));
@@ -679,7 +714,7 @@ void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
     i++;
     }
 
-  if(item->GetAuthors().size())
+  if(item->GetAuthors().size() || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Authors", QTableWidgetDescriptionItem::Bold));
@@ -687,7 +722,7 @@ void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
     i++;
     }
 
-  if(item->GetKeywords().size())
+  if(item->GetKeywords().size() || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Keywords", QTableWidgetDescriptionItem::Bold));
@@ -695,7 +730,7 @@ void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
     i++;
     }
 
-  if(item->GetAbstract() != "")
+  if(item->GetAbstract() != "" || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Abstract", QTableWidgetDescriptionItem::Bold));
@@ -703,7 +738,7 @@ void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
     i++;
     }
 
-  if(item->GetDescription() != "")
+  if(item->GetDescription() != "" || edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Description", QTableWidgetDescriptionItem::Bold));
@@ -714,14 +749,17 @@ void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
   midasTreeItemInfoTable->resizeColumnsToContents();
 }
 
-void MIDASDesktopUI::updateInfoPanel(const MidasBitstreamTreeItem* bitstreamTreeItem)
+void MIDASDesktopUI::infoPanel(MidasBitstreamTreeItem* bitstreamTreeItem, bool edit)
 {
-  QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip; 
+  QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
+  if(edit) options |= QTableWidgetDescriptionItem::Editable;
+
+  enableResourceEditing(bitstreamTreeItem->isClientResource() && !edit);
 
   mdo::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
 
   midasTreeItemInfoGroupBox->setTitle(tr(" Bitstream description "));
-
+  midasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
   //midasTreeItemInfoTable->disconnect( SIGNAL( bitstreamChanged ( QTableWidgetItem * ) ) ); 
   midasTreeItemInfoTable->clearSelection();
   midasTreeItemInfoTable->setRowCount(2);
@@ -734,7 +772,7 @@ void MIDASDesktopUI::updateInfoPanel(const MidasBitstreamTreeItem* bitstreamTree
 
   midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
   midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Size", QTableWidgetDescriptionItem::Bold));
-  midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, midasUtils::FileSizeString(atol(bitstream->GetSize().c_str())).c_str(), BITSTREAM_SIZE, options));
+  midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, midasUtils::FileSizeString(atol(bitstream->GetSize().c_str())).c_str(), BITSTREAM_SIZE, QTableWidgetDescriptionItem::Tooltip));
   i++;
 
   midasTreeItemInfoTable->resizeColumnsToContents();
@@ -744,6 +782,7 @@ void MIDASDesktopUI::clearInfoPanel()
 {
   midasTreeItemInfoTable->clear();
   midasTreeItemInfoTable->setRowCount( 0 );
+  enableResourceEditing(false);
 }
 
 void MIDASDesktopUI::displayClientResourceContextMenu( QContextMenuEvent* e )
@@ -1333,5 +1372,38 @@ void MIDASDesktopUI::pullRecursive(int type, int id)
     dlg_pullUI->setResourceType(type);
     dlg_pullUI->setPullId(id);
     dlg_pullUI->accept();
+    }
+}
+
+void MIDASDesktopUI::enableResourceEditing(bool val)
+{
+  editInfoButton->setEnabled(val);
+}
+
+void MIDASDesktopUI::editInfo()
+{
+  MidasTreeItem* node = const_cast<MidasTreeItem*>(
+    treeViewClient->getSelectedMidasTreeItem());
+
+  MidasCommunityTreeItem* comm = NULL;
+  MidasCollectionTreeItem* coll = NULL;
+  MidasItemTreeItem* item = NULL;
+  MidasBitstreamTreeItem* bitstream = NULL;
+
+  if((comm = dynamic_cast<MidasCommunityTreeItem*>(node)) != NULL)
+    {
+    infoPanel(comm, true);
+    }
+  else if((coll = dynamic_cast<MidasCollectionTreeItem*>(node)) != NULL)
+    {
+    infoPanel(coll, true);
+    }
+  else if((item = dynamic_cast<MidasItemTreeItem*>(node)) != NULL)
+    {
+    infoPanel(item, true);
+    }
+  else if((bitstream = dynamic_cast<MidasBitstreamTreeItem*>(node)) != NULL)
+    {
+    infoPanel(bitstream, true);
     }
 }

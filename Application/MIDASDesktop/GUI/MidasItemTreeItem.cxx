@@ -48,6 +48,7 @@ void MidasItemTreeItem::populate(QModelIndex parent)
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
     MidasBitstreamTreeItem* bitstream = new MidasBitstreamTreeItem(name, m_Model, this);
+    bitstream->setClientResource(m_ClientResource);
     bitstream->setBitstream(*i);
     this->appendChild(bitstream);
     QModelIndex index = m_Model->index(row, 0, parent);

@@ -141,7 +141,7 @@ public:
   ~MidasResourceDescTable(){}
 
 signals:
-  void midasTableWidgetContextMenu( QContextMenuEvent * e ); 
+  void midasTableWidgetContextMenu( QContextMenuEvent * e );
 
 protected:
   void contextMenuEvent ( QContextMenuEvent * e );

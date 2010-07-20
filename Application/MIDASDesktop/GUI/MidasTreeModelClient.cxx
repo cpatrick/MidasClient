@@ -39,6 +39,7 @@ void MidasTreeModelClient::Populate()
     columnData << (*i)->GetName().c_str();
 
     MidasCommunityTreeItem* communityItem = new MidasCommunityTreeItem(columnData, this, NULL);
+    communityItem->setClientResource(true);
     communityItem->setCommunity(*i);
     m_TopLevelCommunities.append(communityItem);
 

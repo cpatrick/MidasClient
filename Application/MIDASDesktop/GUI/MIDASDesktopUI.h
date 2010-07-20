@@ -111,6 +111,8 @@ public slots:
 
   void enableActions(bool val);
 
+  void enableResourceEditing(bool val);
+
   // ------------- settings -------------
   void setTimerInterval();
   void adjustTimerSettings();
@@ -132,6 +134,7 @@ public slots:
   void updateInfoPanel( const MidasItemTreeItem* itemTreeItem );
   void updateInfoPanel( const MidasBitstreamTreeItem* bitstreamTreeItem );
   void clearInfoPanel();
+  void editInfo();
 
   void updateActionState(const MidasTreeItem* item);
   void updateActionStateClient(const MidasTreeItem* item);
@@ -176,6 +179,11 @@ public slots:
   // ------------- log ----------------
 
 private:
+  
+  void infoPanel(MidasCommunityTreeItem* node, bool editable);
+  void infoPanel(MidasCollectionTreeItem* node, bool editable);
+  void infoPanel(MidasItemTreeItem* node, bool editable);
+  void infoPanel(MidasBitstreamTreeItem* node, bool editable);
 
   // ------------- UI Dialogs -------------
   CreateMidasCommunityUI *    dlg_createMidasCommunityUI;
@@ -201,6 +209,8 @@ private:
   QProgressBar *              progressBar;
   QPushButton *               cancelButton;
   // ------------- status bar -------------
+
+  QPushButton *               saveButton;
 
   // ------------- tray ----------------
   QAction *                   showAction;
