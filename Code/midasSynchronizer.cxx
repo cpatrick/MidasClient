@@ -427,7 +427,14 @@ int midasSynchronizer::Pull()
 
   if(this->IsPathMode())
     {
-    this->ConvertPathToId();
+    if(!this->ConvertPathToId())
+      {
+      std::stringstream text;
+      text << "The path provided could not be resolved.  The MIDAS server "
+        "might not support converting paths to IDs." << std::endl;
+      Log->Error(text.str());
+      return MIDAS_INVALID_SERVER_PATH;
+      }
     }
 
   switch(this->ResourceType)
