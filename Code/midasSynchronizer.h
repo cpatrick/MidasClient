@@ -56,6 +56,9 @@ public:
   void SetParentId(int id);
   int GetParentId();
 
+  void SetPathMode(bool val) { this->PathMode = val; }
+  bool IsPathMode() { return this->PathMode; }
+
   void SetOperation(SynchOperation op);
   SynchOperation GetOperation();
 
@@ -87,6 +90,9 @@ public:
   void Cancel();
 
 protected:
+  /* Converts a MIDAS server path into an ID and sets the appropriate type */
+  bool ConvertPathToId();
+
   int Add();
   int Clone();
   int Push();
@@ -98,7 +104,7 @@ protected:
   bool PullCommunity(int parentId);
   bool PullItem(int parentId);
 
-  // Helper function to convert client side parent ID to server side one
+  /* Helper function to convert client side parent ID to server side one */
   int GetServerParentId(midasResourceType::ResourceType type, int parentId);
   bool PushBitstream(int id);
   bool PushCollection(int id);
@@ -109,7 +115,7 @@ protected:
 
   bool ValidateParentId(int parentId, midasResourceType::ResourceType type);
 
-  // Reset the synchronizer to its starting state
+  /* Reset the synchronizer to its starting state */
   void Reset();
 
   SynchOperation Operation;
@@ -120,8 +126,12 @@ protected:
   std::string ResourceHandle;
   std::string LastDir;
 
-  // Pull entire subtree of resources that are pulled?
+  /* Pull entire subtree of resources that are pulled?*/
   bool Recursive;
+
+  /* Does the provided resource ID specify a path on the MIDAS server? */
+  bool PathMode;
+
   bool ShouldCancel;
   midasProgressReporter* Progress;
 

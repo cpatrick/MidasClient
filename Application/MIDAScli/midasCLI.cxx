@@ -285,6 +285,10 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
       {
       this->Synchronizer->SetRecursive(true);
       }
+    else if(args[i] == "-p")
+      {
+      this->Synchronizer->SetPathMode(true);
+      }
     else if(args[i] == "-c")
       {
       this->Synchronizer->SetResourceType(midasResourceType::COLLECTION);
@@ -307,7 +311,8 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
       }
     }
 
-  if(this->Synchronizer->GetResourceType() == midasResourceType::NONE)
+  if(this->Synchronizer->GetResourceType() == midasResourceType::NONE &&
+     !this->Synchronizer->IsPathMode())
     {
     this->PrintCommandHelp("pull");
     return false;
@@ -430,6 +435,7 @@ void midasCLI::PrintCommandHelp(std::string command)
     {
     std::cout << "Usage: MIDAScli ... pull [COMMAND_OPTIONS] RESOURCE_ID "
       "[URL]" << std::endl << "Where COMMAND_OPTIONS can be: "
+      << std::endl << " -p         RESOURCE_ID is a path, not an id number"
       << std::endl << " -r         Copy recursively."
       << std::endl << " -C         For pulling a community."
       << std::endl << " -c         For pulling a collection."

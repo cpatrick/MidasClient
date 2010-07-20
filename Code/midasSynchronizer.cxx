@@ -34,6 +34,7 @@ midasSynchronizer::midasSynchronizer()
 {
   this->Recursive = false;
   this->ShouldCancel = false;
+  this->PathMode = false;
   this->Operation = OPERATION_NONE;
   this->ResourceType = midasResourceType::NONE;
   this->ServerURL = "";
@@ -408,7 +409,7 @@ int ProgressCallback(void *clientp, double dltotal, double dlnow,
 //-------------------------------------------------------------------
 int midasSynchronizer::Pull()
 {
-  if(this->ResourceType == midasResourceType::NONE)
+  if(this->ResourceType == midasResourceType::NONE && !this->IsPathMode())
     {
     std::stringstream text;
     text << "You must specify a resource type." << std::endl;
@@ -422,6 +423,11 @@ int midasSynchronizer::Pull()
       "exists in the database." << std::endl;
     Log->Error(text.str());
     return MIDAS_NO_URL;
+    }
+
+  if(this->IsPathMode())
+    {
+    this->ConvertPathToId();
     }
 
   switch(this->ResourceType)
@@ -1170,9 +1176,40 @@ bool midasSynchronizer::PushItem(int id)
 }
 
 //-------------------------------------------------------------------
+bool midasSynchronizer::ConvertPathToId()
+{
+  std::string type, id;
+  mws::RestXMLParser parser;
+  parser.AddTag("/rsp/type", type);
+  parser.AddTag("/rsp/id", id);
+
+  mws::WebAPI::Instance()->SetPostData("");
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+
+  std::stringstream fields;
+  fields << "midas.convert.path.to.id?path=" <<
+    midasUtils::EscapeForURL(this->ResourceHandle);
+
+  if(!mws::WebAPI::Instance()->Execute(fields.str().c_str()))
+    {
+    return false;
+    }
+
+  if(type == "" || id == "")
+    {
+    return false;
+    }
+
+  this->SetResourceType(atoi(type.c_str()));
+  this->SetResourceHandle(id);
+  return true;
+}
+
+//-------------------------------------------------------------------
 void midasSynchronizer::Reset()
 {
   this->ShouldCancel = false;
+  this->PathMode = false;
   this->SetOperation(midasSynchronizer::OPERATION_NONE);
   this->SetResourceHandle("");
   this->SetResourceType(midasResourceType::NONE);
