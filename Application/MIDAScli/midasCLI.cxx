@@ -18,6 +18,7 @@
 
 midasCLI::midasCLI()
 {
+  this->RootDir = "";
   this->Synchronizer = new midasSynchronizer();
   this->Synchronizer->SetDatabase(
     kwsys::SystemTools::GetCurrentWorkingDirectory() + "/midas.db");
@@ -124,7 +125,42 @@ int midasCLI::Perform(std::vector<std::string> args)
       return -1;
       }
     }
-  return ok ? this->Synchronizer->Perform() : -1;
+
+  std::string oldRoot = "";
+  if(this->RootDir != "")
+    {
+    if(!kwsys::SystemTools::FileIsDirectory(this->RootDir.c_str()))
+      {
+      std::cerr << "Failed: \"" << this->RootDir << "\" does not refer to a "
+        "valid directory." << std::endl;
+      return -1;
+      }
+
+    this->Synchronizer->GetDatabase()->Open();
+    oldRoot = this->Synchronizer->GetDatabase()->GetSetting(
+      midasDatabaseProxy::ROOT_DIR);
+    this->Synchronizer->GetDatabase()->SetSetting(
+      midasDatabaseProxy::ROOT_DIR, this->RootDir);
+    this->Synchronizer->GetDatabase()->Close();
+    }
+
+  if(ok)
+    {
+    int retVal = this->Synchronizer->Perform();
+
+    if(oldRoot != "")
+      {
+      this->Synchronizer->GetDatabase()->Open();
+      this->Synchronizer->GetDatabase()->SetSetting(
+        midasDatabaseProxy::ROOT_DIR, oldRoot);
+      this->Synchronizer->GetDatabase()->Close();
+      }
+    return retVal;
+    }
+  else
+    {
+    return -1;
+    }
 }
 
 //-------------------------------------------------------------------
@@ -260,10 +296,24 @@ bool midasCLI::ParseClone(std::vector<std::string> args)
 {
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_CLONE);
   this->Synchronizer->SetRecursive(true);
-  
-  if(args.size())
+
+  unsigned i;
+  for(i = 0; i < args.size(); i++)
     {
-    this->Synchronizer->SetServerURL(args[0]);
+    if(args[i] == "-d" && i + 1 < args.size())
+      {
+      i++;
+      this->RootDir = args[i];
+      }
+    else
+      {
+      break;
+      }
+    }
+  
+  if(i < args.size())
+    {
+    this->Synchronizer->SetServerURL(args[i]);
     }
   else if(this->Synchronizer->GetServerURL() == "")
     {
@@ -304,6 +354,11 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
     else if(args[i] == "-b")
       {
       this->Synchronizer->SetResourceType(midasResourceType::BITSTREAM);
+      }
+    else if(args[i] == "-d" && i + 1 < args.size())
+      {
+      i++;
+      this->RootDir = args[i];
       }
     else
       {
@@ -441,7 +496,9 @@ void midasCLI::PrintCommandHelp(std::string command)
       << std::endl << " -c         For pulling a collection."
       << std::endl << " -i         For pulling an item."
       << std::endl << " -b         For pulling a bitstream."
-      << std::endl << "Exactly one type must be specified (-b, -i, -c, -C)."
+      << std::endl << " -d         Specify the root directory for this pull."
+      << std::endl << "Exactly one type must be specified (-b, -i, -c, -C)"
+      << std::endl << "unless path mode (-p) is used."
       << std::endl;
     }
   else if(command == "push")
@@ -450,7 +507,10 @@ void midasCLI::PrintCommandHelp(std::string command)
     }
   else if(command == "clone")
     {
-    std::cout << "Usage: MIDAScli ... clone [URL]" << std::endl;
+    std::cout << "Usage: MIDAScli ... clone [COMMAND_OPTIONS] [URL]"
+      << std::endl << "Where COMMAND_OPTIONS can be: "
+      << std::endl << " -d      Specify the root directory for this clone."
+      << std::endl;
     }
   else if(command == "clean")
     {
