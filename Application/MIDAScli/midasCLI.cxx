@@ -15,13 +15,14 @@
 #include "midasDotProgressReporter.h"
 #include "midasStatus.h"
 #include "midasStdOutLog.h"
+#include "midasUtils.h"
 
 midasCLI::midasCLI()
 {
   this->RootDir = "";
+  this->ServerURL = "";
   this->Synchronizer = new midasSynchronizer();
-  this->Synchronizer->SetDatabase(
-    kwsys::SystemTools::GetCurrentWorkingDirectory() + "/midas.db");
+  this->Database = kwsys::SystemTools::GetCurrentWorkingDirectory() + "/midas.db";
   this->Synchronizer->SetProgressReporter(
     reinterpret_cast<midasProgressReporter*>(
     new midasDotProgressReporter(30)));
@@ -99,7 +100,7 @@ int midasCLI::Perform(std::vector<std::string> args)
     else if(args[i] == "--database" && i + 1 < args.size())
       {
       i++;
-      this->Synchronizer->SetDatabase(args[i]);
+      this->Database = args[i];
       }
     else if(args[i] == "--profile" && i + 1 < args.size())
       {
@@ -124,6 +125,13 @@ int midasCLI::Perform(std::vector<std::string> args)
       this->PrintUsage();
       return -1;
       }
+    }
+
+  this->Synchronizer->SetDatabase(this->Database);
+  
+  if(this->ServerURL != "")
+    {
+    this->Synchronizer->SetServerURL(this->ServerURL);
     }
 
   std::string oldRoot = "";
@@ -166,6 +174,8 @@ int midasCLI::Perform(std::vector<std::string> args)
 //-------------------------------------------------------------------
 int midasCLI::PerformCreateProfile(std::vector<std::string> args)
 {
+  this->Synchronizer->SetDatabase(this->Database);
+
   unsigned i;
 
   std::string name, user, apiKey, appName;
@@ -279,7 +289,7 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
   i++;
   if(i < args.size())
     {
-    this->Synchronizer->SetServerURL(args[i]);
+    this->ServerURL = args[i];
     }
   return true;
 }
@@ -313,7 +323,7 @@ bool midasCLI::ParseClone(std::vector<std::string> args)
   
   if(i < args.size())
     {
-    this->Synchronizer->SetServerURL(args[i]);
+    this->ServerURL = args[i];
     }
   else if(this->Synchronizer->GetServerURL() == "")
     {
@@ -386,7 +396,7 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
   i++;
   if(i < args.size())
     {
-    this->Synchronizer->SetServerURL(args[i]);
+    this->ServerURL = args[i];
     }
   return true;
 }
@@ -402,7 +412,7 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
     }
   else if(args.size())
     {
-    this->Synchronizer->SetServerURL(args[0]);
+    this->ServerURL = args[0];
     }
   return true;
 }
@@ -423,6 +433,7 @@ int midasCLI::SetRootDir(std::vector<std::string> args)
       "directory." << std::endl;
     return -1;
     }
+  this->Synchronizer->SetDatabase(this->Database);
   this->Synchronizer->GetDatabase()->Open();
   this->Synchronizer->GetDatabase()->SetSetting(
     midasDatabaseProxy::ROOT_DIR, root_dir);

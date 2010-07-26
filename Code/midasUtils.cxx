@@ -133,9 +133,11 @@ bool midasUtils::CreateNewDatabase(std::string path)
   for(std::vector<std::string>::iterator i = lines.begin();
       i != lines.end(); ++i)
     {
-    if(*i != "")
+    std::string query = *i;
+    midasUtils::StringTrim(query);
+    if(query != "")
       {
-      success &= db.ExecuteQuery(i->c_str());
+      success &= db.ExecuteQuery(query.c_str());
       }
     }
 
@@ -195,4 +197,19 @@ mdo::Object* midasUtils::FetchByUuid(std::string uuid)
     }
 
   return object;
+}
+
+void midasUtils::StringTrim(std::string& str)
+{
+  std::string::size_type pos = str.find_last_not_of(' ');
+  if(pos != std::string::npos) 
+    {
+    str.erase(pos + 1);
+    pos = str.find_first_not_of(' ');
+    if(pos != std::string::npos) str.erase(0, pos);
+    }
+  else 
+    {
+    str.erase(str.begin(), str.end());
+    }
 }

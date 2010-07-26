@@ -112,7 +112,7 @@ foreach(sql_def ${sql_defs})
   string(STRIP "${sql_def}" sql_def)
   if(NOT sql_def MATCHES "^--")
     string(REPLACE "\"" "\\\"" sql_def "${sql_def}")
-    file(APPEND "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h" "  \"${sql_def}\"\n")
+    file(APPEND "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h" "  \"${sql_def} \"\n")
   endif()
 endforeach()
 

@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 2.6)
 
 SET(MIDASDesktopUtils_SRCS
   Utils.h
-#  DetailedException.h
-#  DetailedException.cxx
   Printable.h
   metaOutput.h
   metaOutput.cxx

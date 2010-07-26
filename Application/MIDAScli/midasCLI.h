@@ -39,6 +39,8 @@ class midasCLI : public midasLogAware
     int PerformCreateProfile(std::vector<std::string> args);
 
     std::string RootDir;
+    std::string Database;
+    std::string ServerURL;
     midasSynchronizer* Synchronizer;
 };
 

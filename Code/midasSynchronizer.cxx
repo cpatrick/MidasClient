@@ -70,6 +70,23 @@ void midasSynchronizer::SetParentId(int id)
 
 void midasSynchronizer::SetDatabase(std::string path)
 {
+  if(!midasUtils::IsDatabaseValid(path))
+    {
+    std::stringstream text;
+    if(midasUtils::CreateNewDatabase(path))
+      {
+      text << "No valid database found at " << path <<
+        ". Creating new database..." << std::endl;
+      this->GetLog()->Message(text.str());
+      }
+    else
+      {
+      text << "Fatal: failed to create database at " << path << std::endl;
+      this->GetLog()->Error(text.str());
+      kwsys::SystemTools::RemoveFile(path.c_str());
+      exit(-1);
+      }
+    }
   this->Database = path;
   delete this->DatabaseProxy;
   this->DatabaseProxy = new midasDatabaseProxy(path);
