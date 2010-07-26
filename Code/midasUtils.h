@@ -26,6 +26,7 @@ public:
   static std::string EscapeName(std::string name);
   static std::string FileSizeString(long bytes);
   static bool IsDatabaseValid(std::string path);
+  static bool CreateNewDatabase(std::string path);
   static mdo::Object* FetchByUuid(std::string uuid);
 };
 

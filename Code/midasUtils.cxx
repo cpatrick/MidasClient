@@ -19,6 +19,7 @@
 #include "mdoCommunity.h"
 #include "mdoItem.h"
 #include "midasStandardIncludes.h"
+#include "midasTableDefs.h"
 #include <time.h>
 
 #define UUID_LENGTH 45
@@ -115,6 +116,31 @@ bool midasUtils::IsDatabaseValid(std::string path)
   while(db.GetNextRow());
   result &= db.Close();
   return result;
+}
+
+bool midasUtils::CreateNewDatabase(std::string path)
+{
+  mds::SQLiteDatabase db;
+  if(!db.Open(path.c_str()))
+    {
+    return false;
+    }
+  
+  std::vector<std::string> lines;
+  kwsys::SystemTools::Split(mds::getTableDefs(), lines, ';');
+
+  bool success = true;
+  for(std::vector<std::string>::iterator i = lines.begin();
+      i != lines.end(); ++i)
+    {
+    if(*i != "")
+      {
+      success &= db.ExecuteQuery(i->c_str());
+      }
+    }
+
+  success &= db.Close();
+  return success;
 }
 
 mdo::Object* midasUtils::FetchByUuid(std::string uuid)
