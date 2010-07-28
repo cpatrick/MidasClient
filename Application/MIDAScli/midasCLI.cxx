@@ -19,6 +19,7 @@
 
 midasCLI::midasCLI()
 {
+  this->TempProfile = NULL;
   this->RootDir = "";
   this->ServerURL = "";
   this->Synchronizer = new midasSynchronizer();
@@ -34,6 +35,7 @@ midasCLI::midasCLI()
 
 midasCLI::~midasCLI()
 {
+  delete this->TempProfile;
   delete this->Log;
   delete this->Synchronizer;
 }
@@ -95,6 +97,12 @@ int midasCLI::Perform(std::vector<std::string> args)
       {
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseStatus(postOpArgs);
+      break;
+      }
+    else if(args[i] == "upload")
+      {
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      ok = this->ParseUpload(postOpArgs);
       break;
       }
     else if(args[i] == "--database" && i + 1 < args.size())
@@ -278,7 +286,7 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
   if(i < args.size() &&
      this->Synchronizer->GetResourceType() != midasResourceType::NONE)
     {
-    this->Synchronizer->SetResourceHandle(args[i]);
+    this->Synchronizer->SetClientHandle(args[i]);
     }
   else
     {
@@ -385,7 +393,7 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
 
   if(i < args.size())
     {
-    this->Synchronizer->SetResourceHandle(args[i]);
+    this->Synchronizer->SetServerHandle(args[i]);
     }
   else
     {
@@ -405,6 +413,8 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
 bool midasCLI::ParsePush(std::vector<std::string> args)
 {
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
+  this->Synchronizer->SetDatabase(this->Database);
+
   if(!args.size() && this->Synchronizer->GetServerURL() == "")
     {
     this->PrintCommandHelp("push");
@@ -466,6 +476,23 @@ bool midasCLI::ParseStatus(std::vector<std::string> args)
       }
     std::cout << " " << i->GetPath() << std::endl;
     }
+  return true;
+}
+
+//-------------------------------------------------------------------
+bool midasCLI::ParseUpload(std::vector<std::string> args)
+{
+  this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_UPLOAD);
+
+  if(args.size() < 2)
+    {
+    this->PrintCommandHelp("upload");
+    return false;
+    }
+
+  this->Synchronizer->SetClientHandle(args[0]);
+  this->Synchronizer->SetServerHandle(args[1]);
+
   return true;
 }
 
@@ -560,5 +587,13 @@ void midasCLI::PrintCommandHelp(std::string command)
   else if(command == "set_root_dir")
     {
     std::cout << "Usage: MIDAScli ... set_root_dir DIR" << std::endl;
+    }
+  else if(command == "upload")
+    {
+    std::cout << "Usage: MIDAScli ... upload SOURCE DESTINATION"
+      << std::endl << "Where SOURCE is the location on disk of a bitstream "
+      "to upload," << std::endl << "and DESTINATION is the path on the "
+      "MIDAS server of item into which the bitstream will be uploaded."
+      << std::endl;
     }
 }

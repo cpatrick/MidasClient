@@ -49,7 +49,8 @@ public:
     OPERATION_CLEAN,
     OPERATION_CLONE,
     OPERATION_PULL,
-    OPERATION_PUSH
+    OPERATION_PUSH,
+    OPERATION_UPLOAD
     };
 
   void SetLog(midasLog* log);
@@ -76,8 +77,11 @@ public:
   midasProgressReporter* GetProgressReporter();
   void DeleteProgressReporter();
 
-  void SetResourceHandle(std::string handle);
-  std::string GetResourceHandle();
+  void SetClientHandle(std::string handle);
+  std::string GetClientHandle();
+
+  void SetServerHandle(std::string handle);
+  std::string GetServerHandle();
 
   void SetRecursive(bool recursive);
   bool GetRecursive();
@@ -95,10 +99,11 @@ protected:
   bool ConvertPathToId();
 
   int Add();
-  int Clone();
-  int Push();
-  int Pull();
   int Clean();
+  int Clone();
+  int Pull();
+  int Push();
+  int Upload();
 
   bool PullBitstream(int parentId);
   bool PullCollection(int parentId);
@@ -124,7 +129,8 @@ protected:
   int ParentId;
   int LastId;
   std::string ServerURL;
-  std::string ResourceHandle;
+  std::string ClientHandle;
+  std::string ServerHandle;
   std::string LastDir;
 
   /* Pull entire subtree of resources that are pulled?*/

@@ -82,7 +82,7 @@ void CreateMidasItemUI::accept()
 
     parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_ADD);
     parent->getSynchronizer()->SetResourceType(midasResourceType::ITEM);
-    parent->getSynchronizer()->SetResourceHandle(path);
+    parent->getSynchronizer()->SetClientHandle(path);
     
     std::stringstream text;
     if(parent->getSynchronizer()->Perform() == 0)

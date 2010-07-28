@@ -136,7 +136,7 @@ void PullUI::accept()
       }
     std::stringstream idStr;
     idStr << m_PullId;
-    m_Parent->getSynchronizer()->SetResourceHandle(idStr.str());
+    m_Parent->getSynchronizer()->SetServerHandle(idStr.str());
     m_Parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_PULL);
     m_Parent->getSynchronizer()->SetRecursive(recursiveCheckBox->isChecked());
 

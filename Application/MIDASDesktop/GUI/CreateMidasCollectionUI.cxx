@@ -74,7 +74,7 @@ void CreateMidasCollectionUI::accept()
 
     parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_ADD);
     parent->getSynchronizer()->SetResourceType(midasResourceType::COLLECTION);
-    parent->getSynchronizer()->SetResourceHandle(path);
+    parent->getSynchronizer()->SetClientHandle(path);
     
     std::stringstream text;
     if(parent->getSynchronizer()->Perform() == 0)

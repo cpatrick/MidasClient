@@ -38,6 +38,8 @@ midasSynchronizer::midasSynchronizer()
   this->Operation = OPERATION_NONE;
   this->ResourceType = midasResourceType::NONE;
   this->ServerURL = "";
+  this->ServerHandle = "";
+  this->ClientHandle = "";
   this->Progress = NULL;
   this->Log = new midasStdOutLog();
   this->Database = "";
@@ -70,6 +72,11 @@ void midasSynchronizer::SetParentId(int id)
 
 void midasSynchronizer::SetDatabase(std::string path)
 {
+  if(path == this->Database)
+    {
+    return;
+    }
+
   if(!midasUtils::IsDatabaseValid(path))
     {
     std::stringstream text;
@@ -146,14 +153,24 @@ int midasSynchronizer::GetResourceType()
   return this->ResourceType;
 }
 
-void midasSynchronizer::SetResourceHandle(std::string handle)
+void midasSynchronizer::SetClientHandle(std::string handle)
 {
-  this->ResourceHandle = handle;
+  this->ClientHandle = handle;
 }
 
-std::string midasSynchronizer::GetResourceHandle()
+std::string midasSynchronizer::GetClientHandle()
 {
-  return this->ResourceHandle;
+  return this->ClientHandle;
+}
+
+void midasSynchronizer::SetServerHandle(std::string handle)
+{
+  this->ServerHandle = handle;
+}
+
+std::string midasSynchronizer::GetServerHandle()
+{
+  return this->ServerHandle;
 }
 
 std::string midasSynchronizer::GetServerURL()
@@ -227,6 +244,8 @@ int midasSynchronizer::Perform()
     case OPERATION_PUSH:
       rc = this->Push();
       break;
+    case OPERATION_UPLOAD:
+      rc = this->Upload();
     default:
       rc = MIDAS_BAD_OP;
       break;
@@ -244,13 +263,13 @@ int midasSynchronizer::Perform()
 int midasSynchronizer::Add()
 {
   std::string path = 
-    kwsys::SystemTools::FileIsFullPath(this->ResourceHandle.c_str()) ?
-    this->ResourceHandle : WORKING_DIR() + "/" + this->ResourceHandle;
+    kwsys::SystemTools::FileIsFullPath(this->ClientHandle.c_str()) ?
+    this->ClientHandle : WORKING_DIR() + "/" + this->ClientHandle;
 
   if(!kwsys::SystemTools::FileExists(path.c_str()))
     {
     std::stringstream text;
-    text << "Error: \"" << this->ResourceHandle << "\" does "
+    text << "Error: \"" << this->ClientHandle << "\" does "
       "not refer to a valid absolute or relative path." << std::endl;
     this->Log->Error(text.str());
     return MIDAS_INVALID_PATH;
@@ -479,7 +498,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
     }
   mws::Bitstream remote;
   mdo::Bitstream* bitstream = new mdo::Bitstream;
-  bitstream->SetId(atoi(this->ResourceHandle.c_str()));
+  bitstream->SetId(atoi(this->ServerHandle.c_str()));
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(bitstream);
   
@@ -499,14 +518,14 @@ bool midasSynchronizer::PullBitstream(int parentId)
     {
     bool recurse = this->Recursive;
     this->Recursive = false;
-    std::string handle = this->ResourceHandle;
-    this->ResourceHandle = bitstream->GetParent();
+    std::string handle = this->ServerHandle;
+    this->ServerHandle = bitstream->GetParent();
 
     this->PullItem(NO_PARENT);
     this->DatabaseProxy->Open();
     CHANGE_DIR(this->LastDir.c_str());
 
-    this->ResourceHandle = handle;
+    this->ServerHandle = handle;
     this->Recursive = recurse;
     parentId = this->LastId;
     }
@@ -514,7 +533,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
   if(bitstream->GetName() == "")
     {
     std::stringstream text;
-    text << "Bitstream " << this->ResourceHandle <<
+    text << "Bitstream " << this->ServerHandle <<
       " does not exist." << std::endl;
     Log->Error(text.str());
     return false;
@@ -534,7 +553,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
     }
 
   std::stringstream fields;
-  fields << "midas.bitstream.download?id=" << this->GetResourceHandle();
+  fields << "midas.bitstream.download?id=" << this->GetServerHandle();
   
   if(this->Progress)
     {
@@ -571,7 +590,7 @@ bool midasSynchronizer::PullCollection(int parentId)
 
   mws::Collection remote;
   mdo::Collection* collection = new mdo::Collection;
-  collection->SetId(atoi(this->GetResourceHandle().c_str()));
+  collection->SetId(atoi(this->GetServerHandle().c_str()));
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(collection);
 
@@ -596,14 +615,14 @@ bool midasSynchronizer::PullCollection(int parentId)
     {
     bool recurse = this->Recursive;
     this->Recursive = false;
-    std::string handle = this->ResourceHandle;
-    this->ResourceHandle = collection->GetParent();
+    std::string handle = this->ServerHandle;
+    this->ServerHandle = collection->GetParent();
 
     this->PullCommunity(NO_PARENT);
     this->DatabaseProxy->Open();
     CHANGE_DIR(this->LastDir.c_str());
 
-    this->ResourceHandle = handle;
+    this->ServerHandle = handle;
     this->Recursive = recurse;
     parentId = this->LastId;
     }
@@ -632,7 +651,7 @@ bool midasSynchronizer::PullCollection(int parentId)
       {
       std::stringstream s;
       s << (*i)->GetId();
-      this->SetResourceHandle(s.str());
+      this->SetServerHandle(s.str());
       this->PullItem(id);
       }
     CHANGE_DIR(temp.c_str());
@@ -674,7 +693,7 @@ bool midasSynchronizer::PullCommunity(int parentId)
 
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
-  community->SetId(atoi(this->ResourceHandle.c_str()));
+  community->SetId(atoi(this->ServerHandle.c_str()));
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(community);
 
@@ -694,11 +713,11 @@ bool midasSynchronizer::PullCommunity(int parentId)
   status << "Pulled community " << community->GetName();
   this->Log->Status(status.str());
 
-  community = FindInTree(community, atoi(this->ResourceHandle.c_str()));
+  community = FindInTree(community, atoi(this->ServerHandle.c_str()));
   if(!community)
     {
     std::stringstream text;
-    text << "Error: Community " << this->ResourceHandle 
+    text << "Error: Community " << this->ServerHandle 
       << " does not exist." << std::endl;
     Log->Error(text.str());
     this->DatabaseProxy->Close();
@@ -712,14 +731,14 @@ bool midasSynchronizer::PullCommunity(int parentId)
     {
     bool recurse = this->Recursive;
     this->Recursive = false;
-    std::string handle = this->ResourceHandle;
-    this->ResourceHandle = community->GetParent();
+    std::string handle = this->ServerHandle;
+    this->ServerHandle = community->GetParent();
 
     this->PullCommunity(NO_PARENT);
     this->DatabaseProxy->Open();
     CHANGE_DIR(this->LastDir.c_str());
 
-    this->ResourceHandle = handle;
+    this->ServerHandle = handle;
     this->Recursive = recurse;
     parentId = this->LastId;
     }
@@ -766,7 +785,7 @@ void midasSynchronizer::RecurseCommunities(int parentId,
     {
     std::stringstream s;
     s << (*i)->GetId();
-    this->SetResourceHandle(s.str());
+    this->SetServerHandle(s.str());
     this->PullCollection(parentId);
     }
   for(std::vector<mdo::Community*>::const_iterator i =
@@ -775,7 +794,7 @@ void midasSynchronizer::RecurseCommunities(int parentId,
     {
     std::stringstream s;
     s << (*i)->GetId();
-    this->SetResourceHandle(s.str());
+    this->SetServerHandle(s.str());
     this->PullCommunity(parentId);
     }
 }
@@ -791,7 +810,7 @@ bool midasSynchronizer::PullItem(int parentId)
 
   mws::Item remote;
   mdo::Item* item = new mdo::Item;
-  item->SetId(atoi(this->GetResourceHandle().c_str()));
+  item->SetId(atoi(this->GetServerHandle().c_str()));
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(item);
 
@@ -816,14 +835,14 @@ bool midasSynchronizer::PullItem(int parentId)
     {
     bool recurse = this->Recursive;
     this->Recursive = false;
-    std::string handle = this->ResourceHandle;
-    this->ResourceHandle = item->GetParent();
+    std::string handle = this->ServerHandle;
+    this->ServerHandle = item->GetParent();
 
     this->PullCollection(NO_PARENT);
     this->DatabaseProxy->Open();
     CHANGE_DIR(this->LastDir.c_str());
 
-    this->ResourceHandle = handle;
+    this->ServerHandle = handle;
     this->Recursive = recurse;
     parentId = this->LastId;
     }
@@ -857,7 +876,7 @@ bool midasSynchronizer::PullItem(int parentId)
       {
       std::stringstream s;
       s << (*i)->GetId();
-      this->SetResourceHandle(s.str());
+      this->SetServerHandle(s.str());
       this->PullBitstream(id);
       }
     CHANGE_DIR(temp.c_str());
@@ -1213,7 +1232,7 @@ bool midasSynchronizer::ConvertPathToId()
 
   std::stringstream fields;
   fields << "midas.convert.path.to.id?path=" <<
-    midasUtils::EscapeForURL(this->ResourceHandle);
+    midasUtils::EscapeForURL(this->ServerHandle);
 
   if(!mws::WebAPI::Instance()->Execute(fields.str().c_str()))
     {
@@ -1226,8 +1245,14 @@ bool midasSynchronizer::ConvertPathToId()
     }
 
   this->SetResourceType(atoi(type.c_str()));
-  this->SetResourceHandle(id);
+  this->SetServerHandle(id);
   return true;
+}
+
+//-------------------------------------------------------------------
+int midasSynchronizer::Upload()
+{
+  return MIDAS_OK;
 }
 
 //-------------------------------------------------------------------
@@ -1236,7 +1261,8 @@ void midasSynchronizer::Reset()
   this->ShouldCancel = false;
   this->PathMode = false;
   this->SetOperation(midasSynchronizer::OPERATION_NONE);
-  this->SetResourceHandle("");
+  this->SetServerHandle("");
+  this->SetClientHandle("");
   this->SetResourceType(midasResourceType::NONE);
   this->SetParentId(0);
   this->Log->Status("");

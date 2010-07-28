@@ -16,6 +16,7 @@
 #include "midasLogAware.h"
 
 class midasSynchronizer;
+struct midasAuthProfile;
 
 class midasCLI : public midasLogAware
 {
@@ -34,6 +35,7 @@ class midasCLI : public midasLogAware
     bool ParsePull(std::vector<std::string> args);
     bool ParsePush(std::vector<std::string> args);
     bool ParseStatus(std::vector<std::string> args);
+    bool ParseUpload(std::vector<std::string> args);
     
     int SetRootDir(std::vector<std::string> args);
     int PerformCreateProfile(std::vector<std::string> args);
@@ -41,6 +43,7 @@ class midasCLI : public midasLogAware
     std::string RootDir;
     std::string Database;
     std::string ServerURL;
+    midasAuthProfile* TempProfile;
     midasSynchronizer* Synchronizer;
 };
 
