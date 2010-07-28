@@ -108,8 +108,8 @@ file(WRITE "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h" "namespace mds {\ncons
 file(STRINGS "${MIDASCPP_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql" sql_defs)
 
 foreach(sql_def ${sql_defs})
-  # Ignore comment lines
   string(STRIP "${sql_def}" sql_def)
+  # Ignore comment lines
   if(NOT sql_def MATCHES "^--")
     string(REPLACE "\"" "\\\"" sql_def "${sql_def}")
     file(APPEND "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h" "  \"${sql_def} \"\n")
@@ -133,6 +133,19 @@ add_custom_target (
   DEPENDS sqlite3 ${midas_db}
 )
 
+# Must reconfigure table def header when we change the SQL definitions
+add_custom_command (
+  OUTPUT "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h"
+  DEPENDS "${MIDASCPP_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql"
+  COMMAND "${CMAKE_COMMAND}" "${MIDASCPP_SOURCE_DIR}"
+  WORKING_DIRECTORY "${MIDASCPP_BINARY_DIR}"
+)
+add_custom_target (
+  reconfigure_tabledefs ALL
+  DEPENDS "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h"
+)
+
+#-----------------------------------------------------------------------------
 install (FILES ${midas_db} DESTINATION ".")
 
 #-----------------------------------------------------------------------------
