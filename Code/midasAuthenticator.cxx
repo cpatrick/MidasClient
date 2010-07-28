@@ -151,6 +151,7 @@ std::string midasAuthenticator::FetchToken()
 //-------------------------------------------------------------------
 void midasAuthenticator::SetDatabase(std::string database)
 {
+  delete this->Database;
   this->Database = new midasDatabaseProxy(database);
 }
 

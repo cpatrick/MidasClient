@@ -455,6 +455,7 @@ int midasCLI::SetRootDir(std::vector<std::string> args)
 //-------------------------------------------------------------------
 bool midasCLI::ParseStatus(std::vector<std::string> args)
 {
+  this->Synchronizer->SetDatabase(this->Database);
   std::vector<midasStatus> stats = this->Synchronizer->GetStatusEntries();
   for(std::vector<midasStatus>::iterator i = stats.begin(); i != stats.end();
       ++i)

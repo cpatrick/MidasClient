@@ -213,3 +213,20 @@ void midasUtils::StringTrim(std::string& str)
     str.erase(str.begin(), str.end());
     }
 }
+
+std::string midasUtils::GetTypeName(int type)
+{
+  switch(type)
+    {
+    case midasResourceType::COMMUNITY:
+      return "Community";
+    case midasResourceType::COLLECTION:
+      return "Collection";
+    case midasResourceType::ITEM:
+      return "Item";
+    case midasResourceType::BITSTREAM:
+      return "Bitstream";
+    default:
+      return "Unknown";
+    }
+}
