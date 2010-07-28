@@ -39,7 +39,7 @@ midasSynchronizer::midasSynchronizer()
   this->ResourceType = midasResourceType::NONE;
   this->ServerURL = "";
   this->Progress = NULL;
-  this->Log = NULL;
+  this->Log = new midasStdOutLog();
   this->Database = "";
   this->DatabaseProxy = NULL;
   this->Authenticator = new midasAuthenticator;
@@ -96,6 +96,7 @@ void midasSynchronizer::SetDatabase(std::string path)
 
 void midasSynchronizer::SetLog(midasLog* log)
 {
+  delete this->Log;
   this->Log = log;
   this->Authenticator->SetLog(log);
 }
