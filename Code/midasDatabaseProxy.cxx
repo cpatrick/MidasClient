@@ -264,6 +264,10 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
 int midasDatabaseProxy::AddResource(int type, std::string uuid,
   std::string path, std::string name, std::string parentUuid, int parentId)
 {
+  if(parentUuid == "" && type != midasResourceType::COMMUNITY)
+    {
+    return -1;
+    }
   if(!this->ResourceExists(uuid))
     {
     int id = -1;

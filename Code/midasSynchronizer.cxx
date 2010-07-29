@@ -40,6 +40,7 @@ midasSynchronizer::midasSynchronizer()
   this->ServerURL = "";
   this->ServerHandle = "";
   this->ClientHandle = "";
+  this->Uuid = "";
   this->Progress = NULL;
   this->Log = new midasStdOutLog();
   this->Database = "";
@@ -80,18 +81,23 @@ void midasSynchronizer::SetDatabase(std::string path)
   if(!midasUtils::IsDatabaseValid(path))
     {
     std::stringstream text;
-    if(midasUtils::CreateNewDatabase(path))
-      {
-      text << "No valid database found at " << path <<
+    text << "No valid database found at " << path <<
         ". Creating new database..." << std::endl;
-      this->GetLog()->Message(text.str());
-      }
-    else
+    this->GetLog()->Message(text.str());
+
+    if(!midasUtils::CreateNewDatabase(path))
       {
+      std::stringstream text;
       text << "Fatal: failed to create database at " << path << std::endl;
       this->GetLog()->Error(text.str());
       kwsys::SystemTools::RemoveFile(path.c_str());
       exit(-1);
+      }
+    else
+      {
+      std::stringstream text;
+      text << "Database created successfully at " << path << std::endl;
+      this->GetLog()->Message(text.str());
       }
     }
   this->Database = path;
@@ -311,11 +317,7 @@ int midasSynchronizer::Add()
     kwsys::SystemTools::GetParentDirectory(path.c_str());
 
   this->DatabaseProxy->Open();
-  if(this->ParentId)
-    {
-    std::string copyTo = 
-    path = copyTo;
-    }
+
   if(this->DatabaseProxy->GetUuidFromPath(path) != "")
     {
     std::stringstream text;
@@ -327,6 +329,10 @@ int midasSynchronizer::Add()
     }
 
   std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
+  if(parentUuid == "")
+    {
+    parentUuid = this->Uuid;
+    }
 
   if(!this->ValidateParentId(this->ParentId,
     midasResourceType::ResourceType(this->ResourceType)) && parentUuid == "")
@@ -1220,12 +1226,95 @@ bool midasSynchronizer::PushItem(int id)
 }
 
 //-------------------------------------------------------------------
+int midasSynchronizer::Upload()
+{
+  if(this->ClientHandle == "" && this->ServerHandle == "")
+    {
+    std::stringstream text;
+    text << "You must set both a server and client handle "
+      "in order to use the upload operation." << std::endl;
+    this->Log->Error(text.str());
+    return MIDAS_INVALID_PATH;
+    }
+
+   if(this->ServerURL == "")
+    {
+    std::stringstream text;
+    text << "Error: server URL not set." << std::endl;
+    this->Log->Error(text.str());
+    return MIDAS_NO_URL;
+    }
+
+  if(!this->ConvertPathToId())
+    {
+    std::stringstream text;
+    text << "Error: \"" << this->ServerHandle << "\" does not refer "
+      "to a valid path on the MIDAS server." << std::endl;
+    this->Log->Error(text.str());
+    return MIDAS_INVALID_SERVER_PATH;
+    }
+
+  if(this->ResourceType != midasResourceType::ITEM)
+    {
+    std::stringstream text;
+    text << "Error: \"" << this->ServerHandle << "\" must refer to an "
+      "item on the MIDAS server. The given path is of type " <<
+      midasUtils::GetTypeName(this->ResourceType) << "." << std::endl;
+    this->Log->Error(text.str());
+    return MIDAS_INVALID_TYPE;
+    }
+
+  if(this->GetAuthenticator()->GetProfile() == "")
+    {
+    std::stringstream text;
+    text << "Error: you called Upload with no authentication "
+      "credentials. You must authenticate in order to upload." << std::endl;
+    this->Log->Error(text.str());
+    return MIDAS_LOGIN_FAILED;
+    }
+
+  if(!this->GetAuthenticator()->Login(mws::WebAPI::Instance()))
+    {
+    std::stringstream text;
+    text << "Error: Bad login credentials." << std::endl;
+    this->Log->Error(text.str());
+    return MIDAS_LOGIN_FAILED;
+    }
+
+  int rc;
+
+  if((rc = this->Pull()) != MIDAS_OK)
+    {
+    return rc;
+    }
+
+  this->ResourceType = midasResourceType::BITSTREAM;
+  
+  //this->DatabaseProxy->Open();
+  //this->ParentId = this->DatabaseProxy->GetRecordByUuid(this->Uuid).Id;
+  //this->DatabaseProxy->Close();
+  this->ParentId = 0;
+  if((rc = this->Add()) != MIDAS_OK)
+    {
+    return rc;
+    }
+
+  if((rc = this->Push()) != MIDAS_OK)
+    {
+    //TODO roll back the add?
+    }
+
+  return rc;
+}
+
+//-------------------------------------------------------------------
 bool midasSynchronizer::ConvertPathToId()
 {
-  std::string type, id;
+  std::string type, id, uuid;
   mws::RestXMLParser parser;
   parser.AddTag("/rsp/type", type);
   parser.AddTag("/rsp/id", id);
+  parser.AddTag("/rsp/uuid", uuid);
 
   mws::WebAPI::Instance()->SetPostData("");
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
@@ -1239,20 +1328,15 @@ bool midasSynchronizer::ConvertPathToId()
     return false;
     }
 
-  if(type == "" || id == "")
+  if(type == "" || id == "" || uuid == "")
     {
     return false;
     }
 
   this->SetResourceType(atoi(type.c_str()));
   this->SetServerHandle(id);
+  this->Uuid = uuid;
   return true;
-}
-
-//-------------------------------------------------------------------
-int midasSynchronizer::Upload()
-{
-  return MIDAS_OK;
 }
 
 //-------------------------------------------------------------------
@@ -1263,6 +1347,7 @@ void midasSynchronizer::Reset()
   this->SetOperation(midasSynchronizer::OPERATION_NONE);
   this->SetServerHandle("");
   this->SetClientHandle("");
+  this->Uuid = "";
   this->SetResourceType(midasResourceType::NONE);
   this->SetParentId(0);
   this->Log->Status("");

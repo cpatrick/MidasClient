@@ -36,6 +36,7 @@
 #define MIDAS_EMPTY_FILE          -11
 #define MIDAS_CANCELED            -12
 #define MIDAS_INVALID_SERVER_PATH -13
+#define MIDAS_INVALID_TYPE        -14
 
 class midasSynchronizer : public midasLogAware
 {
@@ -132,6 +133,7 @@ protected:
   std::string ClientHandle;
   std::string ServerHandle;
   std::string LastDir;
+  std::string Uuid;
 
   /* Pull entire subtree of resources that are pulled?*/
   bool Recursive;
