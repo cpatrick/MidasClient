@@ -15,37 +15,6 @@ include_directories(
   utils
 )
 
-if(WIN32)
-  link_libraries (
-    imm32.lib
-    winmm.lib
-    Snmpapi.lib
-  )
-endif(WIN32)
-
-
-if(UNIX)
-  find_package(X11)
-
-  if(NOT APPLE)
-    link_libraries(
-      #X11
-      #Xext
-      Xft
-      png
-      glib-2.0
-      gthread-2.0
-      Xt
-      Xi
-      Xinerama
-      ${X11_LIBRARIES}
-      Xrandr
-      Xcursor
-      crypt
-    )
-  endif(NOT APPLE)
-endif(UNIX)
-
 subdirs(utils)
 
 set(MIDASDesktopUI_SRCS
@@ -184,6 +153,69 @@ if(WIN32)
 else(WIN32)
   add_executable(MIDASDesktop ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX})
 endif(WIN32)
+
+if(WIN32)
+  target_link_libraries (MIDASDesktop
+    imm32.lib
+    winmm.lib
+    Snmpapi.lib
+  )
+endif(WIN32)
+
+if(UNIX)
+  find_package(X11)
+  find_package(PNG)
+  
+  find_library(XFT_LIBRARY Xft)
+  find_library(GLIB_LIBRARY glib-2.0)
+  find_library(GTHREAD_LIBRARY gthread-2.0)
+  find_library(XT_LIBRARY Xt)
+  find_library(XI_LIBRARY Xi)
+  find_library(XINERAMA_LIBRARY Xinerama)
+  find_library(XRANDR_LIBRARY Xrandr)
+  find_library(XCURSOR_LIBRARY Xcursor)
+  find_library(CRYPT_LIBRARY crypt)
+
+  if(NOT APPLE)
+    target_link_libraries(MIDASDesktop ${PNG_LIBRARIES} ${X11_LIBRARIES})
+    
+    if(XFT_LIBRARY)
+      target_link_libraries(MIDASDesktop ${XFT_LIBRARY})
+    endif(XFT_LIBRARY)
+    
+    if(GLIB_LIBRARY)
+      target_link_libraries(MIDASDesktop ${GLIB_LIBRARY})
+    endif(GLIB_LIBRARY)
+    
+    if(GTHREAD_LIBRARY)
+      target_link_libraries(MIDASDesktop ${GTHREAD_LIBRARY})
+    endif(GTHREAD_LIBRARY)
+
+    if(XT_LIBRARY)
+      target_link_libraries(MIDASDesktop ${XT_LIBRARY})
+    endif(XT_LIBRARY)
+
+    if(XI_LIBRARY)
+      target_link_libraries(MIDASDesktop ${XI_LIBRARY})
+    endif(XI_LIBRARY)
+    
+    if(XINERAMA_LIBRARY)
+      target_link_libraries(MIDASDesktop ${XINERAMA_LIBRARY})
+    endif(XINERAMA_LIBRARY)
+
+    if(XRANDR_LIBRARY)
+      target_link_libraries(MIDASDesktop ${XRANDR_LIBRARY})
+    endif(XRANDR_LIBRARY)
+    
+    if(XCURSOR_LIBRARY)
+      target_link_libraries(MIDASDesktop ${XCURSOR_LIBRARY})
+    endif(XCURSOR_LIBRARY)
+      
+    if(CRYPT_LIBRARY)
+      target_link_libraries(MIDASDesktop ${CRYPT_LIBRARY})
+    endif(CRYPT_LIBRARY)
+  endif(NOT APPLE)
+endif(UNIX)
 
 target_link_libraries(MIDASDesktop
   MIDAS
