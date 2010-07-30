@@ -1290,9 +1290,31 @@ int midasSynchronizer::Upload()
 
   this->ResourceType = midasResourceType::BITSTREAM;
   
-  //this->DatabaseProxy->Open();
-  //this->ParentId = this->DatabaseProxy->GetRecordByUuid(this->Uuid).Id;
-  //this->DatabaseProxy->Close();
+  this->DatabaseProxy->Open();
+  std::string parentDir =
+    this->DatabaseProxy->GetRecordByUuid(this->Uuid).Path;
+  this->DatabaseProxy->Close();
+
+  if(!kwsys::SystemTools::FileIsDirectory(parentDir.c_str()))
+    {
+    std::stringstream text;
+    text << "Error: invalid directory of parent item on disk." << std::endl;
+    this->Log->Error(text.str());
+    return MIDAS_FAILURE;
+    }
+
+  if(!kwsys::SystemTools::CopyAFile(this->ClientHandle.c_str(),
+     parentDir.c_str()))
+    {
+    std::stringstream text;
+    text << "Error: failed to copy file into item directory" << std::endl;
+    this->Log->Error(text.str());
+    return MIDAS_FAILURE;
+    }
+
+  this->ClientHandle = parentDir + "/" + kwsys::SystemTools::GetFilenameName(
+    this->ClientHandle);
+
   this->ParentId = 0;
   if((rc = this->Add()) != MIDAS_OK)
     {
