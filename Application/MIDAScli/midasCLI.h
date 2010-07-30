@@ -20,31 +20,33 @@ struct midasAuthProfile;
 
 class midasCLI : public midasLogAware
 {
-  public:
-    midasCLI();
-    ~midasCLI();
+public:
+  midasCLI();
+  ~midasCLI();
 
-    int Perform(std::vector<std::string> args);
-  protected:
-    void PrintUsage();
-    void PrintCommandHelp(std::string command);
+  int Perform(std::vector<std::string> args);
+protected:
+  void PrintUsage();
+  void PrintCommandHelp(std::string command);
 
-    bool ParseAdd(std::vector<std::string> args);
-    bool ParseClean(std::vector<std::string> args);
-    bool ParseClone(std::vector<std::string> args);
-    bool ParsePull(std::vector<std::string> args);
-    bool ParsePush(std::vector<std::string> args);
-    bool ParseStatus(std::vector<std::string> args);
-    bool ParseUpload(std::vector<std::string> args);
-    
-    int SetRootDir(std::vector<std::string> args);
-    int PerformCreateProfile(std::vector<std::string> args);
+  bool ParseAdd(std::vector<std::string> args);
+  bool ParseClean(std::vector<std::string> args);
+  bool ParseClone(std::vector<std::string> args);
+  bool ParsePull(std::vector<std::string> args);
+  bool ParsePush(std::vector<std::string> args);
+  bool ParseStatus(std::vector<std::string> args);
+  bool ParseUpload(std::vector<std::string> args);
+  
+  int SetRootDir(std::vector<std::string> args);
+  int PerformCreateProfile(std::vector<std::string> args);
+  int RunSynchronizer();
 
-    std::string RootDir;
-    std::string Database;
-    std::string ServerURL;
-    midasAuthProfile* TempProfile;
-    midasSynchronizer* Synchronizer;
+  std::string RootDir;
+  std::string Database;
+  std::string ServerURL;
+  bool UseTempProfile;
+  midasAuthProfile* TempProfile;
+  midasSynchronizer* Synchronizer;
 };
 
 #endif

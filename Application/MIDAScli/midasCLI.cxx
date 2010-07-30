@@ -19,7 +19,8 @@
 
 midasCLI::midasCLI()
 {
-  this->TempProfile = NULL;
+  this->TempProfile = new midasAuthProfile;
+  this->UseTempProfile = false;
   this->RootDir = "";
   this->ServerURL = "";
   this->Synchronizer = new midasSynchronizer();
@@ -55,52 +56,61 @@ int midasCLI::Perform(std::vector<std::string> args)
     {
     if(args[i] == "add")
       {
+      this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseAdd(postOpArgs);
       break;
       }
     else if(args[i] == "clean")
       {
+      this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseClean(postOpArgs);
       break;
       }
     else if(args[i] == "clone")
       {
+      this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseClone(postOpArgs);
       break;
       }
     else if(args[i] == "create_profile")
       {
+      this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       return this->PerformCreateProfile(postOpArgs);
       }
     else if(args[i] == "push")
       {
+      this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParsePush(postOpArgs);
       break;
       }
     else if(args[i] == "pull")
       {
+      this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParsePull(postOpArgs);
       break;
       }
     else if(args[i] == "set_root_dir")
       {
+      this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       return this->SetRootDir(postOpArgs);
       }
     else if(args[i] == "status")
       {
+      this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseStatus(postOpArgs);
       break;
       }
     else if(args[i] == "upload")
       {
+      this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseUpload(postOpArgs);
       break;
@@ -114,6 +124,31 @@ int midasCLI::Perform(std::vector<std::string> args)
       {
       i++;
       this->Synchronizer->GetAuthenticator()->SetProfile(args[i]);
+      }
+    else if(args[i] == "--url" && i + 1 < args.size())
+      {
+      i++;
+      this->UseTempProfile = true;
+      this->TempProfile->Url = args[i];
+      this->ServerURL = args[i];
+      }
+    else if(args[i] == "--email" && i + 1 < args.size())
+      {
+      i++;
+      this->UseTempProfile = true;
+      this->TempProfile->User = args[i];
+      }
+    else if(args[i] == "--app-name" && i + 1 < args.size())
+      {
+      i++;
+      this->UseTempProfile = true;
+      this->TempProfile->AppName = args[i];
+      }
+    else if(args[i] == "--api-key" && i + 1 < args.size())
+      {
+      i++;
+      this->UseTempProfile = true;
+      this->TempProfile->ApiKey = args[i];
       }
     else if(args[i] == "--help")
       {
@@ -135,11 +170,46 @@ int midasCLI::Perform(std::vector<std::string> args)
       }
     }
 
-  this->Synchronizer->SetDatabase(this->Database);
-  
+  if(ok)
+    {
+    int rc = this->RunSynchronizer();
+
+    if(this->UseTempProfile)
+      {
+      this->Synchronizer->GetDatabase()->Open();
+      this->Synchronizer->GetDatabase()->DeleteProfile(
+        this->Synchronizer->GetAuthenticator()->GetProfile());
+      this->Synchronizer->GetDatabase()->Close();
+      }
+
+    return rc;
+    }
+  this->PrintUsage();
+  return -1;
+}
+
+//-------------------------------------------------------------------
+int midasCLI::RunSynchronizer()
+{
   if(this->ServerURL != "")
     {
     this->Synchronizer->SetServerURL(this->ServerURL);
+    }
+
+  // Create and use temporary profile
+  if(this->UseTempProfile)
+    {
+    std::string tempName = midasUtils::GenerateUUID();
+
+    if(!this->Synchronizer->GetAuthenticator()->AddAuthProfile(
+      this->TempProfile->User, this->TempProfile->AppName,
+      this->TempProfile->ApiKey, tempName))
+      {
+      std::cout << "Ad hoc authentication failed." << std::endl;
+      return -1;
+      }
+
+    this->Synchronizer->GetAuthenticator()->SetProfile(tempName);
     }
 
   std::string oldRoot = "";
@@ -160,30 +230,21 @@ int midasCLI::Perform(std::vector<std::string> args)
     this->Synchronizer->GetDatabase()->Close();
     }
 
-  if(ok)
-    {
-    int retVal = this->Synchronizer->Perform();
+  int retVal = this->Synchronizer->Perform();
 
-    if(oldRoot != "")
-      {
-      this->Synchronizer->GetDatabase()->Open();
-      this->Synchronizer->GetDatabase()->SetSetting(
-        midasDatabaseProxy::ROOT_DIR, oldRoot);
-      this->Synchronizer->GetDatabase()->Close();
-      }
-    return retVal;
-    }
-  else
+  if(oldRoot != "")
     {
-    return -1;
+    this->Synchronizer->GetDatabase()->Open();
+    this->Synchronizer->GetDatabase()->SetSetting(
+      midasDatabaseProxy::ROOT_DIR, oldRoot);
+    this->Synchronizer->GetDatabase()->Close();
     }
+  return retVal;
 }
 
 //-------------------------------------------------------------------
 int midasCLI::PerformCreateProfile(std::vector<std::string> args)
 {
-  this->Synchronizer->SetDatabase(this->Database);
-
   unsigned i;
 
   std::string name, user, apiKey, appName;
@@ -333,7 +394,7 @@ bool midasCLI::ParseClone(std::vector<std::string> args)
     {
     this->ServerURL = args[i];
     }
-  else if(this->Synchronizer->GetServerURL() == "")
+  else if(this->ServerURL == "" && this->Synchronizer->GetServerURL() == "")
     {
     this->PrintCommandHelp("clone");
     return false;
@@ -413,7 +474,6 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
 bool midasCLI::ParsePush(std::vector<std::string> args)
 {
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
-  this->Synchronizer->SetDatabase(this->Database);
 
   if(!args.size() && this->Synchronizer->GetServerURL() == "")
     {
@@ -443,7 +503,6 @@ int midasCLI::SetRootDir(std::vector<std::string> args)
       "directory." << std::endl;
     return -1;
     }
-  this->Synchronizer->SetDatabase(this->Database);
   this->Synchronizer->GetDatabase()->Open();
   this->Synchronizer->GetDatabase()->SetSetting(
     midasDatabaseProxy::ROOT_DIR, root_dir);
@@ -455,7 +514,6 @@ int midasCLI::SetRootDir(std::vector<std::string> args)
 //-------------------------------------------------------------------
 bool midasCLI::ParseStatus(std::vector<std::string> args)
 {
-  this->Synchronizer->SetDatabase(this->Database);
   std::vector<midasStatus> stats = this->Synchronizer->GetStatusEntries();
   for(std::vector<midasStatus>::iterator i = stats.begin(); i != stats.end();
       ++i)
@@ -515,7 +573,9 @@ void midasCLI::PrintUsage()
     << std::endl <<
     " pull             Copy part of a MIDAS database locally."
     << std::endl <<
-    " push             Copy local resources to a MIDAS server."
+    " push             Copy locally added resources to a MIDAS server."
+    << std::endl <<
+    " upload           Upload a file to a MIDAS server."
     << std::endl <<
     " set_root_dir     Set where resources should be pulled to on disk."
     << std::endl << std::endl << "Use MIDAScli --help COMMAND for "
@@ -594,7 +654,7 @@ void midasCLI::PrintCommandHelp(std::string command)
     std::cout << "Usage: MIDAScli ... upload SOURCE DESTINATION"
       << std::endl << "Where SOURCE is the location on disk of a bitstream "
       "to upload," << std::endl << "and DESTINATION is the path on the "
-      "MIDAS server of item into which the bitstream will be uploaded."
+      "MIDAS server of the item into which the bitstream will be uploaded."
       << std::endl;
     }
 }
