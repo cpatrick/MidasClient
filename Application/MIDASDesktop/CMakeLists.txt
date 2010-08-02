@@ -18,7 +18,6 @@ include_directories(
 subdirs(utils)
 
 set(MIDASDesktopUI_SRCS
-  main.cxx
   GUI/MIDASDesktopUI.cxx
   GUI/MIDASDesktopUI.h
   GUI/SignInUI.cxx
@@ -146,16 +145,18 @@ set(MIDASDesktopUI_MOC_SRCS
 QT4_WRAP_CPP(MIDASDesktopUI_SRCS ${MIDASDesktopUI_MOC_SRCS})
 QT4_WRAP_UI(MIDASDesktopUI_UI_CXX ${MIDASDesktopUI_UI_SRCS})
 QT4_ADD_RESOURCES(MIDASDesktopUI_SRCS ${MIDASDesktopUI_RCCS})
- 
+
+add_library(MIDASDesktopLib ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX})
+
 # MIDASDesktop Executable
 if(WIN32)
-  add_executable(MIDASDesktop WIN32 ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX})
+  add_executable(MIDASDesktop WIN32 main.cxx)
 else(WIN32)
-  add_executable(MIDASDesktop ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX})
+  add_executable(MIDASDesktop main.cxx)
 endif(WIN32)
 
 if(WIN32)
-  target_link_libraries (MIDASDesktop
+  target_link_libraries (MIDASDesktopLib
     imm32.lib
     winmm.lib
     Snmpapi.lib
@@ -177,53 +178,57 @@ if(UNIX)
   find_library(CRYPT_LIBRARY crypt)
 
   if(NOT APPLE)
-    target_link_libraries(MIDASDesktop ${PNG_LIBRARIES} ${X11_LIBRARIES})
+    target_link_libraries(MIDASDesktopLib ${PNG_LIBRARIES} ${X11_LIBRARIES})
     
     if(XFT_LIBRARY)
-      target_link_libraries(MIDASDesktop ${XFT_LIBRARY})
+      target_link_libraries(MIDASDesktopLib ${XFT_LIBRARY})
     endif(XFT_LIBRARY)
     
     if(GLIB_LIBRARY)
-      target_link_libraries(MIDASDesktop ${GLIB_LIBRARY})
+      target_link_libraries(MIDASDesktopLib ${GLIB_LIBRARY})
     endif(GLIB_LIBRARY)
     
     if(GTHREAD_LIBRARY)
-      target_link_libraries(MIDASDesktop ${GTHREAD_LIBRARY})
+      target_link_libraries(MIDASDesktopLib ${GTHREAD_LIBRARY})
     endif(GTHREAD_LIBRARY)
 
     if(XT_LIBRARY)
-      target_link_libraries(MIDASDesktop ${XT_LIBRARY})
+      target_link_libraries(MIDASDesktopLib ${XT_LIBRARY})
     endif(XT_LIBRARY)
 
     if(XI_LIBRARY)
-      target_link_libraries(MIDASDesktop ${XI_LIBRARY})
+      target_link_libraries(MIDASDesktopLib ${XI_LIBRARY})
     endif(XI_LIBRARY)
     
     if(XINERAMA_LIBRARY)
-      target_link_libraries(MIDASDesktop ${XINERAMA_LIBRARY})
+      target_link_libraries(MIDASDesktopLib ${XINERAMA_LIBRARY})
     endif(XINERAMA_LIBRARY)
 
     if(XRANDR_LIBRARY)
-      target_link_libraries(MIDASDesktop ${XRANDR_LIBRARY})
+      target_link_libraries(MIDASDesktopLib ${XRANDR_LIBRARY})
     endif(XRANDR_LIBRARY)
     
     if(XCURSOR_LIBRARY)
-      target_link_libraries(MIDASDesktop ${XCURSOR_LIBRARY})
+      target_link_libraries(MIDASDesktopLib ${XCURSOR_LIBRARY})
     endif(XCURSOR_LIBRARY)
       
     if(CRYPT_LIBRARY)
-      target_link_libraries(MIDASDesktop ${CRYPT_LIBRARY})
+      target_link_libraries(MIDASDesktopLib ${CRYPT_LIBRARY})
     endif(CRYPT_LIBRARY)
   endif(NOT APPLE)
 endif(UNIX)
 
-target_link_libraries(MIDASDesktop
+target_link_libraries(MIDASDesktopLib
   MIDAS
   MIDASDesktopUtils
   kwsys
   ${QT_QTCORE_LIBRARY}
   ${QT_QTMAIN_LIBRARY}
   ${QT_QTGUI_LIBRARY}
+)
+
+target_link_libraries(MIDASDesktop
+  MIDASDesktopLib
 )
 
 install(TARGETS MIDASDesktop DESTINATION bin)

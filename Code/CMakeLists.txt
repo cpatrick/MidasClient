@@ -150,5 +150,5 @@ install (FILES ${midas_db} DESTINATION ".")
 
 #-----------------------------------------------------------------------------
 #
-add_library(MIDAS ${MIDASRest_SRCS} ${MIDASSynch_SRCS}) 
+add_library(MIDAS ${MIDASRest_SRCS} ${MIDASSynch_SRCS})
 target_link_libraries(MIDAS cmcurl ITKEXPAT sqlite kwsys)
