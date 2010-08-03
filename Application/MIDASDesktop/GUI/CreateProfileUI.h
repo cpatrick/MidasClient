@@ -18,7 +18,8 @@ public:
 
 signals:
   void createdProfile(std::string name, std::string email,
-                      std::string apiName, std::string apiKey);
+                      std::string apiName, std::string apiKey,
+                      std::string rootDir);
   void deletedProfile(std::string name);
   void serverURLSet(std::string url);
 
@@ -28,7 +29,9 @@ public slots:
   virtual void accept();
   void fillData(const QString& profileName);
   void anonymousChanged(int state);
+  void rootDirChecked(int state);
   void deleteProfile();
+  void browseRootDir();
 
 private:
 

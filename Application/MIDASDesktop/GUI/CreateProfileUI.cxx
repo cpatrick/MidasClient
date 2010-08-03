@@ -8,6 +8,7 @@
 #include <QString>
 #include <QCheckBox>
 #include <QMessageBox>
+#include <QFileDialog>
 
 CreateProfileUI::CreateProfileUI(MIDASDesktopUI *parent):
   QDialog(parent), parent(parent)
@@ -18,8 +19,12 @@ CreateProfileUI::CreateProfileUI(MIDASDesktopUI *parent):
     this, SLOT( fillData(const QString&) ) );
   connect(anonymousCheckBox, SIGNAL( stateChanged(int) ),
     this, SLOT( anonymousChanged(int) ) );
+  connect(rootDirCheckbox, SIGNAL( stateChanged(int) ),
+    this, SLOT( rootDirChecked(int) ) );
   connect(deleteButton, SIGNAL( clicked() ),
     this, SLOT( deleteProfile() ) );
+  connect(browseButton, SIGNAL( clicked() ),
+    this, SLOT( browseRootDir() ) );
 }
 
 void CreateProfileUI::init()
@@ -28,6 +33,10 @@ void CreateProfileUI::init()
   profileNameEdit->setText("");
   apiKeyEdit->setText("");
   apiNameEdit->setText("");
+  rootDirEdit->setText("");
+
+  anonymousCheckBox->setChecked(false);
+  rootDirCheckbox->setChecked(false);
 
   profileComboBox->clear();
   profileComboBox->addItem("New Profile");
@@ -68,9 +77,14 @@ void CreateProfileUI::fillData(const QString& name)
     apiKeyEdit->setText(profile.ApiKey.c_str());
     apiNameEdit->setText(profile.AppName.c_str());
     serverURLEdit->setText(profile.Url.c_str());
+    rootDirEdit->setText(profile.RootDir.c_str());
+
+    rootDirCheckbox->setCheckState(
+      profile.HasRootDir() ? Qt::Unchecked : Qt::Checked);
+    rootDirChecked(rootDirCheckbox->checkState());
     
     anonymousCheckBox->setCheckState(
-      profile.User == "" ? Qt::Checked : Qt::Unchecked);
+      profile.IsAnonymous() ? Qt::Checked : Qt::Unchecked);
     anonymousChanged(anonymousCheckBox->checkState());
     deleteButton->setEnabled(true);
     }
@@ -88,6 +102,17 @@ void CreateProfileUI::anonymousChanged(int state)
   emailEdit->setEnabled(!checked);
   apiKeyEdit->setEnabled(!checked);
   apiNameEdit->setEnabled(!checked);
+}
+
+void CreateProfileUI::rootDirChecked(int state)
+{
+  bool checked = state == Qt::Checked;
+  if(!checked)
+    {
+    rootDirEdit->setText("");
+    }
+  rootDirEdit->setEnabled(checked);
+  browseButton->setEnabled(checked);
 }
 
 int CreateProfileUI::exec()
@@ -111,16 +136,17 @@ void CreateProfileUI::accept()
     QMessageBox::critical(this, "Error", "You must enter a profile name");
     return;
     }
-  std::string profileName, email, apiName, apiKey, serverURL;
+  std::string profileName, email, apiName, apiKey, serverURL, rootDir;
   profileName = profileNameEdit->text().trimmed().toStdString();
   email = emailEdit->text().trimmed().toStdString();
   apiName = apiNameEdit->text().trimmed().toStdString();
   apiKey = apiKeyEdit->text().trimmed().toStdString();
   serverURL = serverURLEdit->text().trimmed().toStdString();
+  rootDir = rootDirEdit->text().trimmed().toStdString();
   QDialog::accept();
 
   emit serverURLSet(serverURL);
-  emit createdProfile(profileName, email, apiName, apiKey);
+  emit createdProfile(profileName, email, apiName, apiKey, rootDir);
 }
 
 void CreateProfileUI::deleteProfile()
@@ -141,4 +167,23 @@ void CreateProfileUI::deleteProfile()
 
   QDialog::accept();
   emit deletedProfile(profileName);
+}
+
+void CreateProfileUI::browseRootDir()
+{
+  std::string path = rootDirEdit->text().trimmed().toStdString();
+  if(path == "")
+    {
+    path = kwsys::SystemTools::GetCurrentWorkingDirectory();
+    }
+
+  QString dir = QFileDialog::getExistingDirectory(
+    this, tr("Choose Root Directory"),
+    path.c_str(),
+    QFileDialog::ShowDirsOnly);
+
+  if(dir != "")
+    {
+    rootDirEdit->setText(dir);
+    }
 }

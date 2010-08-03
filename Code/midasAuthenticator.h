@@ -24,7 +24,7 @@ class midasAuthenticator : public midasLogAware
     ~midasAuthenticator();
 
     bool AddAuthProfile(std::string user, std::string appName,
-      std::string apiKey, std::string profileName);
+      std::string apiKey, std::string rootDir, std::string profileName);
     
     // Lazy getter for an api auth token
     std::string FetchToken();

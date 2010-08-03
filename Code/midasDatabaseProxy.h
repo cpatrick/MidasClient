@@ -42,8 +42,10 @@ struct midasAuthProfile
   std::string AppName;
   std::string ApiKey;
   std::string User;
+  std::string RootDir;
 
   bool IsAnonymous() { return User == ""; }
+  bool HasRootDir() { return RootDir == ""; }
 };
 
 class midasDatabaseProxy : public midasLogAware
@@ -110,7 +112,8 @@ public:
   void FetchInfo(mdo::Bitstream* bitstream);
 
   bool AddAuthProfile(std::string user, std::string appName,
-    std::string apiKey, std::string profileName, std::string url);
+    std::string apiKey, std::string profileName,
+    std::string rootDir, std::string url);
   midasAuthProfile GetAuthProfile(std::string name);
   std::vector<std::string> GetAuthProfiles();
   void DeleteProfile(std::string name);

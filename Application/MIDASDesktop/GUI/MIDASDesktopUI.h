@@ -97,7 +97,8 @@ public slots:
   void signIn(bool ok);
   void signOut();
   void createProfile(std::string name, std::string email,
-                     std::string apiName, std::string apiKey );
+                     std::string apiName, std::string apiKey,
+                     std::string rootDir);
   void chooseLocalDatabase();
   void setLocalDatabase(std::string file);
   void deleteLocalResource(bool deleteFiles);

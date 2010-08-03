@@ -213,8 +213,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( actionOpenURL,                 SIGNAL( triggered() ), this, SLOT( viewInBrowser() ) );
 
   connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
-  connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string)),
-    this, SLOT( createProfile(std::string, std::string, std::string, std::string)));
+  connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string, std::string)),
+    this, SLOT( createProfile(std::string, std::string, std::string, std::string, std::string)));
   connect( dlg_createProfileUI, SIGNAL( deletedProfile(std::string)),
     dlg_signInUI, SLOT( removeProfile(std::string)));
   connect( dlg_createProfileUI, SIGNAL( serverURLSet(std::string)), this, SLOT( setServerURL(std::string)));
@@ -1127,7 +1127,8 @@ void MIDASDesktopUI::setServerURL(std::string url)
 }
 
 void MIDASDesktopUI::createProfile(std::string name, std::string email,
-                               std::string apiName, std::string apiKey)
+                               std::string apiName, std::string apiKey,
+                               std::string rootDir)
 {
   if(!m_database)
     {
@@ -1137,7 +1138,7 @@ void MIDASDesktopUI::createProfile(std::string name, std::string email,
 
   std::string msg;
   m_auth->SetServerURL(m_url);
-  if(m_auth->AddAuthProfile(email, apiName, apiKey, name))
+  if(m_auth->AddAuthProfile(email, apiName, apiKey, rootDir, name))
     {
     msg = "Successfully created profile \"" + name + "\".";
     this->dlg_signInUI->profileCreated(name);

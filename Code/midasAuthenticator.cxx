@@ -64,9 +64,20 @@ bool midasAuthenticator::IsAnonymous()
 }
 
 //-------------------------------------------------------------------
-bool midasAuthenticator::AddAuthProfile(std::string user, std::string appName,
-                                        std::string apiKey, std::string profileName)
+bool midasAuthenticator::AddAuthProfile(std::string user,
+                                        std::string appName,
+                                        std::string apiKey,
+                                        std::string rootDir,
+                                        std::string profileName)
 {
+  if(rootDir != "" && !kwsys::SystemTools::FileIsDirectory(rootDir.c_str()))
+    {
+    std::stringstream text;
+    text << "Error: invalid root directory: " << rootDir << std::endl;
+    Log->Error(text.str());
+    return false;
+    }
+
   this->Database->Open();
   mws::RestXMLParser parser;
   mws::WebAPI* remote = mws::WebAPI::Instance();
@@ -81,15 +92,11 @@ bool midasAuthenticator::AddAuthProfile(std::string user, std::string appName,
     {
     mws::WebAPI::Instance()->SetServerUrl(this->ServerURL.c_str());
     std::stringstream text;
-    if(mws::WebAPI::Instance()->CheckConnection())
-      {
-      text << "Added anonymous profile " << profileName << std::endl;
-      Log->Message(text.str());
-      }
-    else
+    if(!mws::WebAPI::Instance()->CheckConnection())
       {
       text << this->ServerURL << " is not a valid MIDAS Rest API URL";
       Log->Error(text.str());
+      this->Database->Close();
       return false;
       }
     }
@@ -100,9 +107,17 @@ bool midasAuthenticator::AddAuthProfile(std::string user, std::string appName,
     Log->Error(text.str());
     return false;
     }
-  bool success = 
-    this->Database->AddAuthProfile(user, appName, apiKey, profileName, this->ServerURL);
+  bool success = this->Database->AddAuthProfile(
+    user, appName, apiKey, profileName, rootDir, this->ServerURL);
   this->Database->Close();
+
+  if(!success)
+    {
+    std::stringstream text;
+    text << "Failed when inserting auth profile into database. "
+      << "Name may already exist." << std::endl;
+    this->Log->Error(text.str());
+    }
   return success;
 }
 

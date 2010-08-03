@@ -308,8 +308,8 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
 midasAuthProfile midasDatabaseProxy::GetAuthProfile(std::string name)
 {
   std::stringstream query;
-  query << "SELECT eperson, apikey, app_name, url FROM auth_profile WHERE "
-    "profile_name='" << name << "'";
+  query << "SELECT eperson, apikey, app_name, url, root_dir FROM auth_profile"
+    " WHERE profile_name='" << name << "'";
 
   midasAuthProfile profile;
 
@@ -321,6 +321,7 @@ midasAuthProfile midasDatabaseProxy::GetAuthProfile(std::string name)
     profile.ApiKey = this->Database->GetValueAsString(1);
     profile.AppName = this->Database->GetValueAsString(2);
     profile.Url = this->Database->GetValueAsString(3);
+    profile.RootDir = this->Database->GetValueAsString(4);
     while(this->Database->GetNextRow());
     }
   return profile;
@@ -341,14 +342,14 @@ std::vector<std::string> midasDatabaseProxy::GetAuthProfiles()
 //-------------------------------------------------------------------------
 bool midasDatabaseProxy::AddAuthProfile(std::string user, std::string appName,
                                         std::string apiKey, std::string name,
-                                        std::string url)
+                                        std::string rootDir, std::string url)
 {
   this->DeleteProfile(name);
 
   std::stringstream query;
-  query << "INSERT INTO auth_profile (profile_name, eperson, apikey, "
-    "app_name, url) VALUES ('" << name << "', '" << user << "', '" << apiKey
-    << "', '" << appName << "', '" << url << "')";
+  query << "INSERT INTO auth_profile (profile_name, eperson, apikey, app_name,"
+    " root_dir, url) VALUES ('" << name << "', '" << user << "', '" << apiKey
+    << "', '" << appName << "', '" << rootDir << "', '" << url << "')";
 
   return this->Database->ExecuteQuery(query.str().c_str());
 }
