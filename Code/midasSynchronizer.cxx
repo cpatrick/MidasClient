@@ -225,14 +225,7 @@ int midasSynchronizer::Perform()
     }
 
   std::string temp = WORKING_DIR();
-  this->DatabaseProxy->Open();
-  std::string wdir = this->DatabaseProxy->GetSetting(midasDatabaseProxy::ROOT_DIR);
-  this->DatabaseProxy->Close();
 
-  if(wdir != "")
-    {
-    CHANGE_DIR(wdir.c_str());
-    }
   switch(this->Operation)
     {
     case OPERATION_ADD:
@@ -408,6 +401,8 @@ int midasSynchronizer::Clean()
 //-------------------------------------------------------------------
 int midasSynchronizer::Clone()
 {
+  this->ChangeToRootDir();
+
   if(this->GetServerURL() == "")
     {
     std::stringstream text;
@@ -452,6 +447,8 @@ int ProgressCallback(void *clientp, double dltotal, double dlnow,
 //-------------------------------------------------------------------
 int midasSynchronizer::Pull()
 {
+  this->ChangeToRootDir();
+
   if(this->ResourceType == midasResourceType::NONE && !this->IsPathMode())
     {
     std::stringstream text;
@@ -1237,7 +1234,21 @@ int midasSynchronizer::Upload()
     return MIDAS_INVALID_PATH;
     }
 
-   if(this->ServerURL == "")
+  if(!kwsys::SystemTools::FileExists(this->ClientHandle.c_str(), true))
+    {
+    std::string originalPath = this->ClientHandle;
+    this->ClientHandle = WORKING_DIR() + "/" + originalPath;
+    if(!kwsys::SystemTools::FileExists(this->ClientHandle.c_str(), true))
+      {
+      std::stringstream text;
+      text << "Error: The source file \"" << originalPath <<
+        "\" does not exist." << std::endl;
+      this->Log->Error(text.str());
+      return MIDAS_INVALID_PATH;
+      }
+    }
+
+  if(this->ServerURL == "")
     {
     std::stringstream text;
     text << "Error: server URL not set." << std::endl;
@@ -1379,4 +1390,29 @@ void midasSynchronizer::Reset()
 void midasSynchronizer::Cancel()
 {
   this->ShouldCancel = true;
+}
+
+//-------------------------------------------------------------------
+void midasSynchronizer::ChangeToRootDir()
+{
+  this->DatabaseProxy->Open();
+  std::string wdir;
+  
+  if(this->GetAuthenticator()->GetProfile() != "")
+    {
+    wdir = this->DatabaseProxy->GetAuthProfile(
+      this->GetAuthenticator()->GetProfile()).RootDir;
+    }
+
+  // If no profile-specific setting exists, fall back to global root dir
+  if(wdir == "")
+    {
+    wdir = this->DatabaseProxy->GetSetting(midasDatabaseProxy::ROOT_DIR);
+    }
+  this->DatabaseProxy->Close();
+
+  if(wdir != "" && kwsys::SystemTools::FileIsDirectory(wdir.c_str()))
+    {
+    CHANGE_DIR(wdir.c_str());
+    }
 }
