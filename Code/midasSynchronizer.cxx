@@ -47,7 +47,6 @@ midasSynchronizer::midasSynchronizer()
   this->DatabaseProxy = NULL;
   this->Authenticator = new midasAuthenticator;
   this->Authenticator->SetLog(this->Log);
-  this->ParentId = 0;
 }
 
 midasSynchronizer::~midasSynchronizer()
@@ -59,16 +58,6 @@ midasSynchronizer::~midasSynchronizer()
 midasAuthenticator* midasSynchronizer::GetAuthenticator()
 {
   return this->Authenticator;
-}
-
-int midasSynchronizer::GetParentId()
-{
-  return this->ParentId;
-}
-
-void midasSynchronizer::SetParentId(int id)
-{
-  this->ParentId = id;
 }
 
 void midasSynchronizer::SetDatabase(std::string path)
@@ -261,11 +250,21 @@ int midasSynchronizer::Perform()
 //-------------------------------------------------------------------
 int midasSynchronizer::Add()
 {
-  std::string path = 
-    kwsys::SystemTools::FileIsFullPath(this->ClientHandle.c_str()) ?
-    this->ClientHandle : WORKING_DIR() + "/" + this->ClientHandle;
+  if(this->ServerHandle != "")
+    {
+    int type = this->ResourceType;
+    this->ResourceType = midasUtils::GetParentType(type);
+    int rc = this->Pull();
+    if(rc != MIDAS_OK)
+      {
+      return rc;
+      }
+    this->ResourceType = type;
+    }
 
-  if(!kwsys::SystemTools::FileExists(path.c_str()))
+  std::string path = this->ResolveAddPath();
+
+  if(path == "")
     {
     std::stringstream text;
     text << "Error: \"" << this->ClientHandle << "\" does "
@@ -283,7 +282,8 @@ int midasSynchronizer::Add()
     return MIDAS_BAD_FILE_TYPE;
     }
   if(!kwsys::SystemTools::FileIsDirectory(path.c_str()) &&
-    this->ResourceType != midasResourceType::BITSTREAM)
+    this->ResourceType != midasResourceType::BITSTREAM &&
+    this->ServerHandle == "")
     {
     std::stringstream text;
     text << "Error: \"" << path << "\" is not a directory. For "
@@ -321,14 +321,25 @@ int midasSynchronizer::Add()
     return MIDAS_DUPLICATE_PATH;
     }
 
-  std::string parentUuid = this->DatabaseProxy->GetUuidFromPath(parentDir);
-  if(parentUuid == "")
+  std::string parentUuid = this->ServerHandle == "" ?
+    this->DatabaseProxy->GetUuidFromPath(parentDir) :
+    this->Uuid;
+
+  parentDir = this->DatabaseProxy->GetRecordByUuid(parentUuid).Path;
+  if(this->ServerHandle != "" && this->ResourceType !=
+     midasResourceType::BITSTREAM)
     {
-    parentUuid = this->Uuid;
+    path = parentDir + "/" + name;
+    if(!kwsys::SystemTools::MakeDirectory(path.c_str()))
+      {
+      std::stringstream text;
+      text << "Error: Failed to create directory " << path << std::endl;
+      this->Log->Error(text.str());
+      return MIDAS_FAILURE;
+      }
     }
 
-  if(!this->ValidateParentId(this->ParentId,
-    midasResourceType::ResourceType(this->ResourceType)) && parentUuid == "")
+  if(parentUuid == "" && this->ResourceType != midasResourceType::COMMUNITY)
     {
     std::stringstream text;
     text << "The parent of this resource could not be resolved." << std::endl;
@@ -338,7 +349,8 @@ int midasSynchronizer::Add()
     }
 
   int id = this->DatabaseProxy->AddResource(this->ResourceType, uuid, 
-    path, name, parentUuid, this->ParentId);
+    path, name, parentUuid, atoi(this->ServerHandle.c_str()));
+
   if(id <= 0)
     {
     std::stringstream text;
@@ -349,44 +361,8 @@ int midasSynchronizer::Add()
     }
   this->DatabaseProxy->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
 
-  //TODO propagate last modified stamp up the local tree. (perhaps in MarkDirtyResource())
-
   this->DatabaseProxy->Close();
   return MIDAS_OK;
-}
-
-//-------------------------------------------------------------------
-bool midasSynchronizer::ValidateParentId(int parentId,
-                                         midasResourceType::ResourceType type)
-{
-  if(parentId == 0)
-    {
-    // Only communities may have no parent
-    return type == midasResourceType::COMMUNITY;
-    }
-  std::stringstream fields;
-  fields << "midas.";
-  switch(type)
-    {
-    case midasResourceType::BITSTREAM:
-      fields << "item";
-      break;
-    case midasResourceType::COLLECTION:
-      fields << "community";
-      break;
-    case midasResourceType::COMMUNITY:
-      fields << "community";
-      break;
-    case midasResourceType::ITEM:
-      fields << "collection";
-    default:
-      return false;
-    }
-  fields << ".get?id=" << parentId;
-  
-  mws::RestXMLParser parser;
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  return mws::WebAPI::Instance()->Execute(fields.str().c_str());
 }
 
 //-------------------------------------------------------------------
@@ -1292,13 +1268,6 @@ int midasSynchronizer::Upload()
     return MIDAS_LOGIN_FAILED;
     }
 
-  int rc;
-
-  if((rc = this->Pull()) != MIDAS_OK)
-    {
-    return rc;
-    }
-
   this->ResourceType = midasResourceType::BITSTREAM;
   
   this->DatabaseProxy->Open();
@@ -1326,7 +1295,7 @@ int midasSynchronizer::Upload()
   this->ClientHandle = parentDir + "/" + kwsys::SystemTools::GetFilenameName(
     this->ClientHandle);
 
-  this->ParentId = 0;
+  int rc;
   if((rc = this->Add()) != MIDAS_OK)
     {
     return rc;
@@ -1382,7 +1351,6 @@ void midasSynchronizer::Reset()
   this->SetClientHandle("");
   this->Uuid = "";
   this->SetResourceType(midasResourceType::NONE);
-  this->SetParentId(0);
   this->Log->Status("");
 }
 
@@ -1415,4 +1383,24 @@ void midasSynchronizer::ChangeToRootDir()
     {
     CHANGE_DIR(wdir.c_str());
     }
+}
+
+//-------------------------------------------------------------------
+std::string midasSynchronizer::ResolveAddPath()
+{
+  std::string path;
+  if(kwsys::SystemTools::FileIsFullPath(this->ClientHandle.c_str()))
+    {
+    path = this->ClientHandle;
+    }
+  else if(kwsys::SystemTools::FileExists(this->ClientHandle.c_str()))
+    {
+    path = WORKING_DIR() + "/" + this->ClientHandle;
+    }
+  else if(this->ResourceType != midasResourceType::BITSTREAM)
+    {
+    path = this->ClientHandle;
+    }
+
+  return path;
 }

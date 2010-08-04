@@ -51,6 +51,7 @@ void Collection::Clear()
   this->m_IntroductoryText = "";
   this->m_Copyright = "";
   this->m_Uuid = "";
+  this->m_Parent = "";
 }
 
 //------------------------------------------------------------------------

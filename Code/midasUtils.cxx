@@ -118,6 +118,7 @@ bool midasUtils::IsDatabaseValid(std::string path)
   return result;
 }
 
+//-------------------------------------------------------------------
 bool midasUtils::CreateNewDatabase(std::string path)
 {
   mds::SQLiteDatabase db;
@@ -145,6 +146,7 @@ bool midasUtils::CreateNewDatabase(std::string path)
   return success;
 }
 
+//-------------------------------------------------------------------
 mdo::Object* midasUtils::FetchByUuid(std::string uuid)
 {
   mdo::Object* object = NULL;
@@ -199,6 +201,7 @@ mdo::Object* midasUtils::FetchByUuid(std::string uuid)
   return object;
 }
 
+//-------------------------------------------------------------------
 void midasUtils::StringTrim(std::string& str)
 {
   std::string::size_type pos = str.find_last_not_of(' ');
@@ -214,6 +217,7 @@ void midasUtils::StringTrim(std::string& str)
     }
 }
 
+//-------------------------------------------------------------------
 std::string midasUtils::GetTypeName(int type)
 {
   switch(type)
@@ -228,5 +232,23 @@ std::string midasUtils::GetTypeName(int type)
       return "Bitstream";
     default:
       return "Unknown";
+    }
+}
+
+//-------------------------------------------------------------------
+int midasUtils::GetParentType(int type)
+{
+  switch(type)
+    {
+    case midasResourceType::COMMUNITY:
+      return type;
+    case midasResourceType::COLLECTION:
+      return midasResourceType::COMMUNITY;
+    case midasResourceType::ITEM:
+      return midasResourceType::COLLECTION;
+    case midasResourceType::BITSTREAM:
+      return midasResourceType::ITEM;
+    default:
+      return midasResourceType::TYPE_ERROR;
     }
 }

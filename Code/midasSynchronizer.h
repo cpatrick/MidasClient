@@ -120,14 +120,14 @@ protected:
 
   void RecurseCommunities(int parentId, mdo::Community* community);
 
-  bool ValidateParentId(int parentId, midasResourceType::ResourceType type);
-
   /* Reset the synchronizer to its starting state */
   void Reset();
 
+  void ChangeToRootDir();
+  std::string ResolveAddPath();
+
   SynchOperation Operation;
   int ResourceType;
-  int ParentId;
   int LastId;
   std::string ServerURL;
   std::string ClientHandle;

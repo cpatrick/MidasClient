@@ -332,18 +332,14 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
       {
       this->Synchronizer->SetResourceType(midasResourceType::BITSTREAM);
       }
-    else if(args[i] == "--parent")
+    else if(args[i] == "-p")
+      {
+      this->Synchronizer->SetPathMode(true);
+      }
+    else if(args[i] == "--parent" && i + 1 < args.size())
       {
       i++;
-      if(i + 1 < args.size())
-        {
-        this->Synchronizer->SetParentId(atoi(args[i].c_str()));
-        }
-      else
-        {
-        this->PrintCommandHelp("add");
-        return false;
-        }
+      this->Synchronizer->SetServerHandle(args[i]);
       }
     else
       {
@@ -361,7 +357,7 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
     this->PrintCommandHelp("add");
     return false;
     }
-  
+
   i++;
   if(i < args.size())
     {

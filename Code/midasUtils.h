@@ -30,6 +30,7 @@ public:
   static bool CreateNewDatabase(std::string path);
   static mdo::Object* FetchByUuid(std::string uuid);
   static void StringTrim(std::string& str);
+  static int GetParentType(int type);
 };
 
 #endif

@@ -41,6 +41,7 @@ void Item::Clear()
   this->m_Abstract = "";
   this->m_Description = "";
   this->m_Uuid = "";
+  this->m_Parent = "";
   this->m_Keywords.clear();
   this->m_Authors.clear();
   this->m_Bitstreams.clear();

@@ -66,6 +66,7 @@ void Community::Clear()
   this->m_Copyright = "";
   this->m_Links = "";
   this->m_Uuid = "";
+  this->m_Parent = "";
 }
 
 /** Load */
