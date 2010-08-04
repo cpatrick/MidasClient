@@ -311,6 +311,40 @@ int midasSynchronizer::Add()
 
   this->DatabaseProxy->Open();
 
+  std::string parentUuid = this->ServerHandle == "" ?
+    this->DatabaseProxy->GetUuidFromPath(parentDir) :
+    this->Uuid;
+
+  parentDir = this->DatabaseProxy->GetRecordByUuid(parentUuid).Path;
+  if(this->ServerHandle != "")
+    {
+    path = parentDir + "/" + name;
+
+    if(this->ResourceType == midasResourceType::BITSTREAM)
+      {
+      if(!kwsys::SystemTools::CopyAFile(this->ClientHandle.c_str(),
+         parentDir.c_str()))
+        {
+        std::stringstream text;
+        text << "Error: failed to copy file into item directory" << std::endl;
+        this->Log->Error(text.str());
+        return MIDAS_FAILURE;
+        }
+      this->ClientHandle = parentDir + "/" +
+        kwsys::SystemTools::GetFilenameName(this->ClientHandle);
+      }
+    else
+      {
+      if(!kwsys::SystemTools::MakeDirectory(path.c_str()))
+        {
+        std::stringstream text;
+        text << "Error: Failed to create directory " << path << std::endl;
+        this->Log->Error(text.str());
+        return MIDAS_FAILURE;
+        }
+      }
+    }
+
   if(this->DatabaseProxy->GetUuidFromPath(path) != "")
     {
     std::stringstream text;
@@ -319,24 +353,6 @@ int midasSynchronizer::Add()
     this->Log->Error(text.str());
     this->DatabaseProxy->Close();
     return MIDAS_DUPLICATE_PATH;
-    }
-
-  std::string parentUuid = this->ServerHandle == "" ?
-    this->DatabaseProxy->GetUuidFromPath(parentDir) :
-    this->Uuid;
-
-  parentDir = this->DatabaseProxy->GetRecordByUuid(parentUuid).Path;
-  if(this->ServerHandle != "" && this->ResourceType !=
-     midasResourceType::BITSTREAM)
-    {
-    path = parentDir + "/" + name;
-    if(!kwsys::SystemTools::MakeDirectory(path.c_str()))
-      {
-      std::stringstream text;
-      text << "Error: Failed to create directory " << path << std::endl;
-      this->Log->Error(text.str());
-      return MIDAS_FAILURE;
-      }
     }
 
   if(parentUuid == "" && this->ResourceType != midasResourceType::COMMUNITY)
@@ -1269,18 +1285,6 @@ int midasSynchronizer::Upload()
     }
 
   this->ResourceType = midasResourceType::BITSTREAM;
-
-  /*if(!kwsys::SystemTools::CopyAFile(this->ClientHandle.c_str(),
-     parentDir.c_str()))
-    {
-    std::stringstream text;
-    text << "Error: failed to copy file into item directory" << std::endl;
-    this->Log->Error(text.str());
-    return MIDAS_FAILURE;
-    }
-
-  this->ClientHandle = parentDir + "/" + kwsys::SystemTools::GetFilenameName(
-    this->ClientHandle);*/
 
   int rc;
   if((rc = this->Add()) != MIDAS_OK)
