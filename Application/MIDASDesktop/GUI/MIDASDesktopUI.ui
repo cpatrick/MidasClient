@@ -849,31 +849,6 @@
  </tabstops>
  <resources>
   <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>

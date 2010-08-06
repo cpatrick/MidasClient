@@ -1154,7 +1154,7 @@ void MIDASDesktopUI::createProfile(std::string name, std::string email,
 void MIDASDesktopUI::signOut()
 {
   this->activateActions(false, ACTION_ALL); 
-  treeViewServer->Clear(); 
+  treeViewServer->Clear();
   this->clearInfoPanel();
   connectLabel->hide();
   this->displayStatus(tr("Logout"));
