@@ -413,12 +413,15 @@ void MIDASDesktopUI::closeEvent(QCloseEvent *event)
     hide();
     event->ignore();
 
-    m_database->Open();
-    if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 0)
+    if(m_signIn)
       {
-      refreshTimer->start();
+      m_database->Open();
+      if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 0)
+        {
+        refreshTimer->start();
+        }
+      m_database->Close();
       }
-    m_database->Close();
     }
 }
 
