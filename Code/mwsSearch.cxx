@@ -214,12 +214,4 @@ std::vector<mdo::Object*> Search::SearchServer(std::vector<std::string> tokens)
   mws::WebAPI::Instance()->Execute(fields.c_str());
   return results;
 }
-
-std::vector<mdo::Object*> Search::SearchClient(std::vector<std::string> tokens)
-{
-  //Not implemented yet
-  std::vector<mdo::Object*> results;
-  return results;
-}
-
 } //end namespace

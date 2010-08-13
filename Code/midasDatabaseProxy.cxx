@@ -792,6 +792,7 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
   return communities;
 }
 
+//--------------------------------------------------------------------------
 void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool checkDirty)
 {
   if(checkDirty)
@@ -855,6 +856,7 @@ void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool check
   }
 }
 
+//--------------------------------------------------------------------------
 void midasDatabaseProxy::Populate(mdo::Collection* node, bool recurse, bool checkDirty)
 {
   if(checkDirty)
@@ -890,6 +892,7 @@ void midasDatabaseProxy::Populate(mdo::Collection* node, bool recurse, bool chec
     }
 }
 
+//--------------------------------------------------------------------------
 void midasDatabaseProxy::Populate(mdo::Item* node, bool checkDirty)
 {
   if(checkDirty)
@@ -927,6 +930,7 @@ void midasDatabaseProxy::Populate(mdo::Item* node, bool checkDirty)
     }
 }
 
+//--------------------------------------------------------------------------
 bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
 {
   midasResourceRecord record = this->GetRecordByUuid(uuid);
@@ -1063,6 +1067,7 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
   return true;
 }
 
+//--------------------------------------------------------------------------
 void midasDatabaseProxy::UnifyTree()
 {
   std::vector<mdo::Community*> topLevel = this->GetTopLevelCommunities(true);
@@ -1074,6 +1079,7 @@ void midasDatabaseProxy::UnifyTree()
     }
 }
 
+//--------------------------------------------------------------------------
 void midasDatabaseProxy::MergeOnDisk(mdo::Community* comm)
 {
   std::vector<mdo::Community*>::const_iterator i =
@@ -1093,6 +1099,7 @@ void midasDatabaseProxy::MergeOnDisk(mdo::Community* comm)
     }
 }
 
+//--------------------------------------------------------------------------
 void midasDatabaseProxy::MergeOnDisk(mdo::Collection* coll)
 {
   std::vector<mdo::Item*>::const_iterator i =
@@ -1103,6 +1110,7 @@ void midasDatabaseProxy::MergeOnDisk(mdo::Collection* coll)
     }
 }
 
+//--------------------------------------------------------------------------
 void midasDatabaseProxy::MergeOnDisk(mdo::Item* item)
 {
   std::string itemPath = this->GetRecordByUuid(item->GetUuid()).Path;
@@ -1116,7 +1124,7 @@ void midasDatabaseProxy::MergeOnDisk(mdo::Item* item)
       (*i)->GetName());
     kwsys::SystemTools::CopyAFile(path.c_str(),
       copyTo.c_str());
-    
+
     if(!kwsys::SystemTools::ComparePath(path.c_str(), copyTo.c_str()))
       {
       std::stringstream query;
@@ -1125,4 +1133,15 @@ void midasDatabaseProxy::MergeOnDisk(mdo::Item* item)
       this->Database->ExecuteQuery(query.str().c_str());
       }
     }
+}
+
+//--------------------------------------------------------------------------
+std::vector<mdo::Object*> midasDatabaseProxy::Search(
+                                              std::vector<std::string> tokens)
+{
+  std::vector<mdo::Object*> results;
+
+  //TODO implement search
+
+  return results;
 }

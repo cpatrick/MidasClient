@@ -25,7 +25,6 @@ class Search
 {
 public:
   static std::vector<mdo::Object*> SearchServer(std::vector<std::string> tokens);
-  static std::vector<mdo::Object*> SearchClient(std::vector<std::string> tokens);
 };
 
 } //end namespace

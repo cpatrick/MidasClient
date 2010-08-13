@@ -86,6 +86,9 @@ public:
 
   int GetParentId(int type, int id);
 
+  /** Search resources in the database */
+  std::vector<mdo::Object*> Search(std::vector<std::string> tokens);
+
   /**
    * Creates a new resource and uuid record, and its
    * corresponding parent/child entry, iff it doesn't exist.
