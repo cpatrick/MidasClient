@@ -270,6 +270,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_synch->SetLog(Log);
   this->m_synch->SetProgressReporter(m_progress);
   this->m_signIn = false;
+  this->m_editMode = false;
   // ------------- setup client members and logging ----
 
   // ------------- Handle stored settings -------------
@@ -557,33 +558,40 @@ void MIDASDesktopUI::showLogTab()
 
 void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem )
 {
+  this->m_editMode = false;
   infoPanel(const_cast<MidasCommunityTreeItem*>(communityTreeItem), false);
 }
 
 void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem )
 {
+  this->m_editMode = false;
   infoPanel(const_cast<MidasCollectionTreeItem*>(collectionTreeItem), false);
 }
 
 void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
 {
+  this->m_editMode = false;
   infoPanel(const_cast<MidasItemTreeItem*>(itemTreeItem), false);
 }
 
 void MIDASDesktopUI::updateInfoPanel( const MidasBitstreamTreeItem* bitstreamTreeItem )
 {
+  this->m_editMode = false;
   infoPanel(const_cast<MidasBitstreamTreeItem*>(bitstreamTreeItem), false);
 }
 
 /** Show the community information */
 void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool edit)
-{ 
+{
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
   if(edit) options |= QTableWidgetDescriptionItem::Editable;
 
   midasTreeItemInfoGroupBox->setTitle(edit ? " Edit community info " : " Community description "); 
   midasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
   midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) );
+
+  connect(midasTreeItemInfoTable, SIGNAL( itemChanged( QTableWidgetItem*) ), this, SLOT(
+    resourceEdited(QTableWidgetItem*) ) );
   midasTreeItemInfoTable->clearSelection();
 
   mdo::Community* community = communityTreeItem->getCommunity();
@@ -1409,5 +1417,34 @@ void MIDASDesktopUI::editInfo()
   else if((bitstream = dynamic_cast<MidasBitstreamTreeItem*>(node)) != NULL)
     {
     infoPanel(bitstream, true);
+    }
+  this->m_editMode = true;
+}
+
+void MIDASDesktopUI::resourceEdited(QTableWidgetItem* item)
+{
+  if(this->m_editMode)
+    {
+    QTableWidgetMidasCommunityDescItem* commRow = NULL;
+    QTableWidgetMidasCollectionDescItem* collRow = NULL;
+    QTableWidgetMidasItemDescItem* itemRow = NULL;
+    QTableWidgetMidasBitstreamDescItem* bitstreamRow = NULL;
+
+    if((commRow = dynamic_cast<QTableWidgetMidasCommunityDescItem*>(item)) != NULL)
+      {
+      std::cout << "a";
+      }
+    else if((collRow = dynamic_cast<QTableWidgetMidasCollectionDescItem*>(item)) != NULL)
+      {
+      std::cout << "a";
+      }
+    else if((itemRow = dynamic_cast<QTableWidgetMidasItemDescItem*>(item)) != NULL)
+      {
+      std::cout << "a";
+      }
+    else if((bitstreamRow = dynamic_cast<QTableWidgetMidasBitstreamDescItem*>(item)) != NULL)
+      {
+      std::cout << "a";
+      }
     }
 }

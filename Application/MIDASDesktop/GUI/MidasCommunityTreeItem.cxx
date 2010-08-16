@@ -88,6 +88,7 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
     QList<QVariant> name;
     name << (*itCom)->GetName().c_str();
     MidasCommunityTreeItem* community = new MidasCommunityTreeItem(name, m_Model, this);
+    community->setClientResource(m_ClientResource);
     community->setCommunity(*itCom);
 
     this->appendChild(community);

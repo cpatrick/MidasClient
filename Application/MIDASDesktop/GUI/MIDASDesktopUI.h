@@ -86,6 +86,8 @@ protected:
 public slots:
   void showNormal();
 
+  void resourceEdited(QTableWidgetItem* item);
+
   void cancel();
 
   // ------------- status bar -------------
@@ -225,6 +227,7 @@ private:
 
 
   bool                        m_signIn;
+  bool                        m_editMode;
   midasDatabaseProxy*         m_database;
   midasAuthenticator*         m_auth;
   midasSynchronizer*          m_synch;
