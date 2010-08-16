@@ -29,6 +29,7 @@
 #include "GUILogger.h"
 #include "GUIProgress.h"
 #include "Utils.h"
+#include "ResourceEdit.h"
 
 // ------------- Dialogs -------------
 #include "CreateMidasCommunityUI.h"
@@ -1425,26 +1426,7 @@ void MIDASDesktopUI::resourceEdited(QTableWidgetItem* row)
 {
   if(this->m_editMode)
     {
-    QTableWidgetMidasCommunityDescItem* commRow = NULL;
-    QTableWidgetMidasCollectionDescItem* collRow = NULL;
-    QTableWidgetMidasItemDescItem* itemRow = NULL;
-    QTableWidgetMidasBitstreamDescItem* bitstreamRow = NULL;
-
-    if((commRow = dynamic_cast<QTableWidgetMidasCommunityDescItem*>(row)) != NULL)
-      {
-      mdo::Community* comm = commRow->getModelData();
-      }
-    else if((collRow = dynamic_cast<QTableWidgetMidasCollectionDescItem*>(row)) != NULL)
-      {
-      mdo::Collection* coll = collRow->getModelData();
-      }
-    else if((itemRow = dynamic_cast<QTableWidgetMidasItemDescItem*>(row)) != NULL)
-      {
-      mdo::Item* item = itemRow->getModelData();
-      }
-    else if((bitstreamRow = dynamic_cast<QTableWidgetMidasBitstreamDescItem*>(row)) != NULL)
-      {
-      mdo::Bitstream* bitstream = bitstreamRow->getModelData();
-      }
+    ResourceEdit editor(this->m_database);
+    editor.save(row);
     }
 }

@@ -69,6 +69,11 @@ public:
     return this->modeldata; 
     }
 
+  MIDASFields getField()
+    {
+    return this->m_Field;
+    }
+
 private:
   mdo::Community * modeldata; 
   MIDASFields m_Field;
@@ -86,6 +91,11 @@ public:
   mdo::Collection * getModelData()
     {
     return this->modeldata; 
+    }
+
+  MIDASFields getField()
+    {
+    return this->m_Field;
     }
 
 private:
@@ -107,6 +117,11 @@ public:
     return this->modeldata; 
     }
 
+  MIDASFields getField()
+    {
+    return this->m_Field;
+    }
+
 private:
   mdo::Item * modeldata;
   MIDASFields m_Field;
@@ -125,6 +140,11 @@ public:
   mdo::Bitstream * getModelData()
     {
     return this->modeldata;
+    }
+
+  MIDASFields getField()
+    {
+    return this->m_Field;
     }
 
 private:

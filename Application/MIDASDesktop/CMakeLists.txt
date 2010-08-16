@@ -84,6 +84,8 @@ set(MIDASDesktopUI_SRCS
   GUI/SearchThread.cxx
   GUI/UnifyTreeThread.h
   GUI/UnifyTreeThread.cxx
+  GUI/ResourceEdit.h
+  GUI/ResourceEdit.cxx
 )
 
 set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MidasClient.rc)
