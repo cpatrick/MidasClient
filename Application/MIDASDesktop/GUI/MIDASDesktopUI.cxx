@@ -1421,7 +1421,7 @@ void MIDASDesktopUI::editInfo()
   this->m_editMode = true;
 }
 
-void MIDASDesktopUI::resourceEdited(QTableWidgetItem* item)
+void MIDASDesktopUI::resourceEdited(QTableWidgetItem* row)
 {
   if(this->m_editMode)
     {
@@ -1430,21 +1430,21 @@ void MIDASDesktopUI::resourceEdited(QTableWidgetItem* item)
     QTableWidgetMidasItemDescItem* itemRow = NULL;
     QTableWidgetMidasBitstreamDescItem* bitstreamRow = NULL;
 
-    if((commRow = dynamic_cast<QTableWidgetMidasCommunityDescItem*>(item)) != NULL)
+    if((commRow = dynamic_cast<QTableWidgetMidasCommunityDescItem*>(row)) != NULL)
       {
-      std::cout << "a";
+      mdo::Community* comm = commRow->getModelData();
       }
-    else if((collRow = dynamic_cast<QTableWidgetMidasCollectionDescItem*>(item)) != NULL)
+    else if((collRow = dynamic_cast<QTableWidgetMidasCollectionDescItem*>(row)) != NULL)
       {
-      std::cout << "a";
+      mdo::Collection* coll = collRow->getModelData();
       }
-    else if((itemRow = dynamic_cast<QTableWidgetMidasItemDescItem*>(item)) != NULL)
+    else if((itemRow = dynamic_cast<QTableWidgetMidasItemDescItem*>(row)) != NULL)
       {
-      std::cout << "a";
+      mdo::Item* item = itemRow->getModelData();
       }
-    else if((bitstreamRow = dynamic_cast<QTableWidgetMidasBitstreamDescItem*>(item)) != NULL)
+    else if((bitstreamRow = dynamic_cast<QTableWidgetMidasBitstreamDescItem*>(row)) != NULL)
       {
-      std::cout << "a";
+      mdo::Bitstream* bitstream = bitstreamRow->getModelData();
       }
     }
 }
