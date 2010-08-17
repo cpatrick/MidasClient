@@ -892,45 +892,36 @@ int midasSynchronizer::Push()
     Log->Error(text.str());
     return MIDAS_NO_URL;
     }
-  this->DatabaseProxy->Open();
-  // breaking proxy rules for the sake of efficiency here
-  this->DatabaseProxy->GetDatabase()->ExecuteQuery(
-    "SELECT uuid FROM dirty_resource");
 
-  bool success = true;
-  std::vector<std::string> uuids;
+  std::vector<midasStatus> dirties = this->GetStatusEntries();
 
-  while(this->DatabaseProxy->GetDatabase()->GetNextRow())
-    {
-    // store the list so we can delete from dirty list while iterating it
-    uuids.push_back(this->DatabaseProxy->GetDatabase()->GetValueAsString(0));
-    }
-
-  if(!uuids.size())
+  if(!dirties.size())
     {
     std::stringstream text;
     text << "There are no staged resources to push." << std::endl;
     Log->Error(text.str());
     }
 
-  for(std::vector<std::string>::iterator i = uuids.begin(); i != uuids.end();
-      ++i)
+  bool success = true;
+  for(std::vector<midasStatus>::iterator i = dirties.begin();
+      i != dirties.end(); ++i)
     {
-    midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(*i);
+    midasResourceRecord record =
+      this->DatabaseProxy->GetRecordByUuid(i->GetUUID());
 
     switch(record.Type)
       {
       case midasResourceType::BITSTREAM:
-        success &= this->PushBitstream(record.Id);
+        success &= this->PushBitstream(&record);
         break;
       case midasResourceType::COLLECTION:
-        success &= this->PushCollection(record.Id);
+        success &= this->PushCollection(&record);
         break;
       case midasResourceType::COMMUNITY:
-        success &= this->PushCommunity(record.Id);
+        success &= this->PushCommunity(&record);
         break;
       case midasResourceType::ITEM:
-        success &= this->PushItem(record.Id);
+        success &= this->PushItem(&record);
         break;
       default:
         return MIDAS_NO_RTYPE;
@@ -974,34 +965,32 @@ int midasSynchronizer::GetServerParentId(midasResourceType::ResourceType type,
 }
 
 //-------------------------------------------------------------------
-bool midasSynchronizer::PushBitstream(int id)
+bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
 {
   if(this->ShouldCancel)
     {
     return false;
     }
-  std::string uuid = this->DatabaseProxy->GetUuid(
-    midasResourceType::BITSTREAM, id);
+
   std::string name = this->DatabaseProxy->GetName(
-    midasResourceType::BITSTREAM, id);
+    midasResourceType::BITSTREAM, record->Id);
 
-  midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
-
-  if(kwsys::SystemTools::FileLength(record.Path.c_str()) == 0)
+  if(kwsys::SystemTools::FileLength(record->Path.c_str()) == 0)
     {
     std::stringstream text;
-    text << "Error: \"" << record.Path << "\" is 0 bytes. You "
+    text << "Error: \"" << record->Path << "\" is 0 bytes. You "
       "may not push an empty bitstream." << std::endl;
     Log->Error(text.str());
     return false;
     }
 
-  if(record.Parent == 0)
+  if(record->Parent == 0)
     {
-    record.Parent = this->GetServerParentId(midasResourceType::ITEM,
-      this->DatabaseProxy->GetParentId(midasResourceType::BITSTREAM, id));
+    record->Parent = this->GetServerParentId(midasResourceType::ITEM,
+      this->DatabaseProxy->GetParentId(midasResourceType::BITSTREAM,
+      record->Id));
     }
-  if(record.Parent == 0)
+  if(record->Parent == 0)
     {
     std::stringstream text;
     text << "The parent of bitstream \"" << name <<
@@ -1014,8 +1003,8 @@ bool midasSynchronizer::PushBitstream(int id)
   status << "Uploading bitstream " << name << "...";
   this->Log->Status(status.str());
   std::stringstream fields;
-  fields << "midas.upload.bitstream?uuid=" << uuid << "&itemid="
-    << record.Parent;
+  fields << "midas.upload.bitstream?uuid=" << record->Uuid << "&itemid="
+    << record->Parent;
 
   if(this->Progress)
     {
@@ -1027,12 +1016,12 @@ bool midasSynchronizer::PushBitstream(int id)
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   bool ok = mws::WebAPI::Instance()->UploadFile(fields.str().c_str(),
-                                     record.Path.c_str());
+                                     record->Path.c_str());
 
   if(ok)
     {
     // Clear dirty flag on the resource
-    this->DatabaseProxy->ClearDirtyResource(uuid);
+    this->DatabaseProxy->ClearDirtyResource(record->Uuid);
     std::stringstream text;
     text << "Pushed bitstream " << name << std::endl;
     Log->Message(text.str());
@@ -1048,24 +1037,22 @@ bool midasSynchronizer::PushBitstream(int id)
 }
 
 //-------------------------------------------------------------------
-bool midasSynchronizer::PushCollection(int id)
+bool midasSynchronizer::PushCollection(midasResourceRecord* record)
 {
   if(this->ShouldCancel)
     {
     return false;
     }
-  std::string uuid = this->DatabaseProxy->GetUuid(
-    midasResourceType::COLLECTION, id);
   std::string name = this->DatabaseProxy->GetName(
-    midasResourceType::COLLECTION, id);
+    midasResourceType::COLLECTION, record->Id);
 
-  midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
-  if(record.Parent == 0)
+  if(record->Parent == 0)
     {
-    record.Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
-      this->DatabaseProxy->GetParentId(midasResourceType::COLLECTION, id));
+    record->Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
+      this->DatabaseProxy->GetParentId(midasResourceType::COLLECTION,
+      record->Id));
     }
-  if(record.Parent == 0)
+  if(record->Parent == 0)
     {
     std::stringstream text;
     text << "The parent of collection \"" << name <<
@@ -1080,8 +1067,8 @@ bool midasSynchronizer::PushCollection(int id)
   this->Log->Status(status.str());
 
   std::stringstream fields;
-  fields << "midas.collection.create?uuid=" << uuid << "&name=" <<
-    midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
+  fields << "midas.collection.create?uuid=" << record->Uuid << "&name=" <<
+    midasUtils::EscapeForURL(name) << "&parentid=" << record->Parent;
 
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->SetPostData("");
@@ -1090,7 +1077,7 @@ bool midasSynchronizer::PushCollection(int id)
   if(success)
     {
     // Clear dirty flag on the resource
-    this->DatabaseProxy->ClearDirtyResource(uuid);
+    this->DatabaseProxy->ClearDirtyResource(record->Uuid);
     std::stringstream text;
     text << "Pushed collection " << name << std::endl;
     Log->Message(text.str());
@@ -1106,22 +1093,20 @@ bool midasSynchronizer::PushCollection(int id)
 }
 
 //-------------------------------------------------------------------
-bool midasSynchronizer::PushCommunity(int id)
+bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
 {
   if(this->ShouldCancel)
     {
     return false;
     }
-  std::string uuid = this->DatabaseProxy->GetUuid(
-    midasResourceType::COMMUNITY, id);
   std::string name = this->DatabaseProxy->GetName(
-    midasResourceType::COMMUNITY, id);
+    midasResourceType::COMMUNITY, record->Id);
 
-  midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
-  if(record.Parent == 0)
+  if(record->Parent == 0)
     {
-    record.Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
-      this->DatabaseProxy->GetParentId(midasResourceType::COMMUNITY, id));
+    record->Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
+      this->DatabaseProxy->GetParentId(midasResourceType::COMMUNITY,
+      record->Id));
     }
 
   this->Progress->SetIndeterminate();
@@ -1131,8 +1116,8 @@ bool midasSynchronizer::PushCommunity(int id)
 
   // Create new community on server
   std::stringstream fields;
-  fields << "midas.community.create?uuid=" << uuid << "&name=" << 
-    midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
+  fields << "midas.community.create?uuid=" << record->Uuid << "&name=" << 
+    midasUtils::EscapeForURL(name) << "&parentid=" << record->Parent;
 
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->SetPostData("");
@@ -1141,7 +1126,7 @@ bool midasSynchronizer::PushCommunity(int id)
   if(success)
     {
     // Clear dirty flag on the resource
-    this->DatabaseProxy->ClearDirtyResource(uuid);
+    this->DatabaseProxy->ClearDirtyResource(record->Uuid);
     std::stringstream text;
     text << "Pushed community " << name << std::endl;
     Log->Message(text.str());
@@ -1157,24 +1142,22 @@ bool midasSynchronizer::PushCommunity(int id)
 }
 
 //-------------------------------------------------------------------
-bool midasSynchronizer::PushItem(int id)
+bool midasSynchronizer::PushItem(midasResourceRecord* record)
 {
   if(this->ShouldCancel)
     {
     return false;
     }
-  std::string uuid = this->DatabaseProxy->GetUuid(
-    midasResourceType::ITEM, id);
   std::string name = this->DatabaseProxy->GetName(
-    midasResourceType::ITEM, id);
+    midasResourceType::ITEM, record->Id);
 
-  midasResourceRecord record = this->DatabaseProxy->GetRecordByUuid(uuid);
-  if(record.Parent == 0)
+  if(record->Parent == 0)
     {
-    record.Parent = this->GetServerParentId(midasResourceType::COLLECTION,
-      this->DatabaseProxy->GetParentId(midasResourceType::ITEM, id));
+    record->Parent = this->GetServerParentId(midasResourceType::COLLECTION,
+      this->DatabaseProxy->GetParentId(midasResourceType::ITEM,
+      record->Id));
     }
-  if(record.Parent == 0)
+  if(record->Parent == 0)
     {
     std::stringstream text;
     text << "The parent of item \"" << name <<
@@ -1189,8 +1172,8 @@ bool midasSynchronizer::PushItem(int id)
   this->Log->Status(status.str());
   
   std::stringstream fields;
-  fields << "midas.item.create?uuid=" << uuid << "&name=" <<
-    midasUtils::EscapeForURL(name) << "&parentid=" << record.Parent;
+  fields << "midas.item.create?uuid=" << record->Uuid << "&name=" <<
+    midasUtils::EscapeForURL(name) << "&parentid=" << record->Parent;
 
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
@@ -1199,7 +1182,7 @@ bool midasSynchronizer::PushItem(int id)
   if(success)
     {
     // Clear dirty flag on the resource
-    this->DatabaseProxy->ClearDirtyResource(uuid);
+    this->DatabaseProxy->ClearDirtyResource(record->Uuid);
     std::stringstream text;
     text << "Pushed item " << name << std::endl;
     Log->Message(text.str());

@@ -182,7 +182,12 @@ bool midasDatabaseProxy::SaveInfo(mdo::Community* community)
     "copyright_text='" << community->GetCopyright() << "' WHERE "
     "community_id='" << community->GetId() << "'";
 
-  return this->Database->ExecuteQuery(query.str().c_str());
+  if(this->Database->ExecuteQuery(query.str().c_str()))
+    {
+    this->MarkDirtyResource(community->GetUuid(), midasDirtyAction::MODIFIED);
+    return true;
+    }
+  return false;
 }
 
 //-------------------------------------------------------------------------
@@ -196,7 +201,12 @@ bool midasDatabaseProxy::SaveInfo(mdo::Collection* coll)
     "copyright_text='" << coll->GetCopyright() << "'" <<
     " WHERE collection_id='" << coll->GetId() << "'";
 
-  return this->Database->ExecuteQuery(query.str().c_str());
+  if(this->Database->ExecuteQuery(query.str().c_str()))
+    {
+    this->MarkDirtyResource(coll->GetUuid(), midasDirtyAction::MODIFIED);
+    return true;
+    }
+  return false;
 }
 
 //-------------------------------------------------------------------------
@@ -220,15 +230,16 @@ bool midasDatabaseProxy::SaveInfo(mdo::Item* item)
 
   query.str(std::string());
   query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
-    << "VALUES ('" << item->GetId() << "','26','" << item->GetDescription() << "')";
+    << "VALUES ('" << item->GetId() << "','26','" << item->GetDescription()
+    << "')";
   ok &= this->Database->ExecuteQuery(query.str().c_str());
 
   for(std::vector<std::string>::iterator i = item->GetAuthors().begin();
       i != item->GetAuthors().end(); ++i)
     {
     query.str(std::string());
-    query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
-      << "VALUES ('" << item->GetId() << "','3','" << *i << "')";
+    query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value)"
+      << " VALUES ('" << item->GetId() << "','3','" << *i << "')";
     ok &= this->Database->ExecuteQuery(query.str().c_str());
     }
 
@@ -236,11 +247,17 @@ bool midasDatabaseProxy::SaveInfo(mdo::Item* item)
       i != item->GetKeywords().end(); ++i)
     {
     query.str(std::string());
-    query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
-      << "VALUES ('" << item->GetId() << "','57','" << *i << "')";
+    query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value)"
+      << " VALUES ('" << item->GetId() << "','57','" << *i << "')";
     ok &= this->Database->ExecuteQuery(query.str().c_str());
     }
-  return ok;
+
+  if(ok)
+    {
+    this->MarkDirtyResource(item->GetUuid(), midasDirtyAction::MODIFIED);
+    return true;
+    }
+  return false;
 }
 
 //-------------------------------------------------------------------------
@@ -252,7 +269,12 @@ bool midasDatabaseProxy::SaveInfo(mdo::Bitstream* bitstream)
     << "name='" << bitstream->GetName()
     << "' WHERE bitstream_id='" << bitstream->GetId() << "'";
 
-  return this->Database->ExecuteQuery(query.str().c_str());
+  if(this->Database->ExecuteQuery(query.str().c_str()))
+    {
+    this->MarkDirtyResource(bitstream->GetUuid(), midasDirtyAction::MODIFIED);
+    return true;
+    }
+  return false;
 }
 
 //-------------------------------------------------------------------------
@@ -512,6 +534,7 @@ midasResourceRecord midasDatabaseProxy::GetRecordByUuid(std::string uuid)
     "resource_uuid WHERE uuid='" << uuid << "'";
   bool ok = this->Database->ExecuteQuery(query.str().c_str());
   midasResourceRecord record;
+  record.Uuid = uuid;
 
   if(this->Database->GetNextRow())
     {

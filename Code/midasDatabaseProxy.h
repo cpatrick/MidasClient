@@ -33,6 +33,7 @@ struct midasResourceRecord
   int Id;
   int Parent;
   std::string Path;
+  std::string Uuid;
 };
 
 struct midasAuthProfile

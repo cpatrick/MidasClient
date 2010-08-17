@@ -113,10 +113,10 @@ protected:
 
   /* Helper function to convert client side parent ID to server side one */
   int GetServerParentId(midasResourceType::ResourceType type, int parentId);
-  bool PushBitstream(int id);
-  bool PushCollection(int id);
-  bool PushCommunity(int id);
-  bool PushItem(int id);
+  bool PushBitstream(midasResourceRecord* record);
+  bool PushCollection(midasResourceRecord* record);
+  bool PushCommunity(midasResourceRecord* record);
+  bool PushItem(midasResourceRecord* record);
 
   void RecurseCommunities(int parentId, mdo::Community* community);
 

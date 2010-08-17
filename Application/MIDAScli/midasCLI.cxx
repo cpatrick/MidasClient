@@ -521,6 +521,19 @@ bool midasCLI::ParseStatus(std::vector<std::string> args)
   for(std::vector<midasStatus>::iterator i = stats.begin(); i != stats.end();
       ++i)
     {
+    switch(i->GetDirtyAction())
+      {
+      case midasDirtyAction::ADDED:
+        std::cout << "A";
+        break;
+      case midasDirtyAction::MODIFIED:
+        std::cout << "M";
+        break;
+      case midasDirtyAction::REMOVED:
+        std::cout << "R";
+        break;
+      }
+    std::cout << "-";
     switch(i->GetType())
       {
       case midasResourceType::BITSTREAM:
@@ -536,6 +549,7 @@ bool midasCLI::ParseStatus(std::vector<std::string> args)
         std::cout << "i";
         break;
       }
+
     std::cout << " " << i->GetPath() << std::endl;
     }
   return true;
@@ -579,6 +593,8 @@ void midasCLI::PrintUsage()
     " push             Copy locally added resources to a MIDAS server."
     << std::endl <<
     " upload           Upload a file to a MIDAS server."
+    << std::endl <<
+     " status          List dirty resources pending push."
     << std::endl <<
     " set_root_dir     Set where resources should be pulled to on disk."
     << std::endl << std::endl << "Use MIDAScli --help COMMAND for "
