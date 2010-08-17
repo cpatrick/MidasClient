@@ -105,10 +105,10 @@ public:
    */
   bool DeleteResource(std::string uuid, bool deleteFiles = false);
 
-  bool SaveInfo(mdo::Community* community);
-  bool SaveInfo(mdo::Collection* collection);
-  bool SaveInfo(mdo::Item* item);
-  bool SaveInfo(mdo::Bitstream* bitstream);
+  bool SaveInfo(mdo::Community* community, bool markDirty = false);
+  bool SaveInfo(mdo::Collection* collection, bool markDirty = false);
+  bool SaveInfo(mdo::Item* item, bool markDirty = false);
+  bool SaveInfo(mdo::Bitstream* bitstream, bool markDirty = false);
 
   void FetchInfo(mdo::Community* community);
   void FetchInfo(mdo::Collection* collection);

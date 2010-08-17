@@ -94,7 +94,7 @@ void ResourceEdit::SaveCommunity(mdo::Community* comm, MIDASFields field,
 
   if(changed)
     {    
-    this->m_database->SaveInfo(comm);
+    this->m_database->SaveInfo(comm, true);
 
     this->Log->Status("Community saved successfully");
     this->Log->Message("Community saved successfully");
@@ -127,7 +127,7 @@ void ResourceEdit::SaveCollection(mdo::Collection* coll, MIDASFields field,
 
   if(changed)
     {
-    this->m_database->SaveInfo(coll);
+    this->m_database->SaveInfo(coll, true);
 
     this->Log->Status("Collection saved successfully");
     this->Log->Message("Collection saved successfully");
@@ -184,7 +184,7 @@ void ResourceEdit::SaveItem(mdo::Item* item, MIDASFields field,
 
   if(changed)
     {
-    this->m_database->SaveInfo(item);
+    this->m_database->SaveInfo(item, true);
 
     this->Log->Status("Item saved successfully");
     this->Log->Message("Item saved successfully");

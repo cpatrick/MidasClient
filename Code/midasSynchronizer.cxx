@@ -902,6 +902,8 @@ int midasSynchronizer::Push()
     Log->Error(text.str());
     }
 
+  this->DatabaseProxy->Open();
+
   bool success = true;
   for(std::vector<midasStatus>::iterator i = dirties.begin();
       i != dirties.end(); ++i)
@@ -1043,8 +1045,9 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
     {
     return false;
     }
-  std::string name = this->DatabaseProxy->GetName(
-    midasResourceType::COLLECTION, record->Id);
+  mdo::Collection coll;
+  coll.SetId(record->Id);
+  this->DatabaseProxy->FetchInfo(&coll);
 
   if(record->Parent == 0)
     {
@@ -1055,7 +1058,7 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
   if(record->Parent == 0)
     {
     std::stringstream text;
-    text << "The parent of collection \"" << name <<
+    text << "The parent of collection \"" << coll.GetName() <<
       "\" could not be resolved." << std::endl;
     Log->Error(text.str());
     return false;
@@ -1063,12 +1066,14 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
 
   this->Progress->SetIndeterminate();
   std::stringstream status;
-  status << "Uploading collection " << name << "...";
+  status << "Uploading collection " << coll.GetName() << "...";
   this->Log->Status(status.str());
 
   std::stringstream fields;
-  fields << "midas.collection.create?uuid=" << record->Uuid << "&name=" <<
-    midasUtils::EscapeForURL(name) << "&parentid=" << record->Parent;
+  fields << "midas.collection.create?uuid=" << record->Uuid
+    << "&parentid=" << record->Parent
+    << "&name=" << midasUtils::EscapeForURL(coll.GetName())
+    << "&description=" << midasUtils::EscapeForURL(coll.GetDescription());
 
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->SetPostData("");
@@ -1079,13 +1084,13 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
     // Clear dirty flag on the resource
     this->DatabaseProxy->ClearDirtyResource(record->Uuid);
     std::stringstream text;
-    text << "Pushed collection " << name << std::endl;
+    text << "Pushed collection " << coll.GetName() << std::endl;
     Log->Message(text.str());
     }
   else
     {
     std::stringstream text;
-    text << "Failed to push collection " << name << ": " <<
+    text << "Failed to push collection " << coll.GetName() << ": " <<
     mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     Log->Error(text.str());
     }
@@ -1099,8 +1104,6 @@ bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
     {
     return false;
     }
-  std::string name = this->DatabaseProxy->GetName(
-    midasResourceType::COMMUNITY, record->Id);
 
   if(record->Parent == 0)
     {
@@ -1109,36 +1112,49 @@ bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
       record->Id));
     }
 
+  mdo::Community comm;
+  comm.SetId(record->Id);
+  this->DatabaseProxy->FetchInfo(&comm);
+
   this->Progress->SetIndeterminate();
   std::stringstream status;
-  status << "Uploading community " << name << "...";
+  status << "Uploading community " << comm.GetName() << "...";
   this->Log->Status(status.str());
 
   // Create new community on server
   std::stringstream fields;
-  fields << "midas.community.create?uuid=" << record->Uuid << "&name=" << 
-    midasUtils::EscapeForURL(name) << "&parentid=" << record->Parent;
+  fields << "midas.community.create?uuid=" << record->Uuid 
+    << "&parentid=" << record->Parent
+    << "&name=" << midasUtils::EscapeForURL(comm.GetName())
+    << "&copyright=" << midasUtils::EscapeForURL(comm.GetCopyright())
+    << "&introductorytext=" <<
+    midasUtils::EscapeForURL(comm.GetIntroductoryText())
+    << "&description=" << midasUtils::EscapeForURL(comm.GetDescription())
+    << "&links=" << midasUtils::EscapeForURL(comm.GetLinks());
 
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->SetPostData("");
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  bool success = mws::WebAPI::Instance()->Execute(fields.str().c_str());
-  if(success)
+
+  if(mws::WebAPI::Instance()->Execute(fields.str().c_str()))
     {
     // Clear dirty flag on the resource
     this->DatabaseProxy->ClearDirtyResource(record->Uuid);
     std::stringstream text;
-    text << "Pushed community " << name << std::endl;
+    text << "Pushed community " << comm.GetName() << std::endl;
     Log->Message(text.str());
+    Log->Status(text.str());
+    return true;
     }
   else
     {
     std::stringstream text; 
-    text << "Failed to push community " << name << ": " <<
+    text << "Failed to push community " << comm.GetName() << ": " <<
     mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     Log->Error(text.str());
+    Log->Status(text.str());
+    return false;
     }
-  return success;
 }
 
 //-------------------------------------------------------------------
@@ -1148,8 +1164,10 @@ bool midasSynchronizer::PushItem(midasResourceRecord* record)
     {
     return false;
     }
-  std::string name = this->DatabaseProxy->GetName(
-    midasResourceType::ITEM, record->Id);
+
+  mdo::Item item;
+  item.SetId(record->Id);
+  this->DatabaseProxy->FetchInfo(&item);
 
   if(record->Parent == 0)
     {
@@ -1160,7 +1178,7 @@ bool midasSynchronizer::PushItem(midasResourceRecord* record)
   if(record->Parent == 0)
     {
     std::stringstream text;
-    text << "The parent of item \"" << name <<
+    text << "The parent of item \"" << item.GetTitle() <<
       "\" could not be resolved." << std::endl;
     Log->Error(text.str());
     return false;
@@ -1168,33 +1186,38 @@ bool midasSynchronizer::PushItem(midasResourceRecord* record)
 
   this->Progress->SetIndeterminate();
   std::stringstream status;
-  status << "Uploading item " << name << "...";
+  status << "Uploading item " << item.GetTitle() << "...";
   this->Log->Status(status.str());
   
   std::stringstream fields;
-  fields << "midas.item.create?uuid=" << record->Uuid << "&name=" <<
-    midasUtils::EscapeForURL(name) << "&parentid=" << record->Parent;
+  fields << "midas.item.create?uuid=" << record->Uuid
+    << "&parentid=" << record->Parent
+    << "&name=" << midasUtils::EscapeForURL(item.GetName())
+    << "&abstract=" << midasUtils::EscapeForURL(item.GetAbstract())
+    << "&description=" << midasUtils::EscapeForURL(item.GetDescription());
+    //<< "&authors="
 
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   mws::WebAPI::Instance()->SetPostData("");
-  bool success = mws::WebAPI::Instance()->Execute(fields.str().c_str());
-  if(success)
+
+  if(mws::WebAPI::Instance()->Execute(fields.str().c_str()))
     {
     // Clear dirty flag on the resource
     this->DatabaseProxy->ClearDirtyResource(record->Uuid);
     std::stringstream text;
-    text << "Pushed item " << name << std::endl;
+    text << "Pushed item " << item.GetTitle() << std::endl;
     Log->Message(text.str());
+    return true;
     }
   else
     {
     std::stringstream text;
-    text << "Failed to push item " << name << ": " <<
+    text << "Failed to push item " << item.GetTitle() << ": " <<
     mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     Log->Error(text.str());
+    return false;
     }
-  return success;
 }
 
 //-------------------------------------------------------------------
