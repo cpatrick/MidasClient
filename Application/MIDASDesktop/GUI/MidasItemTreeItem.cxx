@@ -64,3 +64,9 @@ void MidasItemTreeItem::populate(QModelIndex parent)
     }
   this->setFetchedChildren( true );
 }
+
+void MidasItemTreeItem::updateDisplayName()
+{
+  QVariant name = this->getItem()->GetTitle().c_str();
+  this->setData(name,0);
+}

@@ -61,6 +61,14 @@ std::string midasUtils::EscapeForURL(std::string s)
 }
 
 //-------------------------------------------------------------------
+std::string midasUtils::EscapeForSQL(std::string s)
+{
+  kwsys::SystemTools::ReplaceString(s, "'", "''");
+
+  return s;
+}
+
+//-------------------------------------------------------------------
 std::string midasUtils::EscapeName(std::string name)
 {
   kwsys::SystemTools::ReplaceString(name, " ", "_");

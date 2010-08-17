@@ -21,6 +21,7 @@ public:
   int getType() const;
   int getId() const;
   std::string getUuid() const;
+  void updateDisplayName();
 
   void setBitstream(mdo::Bitstream* bitstream) {m_Bitstream = bitstream;}
   mdo::Bitstream* getBitstream() const {return m_Bitstream;}

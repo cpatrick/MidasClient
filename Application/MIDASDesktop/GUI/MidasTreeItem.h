@@ -59,6 +59,9 @@ public:
   virtual std::string getUuid() const = 0;
   virtual int childCount() const;
 
+  /** Reset the name based on the underlying resource name */
+  virtual void updateDisplayName() = 0;
+
   virtual QPixmap getDecoration();
   void setDecorationRole(DecorationRoles role);
  

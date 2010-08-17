@@ -109,3 +109,9 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
     }
   this->setFetchedChildren( true );
 }
+
+void MidasCommunityTreeItem::updateDisplayName()
+{
+  QVariant name = this->getCommunity()->GetName().c_str();
+  this->setData(name,0);
+}

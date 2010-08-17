@@ -41,6 +41,7 @@ public slots:
   virtual void Update();
   virtual void updateSelection(const QItemSelection &selected,
     const QItemSelection &deselected);
+  virtual void decorateByUuid(std::string uuid);
 
 protected:
   virtual void contextMenuEvent (QContextMenuEvent * e);

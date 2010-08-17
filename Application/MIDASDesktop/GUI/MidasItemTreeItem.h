@@ -20,6 +20,7 @@ public:
   int getType() const;
   int getId() const;
   std::string getUuid() const;
+  void updateDisplayName();
 
   void setItem(mdo::Item* item) {m_Item = item;}
   mdo::Item* getItem() const {return m_Item;}

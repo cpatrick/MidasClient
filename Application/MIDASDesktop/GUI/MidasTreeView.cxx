@@ -67,3 +67,8 @@ void MidasTreeView::contextMenuEvent(QContextMenuEvent * e)
 {
   emit midasTreeViewContextMenu( e );
 }
+
+void MidasTreeView::decorateByUuid(std::string uuid)
+{
+  m_Model->decorateByUuid(uuid);
+}

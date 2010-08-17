@@ -20,6 +20,7 @@ public:
   int getType() const;
   int getId() const;
   std::string getUuid() const;
+  void updateDisplayName();
 
   void setCollection(mdo::Collection* collection) {m_Collection = collection;}
   mdo::Collection* getCollection() const {return m_Collection;}

@@ -183,18 +183,6 @@ void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
 }
 
 //-------------------------------------------------------------------------
-void MidasTreeModelServer::decorateByUuid(std::string uuid)
-{
-  QModelIndex index = getIndexByUuid(uuid);
-
-  if(index.isValid())
-    {
-    MidasTreeItem* node = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
-    node->setDecorationRole(MidasTreeItem::Dirty);
-    }
-}
-
-//-------------------------------------------------------------------------
 void MidasTreeModelServer::itemExpanded ( const QModelIndex & index )
 {
   MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));

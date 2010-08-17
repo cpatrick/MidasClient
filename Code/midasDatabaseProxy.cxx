@@ -176,6 +176,7 @@ bool midasDatabaseProxy::SaveInfo(mdo::Community* community)
 {
   std::stringstream query;
   query << "UPDATE community SET " <<
+    "name='" << community->GetName() << "', "
     "short_description='" << community->GetDescription() << "', "
     "introductory_text='" << community->GetIntroductoryText() << "', "
     "copyright_text='" << community->GetCopyright() << "' WHERE "
@@ -188,7 +189,8 @@ bool midasDatabaseProxy::SaveInfo(mdo::Community* community)
 bool midasDatabaseProxy::SaveInfo(mdo::Collection* coll)
 {
   std::stringstream query;
-  query << "UPDATE collection SET " << 
+  query << "UPDATE collection SET " <<
+    "name='" << coll->GetName() << "', "
     "short_description='" << coll->GetDescription() << "', "
     "introductory_text='" << coll->GetIntroductoryText() << "', "
     "copyright_text='" << coll->GetCopyright() << "'" <<
@@ -245,7 +247,9 @@ bool midasDatabaseProxy::SaveInfo(mdo::Item* item)
 bool midasDatabaseProxy::SaveInfo(mdo::Bitstream* bitstream)
 {
   std::stringstream query;
-  query << "UPDATE bitstream SET size_bytes='" << bitstream->GetSize()
+  query << "UPDATE bitstream SET "
+    << "size_bytes='" << bitstream->GetSize() << "', "
+    << "name='" << bitstream->GetName()
     << "' WHERE bitstream_id='" << bitstream->GetId() << "'";
 
   return this->Database->ExecuteQuery(query.str().c_str());

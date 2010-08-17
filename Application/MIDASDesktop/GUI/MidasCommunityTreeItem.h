@@ -20,6 +20,7 @@ public:
   int getType() const;
   int getId() const;
   std::string getUuid() const;
+  void updateDisplayName();
   
   void setCommunity(mdo::Community* community);
   mdo::Community* getCommunity() const {return m_Community;}

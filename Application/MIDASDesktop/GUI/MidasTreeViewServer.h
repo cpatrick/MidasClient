@@ -31,7 +31,6 @@ public:
 
 public slots:
   void selectByUuid(std::string uuid);
-  void decorateByUuid(std::string uuid);
   void alertFetchedMore();
 
   void expansionDone();

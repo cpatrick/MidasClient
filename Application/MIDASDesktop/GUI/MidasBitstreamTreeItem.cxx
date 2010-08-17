@@ -45,3 +45,9 @@ QPixmap MidasBitstreamTreeItem::getDecoration()
   role += ".png";
   return QPixmap(role.c_str()); 
 }
+
+void MidasBitstreamTreeItem::updateDisplayName()
+{
+  QVariant name = this->getBitstream()->GetName().c_str();
+  this->setData(name,0);
+}

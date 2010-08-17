@@ -23,6 +23,7 @@ class midasUtils
 public:
   static std::string GenerateUUID();
   static std::string EscapeForURL(std::string s);
+  static std::string EscapeForSQL(std::string s);
   static std::string EscapeName(std::string name);
   static std::string FileSizeString(long bytes);
   static std::string GetTypeName(int type);

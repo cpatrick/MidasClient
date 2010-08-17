@@ -71,11 +71,6 @@ void MidasTreeViewServer::SetWebAPI(mws::WebAPI* api)
   m_WebAPI = api;
 }
 
-void MidasTreeViewServer::decorateByUuid(std::string uuid)
-{
-  reinterpret_cast<MidasTreeModelServer*>(m_Model)->decorateByUuid(uuid);
-}
-
 void MidasTreeViewServer::alertFetchedMore()
 {
   emit fetchedMore();

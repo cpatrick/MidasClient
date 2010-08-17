@@ -50,6 +50,7 @@ signals:
 public slots:
   virtual void itemExpanded ( const QModelIndex & index );
   virtual void itemCollapsed ( const QModelIndex & index );
+  virtual void decorateByUuid( std::string uuid );
 
 protected:
   std::map<std::string, QModelIndex> m_IndexMap;

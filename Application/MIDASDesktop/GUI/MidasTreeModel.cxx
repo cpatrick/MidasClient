@@ -235,8 +235,27 @@ void MidasTreeModel::itemExpanded ( const QModelIndex & index )
 //-------------------------------------------------------------------------
 void MidasTreeModel::itemCollapsed ( const QModelIndex & index )
 {
-  MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
+  MidasTreeItem* item = const_cast<MidasTreeItem*>(this->midasTreeItem(index));
   item->setDecorationRole(MidasTreeItem::Collapsed);
 
   m_ExpandedList.erase(item->getUuid());
+}
+
+//-------------------------------------------------------------------------
+void MidasTreeModel::decorateByUuid(std::string uuid)
+{
+  QModelIndex index = getIndexByUuid(uuid);
+
+  if(index.isValid())
+    {
+    MidasTreeItem* node = const_cast<MidasTreeItem*>(
+      this->midasTreeItem(index));
+    node->setDecorationRole(MidasTreeItem::Dirty);
+    
+    MidasTreeItem* item =
+      const_cast<MidasTreeItem*>(this->midasTreeItem(index));
+    item->updateDisplayName();
+
+    emit dataChanged(index, index);
+    }
 }

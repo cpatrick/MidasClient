@@ -123,6 +123,9 @@ MIDASDesktopUI::MIDASDesktopUI()
   midasTreeItemInfoTable->horizontalHeader()->setStretchLastSection( true ); 
   midasTreeItemInfoTable->horizontalHeader()->hide();
   midasTreeItemInfoTable->verticalHeader()->hide();
+
+  connect(midasTreeItemInfoTable, SIGNAL( itemChanged( QTableWidgetItem*) ), this, SLOT(
+    resourceEdited(QTableWidgetItem*) ) );
   // ------------- Item info panel -------------
 
   saveButton = new QPushButton();
@@ -589,10 +592,6 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
 
   midasTreeItemInfoGroupBox->setTitle(edit ? " Edit community info " : " Community description "); 
   midasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
-  midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) );
-
-  connect(midasTreeItemInfoTable, SIGNAL( itemChanged( QTableWidgetItem*) ), this, SLOT(
-    resourceEdited(QTableWidgetItem*) ) );
   midasTreeItemInfoTable->clearSelection();
 
   mdo::Community* community = communityTreeItem->getCommunity();
@@ -662,7 +661,6 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
 
   midasTreeItemInfoGroupBox->setTitle(edit ? " Edit collection info " : " Collection description ");
   midasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
-  midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) );
   midasTreeItemInfoTable->clearSelection();
 
   enableResourceEditing(collectionTreeItem->isClientResource() && !edit);
@@ -702,7 +700,6 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
 
   midasTreeItemInfoGroupBox->setTitle(edit? " Edit item info " : " Item description ");
   midasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
-  midasTreeItemInfoTable->disconnect( SIGNAL( itemChanged ( QTableWidgetItem * ) ) ); 
   midasTreeItemInfoTable->clearSelection();
 
   enableResourceEditing(itemTreeItem->isClientResource() && !edit);
@@ -766,13 +763,14 @@ void MIDASDesktopUI::infoPanel(MidasBitstreamTreeItem* bitstreamTreeItem, bool e
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip;
   if(edit) options |= QTableWidgetDescriptionItem::Editable;
 
-  enableResourceEditing(bitstreamTreeItem->isClientResource() && !edit);
+  //enableResourceEditing(bitstreamTreeItem->isClientResource() && !edit);
+  enableResourceEditing(false); //false for now (nothing to edit about a bitstream)
 
   mdo::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
 
   midasTreeItemInfoGroupBox->setTitle(tr(" Bitstream description "));
   midasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
-  //midasTreeItemInfoTable->disconnect( SIGNAL( bitstreamChanged ( QTableWidgetItem * ) ) ); 
+
   midasTreeItemInfoTable->clearSelection();
   midasTreeItemInfoTable->setRowCount(2);
   int i = 0;
@@ -1427,6 +1425,12 @@ void MIDASDesktopUI::resourceEdited(QTableWidgetItem* row)
   if(this->m_editMode)
     {
     ResourceEdit editor(this->m_database);
-    editor.save(row);
+    editor.SetLog(this->Log);
+
+    connect(&editor, SIGNAL(DataModified(std::string)), treeViewClient,
+      SLOT( decorateByUuid(std::string) ) );
+
+    editor.Save(row);
+    disconnect(&editor);
     }
 }

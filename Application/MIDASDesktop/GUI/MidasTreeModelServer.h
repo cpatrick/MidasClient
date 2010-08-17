@@ -47,7 +47,6 @@ signals:
 public slots:
 
   void itemExpanded ( const QModelIndex & index );
-  void decorateByUuid( std::string uuid );
   void emitLayoutChanged() { emit layoutChanged(); }
 
 private:
