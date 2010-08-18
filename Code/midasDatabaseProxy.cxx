@@ -172,8 +172,8 @@ void midasDatabaseProxy::FetchInfo(mdo::Item* item)
     }
 
   query.str(std::string());
-  query << "SELECT text_value FROM metadatavalue WHERE item_id='"
-    << item->GetId() << "' AND metadata_field_id='64'";
+  query << "SELECT title FROM item WHERE item_id='"
+    << item->GetId() << "'";
   this->Database->ExecuteQuery(query.str().c_str());
 
   while(this->Database->GetNextRow())
@@ -243,8 +243,8 @@ bool midasDatabaseProxy::SaveInfo(mdo::Item* item, bool markDirty)
   ok &= this->Database->ExecuteQuery(query.str().c_str());
  
   query.str(std::string());
-  query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
-    << "VALUES ('" << item->GetId() << "','64','" << item->GetTitle() << "')";
+  query << "UPDATE item SET title='" << item->GetTitle()
+    << "' WHERE item_id='" << item->GetId() << "'";
   ok &= this->Database->ExecuteQuery(query.str().c_str());
 
   query.str(std::string());
@@ -723,6 +723,7 @@ void midasDatabaseProxy::Clean()
   this->Database->ExecuteQuery("DELETE FROM community2collection");
   this->Database->ExecuteQuery("DELETE FROM collection2item");
   this->Database->ExecuteQuery("DELETE FROM item2bitstream");
+  this->Database->ExecuteQuery("DELETE FROM metadatavalue");
   //this->Database->ExecuteQuery("DELETE FROM app_settings");
 }
 
@@ -788,26 +789,26 @@ std::vector<midasStatus> midasDatabaseProxy::GetStatusEntries()
   std::vector<midasStatus> statlist;
   this->Database->ExecuteQuery("SELECT uuid, action FROM dirty_resource");
 
-  std::map<std::string, midasDirtyAction::Action> dirties;
+  std::vector<std::string> uuids;
+  std::vector<midasDirtyAction::Action> actions;
+  
   while(this->Database->GetNextRow())
     {
-    dirties[this->Database->GetValueAsString(0)] =
-      midasDirtyAction::Action(this->Database->GetValueAsInt(1));
+    uuids.push_back(this->Database->GetValueAsString(0));
+    actions.push_back(midasDirtyAction::Action(
+      this->Database->GetValueAsInt(1)));
     }
 
-  for(std::map<std::string, midasDirtyAction::Action>::iterator i =
-      dirties.begin(); i != dirties.end(); ++i)
+  for(size_t i = 0; i < uuids.size(); i++)
     {
-    midasResourceRecord record = this->GetRecordByUuid(i->first);
-
-    midasResourceType::ResourceType rt =
-      midasResourceType::ResourceType(record.Type);
+    midasResourceRecord record = this->GetRecordByUuid(uuids[i]);
     std::string name = this->GetName(record.Type, record.Id);
 
-    midasStatus status(i->first, name, i->second, rt, record.Path);
+    midasStatus status(uuids[i], name, actions[i],
+      midasResourceType::ResourceType(record.Type), record.Path);
+
     statlist.push_back(status);
     }
-
   return statlist;
 }
 

@@ -375,6 +375,18 @@ int midasSynchronizer::Add()
     this->DatabaseProxy->Close();
     return MIDAS_FAILURE;
     }
+
+  // Size of bitstream needs to be saved automatically
+  if(this->ResourceType == midasResourceType::BITSTREAM)
+    {
+    std::stringstream size;
+    size << kwsys::SystemTools::FileLength(path.c_str());
+    mdo::Bitstream bitstream;
+    bitstream.SetId(id);
+    bitstream.SetName(name.c_str());
+    bitstream.SetSize(size.str());
+    this->DatabaseProxy->SaveInfo(&bitstream);
+    }
   this->DatabaseProxy->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
 
   this->DatabaseProxy->Close();
