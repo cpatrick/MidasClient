@@ -27,7 +27,7 @@ if(BUILD_TESTING)
   set_tests_properties(testCliNoArgs PROPERTIES WILL_FAIL ON)
 
   # Restore database to a fresh state
-  add_test(cleanDatabase ${midascli_command} clean)
+  add_test(cleanDatabase ${midascli_command} --database ${sqlite_db} clean)
   add_test(deleteAuthProfiles ${sqlite3_command} ${sqlite_db} "DELETE FROM auth_profile;")
 
   # "clone" command tests
