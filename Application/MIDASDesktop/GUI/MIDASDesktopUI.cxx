@@ -916,6 +916,15 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
       midasResourceType::ITEM, parentItem->getItem()->GetId());
     int id = this->m_database->AddResource(midasResourceType::BITSTREAM, uuid, 
       path, name, parentUuid, 0);
+
+    // Get and save file size
+    std::stringstream size;
+    size << kwsys::SystemTools::FileLength(path.c_str());
+    mdo::Bitstream bitstream;
+    bitstream.SetId(id);
+    bitstream.SetName(name.c_str());
+    bitstream.SetSize(size.str());
+    this->m_database->SaveInfo(&bitstream);
     this->m_database->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
     this->m_database->Close();
 
