@@ -23,8 +23,7 @@ void ResourceEdit::Save(QTableWidgetItem* row)
   QTableWidgetMidasItemDescItem* itemRow = NULL;
   QTableWidgetMidasBitstreamDescItem* bitstreamRow = NULL;
 
-  std::string data = midasUtils::EscapeForSQL(
-    row->data(Qt::DisplayRole).toString().toStdString());
+  std::string data = row->data(Qt::DisplayRole).toString().toStdString();
   midasUtils::StringTrim(data);
 
   this->m_database->Open();

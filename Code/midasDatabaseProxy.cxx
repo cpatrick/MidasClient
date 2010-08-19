@@ -189,10 +189,14 @@ bool midasDatabaseProxy::SaveInfo(mdo::Community* community, bool markDirty)
 {
   std::stringstream query;
   query << "UPDATE community SET " <<
-    "name='" << community->GetName() << "', "
-    "short_description='" << community->GetDescription() << "', "
-    "introductory_text='" << community->GetIntroductoryText() << "', "
-    "copyright_text='" << community->GetCopyright() << "' WHERE "
+    "name='" <<
+    midasUtils::EscapeForSQL(community->GetName()) << "', "
+    "short_description='" << 
+    midasUtils::EscapeForSQL(community->GetDescription()) << "', "
+    "introductory_text='" <<
+    midasUtils::EscapeForSQL(community->GetIntroductoryText()) << "', "
+    "copyright_text='" <<
+    midasUtils::EscapeForSQL(community->GetCopyright()) << "' WHERE "
     "community_id='" << community->GetId() << "'";
 
   if(this->Database->ExecuteQuery(query.str().c_str()))
@@ -211,10 +215,14 @@ bool midasDatabaseProxy::SaveInfo(mdo::Collection* coll, bool markDirty)
 {
   std::stringstream query;
   query << "UPDATE collection SET " <<
-    "name='" << coll->GetName() << "', "
-    "short_description='" << coll->GetDescription() << "', "
-    "introductory_text='" << coll->GetIntroductoryText() << "', "
-    "copyright_text='" << coll->GetCopyright() << "'" <<
+    "name='" <<
+    midasUtils::EscapeForSQL(coll->GetName()) << "', "
+    "short_description='" <<
+    midasUtils::EscapeForSQL(coll->GetDescription()) << "', "
+    "introductory_text='" <<
+    midasUtils::EscapeForSQL(coll->GetIntroductoryText()) << "', "
+    "copyright_text='" <<
+    midasUtils::EscapeForSQL(coll->GetCopyright()) << "'" <<
     " WHERE collection_id='" << coll->GetId() << "'";
 
   if(this->Database->ExecuteQuery(query.str().c_str()))
@@ -238,19 +246,20 @@ bool midasDatabaseProxy::SaveInfo(mdo::Item* item, bool markDirty)
   
   query.str(std::string());
   query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
-    << "VALUES ('" << item->GetId() << "','27','" << item->GetAbstract()
-    << "')";
+    << "VALUES ('" << item->GetId() << "','27','" <<
+    midasUtils::EscapeForSQL(item->GetAbstract()) << "')";
   ok &= this->Database->ExecuteQuery(query.str().c_str());
  
   query.str(std::string());
-  query << "UPDATE item SET title='" << item->GetTitle()
-    << "' WHERE item_id='" << item->GetId() << "'";
+  query << "UPDATE item SET title='" <<
+    midasUtils::EscapeForSQL(item->GetTitle()) << "' WHERE item_id='" <<
+    item->GetId() << "'";
   ok &= this->Database->ExecuteQuery(query.str().c_str());
 
   query.str(std::string());
   query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
-    << "VALUES ('" << item->GetId() << "','26','" << item->GetDescription()
-    << "')";
+    << "VALUES ('" << item->GetId() << "','26','" <<
+    midasUtils::EscapeForSQL(item->GetDescription()) << "')";
   ok &= this->Database->ExecuteQuery(query.str().c_str());
 
   for(std::vector<std::string>::iterator i = item->GetAuthors().begin();
@@ -258,7 +267,8 @@ bool midasDatabaseProxy::SaveInfo(mdo::Item* item, bool markDirty)
     {
     query.str(std::string());
     query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value)"
-      << " VALUES ('" << item->GetId() << "','3','" << *i << "')";
+      << " VALUES ('" << item->GetId() << "','3','"
+      << midasUtils::EscapeForSQL(*i) << "')";
     ok &= this->Database->ExecuteQuery(query.str().c_str());
     }
 
@@ -267,7 +277,8 @@ bool midasDatabaseProxy::SaveInfo(mdo::Item* item, bool markDirty)
     {
     query.str(std::string());
     query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value)"
-      << " VALUES ('" << item->GetId() << "','57','" << *i << "')";
+      << " VALUES ('" << item->GetId() << "','57','"
+      << midasUtils::EscapeForSQL(*i) << "')";
     ok &= this->Database->ExecuteQuery(query.str().c_str());
     }
 
@@ -288,7 +299,7 @@ bool midasDatabaseProxy::SaveInfo(mdo::Bitstream* bitstream, bool markDirty)
   std::stringstream query;
   query << "UPDATE bitstream SET "
     << "size_bytes='" << bitstream->GetSize() << "', "
-    << "name='" << bitstream->GetName()
+    << "name='" << midasUtils::EscapeForSQL(bitstream->GetName())
     << "' WHERE bitstream_id='" << bitstream->GetId() << "'";
 
   if(this->Database->ExecuteQuery(query.str().c_str()))
@@ -315,6 +326,8 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
 int midasDatabaseProxy::AddResource(int type, std::string uuid,
   std::string path, std::string name, std::string parentUuid, int parentId)
 {
+  name = midasUtils::EscapeForSQL(name);
+
   if(parentUuid == "" && type != midasResourceType::COMMUNITY)
     {
     return -1;
