@@ -12,9 +12,7 @@
 #include "midasLogAware.h"
 
 class UploadAgreementUI;
-class CreateMidasCommunityUI; 
-class CreateMidasCollectionUI; 
-class CreateMidasItemUI; 
+class CreateMidasResourceUI; 
 class SignInUI;
 class PullUI;
 class CreateProfileUI;
@@ -189,14 +187,7 @@ private:
   void infoPanel(MidasBitstreamTreeItem* node, bool editable);
 
   // ------------- UI Dialogs -------------
-  CreateMidasCommunityUI *    dlg_createMidasCommunityUI;
-  CreateMidasCommunityUI *    dlg_createMidasSubCommunityUI;
-  CreateMidasCommunityUI *    dlg_addMidasCommunityUI;
-  CreateMidasCommunityUI *    dlg_addMidasSubCommunityUI;
-  CreateMidasCollectionUI *   dlg_createMidasCollectionUI;
-  CreateMidasCollectionUI *   dlg_addMidasCollectionUI;
-  CreateMidasItemUI *         dlg_createMidasItemUI;
-  CreateMidasItemUI *         dlg_addMidasItemUI;
+  CreateMidasResourceUI *     dlg_createMidasResourceUI;
   CreateProfileUI *           dlg_createProfileUI;
   SignInUI *                  dlg_signInUI;
   UploadAgreementUI *         dlg_uploadAgreementUI;

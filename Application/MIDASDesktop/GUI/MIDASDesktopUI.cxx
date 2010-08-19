@@ -32,9 +32,7 @@
 #include "ResourceEdit.h"
 
 // ------------- Dialogs -------------
-#include "CreateMidasCommunityUI.h"
-#include "CreateMidasCollectionUI.h"
-#include "CreateMidasItemUI.h"
+#include "CreateMidasResourceUI.h"
 #include "CreateProfileUI.h"
 #include "DeleteResourceUI.h"
 #include "UploadAgreementUI.h"
@@ -93,22 +91,14 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- Instantiate and setup tray icon -------------
 
   // ------------- Instantiate and setup UI dialogs -------------
-  dlg_createMidasCommunityUI =    new CreateMidasCommunityUI( this );
-  dlg_createMidasSubCommunityUI = new CreateMidasCommunityUI( this, CreateMidasCommunityUI::SubCommunity );
-  dlg_addMidasCommunityUI =       new CreateMidasCommunityUI( this, CreateMidasCommunityUI::ClientCommunity);
-  dlg_addMidasSubCommunityUI =    new CreateMidasCommunityUI( this, CreateMidasCommunityUI::ClientSubCommunity);
-  dlg_createMidasCollectionUI =   new CreateMidasCollectionUI( this );
-  dlg_addMidasCollectionUI =      new CreateMidasCollectionUI( this, CreateMidasCollectionUI::ClientCollection);
-  dlg_createMidasItemUI =         new CreateMidasItemUI( this );
-  dlg_addMidasItemUI =            new CreateMidasItemUI( this, CreateMidasItemUI::ClientItem);
-
-  dlg_uploadAgreementUI =  new UploadAgreementUI( this );
-  dlg_signInUI =           new SignInUI( this );
-  dlg_createProfileUI =    new CreateProfileUI( this );
-  dlg_aboutUI =            new AboutUI( this );
-  dlg_preferencesUI =      new PreferencesUI( this );
-  dlg_pullUI =             new PullUI( this );
-  dlg_deleteResourceUI =   new DeleteResourceUI( this );
+  dlg_createMidasResourceUI = new CreateMidasResourceUI( this );
+  dlg_uploadAgreementUI =     new UploadAgreementUI( this );
+  dlg_signInUI =              new SignInUI( this );
+  dlg_createProfileUI =       new CreateProfileUI( this );
+  dlg_aboutUI =               new AboutUI( this );
+  dlg_preferencesUI =         new PreferencesUI( this );
+  dlg_pullUI =                new PullUI( this );
+  dlg_deleteResourceUI =      new DeleteResourceUI( this );
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
@@ -294,10 +284,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_signInUI;
   delete dlg_createProfileUI;
   delete dlg_preferencesUI;
-  delete dlg_createMidasCommunityUI;
-  delete dlg_createMidasSubCommunityUI;
-  delete dlg_createMidasCollectionUI;
-  delete dlg_createMidasItemUI;
+  delete dlg_createMidasResourceUI;
   delete dlg_uploadAgreementUI;
   delete dlg_pullUI;
   delete stateLabel;
@@ -861,22 +848,26 @@ void MIDASDesktopUI::displayServerResourceContextMenu( QContextMenuEvent* e )
 
 void MIDASDesktopUI::addCommunity()
 {
-  this->dlg_addMidasCommunityUI->exec();
+  dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Community);
+  dlg_createMidasResourceUI->exec();
 }
 
 void MIDASDesktopUI::addSubcommunity()
 {
-  this->dlg_addMidasSubCommunityUI->exec();
+  dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::SubCommunity);
+  dlg_createMidasResourceUI->exec();
 }
 
 void MIDASDesktopUI::addCollection()
 {
-  this->dlg_addMidasCollectionUI->exec();
+  dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Collection);
+  dlg_createMidasResourceUI->exec();
 }
 
 void MIDASDesktopUI::addItem()
 {
-  this->dlg_addMidasItemUI->exec();
+  dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Item);
+  dlg_createMidasResourceUI->exec();
 }
 
 void MIDASDesktopUI::addBitstream()

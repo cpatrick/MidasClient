@@ -24,12 +24,8 @@ set(MIDASDesktopUI_SRCS
   GUI/SignInUI.h
   GUI/SignInThread.cxx
   GUI/SignInThread.h
-  GUI/CreateMidasCommunityUI.cxx
-  GUI/CreateMidasCommunityUI.h
-  GUI/CreateMidasCollectionUI.cxx
-  GUI/CreateMidasCollectionUI.h
-  GUI/CreateMidasItemUI.cxx
-  GUI/CreateMidasItemUI.h
+  GUI/CreateMidasResourceUI.cxx
+  GUI/CreateMidasResourceUI.h
   GUI/CreateProfileUI.cxx
   GUI/CreateProfileUI.h
   GUI/DeleteResourceUI.h
@@ -92,9 +88,7 @@ set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MidasClient.rc)
 
 set(MIDASDesktopUI_UI_SRCS
   GUI/MIDASDesktopUI.ui
-  GUI/CreateMidasCommunityUI.ui
-  GUI/CreateMidasCollectionUI.ui
-  GUI/CreateMidasItemUI.ui
+  GUI/CreateMidasResourceUI.ui
   GUI/CreateProfileUI.ui
   GUI/DeleteResourceUI.ui
   GUI/UploadAgreementUI.ui
@@ -109,9 +103,7 @@ set(MIDASDesktopUI_RCCS MIDASDesktopIcons.qrc)
 
 set(MIDASDesktopUI_MOC_SRCS
   GUI/MIDASDesktopUI.h 
-  GUI/CreateMidasCommunityUI.h
-  GUI/CreateMidasCollectionUI.h
-  GUI/CreateMidasItemUI.h
+  GUI/CreateMidasResourceUI.h
   GUI/CreateProfileUI.h
   GUI/DeleteResourceUI.h
   GUI/PullUI.h
