@@ -82,6 +82,15 @@ set(MIDASDesktopUI_SRCS
   GUI/UnifyTreeThread.cxx
   GUI/ResourceEdit.h
   GUI/ResourceEdit.cxx
+  GUI/ButtonDelegate.h
+  GUI/ButtonDelegate.cxx
+  GUI/ButtonLineEdit.h
+  GUI/ButtonLineEdit.cxx
+  GUI/ButtonEditUI.h
+  GUI/AddAuthorUI.h
+  GUI/AddAuthorUI.cxx
+  GUI/AddKeywordUI.h
+  GUI/AddKeywordUI.cxx
 )
 
 set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MidasClient.rc)
@@ -97,6 +106,8 @@ set(MIDASDesktopUI_UI_SRCS
   GUI/ProcessingStatusUI.ui
   GUI/PullUI.ui
   GUI/PreferencesUI.ui
+  GUI/AddAuthorUI.ui
+  GUI/AddKeywordUI.ui
 )
 
 set(MIDASDesktopUI_RCCS MIDASDesktopIcons.qrc)
@@ -135,6 +146,11 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/GUIProgress.h
   GUI/GUILogger.h
   GUI/ResourceEdit.h
+  GUI/ButtonDelegate.h
+  GUI/ButtonLineEdit.h
+  GUI/ButtonEditUI.h
+  GUI/AddAuthorUI.h
+  GUI/AddKeywordUI.h
 )
 
 QT4_WRAP_CPP(MIDASDesktopUI_SRCS ${MIDASDesktopUI_MOC_SRCS})

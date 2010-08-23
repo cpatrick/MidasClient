@@ -30,6 +30,7 @@
 #include "GUIProgress.h"
 #include "Utils.h"
 #include "ResourceEdit.h"
+#include "ButtonDelegate.h"
 
 // ------------- Dialogs -------------
 #include "CreateMidasResourceUI.h"
@@ -38,6 +39,8 @@
 #include "UploadAgreementUI.h"
 #include "SignInUI.h"
 #include "AboutUI.h"
+#include "AddKeywordUI.h"
+#include "AddAuthorUI.h"
 #include "PreferencesUI.h"
 #include "PullUI.h"
 #include "ProcessingStatusUI.h"
@@ -99,6 +102,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_preferencesUI =         new PreferencesUI( this );
   dlg_pullUI =                new PullUI( this );
   dlg_deleteResourceUI =      new DeleteResourceUI( this );
+  dlg_addAuthorUI =           new AddAuthorUI;
+  dlg_addKeywordUI =          new AddKeywordUI;
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
@@ -116,6 +121,14 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect(midasTreeItemInfoTable, SIGNAL( itemChanged( QTableWidgetItem*) ), this, SLOT(
     resourceEdited(QTableWidgetItem*) ) );
+
+  authorsEditor = new ButtonDelegate(this);
+  authorsEditor->setField(ITEM_AUTHORS);
+  authorsEditor->setEditUI(dlg_addAuthorUI);
+  
+  keywordsEditor = new ButtonDelegate(this);
+  keywordsEditor->setField(ITEM_KEYWORDS);
+  keywordsEditor->setEditUI(dlg_addKeywordUI);
   // ------------- Item info panel -------------
 
   saveButton = new QPushButton();
@@ -287,6 +300,8 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_createMidasResourceUI;
   delete dlg_uploadAgreementUI;
   delete dlg_pullUI;
+  delete dlg_addAuthorUI;
+  delete dlg_addKeywordUI;
   delete stateLabel;
   delete connectLabel;
   delete cancelButton;
@@ -300,6 +315,8 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete m_RefreshThread;
   delete m_SynchronizerThread;
   delete m_SearchThread;
+  delete authorsEditor;
+  delete keywordsEditor;
 }
 
 void MIDASDesktopUI::showNormal()
@@ -715,6 +732,8 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Authors", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, kwutils::concatenate(item->GetAuthors(), "/ ").c_str(), ITEM_AUTHORS, options));
+    authorsEditor->setItem(itemTreeItem);
+    midasTreeItemInfoTable->setItemDelegateForRow(i, this->authorsEditor);
     i++;
     }
 
@@ -723,6 +742,8 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Keywords", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, kwutils::concatenate(item->GetKeywords(), "/ ").c_str(), ITEM_KEYWORDS, options));
+    keywordsEditor->setItem(itemTreeItem);
+    midasTreeItemInfoTable->setItemDelegateForRow(i, this->keywordsEditor);
     i++;
     }
 

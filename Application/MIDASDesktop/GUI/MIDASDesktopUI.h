@@ -19,10 +19,14 @@ class CreateProfileUI;
 class DeleteResourceUI;
 class AboutUI;
 class PreferencesUI;
+class AddAuthorUI;
+class AddKeywordUI;
+
 class midasSynchronizer;
 class midasAuthenticator;
 class midasDatabaseProxy;
 class midasProgressReporter;
+class ButtonDelegate;
 
 class RefreshServerTreeThread;
 class SynchronizerThread;
@@ -195,6 +199,8 @@ private:
   PreferencesUI *             dlg_preferencesUI;
   PullUI *                    dlg_pullUI;
   DeleteResourceUI*           dlg_deleteResourceUI;
+  AddAuthorUI*                dlg_addAuthorUI;
+  AddKeywordUI*               dlg_addKeywordUI;
   // ------------- UI Dialogs -------------
 
   // ------------- status bar -------------
@@ -205,6 +211,8 @@ private:
   // ------------- status bar -------------
 
   QPushButton *               saveButton;
+  ButtonDelegate *            authorsEditor;
+  ButtonDelegate *            keywordsEditor;
 
   // ------------- tray ----------------
   QAction *                   showAction;
