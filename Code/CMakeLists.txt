@@ -151,4 +151,5 @@ install (FILES ${midas_db} DESTINATION ".")
 #-----------------------------------------------------------------------------
 #
 add_library(MIDAS ${MIDASRest_SRCS} ${MIDASSynch_SRCS})
+add_dependencies(MIDAS reconfigure_tabledefs)
 target_link_libraries(MIDAS cmcurl ITKEXPAT sqlite kwsys)
