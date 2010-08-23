@@ -1,16 +1,16 @@
 /***************************************************************************
- *                                  _   _ ____  _
- *  Project                     ___| | | |  _ \| |
- *                             / __| | | | |_) | |
- *                            | (__| |_| |  _ <| |___
+ *                                  _   _ ____  _     
+ *  Project                     ___| | | |  _ \| |    
+ *                             / __| | | | |_) | |    
+ *                            | (__| |_| |  _ <| |___ 
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2006, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
  * are also available at http://curl.haxx.se/docs/copyright.html.
- *
+ * 
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
  * furnished to do so, under the terms of the COPYING file.
@@ -23,22 +23,18 @@
 
 #include "setup.h"
 
-#ifndef CURL_DISABLE_DICT
-
 /* -- WIN32 approved -- */
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <ctype.h>
-#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#endif
 
-#ifdef WIN32
+#include <errno.h>
+
+#if defined(WIN32) && !defined(__GNUC__) || defined(__MINGW32__)
 #include <time.h>
 #include <io.h>
 #else
@@ -46,9 +42,7 @@
 #include <sys/socket.h>
 #endif
 #include <netinet/in.h>
-#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
-#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -85,59 +79,20 @@
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
 
-/* The last #include file should be: */
-#include "memdebug.h"
-
-static char *unescape_word(struct SessionHandle *data, char *inp)
-{
-  char *newp;
-  char *dictp;
-  char *ptr;
-  int len;
-  unsigned char byte;
-  int olen=0;
-
-  newp = curl_easy_unescape(data, inp, 0, &len);
-  if(!newp)
-    return NULL;
-
-  dictp = malloc(len*2 + 1); /* add one for terminating zero */
-  if(dictp) {
-    /* According to RFC2229 section 2.2, these letters need to be escaped with
-       \[letter] */
-    for(ptr = newp;
-        (byte = (unsigned char)*ptr) != 0;
-        ptr++) {
-      if ((byte <= 32) || (byte == 127) ||
-          (byte == '\'') || (byte == '\"') || (byte == '\\')) {
-        dictp[olen++] = '\\';
-      }
-      dictp[olen++] = byte;
-    }
-    dictp[olen]=0;
-
-    free(newp);
-  }
-  return dictp;
-}
-
-CURLcode Curl_dict(struct connectdata *conn, bool *done)
+CURLcode Curl_dict(struct connectdata *conn)
 {
   char *word;
-  char *eword;
   char *ppath;
   char *database = NULL;
   char *strategy = NULL;
   char *nthdef = NULL; /* This is not part of the protocol, but required
                           by RFC 2229 */
-  CURLcode result=CURLE_OK;
+  CURLcode result;
   struct SessionHandle *data=conn->data;
   curl_socket_t sockfd = conn->sock[FIRSTSOCKET];
 
-  char *path = data->reqdata.path;
-  curl_off_t *bytecount = &data->reqdata.keep.bytecount;
-
-  *done = TRUE; /* unconditionally */
+  char *path = conn->path;
+  curl_off_t *bytecount = &conn->bytecount;
 
   if(conn->bits.user_passwd) {
     /* AUTH is missing */
@@ -146,7 +101,7 @@ CURLcode Curl_dict(struct connectdata *conn, bool *done)
   if (strnequal(path, DICT_MATCH, sizeof(DICT_MATCH)-1) ||
       strnequal(path, DICT_MATCH2, sizeof(DICT_MATCH2)-1) ||
       strnequal(path, DICT_MATCH3, sizeof(DICT_MATCH3)-1)) {
-
+      
     word = strchr(path, ':');
     if (word) {
       word++;
@@ -163,7 +118,7 @@ CURLcode Curl_dict(struct connectdata *conn, bool *done)
         }
       }
     }
-
+      
     if ((word == NULL) || (*word == (char)0)) {
       failf(data, "lookup word is missing");
     }
@@ -173,38 +128,31 @@ CURLcode Curl_dict(struct connectdata *conn, bool *done)
     if ((strategy == NULL) || (*strategy == (char)0)) {
       strategy = (char *)".";
     }
-
-    eword = unescape_word(data, word);
-    if(!eword)
-      return CURLE_OUT_OF_MEMORY;
-
+      
     result = Curl_sendf(sockfd, conn,
-                        "CLIENT " LIBCURL_NAME " " LIBCURL_VERSION "\r\n"
+                        "CLIENT " LIBCURL_NAME " " LIBCURL_VERSION "\n"
                         "MATCH "
                         "%s "    /* database */
                         "%s "    /* strategy */
-                        "%s\r\n" /* word */
-                        "QUIT\r\n",
-
+                        "%s\n"   /* word */
+                        "QUIT\n",
+                        
                         database,
                         strategy,
-                        eword
+                        word
                         );
-
-    free(eword);
-
     if(result)
       failf(data, "Failed sending DICT request");
     else
-      result = Curl_setup_transfer(conn, FIRSTSOCKET, -1, FALSE, bytecount,
-                                   -1, NULL); /* no upload */
+      result = Curl_Transfer(conn, FIRSTSOCKET, -1, FALSE, bytecount,
+                             -1, NULL); /* no upload */      
     if(result)
       return result;
   }
   else if (strnequal(path, DICT_DEFINE, sizeof(DICT_DEFINE)-1) ||
            strnequal(path, DICT_DEFINE2, sizeof(DICT_DEFINE2)-1) ||
            strnequal(path, DICT_DEFINE3, sizeof(DICT_DEFINE3)-1)) {
-
+    
     word = strchr(path, ':');
     if (word) {
       word++;
@@ -217,64 +165,57 @@ CURLcode Curl_dict(struct connectdata *conn, bool *done)
         }
       }
     }
-
+      
     if ((word == NULL) || (*word == (char)0)) {
       failf(data, "lookup word is missing");
     }
     if ((database == NULL) || (*database == (char)0)) {
       database = (char *)"!";
     }
-
-    eword = unescape_word(data, word);
-    if(!eword)
-      return CURLE_OUT_OF_MEMORY;
-
+      
     result = Curl_sendf(sockfd, conn,
-                        "CLIENT " LIBCURL_NAME " " LIBCURL_VERSION "\r\n"
+                        "CLIENT " LIBCURL_NAME " " LIBCURL_VERSION "\n"
                         "DEFINE "
                         "%s "     /* database */
-                        "%s\r\n"  /* word */
-                        "QUIT\r\n",
+                        "%s\n"    /* word */
+                        "QUIT\n",
                         database,
-                        eword);
-
-    free(eword);
-
+                        word);
     if(result)
       failf(data, "Failed sending DICT request");
     else
-      result = Curl_setup_transfer(conn, FIRSTSOCKET, -1, FALSE, bytecount,
-                                   -1, NULL); /* no upload */
-
+      result = Curl_Transfer(conn, FIRSTSOCKET, -1, FALSE, bytecount,
+                             -1, NULL); /* no upload */
+    
     if(result)
       return result;
-
+      
   }
   else {
-
+      
     ppath = strchr(path, '/');
     if (ppath) {
       int i;
-
+        
       ppath++;
       for (i = 0; ppath[i]; i++) {
         if (ppath[i] == ':')
           ppath[i] = ' ';
       }
       result = Curl_sendf(sockfd, conn,
-                          "CLIENT " LIBCURL_NAME " " LIBCURL_VERSION "\r\n"
-                          "%s\r\n"
-                          "QUIT\r\n", ppath);
+                          "CLIENT " LIBCURL_NAME " " LIBCURL_VERSION "\n"
+                          "%s\n"
+                          "QUIT\n", ppath);
       if(result)
         failf(data, "Failed sending DICT request");
       else
-        result = Curl_setup_transfer(conn, FIRSTSOCKET, -1, FALSE, bytecount,
-                                     -1, NULL);
+        result = Curl_Transfer(conn, FIRSTSOCKET, -1, FALSE, bytecount,
+                               -1, NULL);
       if(result)
         return result;
     }
   }
+  (void)nthdef;
 
   return CURLE_OK;
 }
-#endif /*CURL_DISABLE_DICT*/

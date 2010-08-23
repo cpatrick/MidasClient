@@ -24,6 +24,6 @@
  ***************************************************************************/
 
 void Curl_md5it(unsigned char *output,
-                const unsigned char *input);
+                unsigned char *input);
 
 #endif

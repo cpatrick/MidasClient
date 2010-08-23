@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2007, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -22,7 +22,7 @@
  ***************************************************************************/
 #include "setup.h"
 
-#if !defined(CURL_DISABLE_HTTP) && !defined(CURL_DISABLE_CRYPTO_AUTH)
+#ifndef CURL_DISABLE_HTTP
 /* -- WIN32 approved -- */
 #include <stdio.h>
 #include <string.h>
@@ -38,8 +38,7 @@
 #include "http_digest.h"
 #include "strtok.h"
 #include "url.h" /* for Curl_safefree() */
-#include "memory.h"
-#include "easyif.h" /* included for Curl_convert_... prototypes */
+#include "curl_memory.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -60,8 +59,8 @@ CURLdigest Curl_input_digest(struct connectdata *conn,
                                               header */
 {
   bool more = TRUE;
-  char *token = NULL;
-  char *tmp = NULL;
+  char *token;
+  char *tmp;
   bool foundAuth = FALSE;
   bool foundAuthInt = FALSE;
   struct SessionHandle *data=conn->data;
@@ -76,7 +75,7 @@ CURLdigest Curl_input_digest(struct connectdata *conn,
   }
 
   /* skip initial whitespaces */
-  while(*header && ISSPACE(*header))
+  while(*header && isspace((int)*header))
     header++;
 
   if(checkprefix("Digest", header)) {
@@ -92,9 +91,9 @@ CURLdigest Curl_input_digest(struct connectdata *conn,
     while(more) {
       char value[32];
       char content[128];
-      size_t totlen=0;
+      size_t totlen;
 
-      while(*header && ISSPACE(*header))
+      while(*header && isspace((int)*header))
         header++;
 
       /* how big can these strings be? */
@@ -225,7 +224,7 @@ CURLcode Curl_output_digest(struct connectdata *conn,
   unsigned char ha2[33];/* 32 digits and 1 zero byte */
   char cnoncebuf[7];
   char *cnonce;
-  char *tmp = NULL;
+  char *tmp;
   struct timeval now;
 
   char **allocuserpwd;
@@ -235,21 +234,6 @@ CURLcode Curl_output_digest(struct connectdata *conn,
 
   struct SessionHandle *data = conn->data;
   struct digestdata *d;
-#ifdef CURL_DOES_CONVERSIONS
-  CURLcode rc;
-/* The CURL_OUTPUT_DIGEST_CONV macro below is for non-ASCII machines.
-   It converts digest text to ASCII so the MD5 will be correct for 
-   what ultimately goes over the network.
-*/
-#define CURL_OUTPUT_DIGEST_CONV(a, b) \
-  rc = Curl_convert_to_network(a, (char *)b, strlen((const char*)b)); \
-  if (rc != CURLE_OK) { \
-    free(b); \
-    return rc; \
-  }
-#else
-#define CURL_OUTPUT_DIGEST_CONV(a, b)
-#endif /* CURL_DOES_CONVERSIONS */
 
   if(proxy) {
     d = &data->state.proxydigest;
@@ -286,7 +270,7 @@ CURLcode Curl_output_digest(struct connectdata *conn,
     /* Generate a cnonce */
     now = Curl_tvnow();
     snprintf(cnoncebuf, sizeof(cnoncebuf), "%06ld", now.tv_sec);
-    if(Curl_base64_encode(data, cnoncebuf, strlen(cnoncebuf), &cnonce))
+    if(Curl_base64_encode(cnoncebuf, strlen(cnoncebuf), &cnonce))
       d->cnonce = cnonce;
     else
       return CURLE_OUT_OF_MEMORY;
@@ -307,8 +291,6 @@ CURLcode Curl_output_digest(struct connectdata *conn,
     aprintf("%s:%s:%s", userp, d->realm, passwdp);
   if(!md5this)
     return CURLE_OUT_OF_MEMORY;
-
-  CURL_OUTPUT_DIGEST_CONV(data, md5this); /* convert on non-ASCII machines */
   Curl_md5it(md5buf, md5this);
   free(md5this); /* free this again */
 
@@ -321,12 +303,10 @@ CURLcode Curl_output_digest(struct connectdata *conn,
   if(d->algo == CURLDIGESTALGO_MD5SESS) {
     /* nonce and cnonce are OUTSIDE the hash */
     tmp = aprintf("%s:%s:%s", ha1, d->nonce, d->cnonce);
+    free(ha1);
     if(!tmp)
       return CURLE_OUT_OF_MEMORY;
-    CURL_OUTPUT_DIGEST_CONV(data, tmp); /* convert on non-ASCII machines */
-    Curl_md5it(md5buf, (unsigned char *)tmp);
-    free(tmp); /* free this again */
-    md5_to_ascii(md5buf, ha1);
+    ha1 = (unsigned char *)tmp;
   }
 
   /*
@@ -353,7 +333,6 @@ CURLcode Curl_output_digest(struct connectdata *conn,
        entity-body here */
     /* TODO: Append H(entity-body)*/
   }
-  CURL_OUTPUT_DIGEST_CONV(data, md5this); /* convert on non-ASCII machines */
   Curl_md5it(md5buf, md5this);
   free(md5this); /* free this again */
   md5_to_ascii(md5buf, ha2);
@@ -377,7 +356,6 @@ CURLcode Curl_output_digest(struct connectdata *conn,
   if(!md5this)
     return CURLE_OUT_OF_MEMORY;
 
-  CURL_OUTPUT_DIGEST_CONV(data, md5this); /* convert on non-ASCII machines */
   Curl_md5it(md5buf, md5this);
   free(md5this); /* free this again */
   md5_to_ascii(md5buf, request_digest);

@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2006, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -26,9 +26,8 @@
 #include "setup.h"
 #include "hash.h"
 
-#if (defined(NETWARE) && defined(__NOVELL_LIBC__))
-#undef in_addr_t
-#define in_addr_t uint32_t
+#ifdef HAVE_NETDB_H
+#include <netdb.h>
 #endif
 
 /*
@@ -56,14 +55,14 @@
 #define CURLRES_IPV4
 #endif
 
-#if defined(CURLRES_IPV4) || defined(CURLRES_ARES)
+#ifdef CURLRES_IPV4
 #if !defined(HAVE_GETHOSTBYNAME_R) || defined(CURLRES_ASYNCH)
 /* If built for ipv4 and missing gethostbyname_r(), or if using async name
    resolve, we need the Curl_addrinfo_copy() function (which itself needs the
-   Curl_he2ai() function)) */
+   Curl_hostent_relocate() function)) */
 #define CURLRES_ADDRINFO_COPY
 #endif
-#endif /* IPv4/ares-only */
+#endif /* IPv4-only */
 
 #ifndef CURLRES_ASYNCH
 #define CURLRES_SYNCH
@@ -87,8 +86,6 @@
 #define CURL_ASYNC_SUCCESS ARES_SUCCESS
 #else
 #define CURL_ASYNC_SUCCESS CURLE_OK
-#define ares_cancel(x) do {} while(0)
-#define ares_destroy(x) do {} while(0)
 #endif
 
 /*
@@ -100,26 +97,25 @@ typedef struct addrinfo Curl_addrinfo;
 /* OK, so some ipv4-only include tree probably have the addrinfo struct, but
    to work even on those that don't, we provide our own look-alike! */
 struct Curl_addrinfo {
-  int                   ai_flags;
-  int                   ai_family;
-  int                   ai_socktype;
-  int                   ai_protocol;
-  socklen_t             ai_addrlen;   /* Follow rfc3493 struct addrinfo */
-  char                 *ai_canonname;
-  struct sockaddr      *ai_addr;
+  int     ai_flags;
+  int     ai_family;
+  int     ai_socktype;
+  int     ai_protocol;
+  size_t  ai_addrlen;
+  struct sockaddr *ai_addr;
+  char   *ai_canonname;
   struct Curl_addrinfo *ai_next;
 };
 typedef struct Curl_addrinfo Curl_addrinfo;
 #endif
 
 struct addrinfo;
-struct hostent;
 struct SessionHandle;
 struct connectdata;
 
 void Curl_global_host_cache_init(void);
 void Curl_global_host_cache_dtor(void);
-struct curl_hash *Curl_global_host_cache_get(void);
+curl_hash *Curl_global_host_cache_get(void);
 
 #define Curl_global_host_cache_use(__p) ((__p)->set.global_dns_cache)
 
@@ -141,7 +137,7 @@ struct Curl_dns_entry {
 #define CURLRESOLV_ERROR    -1
 #define CURLRESOLV_RESOLVED  0
 #define CURLRESOLV_PENDING   1
-int Curl_resolv(struct connectdata *conn, const char *hostname,
+int Curl_resolv(struct connectdata *conn, char *hostname,
                 int port, struct Curl_dns_entry **dnsentry);
 
 /*
@@ -157,7 +153,7 @@ bool Curl_ipvalid(struct SessionHandle *data);
  * of arguments
  */
 Curl_addrinfo *Curl_getaddrinfo(struct connectdata *conn,
-                                const char *hostname,
+                                char *hostname,
                                 int port,
                                 int *waitp);
 
@@ -166,19 +162,15 @@ CURLcode Curl_is_resolved(struct connectdata *conn,
 CURLcode Curl_wait_for_resolv(struct connectdata *conn,
                               struct Curl_dns_entry **dnsentry);
 
-/* Curl_resolv_getsock() is a generic function that exists in multiple
-   versions depending on what name resolve technology we've built to use. The
-   function is called from the multi_getsock() function.  'sock' is a pointer
-   to an array to hold the file descriptors, with 'numsock' being the size of
-   that array (in number of entries). This function is supposed to return
-   bitmask indicating what file descriptors (referring to array indexes in the
-   'sock' array) to wait for, read/write. */
-int Curl_resolv_getsock(struct connectdata *conn, curl_socket_t *sock,
-                        int numsocks);
-
+/* Curl_fdset() is a generic function that exists in multiple versions
+   depending on what name resolve technology we've built to use. The function
+   is called from the curl_multi_fdset() function */
+CURLcode Curl_fdset(struct connectdata *conn,
+                    fd_set *read_fd_set,
+                    fd_set *write_fd_set,
+                    int *max_fdp);
 /* unlock a previously resolved dns entry */
-void Curl_resolv_unlock(struct SessionHandle *data,
-                        struct Curl_dns_entry *dns);
+void Curl_resolv_unlock(struct SessionHandle *data, struct Curl_dns_entry *dns);
 
 /* for debugging purposes only: */
 void Curl_scan_cache_used(void *user, void *ptr);
@@ -187,7 +179,7 @@ void Curl_scan_cache_used(void *user, void *ptr);
 void Curl_freeaddrinfo(Curl_addrinfo *freeaddr);
 
 /* make a new dns cache and return the handle */
-struct curl_hash *Curl_mk_dnscache(void);
+curl_hash *Curl_mk_dnscache(void);
 
 /* prune old entries from the DNS cache */
 void Curl_hostcache_prune(struct SessionHandle *data);
@@ -198,42 +190,41 @@ int Curl_num_addresses (const Curl_addrinfo *addr);
 #ifdef CURLDEBUG
 void curl_dofreeaddrinfo(struct addrinfo *freethis,
                          int line, const char *source);
-int curl_dogetaddrinfo(const char *hostname, const char *service,
+int curl_dogetaddrinfo(char *hostname, char *service,
                        struct addrinfo *hints,
                        struct addrinfo **result,
                        int line, const char *source);
-#ifdef HAVE_GETNAMEINFO
-int curl_dogetnameinfo(GETNAMEINFO_QUAL_ARG1 GETNAMEINFO_TYPE_ARG1 sa,
-                       GETNAMEINFO_TYPE_ARG2 salen,
-                       char *host, GETNAMEINFO_TYPE_ARG46 hostlen,
-                       char *serv, GETNAMEINFO_TYPE_ARG46 servlen,
-                       GETNAMEINFO_TYPE_ARG7 flags,
+int curl_dogetnameinfo(const struct sockaddr *sa, socklen_t salen,
+                       char *host, size_t hostlen,
+                       char *serv, size_t servlen, int flags,
                        int line, const char *source);
-#endif
 #endif
 
 /* This is the callback function that is used when we build with asynch
    resolve, ipv4 */
-CURLcode Curl_addrinfo4_callback(void *arg,
-                                 int status,
-                                 struct hostent *hostent);
+void Curl_addrinfo4_callback(void *arg,
+                            int status,
+                            struct hostent *hostent);
 /* This is the callback function that is used when we build with asynch
    resolve, ipv6 */
-CURLcode Curl_addrinfo6_callback(void *arg,
-                                 int status,
-                                 struct addrinfo *ai);
+void Curl_addrinfo6_callback(void *arg,
+                            int status,
+                            struct addrinfo *ai);
 
 
-/* [ipv4/ares only] Creates a Curl_addrinfo struct from a numerical-only IP
+/* [ipv4 only] Creates a Curl_addrinfo struct from a numerical-only IP
    address */
-Curl_addrinfo *Curl_ip2addr(in_addr_t num, const char *hostname, int port);
+Curl_addrinfo *Curl_ip2addr(in_addr_t num, char *hostname, int port);
 
-/* [ipv4/ares only] Curl_he2ai() converts a struct hostent to a Curl_addrinfo chain
+/* [ipv4 only] Curl_he2ai() converts a struct hostent to a Curl_addrinfo chain
    and returns it */
-Curl_addrinfo *Curl_he2ai(const struct hostent *, int port);
+Curl_addrinfo *Curl_he2ai(struct hostent *, int port);
+
+/* relocate a hostent struct */
+void Curl_hostent_relocate(struct hostent *h, long offset);
 
 /* Clone a Curl_addrinfo struct, works protocol independently */
-Curl_addrinfo *Curl_addrinfo_copy(const void *orig, int port);
+Curl_addrinfo *Curl_addrinfo_copy(void *orig, int port);
 
 /*
  * Curl_printable_address() returns a printable version of the 1st address
@@ -250,14 +241,7 @@ const char *Curl_printable_address(const Curl_addrinfo *ip,
  */
 struct Curl_dns_entry *
 Curl_cache_addr(struct SessionHandle *data, Curl_addrinfo *addr,
-                const char *hostname, int port);
-
-/*
- * Curl_destroy_thread_data() cleans up async resolver data.
- * Complementary of ares_destroy.
- */
-struct Curl_async; /* forward-declaration */
-void Curl_destroy_thread_data(struct Curl_async *async);
+                char *hostname, int port);
 
 #ifndef INADDR_NONE
 #define CURL_INADDR_NONE (in_addr_t) ~0

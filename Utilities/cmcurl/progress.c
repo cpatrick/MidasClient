@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2006, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -139,8 +139,10 @@ void Curl_pgrsDone(struct connectdata *conn)
   struct SessionHandle *data = conn->data;
   data->progress.lastshow=0;
   Curl_pgrsUpdate(conn); /* the final (forced) update */
-
-  data->progress.speeder_c = 0; /* reset the progress meter display */
+  if(!(data->progress.flags & PGRS_HIDE) &&
+     !data->progress.callback)
+    /* only output if we don't use a progress callback and we're not hidden */
+    fprintf(data->set.err, "\n");
 }
 
 /* reset all times except redirect */
@@ -252,11 +254,11 @@ int Curl_pgrsUpdate(struct connectdata *conn)
          even when not displayed! */
   else if(!(data->progress.flags & PGRS_HEADERS_OUT)) {
     if (!data->progress.callback) {
-      if(data->reqdata.resume_from)
+      if(conn->resume_from)
         fprintf(data->set.err,
                 "** Resuming transfer from byte position %" FORMAT_OFF_T
                 "\n",
-                data->reqdata.resume_from);
+                conn->resume_from);
       fprintf(data->set.err,
               "  %% Total    %% Received %% Xferd  Average Speed   Time    Time     Time  Current\n"
               "                                 Dload  Upload   Total   Spent    Left  Speed\n");
@@ -326,7 +328,7 @@ int Curl_pgrsUpdate(struct connectdata *conn)
       curl_off_t amount = data->progress.speeder[nowindex]-
         data->progress.speeder[checkindex];
 
-      if(amount > 4294967 /* 0xffffffff/1000 */)
+      if(amount > 0xffffffff/1000)
         /* the 'amount' value is bigger than would fit in 32 bits if
            multiplied with 1000, so we use the double math for this */
         data->progress.current_speed = (curl_off_t)

@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___ 
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2005, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -23,9 +23,7 @@
 
 #include "setup.h"
 
-#ifndef CURL_DISABLE_CRYPTO_AUTH
-
-#if !defined(USE_SSLEAY) || !defined(USE_OPENSSL)
+#ifndef USE_SSLEAY
 /* This code segment is only used if OpenSSL is not provided, as if it is
    we use the MD5-function provided there instead. No good duplicating
    code! */
@@ -67,7 +65,7 @@ struct md5_ctx {
 typedef struct md5_ctx MD5_CTX;
 
 static void MD5_Init(struct md5_ctx *);
-static void MD5_Update(struct md5_ctx *, const unsigned char *, unsigned int);
+static void MD5_Update(struct md5_ctx *, unsigned char *, unsigned int);
 static void MD5_Final(unsigned char [16], struct md5_ctx *);
 
 /* Constants for MD5Transform routine.
@@ -90,11 +88,11 @@ static void MD5_Final(unsigned char [16], struct md5_ctx *);
 #define S43 15
 #define S44 21
 
-static void MD5Transform(UINT4 [4], const unsigned char [64]);
+static void MD5Transform(UINT4 [4], unsigned char [64]);
 static void Encode(unsigned char *, UINT4 *, unsigned int);
-static void Decode(UINT4 *, const unsigned char *, unsigned int);
+static void Decode(UINT4 *, unsigned char *, unsigned int);
 
-static const unsigned char PADDING[64] = {
+static unsigned char PADDING[64] = {
   0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -151,9 +149,9 @@ static void MD5_Init(struct md5_ctx *context)
   operation, processing another message block, and updating the
   context.
  */
-static void MD5_Update (struct md5_ctx *context,    /* context */
-                        const unsigned char *input, /* input block */
-                        unsigned int inputLen)      /* length of input block */
+static void MD5_Update (struct md5_ctx *context, /* context */
+                        unsigned char *input, /* input block */
+                        unsigned int inputLen)/* length of input block */
 {
   unsigned int i, bufindex, partLen;
 
@@ -214,7 +212,7 @@ static void MD5_Final(unsigned char digest[16], /* message digest */
 
 /* MD5 basic transformation. Transforms state based on block. */
 static void MD5Transform(UINT4 state[4],
-                         const unsigned char block[64])
+                         unsigned char block[64])
 {
   UINT4 a = state[0], b = state[1], c = state[2], d = state[3], x[16];
 
@@ -322,7 +320,7 @@ static void Encode (unsigned char *output,
    a multiple of 4.
 */
 static void Decode (UINT4 *output,
-                    const unsigned char *input,
+                    unsigned char *input,
                     unsigned int len)
 {
   unsigned int i, j;
@@ -341,12 +339,10 @@ static void Decode (UINT4 *output,
 #include "md5.h"
 
 void Curl_md5it(unsigned char *outbuffer, /* 16 bytes */
-                const unsigned char *input)
+                unsigned char *input)
 {
   MD5_CTX ctx;
   MD5_Init(&ctx);
   MD5_Update(&ctx, input, (unsigned int)strlen((char *)input));
   MD5_Final(outbuffer, &ctx);
 }
-
-#endif

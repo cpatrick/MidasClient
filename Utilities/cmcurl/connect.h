@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2006, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -31,15 +31,13 @@ CURLcode Curl_is_connected(struct connectdata *conn,
                            bool *connected);
 
 CURLcode Curl_connecthost(struct connectdata *conn,
-                          const struct Curl_dns_entry *host, /* connect to this */
+                          struct Curl_dns_entry *host, /* connect to this */
                           curl_socket_t *sockconn, /* not set if error */
                           Curl_addrinfo **addr, /* the one we used */
                           bool *connected /* truly connected? */
                           );
 
-int Curl_sockerrno(void);
-
-CURLcode Curl_store_ip_addr(struct connectdata *conn);
+int Curl_ourerrno(void);
 
 #define DEFAULT_CONNECT_TIMEOUT 300000 /* milliseconds == five minutes */
 
