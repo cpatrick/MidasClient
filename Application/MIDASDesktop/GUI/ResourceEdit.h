@@ -2,7 +2,7 @@
 #define __ResourceEdit_H
 
 #include "midasLogAware.h"
-#include "midasResourceDescTable.h"
+#include "MidasResourceDescTable.h"
 #include <QObject>
 
 class midasDatabaseProxy;
