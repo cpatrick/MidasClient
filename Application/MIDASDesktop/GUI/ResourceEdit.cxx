@@ -124,6 +124,20 @@ void ResourceEdit::SaveCollection(mdo::Collection* coll, MIDASFields field,
         changed = true;
         }
       break;
+    case COLLECTION_COPYRIGHT:
+      if(coll->GetCopyright() != data)
+        {
+        coll->SetCopyright(data.c_str());
+        changed = true;
+        }
+      break;
+    case COLLECTION_INTRODUCTORY:
+      if(coll->GetIntroductoryText() != data)
+        {
+        coll->SetIntroductoryText(data.c_str());
+        changed = true;
+        }
+      break;
     }
 
   if(changed)

@@ -1085,7 +1085,10 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
   fields << "midas.collection.create?uuid=" << record->Uuid
     << "&parentid=" << record->Parent
     << "&name=" << midasUtils::EscapeForURL(coll.GetName())
-    << "&description=" << midasUtils::EscapeForURL(coll.GetDescription());
+    << "&description=" << midasUtils::EscapeForURL(coll.GetDescription())
+    << "&introductorytext=" <<
+    midasUtils::EscapeForURL(coll.GetIntroductoryText())
+    << "&copyright=" << midasUtils::EscapeForURL(coll.GetCopyright());
 
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->SetPostData("");

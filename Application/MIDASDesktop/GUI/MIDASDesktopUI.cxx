@@ -10,6 +10,7 @@
 #include <QDesktopServices>
 #include <QMessageBox>
 #include <QThread>
+#include <QItemDelegate>
 
 #include <kwsys/SystemTools.hxx>
 
@@ -618,6 +619,7 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Name", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCommunityDescItem(community, community->GetName().c_str(), COMMUNITY_NAME, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++; 
     }
 
@@ -626,6 +628,7 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Description", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCommunityDescItem(community, community->GetDescription().c_str(), COMMUNITY_DESCRIPTION, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
 
@@ -634,6 +637,7 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Introductory", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCommunityDescItem(community, community->GetIntroductoryText().c_str(), COMMUNITY_INTRODUCTORY, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
   
@@ -642,6 +646,7 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Copyright", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCommunityDescItem(community, community->GetCopyright().c_str(), COMMUNITY_COPYRIGHT, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
 
@@ -650,6 +655,7 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Links", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCommunityDescItem(community, community->GetLinks().c_str(), COMMUNITY_LINKS, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
 
@@ -672,6 +678,8 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
   int i = 0;
   if(collection->GetName() != "" || edit) i++;
   if(collection->GetDescription() != "" || edit) i++;
+  if(collection->GetCopyright() != "" || edit) i++;
+  if(collection->GetIntroductoryText() != "" || edit) i++;
   
   midasTreeItemInfoTable->setRowCount( i );
   i = 0;
@@ -681,6 +689,7 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Name", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCollectionDescItem(collection, collection->GetName().c_str(), COLLECTION_NAME, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
 
@@ -689,6 +698,25 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Description", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCollectionDescItem(collection, collection->GetDescription().c_str(), COLLECTION_DESCRIPTION, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
+
+  if(collection->GetIntroductoryText() != "" || edit)
+    {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Introductory Text", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCollectionDescItem(collection, collection->GetIntroductoryText().c_str(), COLLECTION_INTRODUCTORY, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
+
+  if(collection->GetCopyright() != "" || edit)
+    {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Copyright", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCollectionDescItem(collection, collection->GetCopyright().c_str(), COLLECTION_COPYRIGHT, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
 
@@ -724,6 +752,7 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Title", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, item->GetTitle().c_str(), ITEM_TITLE, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
 
@@ -752,6 +781,7 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Abstract", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, item->GetAbstract().c_str(), ITEM_ABSTRACT, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
 
@@ -760,6 +790,7 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Description", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, item->GetDescription().c_str(), ITEM_DESCRIPTION, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
 
@@ -786,11 +817,13 @@ void MIDASDesktopUI::infoPanel(MidasBitstreamTreeItem* bitstreamTreeItem, bool e
   midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
   midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Filename", QTableWidgetDescriptionItem::Bold));
   midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, bitstream->GetName().c_str(), BITSTREAM_NAME, options));
+  midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
   i++;
 
   midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
   midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Size", QTableWidgetDescriptionItem::Bold));
   midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, midasUtils::FileSizeString(atol(bitstream->GetSize().c_str())).c_str(), BITSTREAM_SIZE, QTableWidgetDescriptionItem::Tooltip));
+  midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
   i++;
 
   midasTreeItemInfoTable->resizeColumnsToContents();

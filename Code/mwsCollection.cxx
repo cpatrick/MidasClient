@@ -130,6 +130,8 @@ bool Collection::Fetch()
   m_Collection->Clear();
   parser.AddTag("/rsp/name",m_Collection->GetName());
   parser.AddTag("/rsp/description",m_Collection->GetDescription());
+  parser.AddTag("/rsp/copyright",m_Collection->GetCopyright());
+  parser.AddTag("/rsp/introductory",m_Collection->GetIntroductoryText());
   parser.AddTag("/rsp/uuid",m_Collection->GetUuid());
   parser.AddTag("/rsp/parent",m_Collection->GetParent());
   
