@@ -20,9 +20,11 @@ public:
     QWidget* parent = 0, std::string text = "Add");
   ~ButtonLineEdit();
 
+  QString getData();
+  void setData(const QString& value);
+
 public slots:
   void appendText(const QString& text);
-  void saveItem(const QString& value);
 
 protected:
   QLineEdit* m_TextEdit;

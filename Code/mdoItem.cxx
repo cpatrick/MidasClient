@@ -74,4 +74,48 @@ void Item::Print(std::ostream &os, int indent)
     }
 }
 
+std::string Item::GetAuthorsString()
+{
+  std::string output;
+  bool first = true;
+
+  for(std::vector<std::string>::iterator i = m_Authors.begin();
+      i != m_Authors.end(); ++i)
+    {
+    if(!first)
+      {
+      output += " / ";
+      }
+    else
+      {
+      first = false;
+      }
+
+    output += *i;
+    }
+  return output;
+}
+
+std::string Item::GetKeywordsString()
+{
+  std::string output;
+  bool first = true;
+
+  for(std::vector<std::string>::iterator i = m_Keywords.begin();
+      i != m_Keywords.end(); ++i)
+    {
+    if(!first)
+      {
+      output += " / ";
+      }
+    else
+      {
+      first = false;
+      }
+
+    output += *i;
+    }
+  return output;
+}
+
 } // end namespace

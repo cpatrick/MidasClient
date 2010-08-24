@@ -102,8 +102,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_preferencesUI =         new PreferencesUI( this );
   dlg_pullUI =                new PullUI( this );
   dlg_deleteResourceUI =      new DeleteResourceUI( this );
-  dlg_addAuthorUI =           new AddAuthorUI;
-  dlg_addKeywordUI =          new AddKeywordUI;
+  dlg_addAuthorUI =           new AddAuthorUI( this );
+  dlg_addKeywordUI =          new AddKeywordUI( this );
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
@@ -731,7 +731,7 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Authors", QTableWidgetDescriptionItem::Bold));
-    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, kwutils::concatenate(item->GetAuthors(), "/ ").c_str(), ITEM_AUTHORS, options));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, item->GetAuthorsString().c_str(), ITEM_AUTHORS, options));
     authorsEditor->setItem(itemTreeItem);
     midasTreeItemInfoTable->setItemDelegateForRow(i, this->authorsEditor);
     i++;
@@ -741,7 +741,7 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Keywords", QTableWidgetDescriptionItem::Bold));
-    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, kwutils::concatenate(item->GetKeywords(), "/ ").c_str(), ITEM_KEYWORDS, options));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, item->GetKeywordsString().c_str(), ITEM_KEYWORDS, options));
     keywordsEditor->setItem(itemTreeItem);
     midasTreeItemInfoTable->setItemDelegateForRow(i, this->keywordsEditor);
     i++;

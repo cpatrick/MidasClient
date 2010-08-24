@@ -42,17 +42,18 @@ QWidget* ButtonDelegate::createEditor(QWidget* parent,
 void ButtonDelegate::setEditorData(QWidget* editor,
                                    const QModelIndex& index) const
 {
+  ButtonLineEdit* edit = static_cast<ButtonLineEdit*>(editor);
   std::string value = index.model()->data(
     index, Qt::DisplayRole).toString().toStdString();
-  //m_TextEdit->setText(value.c_str());
+  
+  edit->setData(value.c_str());
 }
 
 void ButtonDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
                                   const QModelIndex& index) const
 {
-  //QPushButton* spinBox = static_cast<QPushButton*>(editor);
-
-  //model->setData(index, spinBox->text(), Qt::EditRole);
+  ButtonLineEdit* edit = static_cast<ButtonLineEdit*>(editor);
+  model->setData(index, edit->getData(), Qt::EditRole);
 }
 
 void ButtonDelegate::updateEditorGeometry(QWidget* editor,

@@ -1206,8 +1206,9 @@ bool midasSynchronizer::PushItem(midasResourceRecord* record)
     << "&parentid=" << record->Parent
     << "&name=" << midasUtils::EscapeForURL(item.GetName())
     << "&abstract=" << midasUtils::EscapeForURL(item.GetAbstract())
-    << "&description=" << midasUtils::EscapeForURL(item.GetDescription());
-    //<< "&authors="
+    << "&description=" << midasUtils::EscapeForURL(item.GetDescription())
+    << "&authors=" << midasUtils::EscapeForURL(item.GetAuthorsString())
+    << "&keywords=" << midasUtils::EscapeForURL(item.GetKeywordsString());
 
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);

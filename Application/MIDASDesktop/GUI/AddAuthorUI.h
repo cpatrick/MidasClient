@@ -4,13 +4,17 @@
 #include "ui_AddAuthorUI.h"
 #include "ButtonEditUI.h"
 
+class MIDASDesktopUI;
+
 class AddAuthorUI : public ButtonEditUI, private Ui::AddAuthorDialog
 {
   Q_OBJECT
 public:
-  AddAuthorUI();
+  AddAuthorUI(MIDASDesktopUI* parent);
+
 public slots:
   void exec();
+  void accept();
 };
 
 #endif

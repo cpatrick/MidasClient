@@ -64,10 +64,12 @@ public:
   void SetAuthors(std::vector<std::string> authors) { m_Authors = authors; }
   void AddAuthor(std::string author) { m_Authors.push_back(author); }
   std::vector<std::string> & GetAuthors() { return m_Authors; }
+  std::string GetAuthorsString();
 
   void SetKeywords(std::vector<std::string> keywords) {m_Keywords = keywords;}
   void AddKeyword(std::string keyword) { m_Keywords.push_back(keyword); }
   std::vector<std::string> & GetKeywords() { return m_Keywords; }
+  std::string GetKeywordsString();
 
   // Get the list of bitstreams
   const std::vector<Bitstream*>& GetBitstreams() { return m_Bitstreams; }

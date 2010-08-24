@@ -7,6 +7,8 @@
 #include "mdoItem.h"
 #include "mdoBitstream.h"
 
+#include "Utils.h"
+
 ResourceEdit::ResourceEdit(midasDatabaseProxy* database)
 {
   this->m_database = database;
@@ -139,6 +141,8 @@ void ResourceEdit::SaveItem(mdo::Item* item, MIDASFields field,
                             std::string data)
 {
   bool changed = false;
+  std::vector<std::string> tokens;
+
   switch(field)
     {
     case ITEM_TITLE:
@@ -162,23 +166,16 @@ void ResourceEdit::SaveItem(mdo::Item* item, MIDASFields field,
         changed = true;
         }
       break;
-    /*case ITEM_KEYWORDS:
-
-      if(item->GetKeywords() != data)
-        {
-        // todo we have to parse the keywords string here
-        //item->SetKeywords(data.c_str());
-        changed = true;
-        }
+    case ITEM_KEYWORDS:
+      kwutils::tokenize(data, tokens, "/", true);
+      item->SetKeywords(tokens);
+      changed = true;
       break;
     case ITEM_AUTHORS:
-      if(item->Get != data)
-        {
-        // todo we have to parse the keywords string here
-        //item->SetAutho(data.c_str());
-        changed = true;
-        }
-      break;*/
+      kwutils::tokenize(data, tokens, "/", true);
+      item->SetAuthors(tokens);
+      changed = true;
+      break;
     }
 
   if(changed)
