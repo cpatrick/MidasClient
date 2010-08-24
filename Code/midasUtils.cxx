@@ -19,7 +19,7 @@
 #include "mdoCommunity.h"
 #include "mdoItem.h"
 #include "midasStandardIncludes.h"
-#include "MidasTableDefs.h"
+#include "midasTableDefs.h"
 #include <time.h>
 
 #define UUID_LENGTH 45
