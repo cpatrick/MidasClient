@@ -671,6 +671,10 @@ void midasCLI::PrintCommandHelp(std::string command)
     {
     std::cout << "Usage: MIDAScli ... set_root_dir DIR" << std::endl;
     }
+  else if(command == "status")
+    {
+    std::cout << "Usage: MIDAScli ... status" << std::endl;
+    }
   else if(command == "upload")
     {
     std::cout << "Usage: MIDAScli ... upload SOURCE DESTINATION"
