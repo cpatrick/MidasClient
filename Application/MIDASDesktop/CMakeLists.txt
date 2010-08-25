@@ -254,10 +254,7 @@ if ( NOT Q_WS_MAC)
             foreach(qtlib ${QTLIBLIST})
               if(WIN32)
                 get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
-                file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
-                file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
-                file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MinSizeRel)
-                file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo)
+
                 install(FILES ${QT_DLL_PATH_tmp}/${qtlib}${type}d4.dll
                   #DESTINATION ./
                   DESTINATION bin
