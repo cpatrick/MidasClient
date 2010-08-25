@@ -134,7 +134,7 @@ bool RestAPI::PerformCurl()
   if(m_OutputMode == BUFFER)
     {
     this->ResetOutputBuffer();
-    }     
+    }
   
   m_CurlCode = curl_easy_perform(m_cURL);
   if ( m_CurlCode != CURLE_OK )
