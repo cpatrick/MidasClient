@@ -1,5 +1,3 @@
-#include <QStringList>
-
 #include "MidasTreeItem.h"
 #include "MidasCommunityTreeItem.h"
 #include "MidasCollectionTreeItem.h"
@@ -7,10 +5,11 @@
 #include "MidasBitstreamTreeItem.h"
 #include "Utils.h"
 #include "MidasClientGlobal.h"
+
+#include <QStringList>
 #include <QPixmap>
 #include <QStyle>
 #include <QTime>
-#include <QList>
 
 MidasTreeItem::MidasTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent):
   lifespan(600),  
@@ -64,7 +63,7 @@ void MidasTreeItem::appendChild(MidasTreeItem *item)
 
 void MidasTreeItem::removeChild(MidasTreeItem *item)
 {
-  this->childItems.removeOne(item);
+  this->childItems.removeAt(this->childItems.indexOf(item));
 }
 
 void MidasTreeItem::removeAllChild()
