@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QThread>
 #include <QItemDelegate>
+#include <QUrl>
 
 #include <kwsys/SystemTools.hxx>
 
