@@ -1,4 +1,4 @@
-if(BUILD_TESTING)
+if(BUILD_MIDASCPP_TESTING)
   set(midascli_command "${MIDASCPP_BINARY_DIR}/bin/MIDAScli")
   set(sqlite3_command "${MIDASCPP_BINARY_DIR}/bin/sqlite3")
   set(dashboard_midas_server_url http://localhost/midas/api/rest CACHE STRING "The URL of the REST API for MIDAS testing")
@@ -62,6 +62,6 @@ if(BUILD_TESTING)
   set_tests_properties(testPushNoAuth PROPERTIES DEPENDS testAddBitstream WILL_FAIL ON)
   add_test(testPush ${midascli_command} --database ${sqlite_db} --profile test push)
   set_tests_properties(testPush PROPERTIES DEPENDS testPushNoAuth)
-endif(BUILD_TESTING)
+endif(BUILD_MIDASCPP_TESTING)
   
 
