@@ -10,6 +10,7 @@
 #include <QPixmap>
 #include <QStyle>
 #include <QTime>
+#include <QList>
 
 MidasTreeItem::MidasTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent):
   lifespan(600),  
