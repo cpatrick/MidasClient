@@ -17,7 +17,7 @@
 
 #include "mdoItem.h"
 #include "mdoBitstream.h"
-#include "kwsys/SystemTools.hxx"
+#include "midasStandardIncludes.h"
 
 namespace mds{
 

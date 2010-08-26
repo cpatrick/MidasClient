@@ -13,7 +13,7 @@
 #include <QItemDelegate>
 #include <QUrl>
 
-#include <kwsys/SystemTools.hxx>
+#include "midasStandardIncludes.h"
 
 #include "mwsSettings.h"
 #include "mdoCommunity.h"

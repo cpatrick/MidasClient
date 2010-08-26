@@ -9,8 +9,8 @@
 
 =========================================================================*/
 
-#ifndef MIDASSTANDARDINCLUDES_H
-#define MIDASSTANDARDINCLUDES_H
+#ifndef __MIDASSTANDARDINCLUDES_H
+#define __MIDASSTANDARDINCLUDES_H
 
 #include <vector>
 #include <string>
@@ -28,7 +28,7 @@
 #include <sstream>
 #include <iomanip>
 
-#include <kwsys/SystemTools.hxx>
+#include "MIDASConfig.h"
 #include "midasUtils.h"
 
 #define INVALID_POLICY -151

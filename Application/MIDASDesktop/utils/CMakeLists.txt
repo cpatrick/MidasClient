@@ -4,8 +4,6 @@ cmake_minimum_required(VERSION 2.6)
 SET(MIDASDesktopUtils_SRCS
   Utils.h
   Printable.h
-  metaOutput.h
-  metaOutput.cxx
   md5.h
   md5.cxx
   Logger.cxx
@@ -13,4 +11,3 @@ SET(MIDASDesktopUtils_SRCS
 
 # Create the base library
 ADD_LIBRARY(MIDASDesktopUtils ${MIDASDesktopUtils_SRCS})
-

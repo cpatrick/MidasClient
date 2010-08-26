@@ -14,7 +14,7 @@
 #include "MidasCommunityTreeItem.h"
 #include "MidasCollectionTreeItem.h"
 
-#include <kwsys/SystemTools.hxx>
+#include "midasStandardIncludes.h"
 
 CreateMidasResourceUI::CreateMidasResourceUI(MIDASDesktopUI *m_Parent):
   QDialog(m_Parent), m_Parent(m_Parent)

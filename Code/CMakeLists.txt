@@ -17,10 +17,6 @@ configure_file(
   @ONLY
 )
 
-include_directories(
-  "${MIDASCPP_BINARY_DIR}/Code"
-)
-
 # --------------------------------------------------------------------------
 # Sources
 set(MIDASRest_SRCS
