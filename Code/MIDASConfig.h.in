@@ -3,5 +3,6 @@
 
 #define MIDAS_CLIENT_VERSION (STR("@MIDASCPP_VERSION_STRING@"))
 #include <@MIDASCPP_KWSYS_NAMESPACE@/SystemTools.hxx>
+#define kwsys @MIDASCPP_KWSYS_NAMESPACE@
 
 #endif
