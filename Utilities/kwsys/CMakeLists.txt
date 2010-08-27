@@ -933,7 +933,7 @@ ENDIF(KWSYS_USE_Process)
 #-----------------------------------------------------------------------------
 # Setup testing if not being built as part of another project.
 IF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
-  IF(BUILD_TESTING)
+  IF(BUILD_KWSYS_TESTING)
     # Compute the location of executables.
     SET(EXEC_DIR "${CMAKE_CURRENT_BINARY_DIR}")
     IF(EXECUTABLE_OUTPUT_PATH)
@@ -1069,5 +1069,5 @@ IF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
       SET_TESTS_PROPERTIES(kwsys.testFail PROPERTIES MEASUREMENT "Some Key=Some Value")
       MESSAGE(STATUS "GET_TEST_PROPERTY returned: ${wfv}")
     ENDIF(COMMAND SET_TESTS_PROPERTIES AND COMMAND GET_TEST_PROPERTY AND KWSYS_STANDALONE)
-  ENDIF(BUILD_TESTING)
+  ENDIF(BUILD_KWSYS_TESTING)
 ENDIF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
