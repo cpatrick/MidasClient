@@ -39,6 +39,13 @@ bool ProxyInterface::FetchTree()
             << " ProxyInterface::FetchTree(): Not implemented" << std::endl;
   return false;
 }
+
+bool ProxyInterface::Delete()
+{
+   std::cerr << m_Name.c_str() 
+            << " ProxyInterface::Delete(): Not implemented" << std::endl;
+  return false;
+}
  
 /** Download a bitstream */
 std::string ProxyInterface::DownloadBitstream(const char* uuid,const char* filename)

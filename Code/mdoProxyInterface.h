@@ -35,6 +35,9 @@ public:
   
   /** Commit data */
   virtual bool Commit() = 0;
+
+  /** Delete the object */
+  virtual bool Delete();
   
   /** Download a bitstream */
   virtual std::string DownloadBitstream(const char* uuid,const char* filename);

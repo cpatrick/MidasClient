@@ -25,6 +25,15 @@ namespace mdo
   class Bitstream;
 }
 
+namespace mds
+{
+  class Community;
+  class Collection;
+  class Item;
+  class Bitstream;
+  class Object;
+}
+
 struct midasResourceRecord
 {
   midasResourceRecord() :
@@ -51,6 +60,10 @@ struct midasAuthProfile
 
 class midasDatabaseProxy : public midasLogAware
 {
+  friend class mds::Community;
+  friend class mds::Collection;
+  friend class mds::Item;
+  friend class mds::Bitstream;
 public:
   midasDatabaseProxy(std::string database);
   ~midasDatabaseProxy();
@@ -66,9 +79,6 @@ public:
     };
 
   mds::SQLiteDatabase* GetDatabase();
-
-  bool Open();
-  bool Close();
 
   /**
    * Clean entries in the database
@@ -104,16 +114,6 @@ public:
    * Delete a resource from the database
    */
   bool DeleteResource(std::string uuid, bool deleteFiles = false);
-
-  bool SaveInfo(mdo::Community* community, bool markDirty = false);
-  bool SaveInfo(mdo::Collection* collection, bool markDirty = false);
-  bool SaveInfo(mdo::Item* item, bool markDirty = false);
-  bool SaveInfo(mdo::Bitstream* bitstream, bool markDirty = false);
-
-  void FetchInfo(mdo::Community* community);
-  void FetchInfo(mdo::Collection* collection);
-  void FetchInfo(mdo::Item* item);
-  void FetchInfo(mdo::Bitstream* bitstream);
 
   bool AddAuthProfile(std::string user, std::string appName,
     std::string apiKey, std::string profileName,
@@ -155,7 +155,10 @@ public:
                 bool checkDirty = true);
   void Populate(mdo::Item* node, bool checkDirty = true);
 
-  /** 
+  /** Create an MDS object given a uuid */
+  mds::Object* ObjectFromUUID(std::string uuid);
+
+  /**
    * If any resources are located outside the current root on disk,
    * this will copy them underneath it and update their stored path
    */
@@ -177,6 +180,9 @@ protected:
 
   mds::SQLiteDatabase* Database;
   std::string DatabasePath;
+  
+  bool Open();
+  bool Close();
 };
 
 #endif

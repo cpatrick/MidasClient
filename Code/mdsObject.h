@@ -9,18 +9,18 @@
 
 =========================================================================*/
 
-#ifndef _mdsObject_h_
-#define _mdsObject_h_
+#ifndef __mdsObject_h_
+#define __mdsObject_h_
 
 #include <string>
 #include <vector>
 
 #include "mdoProxyInterface.h"
-#include "mdsDatabase.h"
+#include "midasDatabaseProxy.h"
 
 namespace mds{
 
-/** This class represent an object on the MIDAS server. */
+/** This class represent an object in the local database */
 class Object : public mdo::ProxyInterface
 {
 public:
@@ -28,19 +28,26 @@ public:
   Object()
     {
     m_Database = NULL;
+    m_MarkDirty = false;
     }
     
   ~Object(){};
 
   /** Set the Database */
-  void SetDatabase(Database* database)
+  void SetDatabase(midasDatabaseProxy* database)
     {
     m_Database = database;
     }
 
+  void MarkAsDirty()
+    {
+    m_MarkDirty = true;
+    }
+
 protected:
   
-  Database* m_Database;
+  midasDatabaseProxy* m_Database;
+  bool                m_MarkDirty;
   
 };
 

@@ -41,7 +41,6 @@ void CreateProfileUI::init()
   profileComboBox->clear();
   profileComboBox->addItem("New Profile");
 
-  parent->getDatabaseProxy()->Open();
   serverURLEdit->setText(
     parent->getDatabaseProxy()->GetSetting(midasDatabaseProxy::LAST_URL).c_str());
 
@@ -51,7 +50,6 @@ void CreateProfileUI::init()
     {
     profileComboBox->addItem(i->c_str());
     }
-  parent->getDatabaseProxy()->Close();
 }
 
 void CreateProfileUI::fillData(const QString& name)
@@ -67,10 +65,8 @@ void CreateProfileUI::fillData(const QString& name)
     }
   else
     {
-    parent->getDatabaseProxy()->Open();
     midasAuthProfile profile = parent->getDatabaseProxy()->GetAuthProfile(
       name.toStdString());
-    parent->getDatabaseProxy()->Close();
 
     profileNameEdit->setText(profile.Name.c_str());
     emailEdit->setText(profile.User.c_str());
@@ -154,9 +150,7 @@ void CreateProfileUI::deleteProfile()
   std::string profileName = profileComboBox->currentText().toStdString();
   profileComboBox->removeItem(profileComboBox->currentIndex());
 
-  parent->getDatabaseProxy()->Open();
   parent->getDatabaseProxy()->DeleteProfile(profileName);
-  parent->getDatabaseProxy()->Close();
 
   std::stringstream text;
   text << "Deleted profile " << profileName;

@@ -21,16 +21,12 @@ void SignInThread::SetProfile(QString profile)
 
 void SignInThread::run()
 {
-  m_Parent->getDatabaseProxy()->Open();
   std::string url = m_Parent->getDatabaseProxy()->GetAuthProfile(m_Profile.toStdString()).Url;
-  m_Parent->getDatabaseProxy()->Close();
 
   if(mws::WebAPI::Instance()->CheckConnection())
     {
     m_Parent->setServerURL(url);
-    m_Parent->getDatabaseProxy()->Open();
     m_Parent->getAuthenticator()->SetProfile(m_Profile.toStdString());
-    m_Parent->getDatabaseProxy()->Close();
     m_Parent->getSynchronizer()->GetAuthenticator()->SetProfile(m_Profile.toStdString());
     
     m_Parent->getTreeViewServer()->SetWebAPI(mws::WebAPI::Instance());

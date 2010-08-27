@@ -15,7 +15,13 @@
 #include "Logger.h"
 #include "Utils.h"
 #include "MidasClientGlobal.h"
-#include "mwsCommunity.h"
+#include "mdoCommunity.h"
+#include "mdsCommunity.h"
+#include "mdsCollection.h"
+#include "mdoCollection.h"
+#include "mdsItem.h"
+#include "mdoItem.h"
+#include "mdsBitstream.h"
 #include "mdoBitstream.h"
 #include "midasDatabaseProxy.h"
 #include "midasLog.h"
@@ -178,30 +184,38 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
 
   if((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
     {
-    m_Database->Open();
-    m_Database->FetchInfo(communityTreeItem->getCommunity());
-    m_Database->Close();
+    mds::Community mdsComm;
+    mdsComm.SetObject(communityTreeItem->getCommunity());
+    mdsComm.SetDatabase(m_Database);
+    mdsComm.Fetch();
+
     emit midasCommunityTreeItemSelected(communityTreeItem);
     }
   else if((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
     {
-    m_Database->Open();
-    m_Database->FetchInfo(collectionTreeItem->getCollection());
-    m_Database->Close();
+    mds::Collection mdsColl;
+    mdsColl.SetObject(collectionTreeItem->getCollection());
+    mdsColl.SetDatabase(m_Database);
+    mdsColl.Fetch();
+
     emit midasCollectionTreeItemSelected(collectionTreeItem);
     }
   else if((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
     {
-    m_Database->Open();
-    m_Database->FetchInfo(itemTreeItem->getItem());
-    m_Database->Close();
+    mds::Item mdsItem;
+    mdsItem.SetObject(itemTreeItem->getItem());
+    mdsItem.SetDatabase(m_Database);
+    mdsItem.Fetch();
+
     emit midasItemTreeItemSelected(itemTreeItem);
     }
   else if((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
     {
-    m_Database->Open();
-    m_Database->FetchInfo(bitstreamTreeItem->getBitstream());
-    m_Database->Close();
+    mds::Bitstream mdsBitstream;
+    mdsBitstream.SetObject(bitstreamTreeItem->getBitstream());
+    mdsBitstream.SetDatabase(m_Database);
+    mdsBitstream.Fetch();
+
     emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
     }
 }

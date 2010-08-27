@@ -176,10 +176,8 @@ int midasCLI::Perform(std::vector<std::string> args)
 
     if(this->UseTempProfile)
       {
-      this->Synchronizer->GetDatabase()->Open();
       this->Synchronizer->GetDatabase()->DeleteProfile(
         this->Synchronizer->GetAuthenticator()->GetProfile());
-      this->Synchronizer->GetDatabase()->Close();
       }
 
     return rc;
@@ -222,22 +220,18 @@ int midasCLI::RunSynchronizer()
       return -1;
       }
 
-    this->Synchronizer->GetDatabase()->Open();
     oldRoot = this->Synchronizer->GetDatabase()->GetSetting(
       midasDatabaseProxy::ROOT_DIR);
     this->Synchronizer->GetDatabase()->SetSetting(
       midasDatabaseProxy::ROOT_DIR, this->RootDir);
-    this->Synchronizer->GetDatabase()->Close();
     }
 
   int retVal = this->Synchronizer->Perform();
 
   if(oldRoot != "")
     {
-    this->Synchronizer->GetDatabase()->Open();
     this->Synchronizer->GetDatabase()->SetSetting(
       midasDatabaseProxy::ROOT_DIR, oldRoot);
-    this->Synchronizer->GetDatabase()->Close();
     }
   return retVal;
 }
@@ -506,10 +500,9 @@ int midasCLI::SetRootDir(std::vector<std::string> args)
       "directory." << std::endl;
     return -1;
     }
-  this->Synchronizer->GetDatabase()->Open();
   this->Synchronizer->GetDatabase()->SetSetting(
     midasDatabaseProxy::ROOT_DIR, root_dir);
-  this->Synchronizer->GetDatabase()->Close();
+
   std::cout << "Changed root directory to " << root_dir << "." << std::endl;
   return 0;
 }

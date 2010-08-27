@@ -9,8 +9,8 @@
 
 =========================================================================*/
 #include "mdsBitstream.h"
-#include <sstream>
-#include <iostream>
+#include "mdoBitstream.h"
+#include "midasStandardIncludes.h"
 
 namespace mds{
 
@@ -28,11 +28,69 @@ Bitstream::~Bitstream()
 /** Fetch the object */
 bool Bitstream::Fetch()
 {
+  if(!m_Bitstream)
+    {
+    m_Database->GetLog()->Error("Bitstream::Fetch : Bitstream not set\n");
+    return false;
+    }
+    
+  if(m_Bitstream->GetId() == 0)
+    {
+    m_Database->GetLog()->Error("Bitstream::Fetch : BitstreamId not set\n");
+    return false;
+    }
+
+  if(m_Bitstream->IsFetched())
+    {
+    return true;
+    }
+
+  std::stringstream query;
+  query << "SELECT size_bytes, name FROM bitstream WHERE bitstream_id='"
+    << m_Bitstream->GetId() << "'";
+  m_Database->Open();
+  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+
+  while(m_Database->GetDatabase()->GetNextRow())
+    {
+    std::stringstream val;
+    val << m_Database->GetDatabase()->GetValueAsInt(0);
+    m_Bitstream->SetSize(val.str());
+    m_Bitstream->SetName(m_Database->GetDatabase()->GetValueAsString(1));
+    }
+  m_Bitstream->SetFetched(true);
+  m_Database->Close();
   return true;
 }
 
 /** Commit the object */
 bool Bitstream::Commit()
+{
+  std::stringstream query;
+  query << "UPDATE bitstream SET "
+    << "size_bytes='" << m_Bitstream->GetSize() << "', "
+    << "name='" << midasUtils::EscapeForSQL(m_Bitstream->GetName())
+    << "' WHERE bitstream_id='" << m_Bitstream->GetId() << "'";
+
+  m_Database->Open();
+  if(m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->Close();
+    if(m_MarkDirty)
+      {
+      m_Database->MarkDirtyResource(m_Bitstream->GetUuid(), midasDirtyAction::MODIFIED);
+      }
+    return true;
+    }
+  return false;
+}
+
+bool Bitstream::FetchTree()
+{
+  return true;
+}
+
+bool Bitstream::Delete()
 {
   return true;
 }

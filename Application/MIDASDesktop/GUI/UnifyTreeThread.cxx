@@ -12,9 +12,7 @@ UnifyTreeThread::~UnifyTreeThread()
 
 void UnifyTreeThread::run()
 {
-  m_Parent->getDatabaseProxy()->Open();
   m_Parent->getDatabaseProxy()->UnifyTree();
-  m_Parent->getDatabaseProxy()->Close();
 
   emit threadComplete();
 }

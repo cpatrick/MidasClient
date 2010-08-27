@@ -62,12 +62,13 @@ set(MIDASRest_SRCS
   mwsWebAPI.cxx
   mwsSettings.h
   mwsSettings.cxx
-
-  metaCommand.h
-  metaCommand.cxx
  
   mdsSQLiteDatabase.h
   mdsSQLiteDatabase.cxx
+  mdsCommunity.h
+  mdsCommunity.cxx
+  mdsCollection.h
+  mdsCollection.cxx
   mdsItem.h
   mdsItem.cxx
   mdsBitstream.h

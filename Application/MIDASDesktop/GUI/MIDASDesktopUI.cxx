@@ -20,6 +20,7 @@
 #include "mwsCommunity.h"
 #include "mwsItem.h"
 #include "mwsCollection.h"
+#include "mdsBitstream.h"
 #include "mwsNewResources.h"
 #include "mwsSearch.h"
 #include "midasAuthenticator.h"
@@ -327,12 +328,10 @@ void MIDASDesktopUI::showNormal()
 
   if(m_database)
     {
-    m_database->Open();
     if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 0)
       {
       refreshTimer->stop();
       }
-    m_database->Close();
     }
   QMainWindow::showNormal();
   QMainWindow::activateWindow();
@@ -426,12 +425,10 @@ void MIDASDesktopUI::closeEvent(QCloseEvent *event)
 
     if(m_signIn)
       {
-      m_database->Open();
       if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 0)
         {
         refreshTimer->start();
         }
-      m_database->Close();
       }
     }
 }
@@ -948,7 +945,6 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
     std::string path = i->toStdString();
     std::string name = kwsys::SystemTools::GetFilenameName(path.c_str());
     std::string uuid = midasUtils::GenerateUUID();
-    this->m_database->Open();
     
     if(m_database->GetSettingBool(midasDatabaseProxy::UNIFIED_TREE))
       {
@@ -970,9 +966,12 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
     bitstream.SetId(id);
     bitstream.SetName(name.c_str());
     bitstream.SetSize(size.str());
-    this->m_database->SaveInfo(&bitstream);
+    mds::Bitstream mdsBitstream;
+    mdsBitstream.SetDatabase(m_database);
+    mdsBitstream.SetObject(&bitstream);
+    mdsBitstream.MarkAsDirty();
+    mdsBitstream.Commit();
     this->m_database->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
-    this->m_database->Close();
 
     if(id)
       {
@@ -990,9 +989,7 @@ void MIDASDesktopUI::viewDirectory()
   MidasTreeItem* resource = const_cast<MidasTreeItem*>(
     treeViewClient->getSelectedMidasTreeItem());
 
-  m_database->Open();
   std::string path = m_database->GetRecordByUuid(resource->getUuid()).Path;
-  m_database->Close();
 
   path = "file:" + path;
   QUrl url(path.c_str());
@@ -1060,17 +1057,13 @@ void MIDASDesktopUI::signInOrOut()
 
 void MIDASDesktopUI::setTimerInterval()
 {
-  m_database->Open();
   int minutes = atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_INTERVAL).c_str());
-  m_database->Close();
   refreshTimer->setInterval(minutes * 60 * 1000);
 }
 
 void MIDASDesktopUI::adjustTimerSettings()
 {
-  m_database->Open();
   int setting = atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str());
-  m_database->Close();
 
   refreshTimer->stop();
 
@@ -1101,12 +1094,10 @@ void MIDASDesktopUI::signIn(bool ok)
     activateActions( true, MIDASDesktopUI::ACTION_CONNECTED );
 
     // start the refresh timer here if our setting = 1
-    m_database->Open();
     if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 1)
       {
       refreshTimer->start();
       }
-    m_database->Close();
 
     // Satus bar
     std::string connect = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 
@@ -1338,7 +1329,6 @@ void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)
 void MIDASDesktopUI::storeLastPollTime()
 {
   mws::NewResources newResources;
-  m_database->Open();
   newResources.SetSince(m_database->GetSetting(midasDatabaseProxy::LAST_FETCH_TIME));
   newResources.Fetch();
   this->m_dirtyUuids = newResources.GetUuids();
@@ -1350,7 +1340,6 @@ void MIDASDesktopUI::storeLastPollTime()
     }
 
   m_database->SetSetting(midasDatabaseProxy::LAST_FETCH_TIME, newResources.GetTimestamp());
-  m_database->Close();
 
   this->decorateServerTree();
 }
@@ -1401,9 +1390,7 @@ void MIDASDesktopUI::finishedExpandingTree()
 void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
 {
   std::string uuid = this->treeViewClient->getSelectedMidasTreeItem()->getUuid();
-  this->m_database->Open();
   this->m_database->DeleteResource(uuid, deleteFiles);
-  this->m_database->Close();
 
   this->updateClientTreeView();
   std::stringstream text;

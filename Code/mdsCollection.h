@@ -9,38 +9,37 @@
 
 =========================================================================*/
 
-#ifndef __mdsItem_h_
-#define __mdsItem_h_
+#ifndef __mdsCollection_h_
+#define __mdsCollection_h_
 
 #include "mdsObject.h"
 
 namespace mdo{
-  class Item;
+  class Collection;
 }
 
 namespace mds{
 
-class Item : public Object
+class Collection : public Object
 {
 public:
 
-  Item();
-  ~Item();
+  Collection();
+  ~Collection();
 
   bool Fetch();
   bool Commit();
   bool FetchTree();
   bool Delete();
   
-  // Add the object
   void SetObject(mdo::Object* object);
-
+   
 protected:
 
-  mdo::Item* m_Item;
+  mdo::Collection* m_Collection;
 
 };
 
 } //end namespace
 
-#endif //__mdsItem_h_
+#endif //__mdsCollection_h_

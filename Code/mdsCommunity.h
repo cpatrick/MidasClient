@@ -9,38 +9,37 @@
 
 =========================================================================*/
 
-#ifndef __mdsItem_h_
-#define __mdsItem_h_
+#ifndef __mdsCommunity_h_
+#define __mdsCommunity_h_
 
 #include "mdsObject.h"
 
 namespace mdo{
-  class Item;
+  class Community;
 }
 
 namespace mds{
 
-class Item : public Object
+class Community : public Object
 {
 public:
 
-  Item();
-  ~Item();
+  Community();
+  ~Community();
 
   bool Fetch();
   bool Commit();
   bool FetchTree();
   bool Delete();
-  
-  // Add the object
+
   void SetObject(mdo::Object* object);
 
 protected:
 
-  mdo::Item* m_Item;
+  mdo::Community* m_Community;
 
 };
 
 } //end namespace
 
-#endif //__mdsItem_h_
+#endif //__mdsCommunity_h_

@@ -30,9 +30,7 @@ midasAuthenticator::~midasAuthenticator()
 //-------------------------------------------------------------------
 bool midasAuthenticator::Login(mws::WebAPI* api)
 {
-  this->Database->Open();
   midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
-  this->Database->Close();
   
   if(profile.IsAnonymous())
     {
@@ -56,10 +54,7 @@ bool midasAuthenticator::Login(mws::WebAPI* api)
 //-------------------------------------------------------------------
 bool midasAuthenticator::IsAnonymous()
 {
-  this->Database->Open();
   midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
-  this->Database->Close();
-
   return profile.IsAnonymous();
 }
 
@@ -78,7 +73,6 @@ bool midasAuthenticator::AddAuthProfile(std::string user,
     return false;
     }
 
-  this->Database->Open();
   mws::RestXMLParser parser;
   mws::WebAPI* remote = mws::WebAPI::Instance();
   if(this->ServerURL == "")
@@ -96,7 +90,6 @@ bool midasAuthenticator::AddAuthProfile(std::string user,
       {
       text << this->ServerURL << " is not a valid MIDAS Rest API URL";
       Log->Error(text.str());
-      this->Database->Close();
       return false;
       }
     }
@@ -109,7 +102,6 @@ bool midasAuthenticator::AddAuthProfile(std::string user,
     }
   bool success = this->Database->AddAuthProfile(
     user, appName, apiKey, profileName, rootDir, this->ServerURL);
-  this->Database->Close();
 
   if(!success)
     {
@@ -137,7 +129,6 @@ std::string midasAuthenticator::FetchToken()
     remote->SetServerUrl(this->ServerURL.c_str());
     remote->GetRestAPI()->SetXMLParser(&parser);
     
-    this->Database->Open();
     midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
     if(profile.Name == "")
       {
@@ -147,7 +138,6 @@ std::string midasAuthenticator::FetchToken()
       Log->Error(text.str());
       return "";
       }
-    this->Database->Close();
 
     if(!remote->Login(profile.AppName.c_str(), profile.User.c_str(),
                       profile.ApiKey.c_str()))

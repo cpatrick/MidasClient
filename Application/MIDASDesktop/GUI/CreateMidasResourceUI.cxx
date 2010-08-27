@@ -69,7 +69,6 @@ void CreateMidasResourceUI::accept()
   switch(this->m_Type)
     {
     case Community:
-      this->m_Parent->getDatabaseProxy()->Open();
       path = this->m_Parent->getDatabaseProxy()->GetAuthProfile(
         this->m_Parent->getAuthenticator()->GetProfile()).RootDir;
 
@@ -78,7 +77,6 @@ void CreateMidasResourceUI::accept()
         path = this->m_Parent->getDatabaseProxy()->GetSetting(
           midasDatabaseProxy::ROOT_DIR);
         }
-      this->m_Parent->getDatabaseProxy()->Close();
 
       if(path == "")
         {
@@ -166,12 +164,10 @@ void CreateMidasResourceUI::AddSubCommunity()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  this->m_Parent->getDatabaseProxy()->Open();
   std::string path = m_Parent->getDatabaseProxy()->GetRecordByUuid(
     m_Parent->getDatabaseProxy()->GetUuid(
     midasResourceType::COMMUNITY,
     parentComm->getCommunity()->GetId())).Path;
-  this->m_Parent->getDatabaseProxy()->Close();
   
   this->AddCommunity(path);
 }
@@ -185,12 +181,10 @@ void CreateMidasResourceUI::AddCollection()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  this->m_Parent->getDatabaseProxy()->Open();
   std::string path = m_Parent->getDatabaseProxy()->GetRecordByUuid(
     m_Parent->getDatabaseProxy()->GetUuid(
     midasResourceType::COMMUNITY,
     parentComm->getCommunity()->GetId())).Path;
-  this->m_Parent->getDatabaseProxy()->Close();
 
   path += "/" + nameEdit->text().toStdString();
   kwsys::SystemTools::MakeDirectory(path.c_str());
@@ -208,12 +202,10 @@ void CreateMidasResourceUI::AddItem()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  this->m_Parent->getDatabaseProxy()->Open();
   std::string path = m_Parent->getDatabaseProxy()->GetRecordByUuid(
     m_Parent->getDatabaseProxy()->GetUuid(
     midasResourceType::COLLECTION,
     parentColl->getCollection()->GetId())).Path;
-  this->m_Parent->getDatabaseProxy()->Close();
 
   path += "/" + nameEdit->text().toStdString();
   kwsys::SystemTools::MakeDirectory(path.c_str());

@@ -3,9 +3,13 @@
 #include "midasUtils.h"
 #include "midasDatabaseProxy.h"
 #include "mdoCommunity.h"
+#include "mdsCommunity.h"
 #include "mdoCollection.h"
+#include "mdsCollection.h"
 #include "mdoItem.h"
+#include "mdsItem.h"
 #include "mdoBitstream.h"
+#include "mdsBitstream.h"
 
 #include "Utils.h"
 
@@ -28,7 +32,6 @@ void ResourceEdit::Save(QTableWidgetItem* row)
   std::string data = row->data(Qt::DisplayRole).toString().toStdString();
   midasUtils::StringTrim(data);
 
-  this->m_database->Open();
   if((commRow = dynamic_cast<QTableWidgetMidasCommunityDescItem*>(row)) != NULL)
     {
     this->SaveCommunity(commRow->getModelData(), commRow->getField(), data);
@@ -45,7 +48,6 @@ void ResourceEdit::Save(QTableWidgetItem* row)
     {
     this->SaveBitstream(bitstreamRow->getModelData(), itemRow->getField(), data);
     }
-  this->m_database->Close();
 }
 
 void ResourceEdit::SaveCommunity(mdo::Community* comm, MIDASFields field,
@@ -94,8 +96,12 @@ void ResourceEdit::SaveCommunity(mdo::Community* comm, MIDASFields field,
     }
 
   if(changed)
-    {    
-    this->m_database->SaveInfo(comm, true);
+    {
+    mds::Community mdsComm;
+    mdsComm.SetDatabase(m_database);
+    mdsComm.SetObject(comm);
+    mdsComm.MarkAsDirty();
+    mdsComm.Commit();
 
     this->Log->Status("Community saved successfully");
     this->Log->Message("Community saved successfully");
@@ -142,7 +148,11 @@ void ResourceEdit::SaveCollection(mdo::Collection* coll, MIDASFields field,
 
   if(changed)
     {
-    this->m_database->SaveInfo(coll, true);
+    mds::Collection mdsColl;
+    mdsColl.SetObject(coll);
+    mdsColl.SetDatabase(m_database);
+    mdsColl.MarkAsDirty();
+    mdsColl.Commit();
 
     this->Log->Status("Collection saved successfully");
     this->Log->Message("Collection saved successfully");
@@ -194,7 +204,11 @@ void ResourceEdit::SaveItem(mdo::Item* item, MIDASFields field,
 
   if(changed)
     {
-    this->m_database->SaveInfo(item, true);
+    mds::Item mdsItem;
+    mdsItem.SetObject(item);
+    mdsItem.SetDatabase(m_database);
+    mdsItem.MarkAsDirty();
+    mdsItem.Commit();
 
     this->Log->Status("Item saved successfully");
     this->Log->Message("Item saved successfully");

@@ -56,264 +56,6 @@ mds::SQLiteDatabase* midasDatabaseProxy::GetDatabase()
 }
 
 //-------------------------------------------------------------------------
-void midasDatabaseProxy::FetchInfo(mdo::Community* community)
-{
-  if(community->IsFetched())
-    {
-    return;
-    }
-  std::stringstream query;
-  query << "SELECT short_description, introductory_text, copyright_text, name "
-    "FROM community WHERE community_id='" << community->GetId() << "'";
-
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  while(this->Database->GetNextRow())
-    {
-    community->SetDescription(this->Database->GetValueAsString(0));
-    community->SetIntroductoryText(this->Database->GetValueAsString(1));
-    community->SetCopyright(this->Database->GetValueAsString(2));
-    community->SetName(this->Database->GetValueAsString(3));
-    }
-  community->SetFetched(true);
-}
-
-//-------------------------------------------------------------------------
-void midasDatabaseProxy::FetchInfo(mdo::Collection* collection)
-{
-  if(collection->IsFetched())
-    {
-    return;
-    }
-  std::stringstream query;
-  query << "SELECT short_description, introductory_text, copyright_text, name "
-    "FROM collection WHERE collection_id='" << collection->GetId() << "'";
-
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  while(this->Database->GetNextRow())
-    {
-    collection->SetDescription(this->Database->GetValueAsString(0));
-    collection->SetIntroductoryText(this->Database->GetValueAsString(1));
-    collection->SetCopyright(this->Database->GetValueAsString(2));
-    collection->SetName(this->Database->GetValueAsString(3));
-    }
-  collection->SetFetched(true);
-}
-
-void midasDatabaseProxy::FetchInfo(mdo::Bitstream* bitstream)
-{
-  if(bitstream->IsFetched())
-    {
-    return;
-    }
-  std::stringstream query;
-  query << "SELECT size_bytes, name FROM bitstream WHERE bitstream_id='"
-    << bitstream->GetId() << "'";
-
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  while(this->Database->GetNextRow())
-    {
-    std::stringstream val;
-    val << this->Database->GetValueAsInt(0);
-    bitstream->SetSize(val.str());
-    bitstream->SetName(this->Database->GetValueAsString(1));
-    }
-  bitstream->SetFetched(true);
-}
-
-//-------------------------------------------------------------------------
-void midasDatabaseProxy::FetchInfo(mdo::Item* item)
-{
-  if(item->IsFetched())
-    {
-    return;
-    }
-
-  std::stringstream query;
-  query << "SELECT text_value FROM metadatavalue WHERE item_id='"
-    << item->GetId() << "' AND metadata_field_id='27'";
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  while(this->Database->GetNextRow())
-    {
-    item->SetAbstract(this->Database->GetValueAsString(0));
-    }
-
-  query.str(std::string());
-  query << "SELECT text_value FROM metadatavalue WHERE item_id='"
-    << item->GetId() << "' AND metadata_field_id='3'";
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  while(this->Database->GetNextRow())
-    {
-    item->AddAuthor(this->Database->GetValueAsString(0));
-    }
-  
-  query.str(std::string());
-  query << "SELECT text_value FROM metadatavalue WHERE item_id='"
-    << item->GetId() << "' AND metadata_field_id='57'";
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  while(this->Database->GetNextRow())
-    {
-    item->AddKeyword(this->Database->GetValueAsString(0));
-    }
-
-  query.str(std::string());
-  query << "SELECT text_value FROM metadatavalue WHERE item_id='"
-    << item->GetId() << "' AND metadata_field_id='26'";
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  while(this->Database->GetNextRow())
-    {
-    item->SetDescription(this->Database->GetValueAsString(0));
-    }
-
-  query.str(std::string());
-  query << "SELECT title FROM item WHERE item_id='"
-    << item->GetId() << "'";
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  while(this->Database->GetNextRow())
-    {
-    item->SetTitle(this->Database->GetValueAsString(0));
-    }
-
-  item->SetFetched(true);
-}
-
-//-------------------------------------------------------------------------
-bool midasDatabaseProxy::SaveInfo(mdo::Community* community, bool markDirty)
-{
-  std::stringstream query;
-  query << "UPDATE community SET " <<
-    "name='" <<
-    midasUtils::EscapeForSQL(community->GetName()) << "', "
-    "short_description='" << 
-    midasUtils::EscapeForSQL(community->GetDescription()) << "', "
-    "introductory_text='" <<
-    midasUtils::EscapeForSQL(community->GetIntroductoryText()) << "', "
-    "copyright_text='" <<
-    midasUtils::EscapeForSQL(community->GetCopyright()) << "' WHERE "
-    "community_id='" << community->GetId() << "'";
-
-  if(this->Database->ExecuteQuery(query.str().c_str()))
-    {
-    if(markDirty)
-      {
-      this->MarkDirtyResource(community->GetUuid(), midasDirtyAction::MODIFIED);
-      }
-    return true;
-    }
-  return false;
-}
-
-//-------------------------------------------------------------------------
-bool midasDatabaseProxy::SaveInfo(mdo::Collection* coll, bool markDirty)
-{
-  std::stringstream query;
-  query << "UPDATE collection SET " <<
-    "name='" <<
-    midasUtils::EscapeForSQL(coll->GetName()) << "', "
-    "short_description='" <<
-    midasUtils::EscapeForSQL(coll->GetDescription()) << "', "
-    "introductory_text='" <<
-    midasUtils::EscapeForSQL(coll->GetIntroductoryText()) << "', "
-    "copyright_text='" <<
-    midasUtils::EscapeForSQL(coll->GetCopyright()) << "'" <<
-    " WHERE collection_id='" << coll->GetId() << "'";
-
-  if(this->Database->ExecuteQuery(query.str().c_str()))
-    {
-    if(markDirty)
-      {
-      this->MarkDirtyResource(coll->GetUuid(), midasDirtyAction::MODIFIED);
-      }
-    return true;
-    }
-  return false;
-}
-
-//-------------------------------------------------------------------------
-bool midasDatabaseProxy::SaveInfo(mdo::Item* item, bool markDirty)
-{
-  bool ok = true;
-  std::stringstream query;
-  query << "DELETE FROM metadatavalue WHERE item_id='" << item->GetId() << "'";
-  this->Database->ExecuteQuery(query.str().c_str());
-  
-  query.str(std::string());
-  query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
-    << "VALUES ('" << item->GetId() << "','27','" <<
-    midasUtils::EscapeForSQL(item->GetAbstract()) << "')";
-  ok &= this->Database->ExecuteQuery(query.str().c_str());
- 
-  query.str(std::string());
-  query << "UPDATE item SET title='" <<
-    midasUtils::EscapeForSQL(item->GetTitle()) << "' WHERE item_id='" <<
-    item->GetId() << "'";
-  ok &= this->Database->ExecuteQuery(query.str().c_str());
-
-  query.str(std::string());
-  query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
-    << "VALUES ('" << item->GetId() << "','26','" <<
-    midasUtils::EscapeForSQL(item->GetDescription()) << "')";
-  ok &= this->Database->ExecuteQuery(query.str().c_str());
-
-  for(std::vector<std::string>::iterator i = item->GetAuthors().begin();
-      i != item->GetAuthors().end(); ++i)
-    {
-    query.str(std::string());
-    query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value)"
-      << " VALUES ('" << item->GetId() << "','3','"
-      << midasUtils::EscapeForSQL(*i) << "')";
-    ok &= this->Database->ExecuteQuery(query.str().c_str());
-    }
-
-  for(std::vector<std::string>::iterator i = item->GetKeywords().begin();
-      i != item->GetKeywords().end(); ++i)
-    {
-    query.str(std::string());
-    query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value)"
-      << " VALUES ('" << item->GetId() << "','57','"
-      << midasUtils::EscapeForSQL(*i) << "')";
-    ok &= this->Database->ExecuteQuery(query.str().c_str());
-    }
-
-  if(ok)
-    {
-    if(markDirty)
-      {
-      this->MarkDirtyResource(item->GetUuid(), midasDirtyAction::MODIFIED);
-      }
-    return true;
-    }
-  return false;
-}
-
-//-------------------------------------------------------------------------
-bool midasDatabaseProxy::SaveInfo(mdo::Bitstream* bitstream, bool markDirty)
-{
-  std::stringstream query;
-  query << "UPDATE bitstream SET "
-    << "size_bytes='" << bitstream->GetSize() << "', "
-    << "name='" << midasUtils::EscapeForSQL(bitstream->GetName())
-    << "' WHERE bitstream_id='" << bitstream->GetId() << "'";
-
-  if(this->Database->ExecuteQuery(query.str().c_str()))
-    {
-    if(markDirty)
-      {
-      this->MarkDirtyResource(bitstream->GetUuid(), midasDirtyAction::MODIFIED);
-      }
-    return true;
-    }
-  return false;
-}
-
-//-------------------------------------------------------------------------
 int midasDatabaseProxy::AddResource(int type, std::string uuid,
   std::string path, std::string name, int parentType, int parentId,
   int serverParent)
@@ -376,7 +118,7 @@ midasAuthProfile midasDatabaseProxy::GetAuthProfile(std::string name)
     " WHERE profile_name='" << name << "'";
 
   midasAuthProfile profile;
-
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
   if(this->Database->GetNextRow())
     {
@@ -388,18 +130,21 @@ midasAuthProfile midasDatabaseProxy::GetAuthProfile(std::string name)
     profile.RootDir = this->Database->GetValueAsString(4);
     while(this->Database->GetNextRow());
     }
+  this->Database->Close();
   return profile;
 }
 
 //-------------------------------------------------------------------------
 std::vector<std::string> midasDatabaseProxy::GetAuthProfiles()
 {
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery("SELECT profile_name FROM auth_profile");
   std::vector<std::string> profileNames;
   while(this->Database->GetNextRow())
     {
     profileNames.push_back(this->Database->GetValueAsString(0));
     }
+  this->Database->Close();
   return profileNames;
 }
 
@@ -409,21 +154,25 @@ bool midasDatabaseProxy::AddAuthProfile(std::string user, std::string appName,
                                         std::string rootDir, std::string url)
 {
   this->DeleteProfile(name);
-
+  this->Database->Open(this->DatabasePath.c_str());
   std::stringstream query;
   query << "INSERT INTO auth_profile (profile_name, eperson, apikey, app_name,"
     " root_dir, url) VALUES ('" << name << "', '" << user << "', '" << apiKey
     << "', '" << appName << "', '" << rootDir << "', '" << url << "')";
 
-  return this->Database->ExecuteQuery(query.str().c_str());
+  bool ok = this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
+  return ok;
 }
 
 //-------------------------------------------------------------------------
 void midasDatabaseProxy::DeleteProfile(std::string name)
 {
+  this->Database->Open(this->DatabasePath.c_str());
   std::stringstream query;
   query << "DELETE FROM auth_profile WHERE profile_name = '" << name << "'";
   this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
 }
 
 //-------------------------------------------------------------------------
@@ -431,20 +180,22 @@ void midasDatabaseProxy::MarkDirtyResource(std::string uuid, int dirtyAction)
 {
   // Clear old dirty flags so that we don't have duplicates
   this->ClearDirtyResource(uuid);
+  this->Database->Open(this->DatabasePath.c_str());
   std::stringstream query;
   query << "INSERT INTO dirty_resource (uuid, action) VALUES ('" << uuid
     << "', '" << dirtyAction << "')";
   this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
 }
 
 //-------------------------------------------------------------------------
 void midasDatabaseProxy::ClearDirtyResource(std::string uuid)
 {
-  this->Database->Close();
   this->Database->Open(this->DatabasePath.c_str());
   std::stringstream query;
   query << "DELETE FROM dirty_resource WHERE uuid='" << uuid << "'";
   this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
 }
 
 //-------------------------------------------------------------------------
@@ -453,10 +204,12 @@ bool midasDatabaseProxy::IsResourceDirty(std::string uuid)
   std::stringstream query;
   query << "SELECT uuid FROM dirty_resource WHERE uuid='"
     << uuid << "'";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
 
   bool dirty = this->Database->GetNextRow();
   while(this->Database->GetNextRow());
+  this->Database->Close();
   return dirty;
 }
 
@@ -483,10 +236,12 @@ std::string midasDatabaseProxy::GetName(int type, int id)
     default:
       return "";
     }
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
   std::string name = (this->Database->GetNextRow() ? 
     this->Database->GetValueAsString(0) : "");
   while(this->Database->GetNextRow());
+  this->Database->Close();
   return name;
 }
 
@@ -516,10 +271,12 @@ int midasDatabaseProxy::GetParentId(int type, int id)
     default:
       return 0;
     }
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
   int parentId = (this->Database->GetNextRow() ? 
     this->Database->GetValueAsInt(0) : 0);
   while(this->Database->GetNextRow());
+  this->Database->Close();
   return parentId;
 }
 
@@ -529,11 +286,13 @@ int midasDatabaseProxy::GetIdForUuid(std::string uuid)
   std::stringstream query;
   query << "SELECT resource_id FROM resource_uuid WHERE uuid='"
     << uuid << "'";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
 
   int id = this->Database->GetNextRow() ? 
     this->Database->GetValueAsInt(0) : -1;
   while(this->Database->GetNextRow());
+  this->Database->Close();
   return id;
 }
 
@@ -542,11 +301,13 @@ std::string midasDatabaseProxy::GetUuidFromPath(std::string path)
 {
   std::stringstream query;
   query << "SELECT uuid FROM resource_uuid WHERE path='" << path << "'";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
 
   std::string uuid = this->Database->GetNextRow() ? 
     this->Database->GetValueAsString(0) : "";
   while(this->Database->GetNextRow());
+  this->Database->Close();
   return uuid;
 }
 
@@ -556,11 +317,13 @@ std::string midasDatabaseProxy::GetUuid(int type, int id)
   std::stringstream query;
   query << "SELECT uuid FROM resource_uuid WHERE resource_type_id='" 
     << type << "' AND resource_id='" << id << "'";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
 
   std::string uuid = this->Database->GetNextRow() ? 
     this->Database->GetValueAsString(0) : "";
   while(this->Database->GetNextRow());
+  this->Database->Close();
   return uuid;
 }
 
@@ -570,6 +333,7 @@ midasResourceRecord midasDatabaseProxy::GetRecordByUuid(std::string uuid)
   std::stringstream query;
   query << "SELECT resource_type_id, resource_id, server_parent, path FROM "
     "resource_uuid WHERE uuid='" << uuid << "'";
+  this->Database->Open(this->DatabasePath.c_str());
   bool ok = this->Database->ExecuteQuery(query.str().c_str());
   midasResourceRecord record;
   record.Uuid = uuid;
@@ -582,6 +346,7 @@ midasResourceRecord midasDatabaseProxy::GetRecordByUuid(std::string uuid)
     record.Path = this->Database->GetValueAsString(3);
     }
   while(this->Database->GetNextRow());
+  this->Database->Close();
   return record;
 }
 
@@ -647,7 +412,10 @@ bool midasDatabaseProxy::AddChild(int parentType, int parentId,
     }
   query << parent << "2" << child << " (" << parentCol << "_id, " << childCol
     << "_id) VALUES ('" << parentId << "', '" << childId << "')";
-  return this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Open(this->DatabasePath.c_str());
+  bool ok = this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
+  return ok;
 }
 
 //-------------------------------------------------------------------------
@@ -656,8 +424,11 @@ int midasDatabaseProxy::InsertBitstream(std::string path, std::string name)
   std::stringstream query;
   query << "INSERT INTO bitstream (location, internal_id, name) VALUES ('1','"
     << path << "', '" << name << "')";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
-  return this->Database->GetLastInsertId();
+  int id = this->Database->GetLastInsertId();
+  this->Database->Close();
+  return id;
 }
 
 //-------------------------------------------------------------------------
@@ -665,8 +436,11 @@ int midasDatabaseProxy::InsertCollection(std::string name)
 {
   std::stringstream query;
   query << "INSERT INTO collection (name) VALUES ('" << name << "')";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
-  return this->Database->GetLastInsertId();
+  int id = this->Database->GetLastInsertId();
+  this->Database->Close();
+  return id;
 }
 
 //-------------------------------------------------------------------------
@@ -674,6 +448,7 @@ int midasDatabaseProxy::InsertCommunity(std::string name)
 {
   std::stringstream query;
   query << "INSERT INTO community (name) VALUES ('" << name << "')";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
   return this->Database->GetLastInsertId();
 }
@@ -683,6 +458,7 @@ int midasDatabaseProxy::InsertItem(std::string name)
 {
   std::stringstream query;
   query << "INSERT INTO item (title) VALUES ('" << name << "')";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
   return this->Database->GetLastInsertId();
 }
@@ -696,7 +472,9 @@ void midasDatabaseProxy::InsertResourceRecord(int type, int id,
   query << "INSERT INTO resource_uuid (resource_type_id, resource_id, path, "
     "uuid, server_parent) VALUES ('" << type << "', '" << id << "', '"
     << path << "', '" << uuid << "', '" << parentId << "')";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
 }
 
 //-------------------------------------------------------------------------
@@ -704,10 +482,12 @@ bool midasDatabaseProxy::ResourceExists(std::string uuid)
 {
   std::stringstream query;
   query << "SELECT * FROM resource_uuid WHERE uuid='" << uuid << "'";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
   
   bool exists = this->Database->GetNextRow();
   while(this->Database->GetNextRow());
+  this->Database->Close();
   return exists;
 }
 
@@ -726,6 +506,7 @@ bool midasDatabaseProxy::Close()
 //-------------------------------------------------------------------------
 void midasDatabaseProxy::Clean()
 {
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery("DELETE FROM resource_uuid");
   this->Database->ExecuteQuery("DELETE FROM dirty_resource");
   this->Database->ExecuteQuery("DELETE FROM bitstream");
@@ -738,6 +519,7 @@ void midasDatabaseProxy::Clean()
   this->Database->ExecuteQuery("DELETE FROM item2bitstream");
   this->Database->ExecuteQuery("DELETE FROM metadatavalue");
   //this->Database->ExecuteQuery("DELETE FROM app_settings");
+  this->Database->Close();
 }
 
 //-------------------------------------------------------------------------
@@ -747,6 +529,7 @@ std::string midasDatabaseProxy::GetSetting(MidasAppSetting setting)
 
   std::stringstream query;
   query << "SELECT value FROM app_settings WHERE key='" << key << "' LIMIT 1";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
   
   std::string value;
@@ -754,6 +537,7 @@ std::string midasDatabaseProxy::GetSetting(MidasAppSetting setting)
     {
     value = this->Database->GetValueAsString(0);
     }
+  this->Database->Close();
   return value;
 }
 
@@ -776,12 +560,14 @@ void midasDatabaseProxy::SetSetting(MidasAppSetting setting, std::string value)
 
   std::stringstream query;
   query << "DELETE FROM app_settings WHERE key='" << key << "'";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
   query.str(std::string());
 
   query << "INSERT INTO app_settings (key, value) VALUES ('" << key << "', '"
     << value << "')";
   this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
 }
 
 void midasDatabaseProxy::SetSetting(MidasAppSetting setting, int value)
@@ -800,6 +586,7 @@ void midasDatabaseProxy::SetSetting(MidasAppSetting setting, bool value)
 std::vector<midasStatus> midasDatabaseProxy::GetStatusEntries()
 {
   std::vector<midasStatus> statlist;
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery("SELECT uuid, action FROM dirty_resource");
 
   std::vector<std::string> uuids;
@@ -811,6 +598,7 @@ std::vector<midasStatus> midasDatabaseProxy::GetStatusEntries()
     actions.push_back(midasDirtyAction::Action(
       this->Database->GetValueAsInt(1)));
     }
+  this->Database->Close();
 
   for(size_t i = 0; i < uuids.size(); i++)
     {
@@ -836,6 +624,7 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
     "resource_uuid.resource_type_id='" << midasResourceType::COMMUNITY << "' AND community.community_id "
     "NOT IN (SELECT child_comm_id FROM community2community)";
 
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
 
   while(this->Database->GetNextRow())
@@ -846,6 +635,7 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
     community->SetName(this->Database->GetValueAsString(2));
     communities.push_back(community);
     }
+  this->Database->Close();
 
   if(buildTree)
     {
@@ -873,6 +663,7 @@ void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool check
     "community.community_id AND community.community_id IN "
     "(SELECT child_comm_id FROM community2community WHERE parent_comm_id=" 
     << node->GetId() << ")";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
 
   std::vector<mdo::Community*> childCommunities;
@@ -884,6 +675,7 @@ void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool check
     community->SetUuid(this->Database->GetValueAsString(2));
     childCommunities.push_back(community);
     }
+  this->Database->Close();
 
   if(recurse)
     {
@@ -901,6 +693,7 @@ void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool check
       << midasResourceType::COLLECTION << "' AND resource_uuid.resource_id="
       "collection.collection_id AND collection.collection_id IN (SELECT collection_id "
       "FROM community2collection WHERE community_id=" << node->GetId() << ")";
+    this->Database->Open(this->DatabasePath.c_str());
     this->Database->ExecuteQuery(query.str().c_str());
 
     std::vector<mdo::Collection*> collections;
@@ -913,6 +706,7 @@ void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool check
       node->AddCollection(collection);
       collections.push_back(collection);
       }
+    this->Database->Close();
 
     for(std::vector<mdo::Collection*>::iterator i = collections.begin();
         i != collections.end(); ++i)
@@ -935,6 +729,7 @@ void midasDatabaseProxy::Populate(mdo::Collection* node, bool recurse, bool chec
     "WHERE resource_uuid.resource_type_id='" << midasResourceType::ITEM << "' AND "
     "resource_uuid.resource_id=item.item_id AND item.item_id IN (SELECT item_id FROM "
     "collection2item WHERE collection_id=" << node->GetId() << ")";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
 
   std::vector<mdo::Item*> items;
@@ -972,6 +767,7 @@ void midasDatabaseProxy::Populate(mdo::Item* node, bool checkDirty)
     "AND resource_uuid.resource_type_id='" << midasResourceType::BITSTREAM << "' AND "
     "bitstream.bitstream_id IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
     << node->GetId() << ")";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
 
   std::vector<mdo::Bitstream*> bitstreams;
@@ -984,6 +780,7 @@ void midasDatabaseProxy::Populate(mdo::Item* node, bool checkDirty)
     node->AddBitstream(bitstream);
     bitstreams.push_back(bitstream);
     }
+  this->Database->Close();
 
   if(checkDirty)
     {
@@ -1011,12 +808,14 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
     case midasResourceType::COMMUNITY:
       query << "SELECT child_comm_id FROM community2community WHERE "
         "parent_comm_id='" << record.Id << "'";
+      this->Database->Open(this->DatabasePath.c_str());
       this->Database->ExecuteQuery(query.str().c_str());
 
       while(this->Database->GetNextRow())
         {
         children.push_back(this->Database->GetValueAsInt(0));
         }
+      this->Database->Close();
       for(std::vector<int>::iterator i = children.begin();
           i != children.end(); ++i)
         {
@@ -1026,6 +825,7 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       query.str(std::string());
       query << "SELECT collection_id FROM community2collection WHERE "
         "community_id='" << record.Id << "'";
+      this->Database->Open(this->DatabasePath.c_str());
       this->Database->ExecuteQuery(query.str().c_str());
 
       children.clear();
@@ -1033,6 +833,7 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
         {
         children.push_back(this->Database->GetValueAsInt(0)); 
         }
+      this->Database->Close();
       for(std::vector<int>::iterator i = children.begin();
           i != children.end(); ++i)
         {
@@ -1042,6 +843,7 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       query.str(std::string());
       query << "DELETE FROM community2community WHERE parent_comm_id='" <<
         record.Id << "'";
+      this->Database->Open(this->DatabasePath.c_str());
       this->Database->ExecuteQuery(query.str().c_str());
 
       query.str(std::string());
@@ -1053,16 +855,19 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       query << "DELETE FROM community WHERE community_id='" <<
         record.Id << "'";
       this->Database->ExecuteQuery(query.str().c_str());
+      this->Database->Close();
       break;
     case midasResourceType::COLLECTION:
       query << "SELECT item_id FROM collection2item WHERE "
         "collection_id='" << record.Id << "'";
+      this->Database->Open(this->DatabasePath.c_str());
       this->Database->ExecuteQuery(query.str().c_str());
 
       while(this->Database->GetNextRow())
         {
         children.push_back(this->Database->GetValueAsInt(0));
         }
+      this->Database->Close();
       for(std::vector<int>::iterator i = children.begin();
           i != children.end(); ++i)
         {
@@ -1072,22 +877,26 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       query.str(std::string());
       query << "DELETE FROM collection2item WHERE collection_id='" <<
         record.Id << "'";
+      this->Database->Open(this->DatabasePath.c_str());
       this->Database->ExecuteQuery(query.str().c_str());
 
       query.str(std::string());
       query << "DELETE FROM collection WHERE collection_id='" <<
         record.Id << "'";
       this->Database->ExecuteQuery(query.str().c_str());
+      this->Database->Close();
       break;
     case midasResourceType::ITEM:
       query << "SELECT bitstream_id FROM item2bitstream WHERE "
         "item_id='" << record.Id << "'";
+      this->Database->Open(this->DatabasePath.c_str());
       this->Database->ExecuteQuery(query.str().c_str());
 
       while(this->Database->GetNextRow())
         {
         children.push_back(this->Database->GetValueAsInt(0));
         }
+      this->Database->Close();
       for(std::vector<int>::iterator i = children.begin();
           i != children.end(); ++i)
         {
@@ -1097,15 +906,19 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       query.str(std::string());
       query << "DELETE FROM item2bitstream WHERE item_id='" <<
         record.Id << "'";
+      this->Database->Open(this->DatabasePath.c_str());
       this->Database->ExecuteQuery(query.str().c_str());
 
       query.str(std::string());
       query << "DELETE FROM item WHERE item_id='" << record.Id << "'";
       this->Database->ExecuteQuery(query.str().c_str());
+      this->Database->Close();
       break;
     case midasResourceType::BITSTREAM:
       query << "DELETE FROM bitstream WHERE bitstream_id='" << record.Id << "'";
+      this->Database->Open(this->DatabasePath.c_str());
       this->Database->ExecuteQuery(query.str().c_str());
+      this->Database->Close();
       break;
     default:
       return false;
@@ -1113,11 +926,14 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
 
   query.str(std::string());
   query << "DELETE FROM dirty_resource WHERE uuid='" << uuid << "'";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
 
   query.str(std::string());
   query << "DELETE FROM resource_uuid WHERE uuid='" << uuid << "'";
+  this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
 
   if(deleteFiles)
     {
@@ -1196,7 +1012,9 @@ void midasDatabaseProxy::MergeOnDisk(mdo::Item* item)
       std::stringstream query;
       query << "UPDATE resource_uuid SET path='" << copyTo <<
         "' WHERE uuid='" << (*i)->GetUuid() << "'";
+      this->Database->Open(this->DatabasePath.c_str());
       this->Database->ExecuteQuery(query.str().c_str());
+      this->Database->Close();
       }
     }
 }

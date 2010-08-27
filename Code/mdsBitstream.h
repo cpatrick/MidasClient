@@ -13,7 +13,6 @@
 #define _mdsBitstream_h_
 
 #include "mdsObject.h"
-#include <vector>
 
 namespace mdo{
   class Bitstream;
@@ -21,7 +20,6 @@ namespace mdo{
 
 namespace mds{
 
-/** This class represent a bitstream on the MIDAS server. */
 class Bitstream : public Object
 {
 public:
@@ -29,14 +27,16 @@ public:
   Bitstream();
   ~Bitstream();
 
-  // Fill the item given the id
   bool Fetch();
   bool Commit();
+  bool FetchTree();
+  bool Delete();
+
   void SetObject(mdo::Object* object);
 
 protected:
 
-  mdo::Bitstream*   m_Bitstream;
+  mdo::Bitstream* m_Bitstream;
 };
 
 } //end namespace

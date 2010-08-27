@@ -27,7 +27,6 @@ PreferencesUI::~PreferencesUI()
 
 void PreferencesUI::reset()
 {
-  m_parent->getDatabaseProxy()->Open();
   std::string interval = this->m_parent->getDatabaseProxy()->GetSetting(
     midasDatabaseProxy::AUTO_REFRESH_INTERVAL);
   std::string index = this->m_parent->getDatabaseProxy()->GetSetting(
@@ -36,7 +35,6 @@ void PreferencesUI::reset()
     midasDatabaseProxy::ROOT_DIR);
   m_UnifiedTree = m_parent->getDatabaseProxy()->GetSettingBool(
     midasDatabaseProxy::UNIFIED_TREE);
-  m_parent->getDatabaseProxy()->Close();
 
   if(index != "")
     {
@@ -67,9 +65,7 @@ void PreferencesUI::enableActions(int index)
 
 void PreferencesUI::selectWorkingDir()
 {
-  m_parent->getDatabaseProxy()->Open();
   std::string path = m_parent->getDatabaseProxy()->GetSetting(midasDatabaseProxy::ROOT_DIR);
-  m_parent->getDatabaseProxy()->Close();
 
   if(path == "")
     {
@@ -95,7 +91,6 @@ int PreferencesUI::exec()
 void PreferencesUI::accept()
 {
   //Save the preferences
-  m_parent->getDatabaseProxy()->Open();
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::AUTO_REFRESH_INTERVAL, timeSpinBox->value());
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING, settingComboBox->currentIndex());
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::UNIFIED_TREE, copyResourcesCheckBox->isChecked());
@@ -104,7 +99,6 @@ void PreferencesUI::accept()
     {
     m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::ROOT_DIR, workingDirEdit->text().toStdString());
     }
-  m_parent->getDatabaseProxy()->Close();
 
   emit intervalChanged();
   emit settingChanged();

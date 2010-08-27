@@ -29,14 +29,12 @@ SignInUI::~SignInUI()
 void SignInUI::init()
 {
   profileComboBox->clear();
-  parent->getDatabaseProxy()->Open();
   std::vector<std::string> profiles = parent->getDatabaseProxy()->GetAuthProfiles();
   
   for(std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i)
     {
     profileComboBox->addItem(i->c_str());
     }
-  parent->getDatabaseProxy()->Close();
 }
 
 /** */

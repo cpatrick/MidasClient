@@ -26,7 +26,6 @@ MidasTreeModelClient::~MidasTreeModelClient()
 /** Populate the tree */
 void MidasTreeModelClient::Populate()
 {
-  this->m_Database->Open();
   std::vector<mdo::Community*> topLevelCommunities =
     this->m_Database->GetTopLevelCommunities(true);
 
@@ -54,7 +53,6 @@ void MidasTreeModelClient::Populate()
       }
     row++;
     }
-  this->m_Database->Close();
   this->endInsertRows();
   emit layoutChanged();
 }
