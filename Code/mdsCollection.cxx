@@ -10,19 +10,25 @@
 =========================================================================*/
 #include "mdsCollection.h"
 #include "mdoCollection.h"
+#include "mdsItem.h"
 #include "midasStandardIncludes.h"
 
 namespace mds{
 
 /** Constructor */
 Collection::Collection()
+: m_Collection(NULL), m_Recurse(true)
 {
-  m_Collection = NULL;
 }
   
 /** Destructor */
 Collection::~Collection()
 {
+}
+
+void Collection::SetRecursive(bool recurse)
+{
+  m_Recurse = recurse;
 }
   
 /** Fecth */
@@ -39,10 +45,18 @@ bool Collection::Fetch()
     m_Database->GetLog()->Error("Collection::Fetch : CollectionId not set\n");
     return false;
     }
+
   if(m_Collection->IsFetched())
     {
     return true;
     }
+
+  if(m_Collection->GetUuid() == "")
+    {
+    m_Collection->SetUuid(m_Database->GetUuid(
+      midasResourceType::COLLECTION, m_Collection->GetId()).c_str());
+    }
+
   std::stringstream query;
   query << "SELECT short_description, introductory_text, copyright_text, name "
     "FROM collection WHERE collection_id='" << m_Collection->GetId() << "'";
@@ -88,6 +102,12 @@ bool Collection::Commit()
     return false;
     }
 
+  if(m_Collection->GetUuid() == "")
+    {
+    m_Collection->SetUuid(m_Database->GetUuid(
+      midasResourceType::COLLECTION, m_Collection->GetId()).c_str());
+    }
+
   std::stringstream query;
   query << "UPDATE collection SET " <<
     "name='" <<
@@ -100,11 +120,6 @@ bool Collection::Commit()
     midasUtils::EscapeForSQL(m_Collection->GetCopyright()) << "'" <<
     " WHERE collection_id='" << m_Collection->GetId() << "'";
 
-  if(m_Collection->GetUuid() == "")
-    {
-    m_Collection->SetUuid(m_Database->GetUuid(
-      midasResourceType::COLLECTION, m_Collection->GetId()).c_str());
-    }
   m_Database->Open();
   if(m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
     {
@@ -124,6 +139,59 @@ bool Collection::Commit()
 
 bool Collection::FetchTree()
 {
+  if(!m_Collection)
+    {
+    m_Database->GetLog()->Error("Collection::FetchTree : Collection not set\n");
+    return false;
+    }
+
+  if(m_Collection->GetId() == 0)
+    {
+    m_Database->GetLog()->Error("Collection::FetchTree : Collection not set\n");
+    return false;
+    }
+
+  if(m_Collection->GetUuid() == "")
+    {
+    m_Collection->SetUuid(m_Database->GetUuid(
+      midasResourceType::COLLECTION, m_Collection->GetId()).c_str());
+    }
+  
+  m_Collection->SetDirty(m_Database->IsResourceDirty(m_Collection->GetUuid()));
+
+  std::stringstream query;
+  query << "SELECT item.item_id, item.title, resource_uuid.uuid FROM item, resource_uuid "
+    "WHERE resource_uuid.resource_type_id='" << midasResourceType::ITEM << "' AND "
+    "resource_uuid.resource_id=item.item_id AND item.item_id IN (SELECT item_id FROM "
+    "collection2item WHERE collection_id=" << m_Collection->GetId() << ")";
+  m_Database->Open();
+  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+
+  std::vector<mdo::Item*> items;
+  while(m_Database->GetDatabase()->GetNextRow())
+    {
+    mdo::Item* item = new mdo::Item;
+    item->SetId(m_Database->GetDatabase()->GetValueAsInt(0));
+    item->SetTitle(m_Database->GetDatabase()->GetValueAsString(1));
+    item->SetUuid(m_Database->GetDatabase()->GetValueAsString(2));
+    m_Collection->AddItem(item);
+    items.push_back(item);
+    }
+
+  if(m_Recurse)
+    {
+    for(std::vector<mdo::Item*>::iterator i = items.begin();
+        i != items.end(); ++i)
+      {
+      mds::Item mdsItem;
+      mdsItem.SetObject(*i);
+      mdsItem.SetDatabase(m_Database);
+      if(!mdsItem.FetchTree())
+        {
+        return false;
+        }
+      }
+    }
   return true;
 }
 

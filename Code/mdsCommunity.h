@@ -32,10 +32,13 @@ public:
   bool FetchTree();
   bool Delete();
 
+  void ParentPathChanged(std::string parentPath);
+
   void SetObject(mdo::Object* object);
+  void SetRecursive(bool recurse);
 
 protected:
-
+  bool            m_Recurse;
   mdo::Community* m_Community;
 
 };

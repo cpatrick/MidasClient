@@ -15,6 +15,7 @@
 #include "mdoCollection.h"
 #include "mdoItem.h"
 #include "mdoBitstream.h"
+#include "mdsCommunity.h"
 
 midasDatabaseProxy::midasDatabaseProxy(std::string database)
 {
@@ -642,155 +643,13 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
     for(std::vector<mdo::Community*>::iterator i = communities.begin();
         i != communities.end(); ++i)
       {
-      this->Populate(*i);
+      mds::Community mdsComm;
+      mdsComm.SetObject(*i);
+      mdsComm.SetDatabase(this);
+      mdsComm.FetchTree();
       }
     }
   return communities;
-}
-
-//--------------------------------------------------------------------------
-void midasDatabaseProxy::Populate(mdo::Community* node, bool recurse, bool checkDirty)
-{
-  if(checkDirty)
-    {
-    node->SetDirty(IsResourceDirty(GetUuid(
-      midasResourceType::COMMUNITY, node->GetId())));
-    }
-  std::stringstream query;
-  query << "SELECT community.community_id, community.name, resource_uuid.uuid "
-    "FROM community, resource_uuid WHERE resource_uuid.resource_type_id='"
-    << midasResourceType::COMMUNITY << "' AND resource_uuid.resource_id="
-    "community.community_id AND community.community_id IN "
-    "(SELECT child_comm_id FROM community2community WHERE parent_comm_id=" 
-    << node->GetId() << ")";
-  this->Database->Open(this->DatabasePath.c_str());
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  std::vector<mdo::Community*> childCommunities;
-  while(this->Database->GetNextRow())
-    {
-    mdo::Community* community = new mdo::Community;
-    community->SetId(this->Database->GetValueAsInt(0));
-    community->SetName(this->Database->GetValueAsString(1));
-    community->SetUuid(this->Database->GetValueAsString(2));
-    childCommunities.push_back(community);
-    }
-  this->Database->Close();
-
-  if(recurse)
-    {
-    // We can only recurse after fetching all database rows
-    for(std::vector<mdo::Community*>::iterator i = childCommunities.begin();
-        i != childCommunities.end(); ++i)
-      {
-      node->AddCommunity(*i);
-      this->Populate(*i);
-      }
-
-    query.str(std::string());
-    query << "SELECT collection.collection_id, collection.name, resource_uuid.uuid "
-      "FROM collection, resource_uuid WHERE resource_uuid.resource_type_id='"
-      << midasResourceType::COLLECTION << "' AND resource_uuid.resource_id="
-      "collection.collection_id AND collection.collection_id IN (SELECT collection_id "
-      "FROM community2collection WHERE community_id=" << node->GetId() << ")";
-    this->Database->Open(this->DatabasePath.c_str());
-    this->Database->ExecuteQuery(query.str().c_str());
-
-    std::vector<mdo::Collection*> collections;
-    while(this->Database->GetNextRow())
-      {
-      mdo::Collection* collection = new mdo::Collection;
-      collection->SetId(this->Database->GetValueAsInt(0));
-      collection->SetName(this->Database->GetValueAsString(1));
-      collection->SetUuid(this->Database->GetValueAsString(2));
-      node->AddCollection(collection);
-      collections.push_back(collection);
-      }
-    this->Database->Close();
-
-    for(std::vector<mdo::Collection*>::iterator i = collections.begin();
-        i != collections.end(); ++i)
-      {
-      this->Populate(*i);
-      }
-  }
-}
-
-//--------------------------------------------------------------------------
-void midasDatabaseProxy::Populate(mdo::Collection* node, bool recurse, bool checkDirty)
-{
-  if(checkDirty)
-    {
-    node->SetDirty(IsResourceDirty(GetUuid(
-      midasResourceType::COLLECTION, node->GetId())));
-    }
-  std::stringstream query;
-  query << "SELECT item.item_id, item.title, resource_uuid.uuid FROM item, resource_uuid "
-    "WHERE resource_uuid.resource_type_id='" << midasResourceType::ITEM << "' AND "
-    "resource_uuid.resource_id=item.item_id AND item.item_id IN (SELECT item_id FROM "
-    "collection2item WHERE collection_id=" << node->GetId() << ")";
-  this->Database->Open(this->DatabasePath.c_str());
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  std::vector<mdo::Item*> items;
-  while(this->Database->GetNextRow())
-    {
-    mdo::Item* item = new mdo::Item;
-    item->SetId(this->Database->GetValueAsInt(0));
-    item->SetTitle(this->Database->GetValueAsString(1));
-    item->SetUuid(this->Database->GetValueAsString(2));
-    node->AddItem(item);
-    items.push_back(item);
-    }
-
-  if(recurse)
-    {
-    for(std::vector<mdo::Item*>::iterator i = items.begin();
-        i != items.end(); ++i)
-      {
-      this->Populate(*i);
-      }
-    }
-}
-
-//--------------------------------------------------------------------------
-void midasDatabaseProxy::Populate(mdo::Item* node, bool checkDirty)
-{
-  if(checkDirty)
-    {
-    node->SetDirty(IsResourceDirty(GetUuid(
-      midasResourceType::ITEM, node->GetId())));
-    }
-  std::stringstream query;
-  query << "SELECT bitstream.bitstream_id, bitstream.name, resource_uuid.uuid "
-    "FROM bitstream, resource_uuid WHERE resource_uuid.resource_id=bitstream.bitstream_id "
-    "AND resource_uuid.resource_type_id='" << midasResourceType::BITSTREAM << "' AND "
-    "bitstream.bitstream_id IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
-    << node->GetId() << ")";
-  this->Database->Open(this->DatabasePath.c_str());
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  std::vector<mdo::Bitstream*> bitstreams;
-  while(this->Database->GetNextRow())
-    {
-    mdo::Bitstream* bitstream = new mdo::Bitstream;
-    bitstream->SetId(this->Database->GetValueAsInt(0));
-    bitstream->SetName(this->Database->GetValueAsString(1));
-    bitstream->SetUuid(this->Database->GetValueAsString(2));
-    node->AddBitstream(bitstream);
-    bitstreams.push_back(bitstream);
-    }
-  this->Database->Close();
-
-  if(checkDirty)
-    {
-    for(std::vector<mdo::Bitstream*>::iterator i = bitstreams.begin();
-        i != bitstreams.end(); ++i)
-      {
-      (*i)->SetDirty(IsResourceDirty(GetUuid(
-        midasResourceType::BITSTREAM, (*i)->GetId())));
-      }
-    }
 }
 
 //--------------------------------------------------------------------------

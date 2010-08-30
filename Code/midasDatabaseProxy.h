@@ -149,14 +149,6 @@ public:
   std::vector<midasStatus> GetStatusEntries();
 
   std::vector<mdo::Community*> GetTopLevelCommunities(bool buildTree);
-  void Populate(mdo::Community* node, bool recurse = true,
-                bool checkDirty = true);
-  void Populate(mdo::Collection* node, bool recurse = true,
-                bool checkDirty = true);
-  void Populate(mdo::Item* node, bool checkDirty = true);
-
-  /** Create an MDS object given a uuid */
-  mds::Object* ObjectFromUUID(std::string uuid);
 
   /**
    * If any resources are located outside the current root on disk,

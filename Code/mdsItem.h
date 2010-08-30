@@ -34,9 +34,10 @@ public:
   
   // Add the object
   void SetObject(mdo::Object* object);
+  void SetRecursive(bool recurse);
 
 protected:
-
+  bool       m_Recurse;
   mdo::Item* m_Item;
 
 };

@@ -16,13 +16,18 @@ namespace mds{
 
 /** Constructor */
 Item::Item()
+: m_Item(NULL), m_Recurse(true)
 {
-  m_Item = NULL;
 }
   
 /** Destructor */
 Item::~Item()
 {
+}
+
+void Item::SetRecursive(bool recurse)
+{
+  m_Recurse = recurse;
 }
   
 /** Fecth */
@@ -43,6 +48,12 @@ bool Item::Fetch()
   if(m_Item->IsFetched())
     {
     return true;
+    }
+
+  if(m_Item->GetUuid() == "")
+    {
+    m_Item->SetUuid(m_Database->GetUuid(
+      midasResourceType::ITEM, m_Item->GetId()).c_str());
     }
 
   std::stringstream query;
@@ -164,6 +175,52 @@ bool Item::Commit()
 
 bool Item::FetchTree()
 {
+  if(!m_Item)
+    {
+    m_Database->GetLog()->Error("Item::FetchTree : Item not set\n");
+    return false;
+    }
+    
+  if(m_Item->GetId() == 0)
+    {
+    m_Database->GetLog()->Error("Item::FetchTree : ItemId not set\n");
+    return false;
+    }
+
+  if(m_Item->GetUuid() == "")
+    {
+    m_Item->SetUuid(m_Database->GetUuid(
+      midasResourceType::ITEM, m_Item->GetId()).c_str());
+    }
+
+  m_Item->SetDirty(m_Database->IsResourceDirty(m_Item->GetUuid()));
+
+  std::stringstream query;
+  query << "SELECT bitstream.bitstream_id, bitstream.name, resource_uuid.uuid "
+    "FROM bitstream, resource_uuid WHERE resource_uuid.resource_id=bitstream.bitstream_id "
+    "AND resource_uuid.resource_type_id='" << midasResourceType::BITSTREAM << "' AND "
+    "bitstream.bitstream_id IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
+    << m_Item->GetId() << ")";
+  m_Database->Open();
+  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+
+  std::vector<mdo::Bitstream*> bitstreams;
+  while(m_Database->GetDatabase()->GetNextRow())
+    {
+    mdo::Bitstream* bitstream = new mdo::Bitstream;
+    bitstream->SetId(m_Database->GetDatabase()->GetValueAsInt(0));
+    bitstream->SetName(m_Database->GetDatabase()->GetValueAsString(1));
+    bitstream->SetUuid(m_Database->GetDatabase()->GetValueAsString(2));
+    m_Item->AddBitstream(bitstream);
+    bitstreams.push_back(bitstream);
+    }
+  m_Database->Close();
+
+  for(std::vector<mdo::Bitstream*>::iterator i = bitstreams.begin();
+      i != bitstreams.end(); ++i)
+    {
+    (*i)->SetDirty(m_Database->IsResourceDirty((*i)->GetUuid()));
+    }
   return true;
 }
 

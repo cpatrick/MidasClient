@@ -33,9 +33,10 @@ public:
   bool Delete();
   
   void SetObject(mdo::Object* object);
+  void SetRecursive(bool recurse);
    
 protected:
-
+  bool             m_Recurse;
   mdo::Collection* m_Collection;
 
 };
