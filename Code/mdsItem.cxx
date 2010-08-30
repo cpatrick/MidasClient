@@ -10,24 +10,20 @@
 =========================================================================*/
 #include "mdsItem.h"
 #include "mdoItem.h"
+#include "mdsBitstream.h"
 #include "midasStandardIncludes.h"
 
 namespace mds{
 
 /** Constructor */
 Item::Item()
-: m_Item(NULL), m_Recurse(true)
+: m_Item(NULL)
 {
 }
   
 /** Destructor */
 Item::~Item()
 {
-}
-
-void Item::SetRecursive(bool recurse)
-{
-  m_Recurse = recurse;
 }
   
 /** Fecth */
@@ -117,6 +113,44 @@ bool Item::Fetch()
 bool Item::Commit()
 {
   bool ok = true;
+
+  std::string path = m_Database->GetRecordByUuid(m_Item->GetUuid()).Path;
+  std::string parentDir = kwsys::SystemTools::GetParentDirectory(path.c_str());
+  std::string oldName = kwsys::SystemTools::GetFilenameName(path);
+
+  if(oldName != m_Item->GetName())
+    {
+    std::string newPath = parentDir + "/" + m_Item->GetTitle();
+    if(rename(path.c_str(), newPath.c_str()) == 0)
+      {
+      std::stringstream pathQuery;
+      pathQuery << "UPDATE resource_uuid SET path='" << newPath <<
+        "' WHERE uuid='" << m_Item->GetUuid() << "'";
+
+      m_Database->Open();
+      m_Database->GetDatabase()->ExecuteQuery(pathQuery.str().c_str());
+      m_Database->Close();
+
+      this->FetchTree();
+
+      for(std::vector<mdo::Bitstream*>::const_iterator i =
+          m_Item->GetBitstreams().begin();
+          i != m_Item->GetBitstreams().end(); ++i)
+        {
+        mds::Bitstream mdsBitstream;
+        mdsBitstream.SetDatabase(m_Database);
+        mdsBitstream.SetObject(*i);
+        mdsBitstream.ParentPathChanged(newPath);
+        }
+      }
+    else
+      {
+      m_Database->GetLog()->Error("Item::Commit : could not rename directory "
+        "on disk. It may be locked.\n");
+      return false;
+      }
+    }
+
   m_Database->Open();
   std::stringstream query;
   query << "DELETE FROM metadatavalue WHERE item_id='" << m_Item->GetId() << "'";
@@ -232,6 +266,28 @@ bool Item::Delete()
 void Item::SetObject(mdo::Object* object)
 {  
   m_Item = reinterpret_cast<mdo::Item*>(object);
+}
+
+void Item::ParentPathChanged(std::string parentPath)
+{
+  std::string newPath = parentPath + "/" + m_Item->GetTitle();
+  std::stringstream query;
+  query << "UPDATE resource_uuid SET path='" << newPath << "' WHERE "
+    "uuid='" << m_Item->GetUuid() << "'";
+
+  m_Database->Open();
+  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  m_Database->Close();
+
+  for(std::vector<mdo::Bitstream*>::const_iterator i =
+      m_Item->GetBitstreams().begin();
+      i != m_Item->GetBitstreams().end(); ++i)
+    {
+    mds::Bitstream mdsBitstream;
+    mdsBitstream.SetObject(*i);
+    mdsBitstream.SetDatabase(m_Database);
+    mdsBitstream.ParentPathChanged(newPath);
+    }
 }
 
 } // end namespace

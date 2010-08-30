@@ -32,6 +32,8 @@ public:
   bool FetchTree();
   bool Delete();
 
+  void ParentPathChanged(std::string parentPath);
+
   void SetObject(mdo::Object* object);
 
 protected:

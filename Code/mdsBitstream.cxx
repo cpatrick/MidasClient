@@ -101,4 +101,16 @@ void Bitstream::SetObject(mdo::Object* object)
   m_Bitstream = reinterpret_cast<mdo::Bitstream*>(object);
 }
 
+void Bitstream::ParentPathChanged(std::string parentPath)
+{
+  std::string newPath = parentPath + "/" + m_Bitstream->GetName();
+  std::stringstream query;
+  query << "UPDATE resource_uuid SET path='" << newPath << "' WHERE "
+    "uuid='" << m_Bitstream->GetUuid() << "'";
+
+  m_Database->Open();
+  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  m_Database->Close();
+}
+
 } // end namespace

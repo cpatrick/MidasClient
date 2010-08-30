@@ -108,6 +108,43 @@ bool Collection::Commit()
       midasResourceType::COLLECTION, m_Collection->GetId()).c_str());
     }
 
+  std::string path = m_Database->GetRecordByUuid(m_Collection->GetUuid()).Path;
+  std::string parentDir = kwsys::SystemTools::GetParentDirectory(path.c_str());
+  std::string oldName = kwsys::SystemTools::GetFilenameName(path);
+
+  if(oldName != m_Collection->GetName())
+    {
+    std::string newPath = parentDir + "/" + m_Collection->GetName();
+    if(rename(path.c_str(), newPath.c_str()) == 0)
+      {
+      std::stringstream pathQuery;
+      pathQuery << "UPDATE resource_uuid SET path='" << newPath <<
+        "' WHERE uuid='" << m_Collection->GetUuid() << "'";
+
+      m_Database->Open();
+      m_Database->GetDatabase()->ExecuteQuery(pathQuery.str().c_str());
+      m_Database->Close();
+
+      this->FetchTree();
+
+      for(std::vector<mdo::Item*>::const_iterator i =
+          m_Collection->GetItems().begin();
+          i != m_Collection->GetItems().end(); ++i)
+        {
+        mds::Item mdsItem;
+        mdsItem.SetDatabase(m_Database);
+        mdsItem.SetObject(*i);
+        mdsItem.ParentPathChanged(newPath);
+        }
+      }
+    else
+      {
+      m_Database->GetLog()->Error("Collection::Commit : could not rename "
+        "directory on disk. It may be locked.\n");
+      return false;
+      }
+    }
+
   std::stringstream query;
   query << "UPDATE collection SET " <<
     "name='" <<
@@ -203,6 +240,28 @@ bool Collection::Delete()
 void Collection::SetObject(mdo::Object* object)
 {  
   m_Collection = reinterpret_cast<mdo::Collection*>(object);
+}
+
+void Collection::ParentPathChanged(std::string parentPath)
+{
+  std::string newPath = parentPath + "/" + m_Collection->GetName();
+  std::stringstream query;
+  query << "UPDATE resource_uuid SET path='" << newPath << "' WHERE "
+    "uuid='" << m_Collection->GetUuid() << "'";
+
+  m_Database->Open();
+  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  m_Database->Close();
+
+  for(std::vector<mdo::Item*>::const_iterator i =
+      m_Collection->GetItems().begin();
+      i != m_Collection->GetItems().end(); ++i)
+    {
+    mds::Item mdsItem;
+    mdsItem.SetObject(*i);
+    mdsItem.SetDatabase(m_Database);
+    mdsItem.ParentPathChanged(newPath);
+    }
 }
 
 } // end namespace

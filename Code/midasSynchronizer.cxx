@@ -96,6 +96,7 @@ void midasSynchronizer::SetDatabase(std::string path)
   this->Database = path;
   delete this->DatabaseProxy;
   this->DatabaseProxy = new midasDatabaseProxy(path);
+  this->DatabaseProxy->SetLog(this->GetLog());
   this->Authenticator->SetDatabase(path);
   this->SetServerURL(this->GetServerURL());
 }

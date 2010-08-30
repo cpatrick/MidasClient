@@ -136,6 +136,22 @@ bool Community::Commit()
         mdsComm.SetObject(*i);
         mdsComm.ParentPathChanged(newPath);
         }
+
+      for(std::vector<mdo::Collection*>::const_iterator i =
+          m_Community->GetCollections().begin();
+          i != m_Community->GetCollections().end(); ++i)
+        {
+        mds::Collection mdsColl;
+        mdsColl.SetDatabase(m_Database);
+        mdsColl.SetObject(*i);
+        mdsColl.ParentPathChanged(newPath);
+        }
+      }
+    else
+      {
+      m_Database->GetLog()->Error("Community::Commit : could not rename "
+        "directory on disk. It may be locked.\n");
+      return false;
       }
     }
 
@@ -278,7 +294,34 @@ void Community::SetObject(mdo::Object* object)
 
 void Community::ParentPathChanged(std::string parentPath)
 {
+  std::string newPath = parentPath + "/" + m_Community->GetName();
+  std::stringstream query;
+  query << "UPDATE resource_uuid SET path='" << newPath << "' WHERE "
+    "uuid='" << m_Community->GetUuid() << "'";
 
+  m_Database->Open();
+  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  m_Database->Close();
+
+  for(std::vector<mdo::Community*>::const_iterator i =
+      m_Community->GetCommunities().begin();
+      i != m_Community->GetCommunities().end(); ++i)
+    {
+    mds::Community mdsComm;
+    mdsComm.SetObject(*i);
+    mdsComm.SetDatabase(m_Database);
+    mdsComm.ParentPathChanged(newPath);
+    }
+
+  for(std::vector<mdo::Collection*>::const_iterator i =
+      m_Community->GetCollections().begin();
+      i != m_Community->GetCollections().end(); ++i)
+    {
+    mds::Collection mdsColl;
+    mdsColl.SetObject(*i);
+    mdsColl.SetDatabase(m_Database);
+    mdsColl.ParentPathChanged(newPath);
+    }
 }
 
 } // end namespace

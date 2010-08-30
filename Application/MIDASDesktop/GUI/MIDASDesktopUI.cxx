@@ -276,8 +276,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_auth = new midasAuthenticator();
   this->m_progress = new GUIProgress(this->progressBar);
   this->Log = new GUILogger(this);
-  this->m_auth->SetLog(Log);
-  this->m_synch->SetLog(Log);
+  this->m_auth->SetLog(this->Log);
+  this->m_synch->SetLog(this->Log);
   this->m_synch->SetProgressReporter(m_progress);
   this->m_signIn = false;
   this->m_editMode = false;
@@ -310,7 +310,6 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete cancelButton;
   delete saveButton;
   delete refreshTimer;
-  delete m_database;
   delete m_auth;
   delete Log;
   delete m_progress;
@@ -1150,10 +1149,9 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
 
   if(midasUtils::IsDatabaseValid(file))
     {
-    delete m_database;
     this->m_auth->SetDatabase(file);
     this->m_synch->SetDatabase(file);
-    this->m_database = new midasDatabaseProxy(file);
+    this->m_database = this->m_synch->GetDatabase();
     QSettings settings("Kitware", "MIDASDesktop");
     settings.setValue("lastDatabase", file.c_str());
     settings.sync();
