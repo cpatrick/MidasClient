@@ -296,6 +296,9 @@ MIDASDesktopUI::MIDASDesktopUI()
 MIDASDesktopUI::~MIDASDesktopUI()
 {
   ProcessingStatusUI::finalize();
+  delete trayIconMenu;
+  delete showAction;
+  delete trayIcon;
   delete dlg_aboutUI;
   delete dlg_signInUI;
   delete dlg_createProfileUI;
