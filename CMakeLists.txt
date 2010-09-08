@@ -96,7 +96,7 @@ IF(NOT MIDASCPP_KWSYS_LIBRARY)
   SET(MIDASCPP_KWSYS_LIBRARY ${MIDASCPP_KWSYS_NAMESPACE})
 ENDIF(NOT MIDASCPP_KWSYS_LIBRARY)
 
-SET(BUILD_MIDASCPP_TESTING OFF CACHE BOOL "Build MIDAScpp testing")
+SET(BUILD_MIDASCPP_TESTING ON CACHE BOOL "Build MIDAScpp testing")
 SUBDIRS(Code Application Utilities Testing)
 
 #-----------------------------------------------------------------------------
