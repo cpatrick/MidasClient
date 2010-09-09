@@ -1,4 +1,3 @@
-# This is the root ITK CMakeLists file.
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 IF(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0003 NEW)
@@ -7,6 +6,9 @@ ENDIF(COMMAND CMAKE_POLICY)
 PROJECT(MIDASCPP)
 
 INCLUDE(CTest)
+CONFIGURE_FILE(${MIDASCPP_SOURCE_DIR}/CTestCustom.cmake.in
+  ${MIDASCPP_BINARY_DIR}/CTestCustom.cmake @ONLY)
+
 # On Visual Studio 8 MS deprecated C. This removes all 1.276E1265 security
 # warnings
 IF(WIN32)
