@@ -232,6 +232,7 @@ int midasSynchronizer::Perform()
       break;
     case OPERATION_UPLOAD:
       rc = this->Upload();
+      break;
     default:
       rc = MIDAS_BAD_OP;
       break;

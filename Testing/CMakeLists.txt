@@ -65,7 +65,9 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(deleteNewDatabase "${CMAKE_COMMAND}" -E remove -f ${new_db})
   add_test(testCreateDatabaseRuntime ${midascli_command} --database ${new_db} clean)
   set_tests_properties(testCreateDatabaseRuntime PROPERTIES DEPENDS deleteNewDatabase)
-
+  
+  add_test(testUpload ${midascli_command} --database ${sqlite_db} --profile test upload "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" "${dashboard_top_level_community_name}/Subcomm/Collection/Item")
+  set_tests_properties(testUpload PROPERTIES DEPENDS cleanDatabase3)
 endif(BUILD_MIDASCPP_TESTING)
   
 
