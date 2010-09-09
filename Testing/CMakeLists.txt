@@ -8,19 +8,13 @@ if(BUILD_MIDASCPP_TESTING)
   site_name(dashboard_top_level_community_name)
   
   set(sqlite_db "${MIDASCPP_BINARY_DIR}/midas.db")
+  set(new_db "${MIDASCPP_BINARY_DIR}/midas_new.db")
   
     # Setup a mock tree we can add
   configure_file(
     "${MIDASCPP_SOURCE_DIR}/README.txt"
     "${MIDASCPP_BINARY_DIR}/Testing/${dashboard_top_level_community_name}/Subcomm/Collection/Item/bitstream.txt"
-    COPYONLY)
-
-  # Add target to copy our database to the testing dir during build
-  add_custom_command (
-    TARGET sqlite_db
-    POST_BUILD
-    COMMAND "${CMAKE_CMAKE_COMMAND}" -E copy "${MIDASCPP_BINARY_DIR}/midas.db" "${MIDASCPP_BINARY_DIR}/Testing/midas.db"
-    COMMENT "Copying SQLite database into Test dir..."
+    COPYONLY
   )
 
   add_test(testCliNoArgs ${midascli_command})
@@ -62,6 +56,16 @@ if(BUILD_MIDASCPP_TESTING)
   set_tests_properties(testPushNoAuth PROPERTIES DEPENDS testAddBitstream WILL_FAIL ON)
   add_test(testPush ${midascli_command} --database ${sqlite_db} --profile test push)
   set_tests_properties(testPush PROPERTIES DEPENDS testPushNoAuth)
+  
+  # Restore database to a fresh state again
+  add_test(cleanDatabase3 ${midascli_command} --database ${sqlite_db} clean)
+  set_tests_properties(cleanDatabase3 PROPERTIES DEPENDS testPush)
+
+  # Coverage for runtime new database creation
+  add_test(deleteNewDatabase "${CMAKE_COMMAND}" -E remove -f ${new_db})
+  add_test(testCreateDatabaseRuntime ${midascli_command} --database ${new_db} clean)
+  set_tests_properties(testCreateDatabaseRuntime PROPERTIES DEPENDS deleteNewDatabase)
+
 endif(BUILD_MIDASCPP_TESTING)
   
 
