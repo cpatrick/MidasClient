@@ -39,12 +39,4 @@ void Bitstream::Clear()
   this->m_Parent = "";
 }
 
-//------------------------------------------------------------------------
-void Bitstream::Print(std::ostream &os, int indent)
-{
-  os << "Id: " << m_Id << "\n";
-  os << "Name: " << m_Name.c_str() << "\n";
-  os << "Size: " << m_Size << "\n";
-}
-
 } // end namespace

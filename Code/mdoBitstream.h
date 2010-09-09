@@ -43,9 +43,6 @@ public:
   // Set/Get the size of bitstream
   void SetSize(std::string size) { m_Size = size; }
   std::string & GetSize() {return m_Size;}
-  
-  // Display all the tags and their respective names and values.
-  void Print(std::ostream &os, int indent=-1);
 
   std::string GetTypeName() { return "Bitstream"; }
 

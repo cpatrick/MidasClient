@@ -71,9 +71,6 @@ public:
   
   // Get the list of collection
   const std::vector<Collection*>& GetCollections() { return m_Collections; }
-  
-  // Display all the tags and their respective names and values.
-  void Print(std::ostream &os, int indent=-1);
  
   // Set the parent
   void SetParentCommunity(Community* comm) { m_ParentCommunity = comm; }
@@ -91,6 +88,8 @@ public:
 
   bool IsFetched() { return fetched; }
   void SetFetched(bool val) { fetched = val; }
+
+  bool SetValue(std::string key, std::string value, bool append = false);
   
 protected:
 

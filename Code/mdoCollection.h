@@ -62,9 +62,6 @@ public:
   
   // Return the list of items
   const std::vector<Item*>& GetItems() { return m_Items; }
-
-  // Display all the tags and their respective names and values.
-  void Print(std::ostream &os, int indent=-1);
  
   // Add an item
   void AddItem(Item* item) {m_Items.push_back(item);}
@@ -76,6 +73,8 @@ public:
   
   bool IsFetched() { return fetched; }
   void SetFetched(bool val) { fetched = val; }
+
+  bool SetValue(std::string key, std::string value, bool append = false);
   
 protected:
 

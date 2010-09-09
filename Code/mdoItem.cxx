@@ -12,6 +12,7 @@
 #include "mdoCollection.h"
 #include <sstream>
 #include <iostream>
+#include "midasStandardIncludes.h"
 
 namespace mdo{
 
@@ -60,20 +61,6 @@ std::string Item::DownloadBitstream(const char* uuid,const char* filename)
   return m_Proxy->DownloadBitstream(uuid,filename);
 }
 
-/** Print */
-void Item::Print(std::ostream &os, int indent)
-{
-  os << "Id: " << m_Id << "\n";
-  os << "Title: " << m_Title.c_str() << "\n";
-  os << "Abstract: " << m_Abstract.c_str() << "\n";
-  // Display all the bitstream in the list
-  os << "# of bistreams: " << m_Bitstreams.size() << "\n";
-  for(unsigned int i=0; i<m_Bitstreams.size(); i++)
-    {
-    m_Bitstreams[i]->Print(os, indent+1);
-    }
-}
-
 std::string Item::GetAuthorsString()
 {
   std::string output;
@@ -116,6 +103,74 @@ std::string Item::GetKeywordsString()
     output += *i;
     }
   return output;
+}
+
+bool Item::SetValue(std::string key, std::string value, bool append)
+{
+  key = kwsys::SystemTools::UpperCase(key);
+
+  if(key == "TITLE")
+    {
+    if(append)
+      {
+      m_Title += value;
+      }
+    else
+      {
+      m_Title = value;
+      }
+    return true;
+    }
+  if(key == "ABSTRACT")
+    {
+    if(append)
+      {
+      m_Abstract += value;
+      }
+    else
+      {
+      m_Abstract = value;
+      }
+    return true;
+    }
+  if(key == "DESCRIPTION")
+    {
+    if(append)
+      {
+      m_Description += value;
+      }
+    else
+      {
+      m_Description = value;
+      }
+    return true;
+    }
+  if(key == "AUTHORS")
+    {
+    if(append)
+      {
+      this->AddAuthor(value);
+      }
+    else
+      {
+      midasUtils::Tokenize(value, m_Authors, "/", true);
+      }
+    return true;
+    }
+  if(key == "KEYWORDS")
+    {
+    if(append)
+      {
+      this->AddKeyword(value);
+      }
+    else
+      {
+      midasUtils::Tokenize(value, m_Keywords, "/", true);
+      }
+    return true;
+    }
+
+  return false;
 }
 
 } // end namespace

@@ -76,9 +76,6 @@ public:
 
   // Add a bitstream to the list
   void AddBitstream(Bitstream* bitstream) {m_Bitstreams.push_back(bitstream);}
-  
-  // Display all the tags and their respective names and values.
-  void Print(std::ostream &os, int indent=-1);
 
   std::string GetTypeName() { return "Item"; }
 
@@ -87,6 +84,8 @@ public:
 
   bool IsFetched() { return fetched; }
   void SetFetched(bool val) { fetched = val; }
+
+  bool SetValue(std::string key, std::string value, bool append = false);
  
 protected:
 

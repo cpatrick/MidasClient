@@ -127,7 +127,6 @@ public:
    */
   bool ResourceExists(std::string uuid);
 
-  int GetIdForUuid(std::string uuid);
   midasResourceRecord GetRecordByUuid(std::string uuid);
 
   /**

@@ -12,6 +12,7 @@
 #include "mdoCollection.h"
 #include <sstream>
 #include <iostream>
+#include "midasStandardIncludes.h"
 
 namespace mdo{
 
@@ -80,26 +81,61 @@ bool Community::LoadTree()
 {
   return m_Proxy->LoadTree();
 }
-//------------------------------------------------------------------------
-void Community::Print(std::ostream &os, int indent)
+
+bool Community::SetValue(std::string key, std::string value, bool append)
 {
-  os << "Level: " << indent << "\n";
-  os << "Id: " << m_Id << "\n";
-  os << "Name: " << m_Name.c_str() << "\n";
-  os << "Description: " << m_Description.c_str() << "\n";
-  os << "# of collections: " << m_Collections.size() << "\n";
-  // Display all the collections in the list
-  for(unsigned int i=0; i < m_Collections.size(); i++)
+  key = kwsys::SystemTools::UpperCase(key);
+
+  if(key == "NAME")
     {
-    m_Collections[i]->Print(os, indent+1);
-    }  
-    
-  // Display all the communities in the list  
-  os << "# of communities: " << m_Communities.size() << "\n"; 
-  for(unsigned int i=0; i < m_Communities.size(); i++)
-    {
-    m_Communities[i]->Print(os, indent+1);
+    if(append)
+      {
+      m_Name += value;
+      }
+    else
+      {
+      m_Name = value;
+      }
+    return true;
     }
+  if(key == "COPYRIGHT")
+    {
+    if(append)
+      {
+      m_Copyright += value;
+      }
+    else
+      {
+      m_Copyright = value;
+      }
+    return true;
+    }
+  if(key == "DESCRIPTION")
+    {
+    if(append)
+      {
+      m_Description += value;
+      }
+    else
+      {
+      m_Description = value;
+      }
+    return true;
+    }
+  if(key == "INTRODUCTORY" || key == "INTRODUCTORYTEXT")
+    {
+    if(append)
+      {
+      m_IntroductoryText += value;
+      }
+    else
+      {
+      m_IntroductoryText = value;
+      }
+    return true;
+    }
+
+  return false;
 }
 
 } // end namespace

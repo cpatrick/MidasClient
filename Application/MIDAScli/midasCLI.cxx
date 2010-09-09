@@ -16,6 +16,13 @@
 #include "midasStatus.h"
 #include "midasStdOutLog.h"
 #include "midasUtils.h"
+#include "mdsObject.h"
+#include "mdoObject.h"
+#include "mdsCommunity.h"
+#include "mdsCollection.h"
+#include "mdsItem.h"
+#include "mdsBitstream.h"
+
 
 midasCLI::midasCLI()
 {
@@ -95,6 +102,12 @@ int midasCLI::Perform(std::vector<std::string> args)
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParsePull(postOpArgs);
       break;
+      }
+    else if(args[i] == "set_metadata")
+      {
+      this->Synchronizer->SetDatabase(this->Database);
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      return this->PerformSetMetadata(postOpArgs);
       }
     else if(args[i] == "set_root_dir")
       {
@@ -564,6 +577,96 @@ bool midasCLI::ParseUpload(std::vector<std::string> args)
   this->Synchronizer->SetServerHandle(args[1]);
 
   return true;
+}
+
+int midasCLI::PerformSetMetadata(std::vector<std::string> args)
+{
+  bool append = false;
+  unsigned i;
+  for(i = 0; i < args.size(); i++)
+    {
+    if(args[i] == "-a" || args[i] == "--append")
+      {
+      append = true;
+      }
+    else
+      {
+      break;
+      }
+    }
+
+  if(i + 3 > args.size())
+    {
+    this->PrintCommandHelp("set_metadata");
+    return -1;
+    }
+  std::string path = args[i];
+  std::string key = args[i+1];
+  std::string value = args[i+2];
+
+  std::string uuid = this->Synchronizer->GetDatabase()->GetUuidFromPath(path);
+
+  if(uuid == "")
+    {
+    std::stringstream text;
+    text << "Error: No resource in the database for path \"" << path << "\""
+      << std::endl;
+    this->Log->Error(text.str());
+    return -2;
+    }
+
+  midasResourceRecord resource =
+    this->Synchronizer->GetDatabase()->GetRecordByUuid(uuid);
+
+  mdo::Object* obj;
+  mds::Object* mdsObj;
+  switch(resource.Type)
+    {
+    case midasResourceType::COMMUNITY:
+      obj = new mdo::Community;
+      mdsObj = new mds::Community;
+      break;
+    case midasResourceType::COLLECTION:
+      obj = new mdo::Collection;
+      mdsObj = new mds::Collection;
+      break;
+    case midasResourceType::ITEM:
+      obj = new mdo::Item;
+      mdsObj = new mds::Item;
+      break;
+    case midasResourceType::BITSTREAM:
+      obj = new mdo::Bitstream;
+      mdsObj = new mds::Bitstream;
+      break;
+    }
+
+  obj->SetId(resource.Id);
+  mdsObj->SetObject(obj);
+  mdsObj->Fetch();
+  if(!obj->SetValue(key, value, append))
+    {
+    std::stringstream text;
+    text << "Error: " << obj->GetTypeName() << "::SetValue failed for key="
+      << key << " and value=" << value << std::endl;
+    this->Log->Error(text.str());
+    return -3;
+    }
+  if(!mdsObj->Commit())
+    {
+    std::stringstream text;
+    text << "Error: mds::" << obj->GetTypeName() <<
+      "::Commit failed" << std::endl;
+    this->Log->Error(text.str());
+    return -4;
+    }
+
+  std::stringstream text;
+  text << obj->GetTypeName() << " metadata changed." << std::endl;
+  this->Log->Message(text.str());
+
+  delete obj;
+  delete mdsObj;
+  return 0;
 }
 
 //-------------------------------------------------------------------

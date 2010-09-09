@@ -107,7 +107,7 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
     }
   else
     {
-    return this->GetIdForUuid(uuid);
+    return this->GetRecordByUuid(uuid).Id;
     }
 }
 
@@ -279,37 +279,6 @@ int midasDatabaseProxy::GetParentId(int type, int id)
   while(this->Database->GetNextRow());
   this->Database->Close();
   return parentId;
-}
-
-//-------------------------------------------------------------------------
-int midasDatabaseProxy::GetIdForUuid(std::string uuid)
-{
-  std::stringstream query;
-  query << "SELECT resource_id FROM resource_uuid WHERE uuid='"
-    << uuid << "'";
-  this->Database->Open(this->DatabasePath.c_str());
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  int id = this->Database->GetNextRow() ? 
-    this->Database->GetValueAsInt(0) : -1;
-  while(this->Database->GetNextRow());
-  this->Database->Close();
-  return id;
-}
-
-//-------------------------------------------------------------------------
-std::string midasDatabaseProxy::GetUuidFromPath(std::string path)
-{
-  std::stringstream query;
-  query << "SELECT uuid FROM resource_uuid WHERE path='" << path << "'";
-  this->Database->Open(this->DatabasePath.c_str());
-  this->Database->ExecuteQuery(query.str().c_str());
-
-  std::string uuid = this->Database->GetNextRow() ? 
-    this->Database->GetValueAsString(0) : "";
-  while(this->Database->GetNextRow());
-  this->Database->Close();
-  return uuid;
 }
 
 //-------------------------------------------------------------------------
@@ -887,4 +856,28 @@ std::vector<mdo::Object*> midasDatabaseProxy::Search(
   //TODO implement search
 
   return results;
+}
+
+//--------------------------------------------------------------------------
+std::string midasDatabaseProxy::GetUuidFromPath(std::string path)
+{
+  // First make sure we use the absolute path
+  kwsys::SystemTools::ConvertToUnixSlashes(path);
+  if(!kwsys::SystemTools::FileIsFullPath(path.c_str()))
+    {
+    path = kwsys::SystemTools::GetCurrentWorkingDirectory()
+      + "/" + path;
+    }
+  std::string uuid = "";
+  std::stringstream query;
+  query << "SELECT uuid FROM resource_uuid WHERE path='" << path << "'";
+  this->Database->Open(this->DatabasePath.c_str());
+  this->Database->ExecuteQuery(query.str().c_str());
+  while(this->Database->GetNextRow())
+    {
+    uuid = this->Database->GetValueAsString(0);
+    }
+  this->Database->Close();
+
+  return uuid;
 }

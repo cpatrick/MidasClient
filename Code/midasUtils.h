@@ -32,6 +32,10 @@ public:
   static mdo::Object* FetchByUuid(std::string uuid);
   static void StringTrim(std::string& str);
   static int GetParentType(int type);
+  static void Tokenize(const std::string& str,
+                       std::vector<std::string>& tokens,
+                       const std::string& delimiters = " ",
+                       bool trimspaces = true);
 };
 
 #endif

@@ -12,6 +12,7 @@
 #include "mdoCommunity.h"
 #include <sstream>
 #include <iostream>
+#include "midasStandardIncludes.h"
 
 namespace mdo{
 
@@ -54,18 +55,60 @@ void Collection::Clear()
   this->m_Parent = "";
 }
 
-//------------------------------------------------------------------------
-void Collection::Print(std::ostream &os, int indent)
+bool Collection::SetValue(std::string key, std::string value, bool append)
 {
-  os << "Id: " << m_Id << "\n";
-  os << "Name: " << m_Name.c_str() << "\n";
-  os << "Description: " << m_Description.c_str() << "\n";
-  // Display all the bitstream in the list
-  os << "# of items: " << m_Items.size() << "\n";
-  for(unsigned int i=0; i<m_Items.size(); i++)
+  key = kwsys::SystemTools::UpperCase(key);
+
+  if(key == "NAME")
     {
-    m_Items[i]->Print(os, indent+1);
+    if(append)
+      {
+      m_Name += value;
+      }
+    else
+      {
+      m_Name = value;
+      }
+    return true;
     }
+  if(key == "COPYRIGHT")
+    {
+    if(append)
+      {
+      m_Copyright += value;
+      }
+    else
+      {
+      m_Copyright = value;
+      }
+    return true;
+    }
+  if(key == "DESCRIPTION")
+    {
+    if(append)
+      {
+      m_Description += value;
+      }
+    else
+      {
+      m_Description = value;
+      }
+    return true;
+    }
+  if(key == "INTRODUCTORY" || key == "INTRODUCTORYTEXT")
+    {
+    if(append)
+      {
+      m_IntroductoryText += value;
+      }
+    else
+      {
+      m_IntroductoryText = value;
+      }
+    return true;
+    }
+
+  return false;
 }
 
 } // end namespace

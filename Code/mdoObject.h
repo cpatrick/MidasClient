@@ -53,6 +53,13 @@ public:
   virtual void Clear() = 0;
   virtual std::string & GetName() = 0;
   virtual std::string GetTypeName() = 0;
+
+  virtual bool SetValue(std::string key,
+                        std::string value,
+                        bool append = false)
+    {
+    return false;
+    }
     
 protected:
 
