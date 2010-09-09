@@ -322,6 +322,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete m_SearchThread;
   delete authorsEditor;
   delete keywordsEditor;
+  delete mws::WebAPI::Instance()->GetRestAPI();
 }
 
 void MIDASDesktopUI::showNormal()

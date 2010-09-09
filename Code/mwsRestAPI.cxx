@@ -111,18 +111,6 @@ bool RestAPI::SetCurlOptions(const char* url,
   return true;  
 }
 
-/** Return the status of the current API */
-void RestAPI::PrintStatus()
-{
-  std::cout << "\tm_Initialized:"  << this->m_Initialized << std::endl;
-  std::cout << "\toutput_buffer:"     << (this->output_buffer.empty() ? "NOT" : "") << "NULL: " << this->output_buffer /*kwutils::to_string<std::string*>(this->output_buffer)*/  << std::endl;
-  std::cout << "\tm_CurlCode:"          << this->m_CurlCode << std::endl;
-  std::cout << "\tIO_MODE::FILE:"     << FILE << std::endl;
-  std::cout << "\tIO_MODE::BUFFER:"   << BUFFER << std::endl;
-  std::cout << "\tm_OutputMode:"       << this->m_OutputMode << std::endl;
-  std::cout << "\tinput_mode:"        << this->input_mode << std::endl;
-}
-
 //--------------------------------------------------------------------------------------------------
 bool RestAPI::PerformCurl()
 {
@@ -473,27 +461,10 @@ void RestAPI::ResetOutputBuffer()
   }
 
 //--------------------------------------------------------------------------------------------------
-const std::string& RestAPI::GetUploadUniqueId()
-  {
-  
-  //Logger::debug(this->upload_unique_id); 
-  
-  return this->upload_unique_id; 
-  }
-
-//--------------------------------------------------------------------------------------------------
-void RestAPI::SetUploadUniqueId(const std::string &value)
-  {
-  this->upload_unique_id.assign(value); 
-  }
-
-//--------------------------------------------------------------------------------------------------
 void RestAPI::SetProgressCallback(curl_progress_callback fprogress, void * fprogress_data)
   {
-  
   this->fprogress = fprogress; 
   this->fprogress_data = fprogress_data; 
-  
   }
 
 bool RestAPI::Parse(const char* buffer,unsigned long length)
@@ -504,50 +475,6 @@ bool RestAPI::Parse(const char* buffer,unsigned long length)
     }
   return m_XMLParser->Parse(buffer,length);
 }
-
-//--------------------------------------------------------------------------------------------------
-std::string RestAPI::GetSessionId()
-  {
-  
-
-  curl_slist* pCookies = 0; 
-  curl_slist* p = 0; 
-  
-  std::string sessionid(""); 
-
-  if (m_cURL != NULL)
-    {
-    // get list of cookies - let's assume the last one in the most recent
-    //TODO: FIX this->m_CurlCode = curl_easy_getinfo( m_cURL, CURLINFO_COOKIELIST, &pCookies );
-    if (this->m_CurlCode == CURLE_OK)
-      {
-      p = pCookies;
-      while(p) 
-        {
-        //Logger::debug(p->data);
-        std::vector<std::string> tokens;
-        //TODO: FIX kwutils::tokenize(STR(p->data), tokens, "\t");
-        if (tokens.size() == 7)
-          {
-          sessionid = tokens.at(6); 
-          //Logger::debug("\tsession id:" + sessionid); 
-          }
-        p = p->next; 
-        }
-      if (pCookies != NULL)
-        {
-        curl_slist_free_all(pCookies);
-        }
-      }
-    else 
-      {
-      //Logger::warning(STR("m_CurlCode:") + kwutils::to_string<m_CurlCode>(this->m_CurlCode) +
-      //                STR(", ERROR:") + curl_easy_strerror(this->m_CurlCode));
-      }
-    }
-  
-  return sessionid; 
-  }
 
 //--------------------------------------------------------------------------------------------------
 static size_t Curl_output_function(void *ptr, size_t size, size_t nitems, void *userp)
@@ -579,82 +506,4 @@ static size_t Curl_read_function(void *bufptr, size_t size, size_t nitems, void 
   return restAPI->GetInputStream()->gcount();
 }
 
-
-//-----------------------------------------------------------------------------
-std::string RestAPI::SearchKeywords( const std::string &keywords)
-  {
-  // Format the search string
-  // TODO: take care of extra '/' in the server URL
-  const std::string searchURL = "api/rest/midas.item.search/?term=" +
-                                this->FormatKeywords(keywords);
-
-  // Send the request and download the .xml answer file
-  std::string out;
-  this->Download(out, searchURL, BUFFER);
-
-  return out;
-  }
-
-//-----------------------------------------------------------------------------
-std::string RestAPI::FormatKeywords(const std::string &keywords)
-  {
-  // Copy input string for modifications
-  std::string out = keywords;
-  /*
-  // Replace weird characters by white space
-  unsigned int i=0;
-  unsigned int N=out.length();
-  while(i++<N)
-    {
-    char c = out[i];
-    if(c>'Z' && c<'A' && c>'z' && c<'a' && c<'0' && c>'9' && c!='+' && c!='-' && c!=' ')
-      out[i] = ' ';
-    }
-
-  // Delete multiples spaces
-  size_t pos;
-  while((pos = out.find("  ")) != std::string::npos) // Look for double white spaces
-    out.erase(pos, 1);
-
-  // Delete first or last character space or + or - sign
-  while(out[0]==' ' || IS_SEARCH_OPERATOR(out[0]))
-    out.erase(0, 1);
-  while(out[out.length()-1]==' ' || IS_SEARCH_OPERATOR(out[out.length()-1]))
-    out.erase(out.length()-1, 1);
-
-  //return out;
-  // Replace '+' by "+AND+"
-  // Replace '-' by "+NOT+"
-  // Replace ' ' by "+OR+"
-  i = 0;
-  while(i++ < out.length())
-    {
-    char c = out[i];
-    switch(c)
-      {
-      case '+':
-        REMOVE_SURROUNDING_SPACE(out, i);
-        out.replace(i,1, "+AND+");
-        i+=4;
-        break;
-      case '-':
-        REMOVE_SURROUNDING_SPACE(out, i);
-        out.replace(i,1, "+NOT+");
-        i+=4;
-        break;
-      case ' ':
-        if(i+1<out.length() && IS_SEARCH_OPERATOR(out[i+1]))
-          break;
-        out.replace(i,1, "+OR+");
-        i+=3;
-        break;
-      default:
-        break;
-      }
-    }
-*/
-  
-  return out;
-  }
-  
 } // end namespace
