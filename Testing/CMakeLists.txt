@@ -57,6 +57,11 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(testPush ${midascli_command} --database ${sqlite_db} --profile test push)
   set_tests_properties(testPush PROPERTIES DEPENDS testPushNoAuth)
   
+  # metadata editing tests
+  add_test(metadata.community.name ${midascli_command} --database ${sqlite_db} set_metadata "${dashboard_top_level_community_name}" name "${dashboard_top_level_community_name}_changed")
+  add_test(metadata.community.copyright ${midascli_command} --database ${sqlite_db} set_metadata "${dashboard_top_level_community_name}_changed" copyright "new copyright text")
+  add_test(metadata.community.introductory ${midascli_command} --database ${sqlite_db} set_metadata "${dashboard_top_level_community_name}_changed" introductory "new introductory text")
+  
   # Restore database to a fresh state again
   add_test(cleanDatabase3 ${midascli_command} --database ${sqlite_db} clean)
   set_tests_properties(cleanDatabase3 PROPERTIES DEPENDS testPush)
@@ -68,6 +73,7 @@ if(BUILD_MIDASCPP_TESTING)
   
   add_test(testUpload ${midascli_command} --database ${sqlite_db} --profile test upload "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" "${dashboard_top_level_community_name}/Subcomm/Collection/Item")
   set_tests_properties(testUpload PROPERTIES DEPENDS cleanDatabase3)
+
 endif(BUILD_MIDASCPP_TESTING)
   
 

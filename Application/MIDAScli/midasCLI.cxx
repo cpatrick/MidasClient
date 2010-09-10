@@ -642,6 +642,8 @@ int midasCLI::PerformSetMetadata(std::vector<std::string> args)
 
   obj->SetId(resource.Id);
   mdsObj->SetObject(obj);
+  mdsObj->SetDatabase(this->Synchronizer->GetDatabase());
+  mdsObj->MarkAsDirty();
   mdsObj->Fetch();
   if(!obj->SetValue(key, value, append))
     {
