@@ -93,6 +93,8 @@ void MidasTreeViewServer::selectByUuid(std::string uuid)
     this, SLOT(expand(const QModelIndex&)));
   connect(m_ExpandTreeThread, SIGNAL(select(const QModelIndex&)),
     this, SLOT(selectByIndex(const QModelIndex&)));
+  connect(m_ExpandTreeThread, SIGNAL( enableActions(bool) ),
+    m_Parent, SLOT( enableActions(bool) ) );
 
   m_ExpandTreeThread->start();
   emit startedExpandingTree();

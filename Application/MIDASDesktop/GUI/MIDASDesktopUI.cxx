@@ -164,6 +164,9 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- setup TreeView signals -------------
 
+  treeViewServer->SetParentUI(this);
+  treeViewClient->SetParentUI(this);
+
   connect(treeViewServer, SIGNAL(midasTreeItemSelected(const MidasTreeItem*)),
     this, SLOT( updateActionState(const MidasTreeItem*) ));
   connect(treeViewClient, SIGNAL(midasTreeItemSelected(const MidasTreeItem*)),
@@ -1330,9 +1333,12 @@ void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)
 
 void MIDASDesktopUI::storeLastPollTime()
 {
+  enableActions(false);
   mws::NewResources newResources;
   newResources.SetSince(m_database->GetSetting(midasDatabaseProxy::LAST_FETCH_TIME));
   newResources.Fetch();
+  enableActions(true);
+
   this->m_dirtyUuids = newResources.GetUuids();
   std::reverse(m_dirtyUuids.begin(), m_dirtyUuids.end());
 
@@ -1350,6 +1356,7 @@ void MIDASDesktopUI::decorateServerTree()
 {
   if(m_dirtyUuids.size())
     {
+    enableActions(false);
     connect(treeViewServer, SIGNAL( finishedExpandingTree() ),
       this, SLOT( decorateCallback() ) );
     this->treeViewServer->selectByUuid(m_dirtyUuids[0]);

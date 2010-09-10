@@ -6,8 +6,18 @@
 #include "MidasItemTreeItem.h"
 #include "MidasBitstreamTreeItem.h"
 #include "MidasTreeModel.h"
+#include "MIDASDesktopUI.h"
 
 #include <QModelIndex>
+
+MidasTreeView::MidasTreeView(QWidget* parent) : QTreeView(parent)
+{
+}
+
+void MidasTreeView::SetParentUI(MIDASDesktopUI* parent)
+{
+  m_Parent = parent;
+}
 
 void MidasTreeView::updateSelection(const QItemSelection &selected,
                                     const QItemSelection &deselected)

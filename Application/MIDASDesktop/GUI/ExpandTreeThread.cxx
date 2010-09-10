@@ -18,6 +18,7 @@ ExpandTreeThread::~ExpandTreeThread()
 
 void ExpandTreeThread::run()
 {
+  emit enableActions(false);
   std::vector<std::string> path = 
     mws::TreePath::PathFromRoot(m_Uuid);
 
@@ -26,6 +27,7 @@ void ExpandTreeThread::run()
     {
     QModelIndex index = m_ParentModel->getIndexByUuid(*i);
     m_ParentModel->fetchMore(index);
+
     emit expand(index);
     }
 
@@ -35,5 +37,6 @@ void ExpandTreeThread::run()
     emit select(index);
     }
 
+  emit enableActions(true);
   emit threadComplete();
 }

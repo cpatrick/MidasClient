@@ -24,6 +24,7 @@ signals:
   void threadComplete();
   void expand(const QModelIndex& index);
   void select(const QModelIndex& index);
+  void enableActions(bool val);
 
 private:
   MidasTreeViewServer*  m_ParentUI;
