@@ -57,10 +57,17 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(testPush ${midascli_command} --database ${sqlite_db} --profile test push)
   set_tests_properties(testPush PROPERTIES DEPENDS testPushNoAuth)
   
-  # metadata editing tests
+  # metadata editing tests - community
+  add_test(delete.community.dest "${CMAKE_COMMAND}" -E remove_directory "${dashboard_top_level_community_name}_changed")
   add_test(metadata.community.name ${midascli_command} --database ${sqlite_db} set_metadata "${dashboard_top_level_community_name}" name "${dashboard_top_level_community_name}_changed")
+  set_tests_properties(metadata.community.name PROPERTIES DEPENDS delete.community.dest)
   add_test(metadata.community.copyright ${midascli_command} --database ${sqlite_db} set_metadata "${dashboard_top_level_community_name}_changed" copyright "new copyright text")
+  add_test(metadata.community.description ${midascli_command} --database ${sqlite_db} set_metadata "${dashboard_top_level_community_name}_changed" description "new description text")
   add_test(metadata.community.introductory ${midascli_command} --database ${sqlite_db} set_metadata "${dashboard_top_level_community_name}_changed" introductory "new introductory text")
+  set_tests_properties(metadata.community.copyright metadata.community.description metadata.community.introductory PROPERTIES DEPENDS metadata.community.name)
+  add_test(pushmodified.community ${midascli_command} --database ${sqlite_db} push)
+  set_tests_properties(pushmodified.community PROPERTIES DEPENDS "metadata.community.introductory;metadata.community.copyright;metadata.community.description"
+    PASS_REGULAR_EXPRESSION "community ${dashboard_top_level_community_name}_changed")
   
   # Restore database to a fresh state again
   add_test(cleanDatabase3 ${midascli_command} --database ${sqlite_db} clean)
