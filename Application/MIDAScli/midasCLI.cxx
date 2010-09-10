@@ -782,6 +782,24 @@ void midasCLI::PrintCommandHelp(std::string command)
       "MIDAS server of the item into which the bitstream will be uploaded."
       << std::endl;
     }
+  else if(command == "set_metadata")
+    {
+    std::cout << "Usage: MIDAScli ... set_metadata [-a] PATH KEY VALUE"
+      << std::endl << "Where PATH is the absolute or relative path to "
+      "the local resource," << std::endl <<
+      "KEY is the name of the metadata field you want to set," << std::endl
+      << "and VALUE is the value to set it to." << std::endl <<
+      "If -a is specified, the value will be appended to the current value "
+      "instead of overwriting it." << std::endl << std::endl <<
+      "Valid metadata keys, by type:" << std::endl <<
+      " Community: name, description, copyright, introductorytext"
+      << std::endl <<
+      " Collection: name, description, copyright, introductorytext"
+      << std::endl <<
+      " Item: title, abstract, description, authors, keywords"
+      << std::endl << std::endl <<
+      "Key names are not case sensitive." << std::endl;
+    }
   else
     {
     std::cerr << "Error: \"" << command << "\" is not a valid MIDAScli "
