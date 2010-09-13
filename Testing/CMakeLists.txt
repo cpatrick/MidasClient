@@ -48,6 +48,9 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(testPushNoAuth ${midascli_command} --database ${sqlite_db} push)
   set_tests_properties(testPushNoAuth PROPERTIES WILL_FAIL ON)
   add_test(testPush ${midascli_command} --database ${sqlite_db} --profile test push)
+  
+  # "upload" command tests
+  add_test(testUpload ${midascli_command} --database ${sqlite_db} --profile test upload "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" "${dashboard_top_level_community_name}/Subcomm/Collection/Item")
 
   # metadata editing tests - community
   add_test(delete.community.dest "${CMAKE_COMMAND}" -E remove_directory "${dashboard_top_level_community_name}_changed")
@@ -92,8 +95,6 @@ if(BUILD_MIDASCPP_TESTING)
   # Coverage for runtime new database creation
   add_test(deleteNewDatabase "${CMAKE_COMMAND}" -E remove -f ${new_db})
   add_test(testCreateDatabaseRuntime ${midascli_command} --database ${new_db} clean)
-
-  add_test(testUpload ${midascli_command} --database ${sqlite_db} --profile test upload "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" "${dashboard_top_level_community_name}/Subcomm/Collection/Item")
 
 endif(BUILD_MIDASCPP_TESTING)
   
