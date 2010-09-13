@@ -19,7 +19,7 @@ ExpandTreeThread::~ExpandTreeThread()
 void ExpandTreeThread::run()
 {
   emit enableActions(false);
-  std::vector<std::string> path = 
+  std::vector<std::string> path =
     mws::TreePath::PathFromRoot(m_Uuid);
 
   for(std::vector<std::string>::iterator i = path.begin();
