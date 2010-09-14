@@ -89,18 +89,24 @@ int midasCLI::Perform(std::vector<std::string> args)
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       return this->PerformCreateProfile(postOpArgs);
       }
-    else if(args[i] == "push")
+    else if(args[i] == "delete")
       {
       this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
-      ok = this->ParsePush(postOpArgs);
-      break;
+      return this->PerformDelete(postOpArgs);
       }
     else if(args[i] == "pull")
       {
       this->Synchronizer->SetDatabase(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParsePull(postOpArgs);
+      break;
+      }
+    else if(args[i] == "push")
+      {
+      this->Synchronizer->SetDatabase(this->Database);
+      std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
+      ok = this->ParsePush(postOpArgs);
       break;
       }
     else if(args[i] == "set_metadata")
@@ -579,6 +585,43 @@ bool midasCLI::ParseUpload(std::vector<std::string> args)
   return true;
 }
 
+int midasCLI::PerformDelete(std::vector<std::string> args)
+{
+  bool deleteOnDisk = false;
+  unsigned i;
+  for(i = 0; i < args.size(); i++)
+    {
+    if(args[i] == "-d")
+      {
+      deleteOnDisk = true;
+      }
+    else
+      {
+      break;
+      }
+    }
+
+  if(i + 1 > args.size())
+    {
+    this->PrintCommandHelp("delete");
+    return -1;
+    }
+  std::string path = args[i];
+  std::string uuid = this->Synchronizer->GetDatabase()->GetUuidFromPath(path);
+
+  if(uuid == "")
+    {
+    std::stringstream text;
+    text << "Error: No resource in the database for path \"" << path << "\""
+      << std::endl;
+    this->Log->Error(text.str());
+    return -2;
+    }
+
+  return this->Synchronizer->GetDatabase()->
+    DeleteResource(uuid, deleteOnDisk) ? 0 : -3;
+}
+
 int midasCLI::PerformSetMetadata(std::vector<std::string> args)
 {
   bool append = false;
@@ -687,6 +730,8 @@ void midasCLI::PrintUsage()
     << std::endl <<
     " create_profile   Create an authentication profile."
     << std::endl <<
+    " delete           Delete a local resource."
+    << std::endl <<
     " pull             Copy part of a MIDAS database locally."
     << std::endl <<
     " push             Copy locally added resources to a MIDAS server."
@@ -732,6 +777,13 @@ void midasCLI::PrintCommandHelp(std::string command)
   else if(command == "clean")
     {
     std::cout << "Usage: MIDAScli ... clean" << std::endl;
+    }
+  else if(command == "delete")
+    {
+    std::cout << "Usage: MIDAScli ... delete [-d] PATH" << std::endl <<
+      "PATH refers to the path on disk of the item to remove locally." <<
+      std::endl << "The -d option will also delete the files on disk." <<
+      std::endl;
     }
   else if(command == "add")
     {

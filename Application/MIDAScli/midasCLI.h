@@ -40,6 +40,7 @@ protected:
   int SetRootDir(std::vector<std::string> args);
   int PerformCreateProfile(std::vector<std::string> args);
   int PerformSetMetadata(std::vector<std::string> args);
+  int PerformDelete(std::vector<std::string> args);
 
   int RunSynchronizer();
 

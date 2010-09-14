@@ -27,6 +27,7 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(printHelp.clean ${midascli_command} --help clean)
   add_test(printHelp.clone ${midascli_command} --help clone)
   add_test(printHelp.create_profile ${midascli_command} --help create_profile)
+  add_test(printHelp.delete ${midascli_command} --help delete)
   add_test(printHelp.set_metadata ${midascli_command} --help set_metadata)
   add_test(printHelp.set_root_dir ${midascli_command} --help set_root_dir)
   add_test(printHelp.status ${midascli_command} --help status)
@@ -113,6 +114,10 @@ if(BUILD_MIDASCPP_TESTING)
     PASS_REGULAR_EXPRESSION
     "Pushed community ${dashboard_top_level_community_name}_changed.*Pushed collection Collection_changed.*Pushed item Item_changed"
   )
+  
+  # "delete" command tests
+  add_test(testDeleteBitstream ${midascli_command} --database ${sqlite_db} delete "${dashboard_top_level_community_name}_changed/Subcomm/Collection_changed/Item_changed/bitstream.txt")
+  add_test(testDeleteHard ${midascli_command} --database ${sqlite_db} delete -d "${dashboard_top_level_community_name}_changed")
 
   # Restore database to a fresh state again
   add_test(cleanDatabase3 ${midascli_command} --database ${sqlite_db} clean)
