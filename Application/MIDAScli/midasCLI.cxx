@@ -738,7 +738,7 @@ void midasCLI::PrintUsage()
     << std::endl <<
     " upload           Upload a file to a MIDAS server."
     << std::endl <<
-     " status          List dirty resources pending push."
+    " status           List dirty resources pending push."
     << std::endl <<
     " set_metadata     Change metadata for a local resource."
     << std::endl <<
