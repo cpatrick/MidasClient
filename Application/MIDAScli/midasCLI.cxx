@@ -740,6 +740,8 @@ void midasCLI::PrintUsage()
     << std::endl <<
      " status          List dirty resources pending push."
     << std::endl <<
+    " set_metadata     Change metadata for a local resource."
+    << std::endl <<
     " set_root_dir     Set where resources should be pulled to on disk."
     << std::endl << std::endl << "Use MIDAScli --help COMMAND for "
     "help with individual commands." << std::endl;
