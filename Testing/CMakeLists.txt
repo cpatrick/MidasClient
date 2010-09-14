@@ -17,8 +17,22 @@ if(BUILD_MIDASCPP_TESTING)
     COPYONLY
   )
 
+  # CLI documentation tests
   add_test(testCliNoArgs ${midascli_command})
   set_tests_properties(testCliNoArgs PROPERTIES WILL_FAIL ON)
+
+  add_test(printHelp ${midascli_command} --help)
+  add_test(printHelp.pull ${midascli_command} --help pull)
+  add_test(printHelp.push ${midascli_command} --help push)
+  add_test(printHelp.clean ${midascli_command} --help clean)
+  add_test(printHelp.clone ${midascli_command} --help clone)
+  add_test(printHelp.create_profile ${midascli_command} --help create_profile)
+  add_test(printHelp.set_metadata ${midascli_command} --help set_metadata)
+  add_test(printHelp.set_root_dir ${midascli_command} --help set_root_dir)
+  add_test(printHelp.status ${midascli_command} --help status)
+  add_test(printHelp.upload ${midascli_command} --help upload)
+
+  add_test(setRootDir ${midascli_command} --database ${sqlite_db} set_root_dir "${MIDASCPP_BINARY_DIR}/Testing")
 
   # Restore database to a fresh state
   add_test(cleanDatabase ${midascli_command} --database ${sqlite_db} clean)
@@ -50,7 +64,18 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(testPush ${midascli_command} --database ${sqlite_db} --profile test push)
   
   # "upload" command tests
-  add_test(testUpload ${midascli_command} --database ${sqlite_db} --profile test upload "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" "${dashboard_top_level_community_name}/Subcomm/Collection/Item")
+  add_test(testUpload ${midascli_command}
+    --database ${sqlite_db}
+    --url ${dashboard_midas_server_url}
+    --email ${dashboard_midas_email}
+    --app-name ${dashboard_midas_app_name}
+    --api-key ${dashboard_midas_api_key}
+    upload "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" "${dashboard_top_level_community_name}/Subcomm/Collection/Item")
+    
+  # "pull" command tests
+  add_test(removeBitstreamOnDisk ${CMAKE_COMMAND} -E remove -f "${dashboard_top_level_community_name}/Subcomm/Collection/Item/bitstream.txt")
+  add_test(testPullRecursive ${midascli_command} --database ${sqlite_db} pull -r -p "${dashboard_top_level_community_name}")
+  set_tests_properties(testPullRecursive PROPERTIES PASS_REGULAR_EXPRESSION "bitstream\\.txt.*Done")
 
   # metadata editing tests - community
   add_test(delete.community.dest "${CMAKE_COMMAND}" -E remove_directory "${dashboard_top_level_community_name}_changed")
