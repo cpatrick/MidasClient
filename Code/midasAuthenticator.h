@@ -27,7 +27,7 @@ class midasAuthenticator : public midasLogAware
       std::string apiKey, std::string rootDir, std::string profileName);
     
     // Lazy getter for an api auth token
-    std::string FetchToken();
+    //std::string FetchToken();
     // May need this function in case the old token expires
     void ClearToken();
 

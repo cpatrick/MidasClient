@@ -122,5 +122,3 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(testCreateDatabaseRuntime ${midascli_command} --database ${new_db} clean)
 
 endif(BUILD_MIDASCPP_TESTING)
-  
-

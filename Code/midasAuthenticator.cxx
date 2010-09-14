@@ -120,7 +120,7 @@ void midasAuthenticator::ClearToken()
 }
 
 //-------------------------------------------------------------------
-std::string midasAuthenticator::FetchToken()
+/*std::string midasAuthenticator::FetchToken()
 {
   if(this->Token != "")
     {
@@ -151,7 +151,7 @@ std::string midasAuthenticator::FetchToken()
     this->Token = remote->GetAPIToken();
     }
   return this->Token;
-}
+}*/
 
 //-------------------------------------------------------------------
 void midasAuthenticator::SetDatabase(std::string database)
