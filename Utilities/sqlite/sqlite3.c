@@ -25,6 +25,10 @@
 #ifndef SQLITE_API
 # define SQLITE_API
 #endif
+
+#ifdef _MSC_VER
+# pragma warning (disable: 4244) /* loss of precision */
+#endif
 /************** Begin file sqliteInt.h ***************************************/
 /*
 ** 2001 September 15
