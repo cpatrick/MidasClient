@@ -833,7 +833,9 @@ void midasCLI::PrintCommandHelp(std::string command)
       << std::endl << "And may also contain the following options:"
       << std::endl <<
       " --root-dir DIR       The root directory to pull into for this profile"
-      << std::endl;
+      << std::endl << std::endl <<
+      "Calling create_profile with no arguments will list all available "
+      "authentication profiles in the database." << std::endl;
     }
   else if(command == "set_root_dir")
     {
