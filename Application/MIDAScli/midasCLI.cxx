@@ -300,6 +300,21 @@ int midasCLI::PerformCreateProfile(std::vector<std::string> args)
       }
     }
 
+  //Print the available authentication auth profiles if no args given
+  if(name == "" && user == "" && apiKey == "" && appName == "")
+    {
+    std::vector<std::string> profiles =
+      this->Synchronizer->GetDatabase()->GetAuthProfiles();
+
+    std::cout << "Available authentication profiles:" << std::endl;
+    for(std::vector<std::string>::iterator i = profiles.begin();
+        i != profiles.end(); ++i)
+      {
+      std::cout << "  " << *i << std::endl;
+      }
+    return 0;
+    }
+
   if(name == "" || user == "" || apiKey == "" || appName == "")
     {
     this->PrintCommandHelp("create_profile");

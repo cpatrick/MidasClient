@@ -44,6 +44,8 @@ if(BUILD_MIDASCPP_TESTING)
 
   # "create_profile" command tests
   add_test(testCreateProfile ${midascli_command} --database ${sqlite_db} create_profile --name test --email ${dashboard_midas_email} --app-name ${dashboard_midas_app_name} --api-key ${dashboard_midas_api_key})
+  add_test(testListAllProfiles ${midascli_command} --database ${sqlite_db} create_profile)
+  set_tests_properties(testListAllProfiles PROPERTIES PASS_REGULAR_EXPRESSION "^Available authentication profiles:.*test")
 
   add_test(testPushNoResources ${midascli_command} --database ${sqlite_db} --profile test push)
 
