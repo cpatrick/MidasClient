@@ -22,6 +22,7 @@ if(BUILD_MIDASCPP_TESTING)
   set_tests_properties(testCliNoArgs PROPERTIES WILL_FAIL ON)
 
   add_test(printHelp ${midascli_command} --help)
+  add_test(printHelp.add ${midascli_command} --help add)
   add_test(printHelp.pull ${midascli_command} --help pull)
   add_test(printHelp.push ${midascli_command} --help push)
   add_test(printHelp.clean ${midascli_command} --help clean)
