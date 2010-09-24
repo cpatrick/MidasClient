@@ -89,6 +89,14 @@ function(add_midas_test testName keyFile)
     message(FATAL_ERROR \"Error downloading ${checksum}: \${errMsg}\")
   endif(NOT exitCode EQUAL 0)
 endif(NOT EXISTS \"${MIDAS_DOWNLOAD_DIR}/${checksum}\")
+
+execute_process(COMMAND \"${CMAKE_COMMAND}\" -E md5sum \"${MIDAS_DOWNLOAD_DIR}/${checksum}\" OUTPUT_VARIABLE output)
+string(SUBSTRING \${output} 0 32 computedChecksum)
+
+if(NOT computedChecksum STREQUAL ${checksum})
+  file(REMOVE \"${MIDAS_DOWNLOAD_DIR}/${checksum}\")
+  message(FATAL_ERROR \"Error: Computed checksum (\${computedChecksum}) did not match expected (${checksum})\")
+endif(NOT computedChecksum STREQUAL ${checksum})
 ")
 
   add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DOWNLOAD_DIR}/FetchScripts/${testName}_fetchData.cmake")
