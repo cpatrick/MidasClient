@@ -4,7 +4,7 @@
 #   project(MyProject)
 #   ...
 #   include(CTest)
-#   include(MIDAS)
+#   include(MIDAS.cmake REQUIRED)
 #
 # To use this module, set the following variable in your script:
 #   MIDAS_REST_URL - URL of the MIDAS server's REST API
@@ -80,7 +80,8 @@ function(add_midas_test testName keyFile)
 
   # Write the test script file for downloading
   file(WRITE "${MIDAS_DOWNLOAD_DIR}/FetchScripts/${testName}_fetchData.cmake"
-"if(NOT EXISTS \"${MIDAS_DOWNLOAD_DIR}/${checksum}\")
+  "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}\")
+if(NOT EXISTS \"${MIDAS_DOWNLOAD_DIR}/${checksum}\")
   file(DOWNLOAD ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum} \"${MIDAS_DOWNLOAD_DIR}/${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
   list(GET status 0 exitCode)
   list(GET status 1 errMsg)
