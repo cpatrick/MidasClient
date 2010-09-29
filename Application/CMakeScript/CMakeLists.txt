@@ -1,0 +1,14 @@
+include(CTest)
+include(MIDAS.cmake REQUIRED)
+
+enable_testing()
+
+add_test(DeleteDownloadedData "${CMAKE_COMMAND}" -E remove -f "${MIDASCPP_BINARY_DIR}/MIDAS_Data/879071fb20d959235fac207f36773851")
+
+set(MIDAS_REST_URL ${dashboard_midas_server_url})
+set(MIDAS_KEY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/TestKeys")
+
+add_midas_test(TestAddMidasTest add2.png.md5 "${CMAKE_COMMAND}" -E compare_files % "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png")
+set_tests_properties(TestAddMidasTest_fetchData PROPERTIES PASS_REGULAR_EXPRESSION "Data is here:.*/midas.bitstream.by.hash\\?hash=879071fb20d959235fac207f36773851")
+
+set_tests_properties(TestAddMidasTest TestAddMidasTest_fetchData DeleteDownloadedData PROPERTIES LABELS "CMakeScript")

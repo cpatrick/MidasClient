@@ -98,7 +98,7 @@ IF(NOT MIDASCPP_KWSYS_LIBRARY)
 ENDIF(NOT MIDASCPP_KWSYS_LIBRARY)
 
 SET(BUILD_MIDASCPP_TESTING ON CACHE BOOL "Build MIDAScpp testing")
-SUBDIRS(Code Application Utilities Testing)
+SUBDIRS(Code Utilities Testing Application)
 
 #-----------------------------------------------------------------------------
 # Export the configuration files
