@@ -14,18 +14,14 @@
 #   MIDAS_KEY_DIR          - Where the key files are located
 #                          - Defaults to PROJECT_SOURCE_DIR/MIDAS_Keys
 #   MIDAS_DOWNLOAD_TIMEOUT - Timeout for download stage (default 0)
-#   MIDAS_SUBSTITUTE_STR   - Which string in the arg list should be
-#                            replaced by the downloaded file.
-#                          - Defaults to "%"
 #
 # Then call the following macro: 
 #  midas_add_test(<testName> <keyFile> <program> [args...])
 #   testName: Name of the test
 #   keyFile: Point this to the ".md5" file you downloaded from MIDAS
 #   program: The executable to be run after the download is complete
-#   args: Optional args to the program.  If one of these args is the
-#         percent sign (%), it will be expanded to point at the
-#         downloaded content.
+#   args: Optional args to the program.  If an arg is of the form
+#         MIDAS{foo.ext.md5}
 # EXAMPLE:
 #  midas_add_test(someTest test.php.md5 php % arg1)
 #   At test time, this would download the full content of test.php
@@ -43,7 +39,7 @@
 # See the License for more information.
 #=============================================================================
 
-function(midas_add_test testName keyFile)
+function(midas_add_test testName)
   if(NOT DEFINED MIDAS_REST_URL)
     message(FATAL_ERROR "You must set MIDAS_REST_URL to the URL of the MIDAS REST API.")
   endif(NOT DEFINED MIDAS_REST_URL)
@@ -63,26 +59,28 @@ function(midas_add_test testName keyFile)
     set(MIDAS_DOWNLOAD_TIMEOUT_STR "TIMEOUT ${MIDAS_DOWNLOAD_TIMEOUT}")
   endif(NOT DEFINED MIDAS_DOWNLOAD_TIMEOUT)
 
-  # Compute hash_alg and base_filename
-  midas_find_alg(${keyFile})
+  # Substitute the downloaded file argument(s)
+  foreach(arg ${ARGN})
+    if(arg MATCHES "^MIDAS{.*}$")
+      string(REGEX MATCH "{.*}$" keyFile "${arg}")
+      string(REGEX REPLACE "^{" "" keyFile "${keyFile}")
+      string(REGEX REPLACE "}$" "" keyFile "${keyFile}")
+      midas_find_alg("${keyFile}")
 
-  if(NOT DEFINED MIDAS_SUBSTITUTE_STR)
-    set(MIDAS_SUBSTITUTE_STR %)
-  endif(NOT DEFINED MIDAS_SUBSTITUTE_STR)
+      # Resolve file location
+      if(EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
+        set(realKeyFile "${MIDAS_KEY_DIR}/${keyFile}")
+      elseif(EXISTS "${MIDAS_KEY_DIR}/${testName}/${keyFile}")
+        set(realKeyFile "${MIDAS_KEY_DIR}/${testName}/${keyFile}")
+      else(EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
+        message(FATAL_ERROR "MIDAS key file ${MIDAS_KEY_DIR}/${keyFile} does not exist.")
+      endif(EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
 
-  if(EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
-    set(realKeyFile "${MIDAS_KEY_DIR}/${keyFile}")
-  elseif(EXISTS "${MIDAS_KEY_DIR}/${testName}/${keyFile}")
-    set(realKeyFile "${MIDAS_KEY_DIR}/${testName}/${keyFile}")
-  else(EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
-    message(FATAL_ERROR "MIDAS key file ${MIDAS_KEY_DIR}/${keyFile} does not exist.")
-  endif(EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
+      # Obtain the checksum
+      file(READ ${realKeyFile} checksum)
 
-  # Obtain the checksum
-  file(READ ${realKeyFile} checksum)
-
-  # Write the test script file for downloading
-  file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake"
+      # Write the test script file for downloading
+      file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/download_${checksum}.cmake"
   "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg}\")
 if(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}\")
   file(DOWNLOAD ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg} \"${MIDAS_DATA_DIR}/${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
@@ -102,22 +100,25 @@ if(NOT computedChecksum STREQUAL ${checksum})
   message(FATAL_ERROR \"Error: Computed checksum (\${computedChecksum}) did not match expected (${checksum})\")
 endif(NOT computedChecksum STREQUAL ${checksum})
 ")
-
-  add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake")
-
-  # Substitute the downloaded file argument(s)
-  foreach(arg ${ARGN})
-    if(arg STREQUAL ${MIDAS_SUBSTITUTE_STR})
+      list(APPEND downloadScripts download_${checksum}.cmake)
       list(APPEND testArgs "${MIDAS_DATA_DIR}/${checksum}")
-    else(arg STREQUAL ${MIDAS_SUBSTITUTE_STR})
+    else(arg MATCHES "^MIDAS{.*}$")
       list(APPEND testArgs ${arg})
-    endif(arg STREQUAL ${MIDAS_SUBSTITUTE_STR})
+    endif(arg MATCHES "^MIDAS{.*}$")
   endforeach(arg)
 
+  file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake"
+       "#This is an auto generated file -- do not edit\n\n")
+  foreach(downloadScript ${downloadScripts})
+    file(APPEND "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake" "include(${downloadScript})\n")
+  endforeach(downloadScript)
+
+  add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake")
   # Finally, create the test
   add_test(${testName} ${testArgs})
   set_tests_properties(${testName} PROPERTIES DEPENDS ${testName}_fetchData)
 endfunction(midas_add_test)
+
 
 # Set hash_alg and base_filename
 macro(midas_find_alg keyFile)
