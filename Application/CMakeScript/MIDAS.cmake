@@ -9,7 +9,7 @@
 # To use this module, set the following variable in your script:
 #   MIDAS_REST_URL - URL of the MIDAS server's REST API
 # Other optional variables:
-#   MIDAS_DOWNLOAD_DIR     - Where to place downloaded files
+#   MIDAS_DATA_DIR         - Where to place downloaded files
 #                          - Defaults to PROJECT_BINARY_DIR/MIDAS_Data
 #   MIDAS_KEY_DIR          - Where the key files are located
 #                          - Defaults to PROJECT_SOURCE_DIR/MIDAS_Keys
@@ -52,10 +52,10 @@ function(add_midas_test testName keyFile)
     set(MIDAS_KEY_DIR "${PROJECT_SOURCE_DIR}/MIDAS_Keys")
   endif(NOT DEFINED MIDAS_KEY_DIR)
 
-  if(NOT DEFINED MIDAS_DOWNLOAD_DIR)
-    set(MIDAS_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}/MIDAS_Data")
-  endif(NOT DEFINED MIDAS_DOWNLOAD_DIR)
-  file(MAKE_DIRECTORY "${MIDAS_DOWNLOAD_DIR}/FetchScripts")
+  if(NOT DEFINED MIDAS_DATA_DIR)
+    set(MIDAS_DATA_DIR "${PROJECT_BINARY_DIR}/MIDAS_Data")
+  endif(NOT DEFINED MIDAS_DATA_DIR)
+  file(MAKE_DIRECTORY "${MIDAS_DATA_DIR}/FetchScripts")
 
   if(NOT DEFINED MIDAS_DOWNLOAD_TIMEOUT)
     set(MIDAS_DOWNLOAD_TIMEOUT_STR "")
@@ -79,33 +79,34 @@ function(add_midas_test testName keyFile)
   file(READ ${realKeyFile} checksum)
 
   # Write the test script file for downloading
-  file(WRITE "${MIDAS_DOWNLOAD_DIR}/FetchScripts/${testName}_fetchData.cmake"
+  file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake"
   "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}\")
-if(NOT EXISTS \"${MIDAS_DOWNLOAD_DIR}/${checksum}\")
-  file(DOWNLOAD ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum} \"${MIDAS_DOWNLOAD_DIR}/${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
+if(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}\")
+  file(DOWNLOAD ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum} \"${MIDAS_DATA_DIR}/${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
   list(GET status 0 exitCode)
   list(GET status 1 errMsg)
   if(NOT exitCode EQUAL 0)
-    file(REMOVE \"${MIDAS_DOWNLOAD_DIR}/${checksum}\")
+    file(REMOVE \"${MIDAS_DATA_DIR}/${checksum}\")
     message(FATAL_ERROR \"Error downloading ${checksum}: \${errMsg}\")
   endif(NOT exitCode EQUAL 0)
-endif(NOT EXISTS \"${MIDAS_DOWNLOAD_DIR}/${checksum}\")
+endif(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}\")
 
-execute_process(COMMAND \"${CMAKE_COMMAND}\" -E md5sum \"${MIDAS_DOWNLOAD_DIR}/${checksum}\" OUTPUT_VARIABLE output)
+execute_process(COMMAND \"${CMAKE_COMMAND}\" -E md5sum \"${MIDAS_DATA_DIR}/${checksum}\" OUTPUT_VARIABLE output)
 string(SUBSTRING \${output} 0 32 computedChecksum)
 
 if(NOT computedChecksum STREQUAL ${checksum})
-  file(REMOVE \"${MIDAS_DOWNLOAD_DIR}/${checksum}\")
+  file(REMOVE \"${MIDAS_DATA_DIR}/${checksum}\")
   message(FATAL_ERROR \"Error: Computed checksum (\${computedChecksum}) did not match expected (${checksum})\")
 endif(NOT computedChecksum STREQUAL ${checksum})
 ")
 
-  add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DOWNLOAD_DIR}/FetchScripts/${testName}_fetchData.cmake")
+  add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake")
 
   # Substitute the downloaded file argument(s)
   foreach(arg ${ARGN})
     if(arg STREQUAL ${MIDAS_SUBSTITUTE_STR})
-      list(APPEND testArgs "${MIDAS_DOWNLOAD_DIR}/${checksum}")
+      list(APPEND testArgs "${MIDAS_DATA_DIR}/${checksum}")
+      list(APPEND testArgs "${MIDAS_DATA_DIR}/${checksum}")
     else(arg STREQUAL ${MIDAS_SUBSTITUTE_STR})
       list(APPEND testArgs ${arg})
     endif(arg STREQUAL ${MIDAS_SUBSTITUTE_STR})
