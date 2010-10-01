@@ -63,9 +63,8 @@ function(midas_add_test testName keyFile)
     set(MIDAS_DOWNLOAD_TIMEOUT_STR "TIMEOUT ${MIDAS_DOWNLOAD_TIMEOUT}")
   endif(NOT DEFINED MIDAS_DOWNLOAD_TIMEOUT)
 
-  if(NOT DEFINED MIDAS_HASH_ALGORITHM)
-    set(MIDAS_HASH_ALGORITHM "MD5")
-  endif(NOT DEFINED MIDAS_HASH_ALGORITHM)
+  # Compute hash_alg and base_filename
+  midas_find_alg(${keyFile})
 
   if(NOT DEFINED MIDAS_SUBSTITUTE_STR)
     set(MIDAS_SUBSTITUTE_STR %)
@@ -84,7 +83,7 @@ function(midas_add_test testName keyFile)
 
   # Write the test script file for downloading
   file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake"
-  "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${MIDAS_HASH_ALGORITHM}\")
+  "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg}\")
 if(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}\")
   file(DOWNLOAD ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${MIDAS_HASH_ALGORITHM} \"${MIDAS_DATA_DIR}/${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
   list(GET status 0 exitCode)
@@ -119,3 +118,12 @@ endif(NOT computedChecksum STREQUAL ${checksum})
   add_test(${testName} ${testArgs})
   set_tests_properties(${testName} PROPERTIES DEPENDS ${testName}_fetchData)
 endfunction(midas_add_test)
+
+# Set hash_alg and base_filename
+macro(midas_find_alg keyFile)
+  # Split up the checksum extension from the real filename
+  string(REGEX MATCH "\\.[^\\.]*$" hash_alg "${keyFile}")
+  string(REGEX REPLACE "\\.[^\\.]*$" "" base_filename "${keyFile}")
+  string(REPLACE "." "" hash_alg "${hash_alg}")
+  string(TOUPPER "${hash_alg}" hash_alg)
+endmacro(midas_find_alg)
