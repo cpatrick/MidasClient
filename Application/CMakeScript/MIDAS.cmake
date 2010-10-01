@@ -4,7 +4,7 @@
 #   project(MyProject)
 #   ...
 #   include(CTest)
-#   include(MIDAS.cmake REQUIRED)
+#   include(MIDAS.cmake)
 #
 # To use this module, set the following variable in your script:
 #   MIDAS_REST_URL - URL of the MIDAS server's REST API
@@ -17,10 +17,9 @@
 #   MIDAS_SUBSTITUTE_STR   - Which string in the arg list should be
 #                            replaced by the downloaded file.
 #                          - Defaults to "%"
-#   MIDAS_HASH_ALGORITHM   - What hash algorithm to use. Defaults to MD5
 #
 # Then call the following macro: 
-#  add_midas_test(<testName> <keyFile> <program> [args...])
+#  midas_add_test(<testName> <keyFile> <program> [args...])
 #   testName: Name of the test
 #   keyFile: Point this to the ".md5" file you downloaded from MIDAS
 #   program: The executable to be run after the download is complete
@@ -28,7 +27,7 @@
 #         percent sign (%), it will be expanded to point at the
 #         downloaded content.
 # EXAMPLE:
-#  add_midas_test(someTest test.php.md5 php % arg1)
+#  midas_add_test(someTest test.php.md5 php % arg1)
 #   At test time, this would download the full content of test.php
 #   from the MIDAS server, then run php on it, assuming you had placed
 #   test.php.md5 (the key file you got from MIDAS corresponding to test.php)
@@ -44,7 +43,7 @@
 # See the License for more information.
 #=============================================================================
 
-function(add_midas_test testName keyFile)
+function(midas_add_test testName keyFile)
   if(NOT DEFINED MIDAS_REST_URL)
     message(FATAL_ERROR "You must set MIDAS_REST_URL to the URL of the MIDAS REST API.")
   endif(NOT DEFINED MIDAS_REST_URL)
@@ -111,7 +110,6 @@ endif(NOT computedChecksum STREQUAL ${checksum})
   foreach(arg ${ARGN})
     if(arg STREQUAL ${MIDAS_SUBSTITUTE_STR})
       list(APPEND testArgs "${MIDAS_DATA_DIR}/${checksum}")
-      list(APPEND testArgs "${MIDAS_DATA_DIR}/${checksum}")
     else(arg STREQUAL ${MIDAS_SUBSTITUTE_STR})
       list(APPEND testArgs ${arg})
     endif(arg STREQUAL ${MIDAS_SUBSTITUTE_STR})
@@ -120,4 +118,4 @@ endif(NOT computedChecksum STREQUAL ${checksum})
   # Finally, create the test
   add_test(${testName} ${testArgs})
   set_tests_properties(${testName} PROPERTIES DEPENDS ${testName}_fetchData)
-endfunction(add_midas_test)
+endfunction(midas_add_test)
