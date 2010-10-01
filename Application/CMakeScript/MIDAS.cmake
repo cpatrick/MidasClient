@@ -17,6 +17,7 @@
 #   MIDAS_SUBSTITUTE_STR   - Which string in the arg list should be
 #                            replaced by the downloaded file.
 #                          - Defaults to "%"
+#   MIDAS_HASH_ALGORITHM   - What hash algorithm to use. Defaults to MD5
 #
 # Then call the following macro: 
 #  add_midas_test(<testName> <keyFile> <program> [args...])
@@ -63,6 +64,10 @@ function(add_midas_test testName keyFile)
     set(MIDAS_DOWNLOAD_TIMEOUT_STR "TIMEOUT ${MIDAS_DOWNLOAD_TIMEOUT}")
   endif(NOT DEFINED MIDAS_DOWNLOAD_TIMEOUT)
 
+  if(NOT DEFINED MIDAS_HASH_ALGORITHM)
+    set(MIDAS_HASH_ALGORITHM "MD5")
+  endif(NOT DEFINED MIDAS_HASH_ALGORITHM)
+
   if(NOT DEFINED MIDAS_SUBSTITUTE_STR)
     set(MIDAS_SUBSTITUTE_STR %)
   endif(NOT DEFINED MIDAS_SUBSTITUTE_STR)
@@ -80,9 +85,9 @@ function(add_midas_test testName keyFile)
 
   # Write the test script file for downloading
   file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake"
-  "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}\")
+  "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${MIDAS_HASH_ALGORITHM}\")
 if(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}\")
-  file(DOWNLOAD ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum} \"${MIDAS_DATA_DIR}/${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
+  file(DOWNLOAD ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${MIDAS_HASH_ALGORITHM} \"${MIDAS_DATA_DIR}/${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
   list(GET status 0 exitCode)
   list(GET status 1 errMsg)
   if(NOT exitCode EQUAL 0)
