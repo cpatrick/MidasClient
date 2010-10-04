@@ -4,7 +4,7 @@
 #   project(MyProject)
 #   ...
 #   include(CTest)
-#   include(MIDAS.cmake)
+#   include(MIDAS)
 #
 # To use this module, set the following variable in your script:
 #   MIDAS_REST_URL - URL of the MIDAS server's REST API
@@ -29,6 +29,11 @@
 #   is analogous to
 #  add_test(someTest php test.php)
 #   if the file test.php had already existed on disk.
+#
+# NOTES:
+# * The MIDAS{} substitution method can also be passed a relative path
+#   from the MIDAS_KEY_DIR to the key file, so that you can place key files
+#   in subdirectories under MIDAS_KEY_DIR. Ex: MIDAS{test1/input/foo.png.md5}
 #
 #=============================================================================
 # Copyright 2010 Kitware, Inc.
@@ -72,16 +77,12 @@ function(midas_add_test testName)
       string(TOUPPER "${hash_alg}" hash_alg)
 
       # Resolve file location
-      if(EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
-        set(realKeyFile "${MIDAS_KEY_DIR}/${keyFile}")
-      elseif(EXISTS "${MIDAS_KEY_DIR}/${testName}/${keyFile}")
-        set(realKeyFile "${MIDAS_KEY_DIR}/${testName}/${keyFile}")
-      else(EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
+      if(NOT EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
         message(FATAL_ERROR "MIDAS key file ${MIDAS_KEY_DIR}/${keyFile} does not exist.")
-      endif(EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
+      endif(NOT EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
 
       # Obtain the checksum
-      file(READ ${realKeyFile} checksum)
+      file(READ "${MIDAS_KEY_DIR}/${keyFile}" checksum)
 
       # Write the test script file for downloading
       file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/download_${checksum}.cmake"
