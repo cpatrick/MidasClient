@@ -16,18 +16,20 @@
 #   MIDAS_DOWNLOAD_TIMEOUT - Timeout for download stage (default 0)
 #
 # Then call the following macro: 
-#  midas_add_test(<testName> <keyFile> <program> [args...])
+#  midas_add_test(<testName> <program> [args...])
 #   testName: Name of the test
-#   keyFile: Point this to the ".md5" file you downloaded from MIDAS
 #   program: The executable to be run after the download is complete
 #   args: Optional args to the program.  If an arg is of the form
-#         MIDAS{foo.ext.md5}
+#         MIDAS{foo.ext.md5}, the actual file foo.ext will be
+#         substituted for it at test time once the file is downloaded,
+#         assuming the keyfile foo.ext.md5 exists in MIDAS_KEY_DIR.
+#
 # EXAMPLE:
-#  midas_add_test(someTest test.php.md5 php % arg1)
-#   At test time, this would download the full content of test.php
-#   from the MIDAS server, then run php on it, assuming you had placed
-#   test.php.md5 (the key file you got from MIDAS corresponding to test.php)
-#   in the current source directory.
+#  midas_add_test(someTest php MIDAS{test.php.md5})
+#   is analogous to
+#  add_test(someTest php test.php)
+#   if the file test.php had already existed on disk.
+#
 #=============================================================================
 # Copyright 2010 Kitware, Inc.
 #
@@ -61,11 +63,13 @@ function(midas_add_test testName)
 
   # Substitute the downloaded file argument(s)
   foreach(arg ${ARGN})
-    if(arg MATCHES "^MIDAS{.*}$")
-      string(REGEX MATCH "{.*}$" keyFile "${arg}")
-      string(REGEX REPLACE "^{" "" keyFile "${keyFile}")
-      string(REGEX REPLACE "}$" "" keyFile "${keyFile}")
-      midas_find_alg("${keyFile}")
+    if(arg MATCHES "^MIDAS{[^}]*}$")
+      string(REGEX REPLACE "^MIDAS{([^}]*)}$" "\\1" keyFile "${arg}")
+      # Split up the checksum extension from the real filename
+      string(REGEX MATCH "\\.[^\\.]*$" hash_alg "${keyFile}")
+      string(REGEX REPLACE "\\.[^\\.]*$" "" base_filename "${keyFile}")
+      string(REPLACE "." "" hash_alg "${hash_alg}")
+      string(TOUPPER "${hash_alg}" hash_alg)
 
       # Resolve file location
       if(EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
@@ -100,11 +104,12 @@ if(NOT computedChecksum STREQUAL ${checksum})
   message(FATAL_ERROR \"Error: Computed checksum (\${computedChecksum}) did not match expected (${checksum})\")
 endif(NOT computedChecksum STREQUAL ${checksum})
 ")
+
       list(APPEND downloadScripts "${MIDAS_DATA_DIR}/FetchScripts/download_${checksum}.cmake")
       list(APPEND testArgs "${MIDAS_DATA_DIR}/${checksum}")
-    else(arg MATCHES "^MIDAS{.*}$")
+    else(arg MATCHES "^MIDAS{[^}]*}$")
       list(APPEND testArgs ${arg})
-    endif(arg MATCHES "^MIDAS{.*}$")
+    endif(arg MATCHES "^MIDAS{[^}]*}$")
   endforeach(arg)
 
   file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake"
@@ -118,13 +123,3 @@ endif(NOT computedChecksum STREQUAL ${checksum})
   add_test(${testName} ${testArgs})
   set_tests_properties(${testName} PROPERTIES DEPENDS ${testName}_fetchData)
 endfunction(midas_add_test)
-
-
-# Set hash_alg and base_filename
-macro(midas_find_alg keyFile)
-  # Split up the checksum extension from the real filename
-  string(REGEX MATCH "\\.[^\\.]*$" hash_alg "${keyFile}")
-  string(REGEX REPLACE "\\.[^\\.]*$" "" base_filename "${keyFile}")
-  string(REPLACE "." "" hash_alg "${hash_alg}")
-  string(TOUPPER "${hash_alg}" hash_alg)
-endmacro(midas_find_alg)

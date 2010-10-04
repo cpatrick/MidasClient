@@ -1,5 +1,5 @@
 include(CTest)
-include(MIDAS.cmake REQUIRED)
+include(MIDAS.cmake)
 
 enable_testing()
 
