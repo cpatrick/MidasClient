@@ -972,12 +972,12 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
     bitstream.SetId(id);
     bitstream.SetName(name.c_str());
     bitstream.SetSize(size.str());
+    bitstream.SetUuid(uuid.c_str());
     mds::Bitstream mdsBitstream;
     mdsBitstream.SetDatabase(m_database);
     mdsBitstream.SetObject(&bitstream);
     mdsBitstream.MarkAsDirty();
     mdsBitstream.Commit();
-    this->m_database->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
 
     if(id)
       {
@@ -1266,7 +1266,7 @@ void MIDASDesktopUI::pushReturned(int rc)
     }
   else
     {
-    text << "Failed to push resources to the server.";
+    text << "Failed to push resources to the server. Error code = " << rc;
     this->GetLog()->Error(text.str());
     }
   this->displayStatus(text.str().c_str());

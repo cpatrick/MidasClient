@@ -253,7 +253,7 @@ bool RestAPI::UploadPost(const char* filename, std::string url, curl_progress_ca
     {
     URL = m_ServerUrl + URL;
     }
-    
+
   curl_easy_reset(m_cURL);
 
   struct curl_httppost *formpost=NULL;
@@ -289,7 +289,7 @@ bool RestAPI::UploadPost(const char* filename, std::string url, curl_progress_ca
   
   /* free slist */ 
   curl_slist_free_all (headerlist);
-  
+
   return success;
 }
 

@@ -922,6 +922,11 @@ int midasSynchronizer::Push()
   for(std::vector<midasStatus>::iterator i = dirties.begin();
       i != dirties.end(); ++i)
     {
+    if(i->GetUUID() == "")
+      {
+      this->Log->Message("Skipping invalid dirty resource entry.\n");
+      continue;
+      }
     midasResourceRecord record =
       this->DatabaseProxy->GetRecordByUuid(i->GetUUID());
 
