@@ -105,8 +105,17 @@ std::string midasUtils::FileSizeString(long bytes)
     unit = "GB";
     }
 
-  text.precision(3);
-  text << amount << " " << unit;
+  if(amount >= 1000)
+    {
+    text.precision(0);
+    text << std::fixed << amount;
+    }
+  else
+    {
+    text.precision(3);
+    text << amount;
+    }
+  text << " " << unit;
   return text.str();
 }
 
