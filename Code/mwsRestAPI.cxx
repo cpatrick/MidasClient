@@ -316,7 +316,7 @@ bool RestAPI::Upload(const std::string &data, std::string url, curl_progress_cal
     {
     case BUFFER:
       //Logger::debug(STR("\tdata(STRING:")+kwutils::to_string<size_t>(data.size())+")");
-      datasize = data.size(); 
+      datasize = data.size();
       this->input_stream = new std::stringstream(data, std::stringstream::out);
       break; 
     case FILE:

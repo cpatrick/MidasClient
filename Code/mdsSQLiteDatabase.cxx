@@ -247,6 +247,32 @@ int SQLiteDatabase::GetValueAsInt(unsigned int column)
 }
 
 /** Get the column value */
+sqlite_int64 SQLiteDatabase::GetValueAsInt64(unsigned int column)
+{
+  if(m_Active == false)
+    {
+    m_ErrorMessage = "Query is not active";
+    return 0;
+    }
+  else if (column < 0 || column >= this->GetNumberOfFields())
+    {
+    m_ErrorMessage = "DataValue() called with out-of-range column index ";
+    return 0;
+    }
+  else
+    {
+    switch (sqlite3_column_type(m_Statement, column))
+      {
+      case SQLITE_INTEGER:
+        return sqlite3_column_int64(m_Statement, column);
+      }
+    }
+  
+  m_ErrorMessage = "Wrong column type";  
+  return 0;
+}
+
+/** Get the column value */
 float SQLiteDatabase::GetValueAsFloat(unsigned int column)
 {
   if(m_Active == false)

@@ -826,7 +826,7 @@ void MIDASDesktopUI::infoPanel(MidasBitstreamTreeItem* bitstreamTreeItem, bool e
 
   midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
   midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Size", QTableWidgetDescriptionItem::Bold));
-  midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, midasUtils::FileSizeString(atol(bitstream->GetSize().c_str())).c_str(), BITSTREAM_SIZE, QTableWidgetDescriptionItem::Tooltip));
+  midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, midasUtils::FileSizeString(strtod(bitstream->GetSize().c_str(), 0)).c_str(), BITSTREAM_SIZE, QTableWidgetDescriptionItem::Tooltip));
   midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
   i++;
 

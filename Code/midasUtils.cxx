@@ -78,7 +78,7 @@ std::string midasUtils::EscapeName(std::string name)
 }
 
 //-------------------------------------------------------------------
-std::string midasUtils::FileSizeString(long bytes)
+std::string midasUtils::FileSizeString(sqlite_int64 bytes)
 {
   std::stringstream text;
   double amount;

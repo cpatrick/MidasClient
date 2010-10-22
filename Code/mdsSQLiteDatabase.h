@@ -51,6 +51,7 @@ public:
   
   /** Get the column value */
   int GetValueAsInt(unsigned int column);
+  sqlite_int64 GetValueAsInt64(unsigned int column);
   float GetValueAsFloat(unsigned int column);
   const char* GetValueAsString(unsigned int column);
   

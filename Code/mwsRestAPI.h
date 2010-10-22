@@ -73,9 +73,12 @@ public:
                 const char* authentication = "");
 
   /// Upload file to the midas server
+  // UploadPost only supports < 2GB files
   bool UploadPost(const char* filename, std::string url, curl_progress_callback fprogress=NULL,
               void * fprogress_data=NULL,
               const char* authentication = "");
+
+  // Upload supports larger than 2GB files
   bool Upload(const std::string &data, std::string url, curl_progress_callback fprogress=NULL,
               void * fprogress_data=NULL,
               const char* authentication = "");

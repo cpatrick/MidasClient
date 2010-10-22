@@ -54,7 +54,7 @@ bool Bitstream::Fetch()
   while(m_Database->GetDatabase()->GetNextRow())
     {
     std::stringstream val;
-    val << m_Database->GetDatabase()->GetValueAsInt(0);
+    val << m_Database->GetDatabase()->GetValueAsInt64(0);
     m_Bitstream->SetSize(val.str());
     m_Bitstream->SetName(m_Database->GetDatabase()->GetValueAsString(1));
     }
