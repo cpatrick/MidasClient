@@ -214,9 +214,7 @@ bool RestAPI::Download(const std::string &filename, std::string url, IO_MODE out
   curl_easy_setopt(m_cURL, CURLOPT_PROGRESSFUNCTION, fprogress == NULL ?
                                                  this->fprogress : fprogress);
 
-  m_XMLParser->Initialize();
   bool success = this->PerformCurl();
-  m_XMLParser->Finalize();
 
   switch(m_OutputMode)
     {
@@ -281,7 +279,9 @@ bool RestAPI::UploadPost(const char* filename, std::string url, curl_progress_ca
      wanted */ 
   headerlist = curl_slist_append(headerlist, buf);
 
+  m_XMLParser->Initialize();
   bool success = this->PerformCurl();
+  m_XMLParser->Finalize();
 
   success &= (m_XMLParser->GetErrorCode() == 0);
   
