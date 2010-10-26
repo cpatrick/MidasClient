@@ -214,7 +214,9 @@ bool RestAPI::Download(const std::string &filename, std::string url, IO_MODE out
   curl_easy_setopt(m_cURL, CURLOPT_PROGRESSFUNCTION, fprogress == NULL ?
                                                  this->fprogress : fprogress);
 
+  m_XMLParser->Initialize();
   bool success = this->PerformCurl();
+  m_XMLParser->Finalize();
 
   switch(m_OutputMode)
     {
@@ -303,7 +305,7 @@ bool RestAPI::Upload(const std::string &data, std::string url, curl_progress_cal
     URL = m_ServerUrl + URL; 
     }
   
-  unsigned long datasize = 0; 
+  unsigned long datasize = 0;
   std::ifstream * input_filestream = NULL;
 
   if (this->upload_unique_id.empty())
@@ -348,19 +350,15 @@ bool RestAPI::Upload(const std::string &data, std::string url, curl_progress_cal
   headers = curl_slist_append(headers, "Expect: ");
   curl_easy_setopt(m_cURL, CURLOPT_HTTPHEADER, headers);
 
-  //TODO: FIX  M_ASSERT(this->fprogress_data != NULL);
-  //TODO: FIX  M_ASSERT(this->fprogress != NULL);
-
-  //Logger::debug("\tfprogress:" + kwutils::to_string<curl_progress_callback>(this->fprogress)); 
-  //Logger::debug("\tfprogress_data:" + kwutils::to_string<void*>(this->fprogress_data)); 
-
   curl_easy_setopt(m_cURL, CURLOPT_PROGRESSDATA, fprogress_data == NULL ?
                                                 this->fprogress_data : fprogress_data);
   curl_easy_setopt(m_cURL, CURLOPT_PROGRESSFUNCTION, fprogress == NULL ?
                                                     this->fprogress : fprogress);
 
+  m_XMLParser->Initialize();
   bool success = this->PerformCurl();
-  
+  m_XMLParser->Finalize();
+
   if (input_filestream != NULL)
     {
     input_filestream->close();

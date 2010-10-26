@@ -153,8 +153,13 @@ bool WebAPI::UploadFile(const char* url, const char* filename)
   
   std::string completeUrl = url;
   completeUrl += "&token=";
-  completeUrl += m_APIToken; 
-  return m_RestAPI->UploadPost(filename,completeUrl);
+  completeUrl += m_APIToken;
+  m_RestAPI->SetInputMode(mws::RestAPI::FILE);
+  bool ok = m_RestAPI->Upload(filename,completeUrl);
+  ok &= std::string(this->GetRestXMLParser()->GetErrorMessage()) == "";
+  ok &= this->GetRestXMLParser()->GetErrorCode() == 0;
+
+  return ok;
 }
 
 

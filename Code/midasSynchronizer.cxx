@@ -991,8 +991,17 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
     return false;
     }
 
-  std::string name = this->DatabaseProxy->GetName(
-    midasResourceType::BITSTREAM, record->Id);
+  mds::Bitstream mdsBitstream;
+  mdo::Bitstream* bitstream = new mdo::Bitstream;
+  bitstream->SetId(record->Id);
+  mdsBitstream.SetObject(bitstream);
+  mdsBitstream.SetDatabase(this->DatabaseProxy);
+  mdsBitstream.Fetch();
+
+  std::string name = bitstream->GetName();
+  std::string size = bitstream->GetSize();
+
+  delete bitstream;
 
   if(kwsys::SystemTools::FileLength(record->Path.c_str()) == 0)
     {
@@ -1023,7 +1032,9 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
   this->Log->Status(status.str());
   std::stringstream fields;
   fields << "midas.upload.bitstream?uuid=" << record->Uuid << "&itemid="
-    << record->Parent;
+    << record->Parent << "&mode=stream&filename="
+    << midasUtils::EscapeForURL(name) << "&path="
+    << midasUtils::EscapeForURL(name) << "&size=" << size;
 
   if(this->Progress)
     {
