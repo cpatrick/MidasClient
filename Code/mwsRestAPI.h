@@ -18,6 +18,7 @@
 #include <sstream>
 
 #include "Utilities/cmcurl/curl/curl.h"
+#include "midasStandardIncludes.h"
 
 namespace mws{
 
@@ -85,9 +86,6 @@ public:
 
  /** Set cURL in verbose mode */
  void SetVerbose(bool verbose);
- 
- /** Return the file length */
- unsigned long GetFileLength(const char* filename);
 
  /** Set the XML parser */
  void SetXMLParser(mws::RestXMLParser* parser);

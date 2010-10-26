@@ -10,12 +10,14 @@
 =========================================================================*/
 #include "mwsRestAPI.h"
 
+#include "midasStandardIncludes.h"
 #include <iostream>
 #include <string>
 #include <vector>
 #include <sstream>
 #include "sys/stat.h"
 #include "mwsRestXMLParser.h"
+#include "midasUtils.h"
 
 namespace mws {
 
@@ -228,22 +230,6 @@ bool RestAPI::Download(const std::string &filename, std::string url, IO_MODE out
   return success;  
  }
 
-
-//-----------------------------------------------------------------------------
-// return size of file; also returns zero if no file exists
-unsigned long RestAPI::GetFileLength(const char* filename)
-{
-  struct stat fs;
-  if (stat(filename, &fs) != 0)
-    {
-    return 0;
-    }
-  else
-    {
-    return static_cast<unsigned long>(fs.st_size);
-    }
-}
-
 //--------------------------------------------------------------------------------------------------
 bool RestAPI::UploadPost(const char* filename, std::string url, curl_progress_callback fprogress,
                          void * fprogress_data, const char* authentication)
@@ -303,7 +289,7 @@ bool RestAPI::Upload(const std::string &data, std::string url, curl_progress_cal
     URL = m_ServerUrl + URL; 
     }
   
-  unsigned long datasize = 0;
+  int64 datasize;
   std::ifstream * input_filestream = NULL;
 
   if (this->upload_unique_id.empty())
@@ -321,7 +307,7 @@ bool RestAPI::Upload(const std::string &data, std::string url, curl_progress_cal
       break; 
     case FILE:
       //Logger::debug("\tdata(filename:"+data+")");
-      datasize = this->GetFileLength(data.c_str());
+      datasize = midasUtils::GetFileLength(data.c_str());
       input_filestream = new std::ifstream;
       input_filestream->open(data.c_str(), std::ios::binary);
       if(!input_filestream->is_open())

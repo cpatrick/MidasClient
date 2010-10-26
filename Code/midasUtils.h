@@ -12,17 +12,15 @@
 #ifndef MIDASUTILS_H
 #define MIDASUTILS_H
 
-#ifndef sqlite_int64
-  #if defined(_MSC_VER) || defined(__BORLANDC__)
-    typedef __int64 sqlite_int64;
-    typedef unsigned __int64 sqlite_uint64;
-  #else
-    typedef long long int sqlite_int64;
-    typedef unsigned long long int sqlite_uint64;
-  #endif
-#endif
-
 #include "midasStandardIncludes.h"
+
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+  typedef __int64 int64;
+  typedef unsigned __int64 uint64;
+#else
+  typedef long long int int64;
+  typedef unsigned long long int uint64;
+#endif
 
 namespace mdo{
   class Object;
@@ -35,7 +33,8 @@ public:
   static std::string EscapeForURL(std::string s);
   static std::string EscapeForSQL(std::string s);
   static std::string EscapeName(std::string name);
-  static std::string FileSizeString(sqlite_int64 bytes);
+  static int64 GetFileLength(const char* filename);
+  static std::string FileSizeString(int64 bytes);
   static std::string GetTypeName(int type);
   static bool IsDatabaseValid(std::string path);
   static bool CreateNewDatabase(std::string path);

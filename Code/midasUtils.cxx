@@ -21,6 +21,8 @@
 #include "midasStandardIncludes.h"
 #include "midasTableDefs.h"
 #include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #define UUID_LENGTH 45
 
@@ -77,8 +79,33 @@ std::string midasUtils::EscapeName(std::string name)
   return name;
 }
 
+int64 midasUtils::GetFileLength(const char* filename)
+{
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+  struct __stat64 fs;
+  if(_stat64(filename, &fs) != 0)
+    {
+    return 0;
+    }
+  else
+    {
+    return fs.st_size;
+    }
+#else
+  struct stat64 fs;
+  if (stat64(filename, &fs) != 0)
+    {
+    return 0;
+    }
+  else
+    {
+    return fs.st_size;
+    }
+#endif
+}
+
 //-------------------------------------------------------------------
-std::string midasUtils::FileSizeString(sqlite_int64 bytes)
+std::string midasUtils::FileSizeString(int64 bytes)
 {
   std::stringstream text;
   double amount;
