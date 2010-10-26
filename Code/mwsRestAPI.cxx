@@ -325,7 +325,7 @@ bool RestAPI::Upload(const std::string &data, std::string url, curl_progress_cal
 
   void * read_function_data = (void*) this; 
   curl_easy_setopt(m_cURL, CURLOPT_UPLOAD, true);
-  curl_easy_setopt(m_cURL, CURLOPT_INFILESIZE, datasize);
+  curl_easy_setopt(m_cURL, CURLOPT_INFILESIZE_LARGE, datasize);
   curl_easy_setopt(m_cURL, CURLOPT_READFUNCTION, Curl_read_function);
   curl_easy_setopt(m_cURL, CURLOPT_READDATA, read_function_data);
 
