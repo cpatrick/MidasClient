@@ -103,7 +103,7 @@ bool RestXMLParser::Parse(const char* buffer,unsigned long length)
       {
       m_ErrorCode = 1;
       m_ErrorMessage = "Cannot parse XML: ";
-      for(int i = 0; i < length; ++i)
+      for(unsigned long i = 0; i < length; ++i)
         {
         m_ErrorMessage += buffer[i];
         }
