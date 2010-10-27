@@ -1004,7 +1004,7 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
 
   delete bitstream;
 
-  if(kwsys::SystemTools::FileLength(record->Path.c_str()) == 0)
+  if(midasUtils::GetFileLength(record->Path.c_str()) == 0)
     {
     std::stringstream text;
     text << "Error: \"" << record->Path << "\" is 0 bytes. You "
