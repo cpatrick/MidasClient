@@ -82,10 +82,11 @@ bool RestXMLParser::Parse(const char* buffer,unsigned long length)
     {
     return false;
     }
-    
+  
+  // Remove any characters before "<?xml"
   if(!m_FoundXMLTag)
     {
-    m_PreBuffer.append(buffer);
+    m_PreBuffer.append(buffer, length);
     size_t pos;
     if((pos = m_PreBuffer.find("<?xml")) != std::string::npos)
       {
@@ -95,7 +96,16 @@ bool RestXMLParser::Parse(const char* buffer,unsigned long length)
       length = m_PreBuffer.length();
       }
     }
-    
+
+  // Remove any characters after "</rsp>"
+  std::string bufStr;
+  bufStr.append(buffer, length);
+  size_t position;
+  if((position = bufStr.find("</rsp>")) != std::string::npos)
+    {
+    length = position + 6;
+    }
+
   if(m_FoundXMLTag)
     {
     int result = XML_Parse(m_Parser, buffer, length, false);
