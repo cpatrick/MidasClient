@@ -439,7 +439,15 @@ int ProgressCallback(void *clientp, double dltotal, double dlnow,
 {
   midasProgressReporter* out
     = reinterpret_cast<midasProgressReporter*>(clientp);
-  out->UpdateProgress(dlnow, dltotal);
+  if(dltotal > 0 && dlnow >0)
+    {
+    out->UpdateProgress(dlnow, dltotal);
+    }
+
+  if(ultotal >0 && ulnow > 0)
+    {
+    out->UpdateProgress(ulnow, ultotal);
+    }
   return 0;
 }
 
@@ -552,7 +560,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
 
   std::stringstream fields;
   fields << "midas.bitstream.download?id=" << this->GetServerHandle();
-  
+
   if(this->Progress)
     {
     mws::WebAPI::Instance()->GetRestAPI()->SetProgressCallback(
