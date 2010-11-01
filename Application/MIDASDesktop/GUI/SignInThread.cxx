@@ -29,6 +29,12 @@ void SignInThread::run()
     m_Parent->getAuthenticator()->SetProfile(m_Profile.toStdString());
     m_Parent->getSynchronizer()->GetAuthenticator()->SetProfile(m_Profile.toStdString());
     
+    if(!m_Parent->getSynchronizer()->GetAuthenticator()->Login(mws::WebAPI::Instance()))
+      {
+      emit initialized(false);
+      return;
+      }
+
     m_Parent->getTreeViewServer()->SetWebAPI(mws::WebAPI::Instance());
     m_Parent->getTreeViewServer()->Initialize();
 
