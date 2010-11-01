@@ -106,6 +106,7 @@ public slots:
   void chooseLocalDatabase();
   void setLocalDatabase(std::string file);
   void deleteLocalResource(bool deleteFiles);
+  void deleteServerResource(bool val);
   void updateClientTreeView();
   void updateServerTreeView();
   void decorateServerTree();
@@ -198,7 +199,8 @@ private:
   AboutUI *                   dlg_aboutUI;
   PreferencesUI *             dlg_preferencesUI;
   PullUI *                    dlg_pullUI;
-  DeleteResourceUI*           dlg_deleteResourceUI;
+  DeleteResourceUI*           dlg_deleteClientResourceUI;
+  DeleteResourceUI*           dlg_deleteServerResourceUI;
   AddAuthorUI*                dlg_addAuthorUI;
   AddKeywordUI*               dlg_addKeywordUI;
   // ------------- UI Dialogs -------------

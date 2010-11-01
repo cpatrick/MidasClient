@@ -150,7 +150,7 @@ bool Bitstream::Delete()
     std::cerr << "Bitstream::Delete() : Bitstream id not set" << std::endl;
     return false;
     }
-       
+
   RestXMLParser parser;
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
 

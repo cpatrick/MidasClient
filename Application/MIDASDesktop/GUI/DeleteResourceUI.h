@@ -11,7 +11,7 @@ class DeleteResourceUI :  public QDialog, private Ui::DeleteResourceDialog
  
 public:
 
-  DeleteResourceUI(MIDASDesktopUI *parent);
+  DeleteResourceUI(MIDASDesktopUI *parent, bool server);
   ~DeleteResourceUI();
 
   void init(); 
@@ -25,7 +25,7 @@ public slots:
   virtual void accept();
 
 private:
-
+  bool            m_Server;
   MIDASDesktopUI* m_Parent;
   
 };

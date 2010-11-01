@@ -46,7 +46,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="deleteLabel">
          <property name="text">
           <string>&lt;b&gt;Are you sure you want to delete the selected resource?&lt;/b&gt;</string>
          </property>
@@ -61,7 +61,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="clientLabel">
        <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
@@ -106,6 +106,7 @@
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
  </resources>

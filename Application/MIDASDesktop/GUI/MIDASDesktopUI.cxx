@@ -97,16 +97,17 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- Instantiate and setup tray icon -------------
 
   // ------------- Instantiate and setup UI dialogs -------------
-  dlg_createMidasResourceUI = new CreateMidasResourceUI( this );
-  dlg_uploadAgreementUI =     new UploadAgreementUI( this );
-  dlg_signInUI =              new SignInUI( this );
-  dlg_createProfileUI =       new CreateProfileUI( this );
-  dlg_aboutUI =               new AboutUI( this );
-  dlg_preferencesUI =         new PreferencesUI( this );
-  dlg_pullUI =                new PullUI( this );
-  dlg_deleteResourceUI =      new DeleteResourceUI( this );
-  dlg_addAuthorUI =           new AddAuthorUI( this );
-  dlg_addKeywordUI =          new AddKeywordUI( this );
+  dlg_createMidasResourceUI =  new CreateMidasResourceUI( this );
+  dlg_uploadAgreementUI =      new UploadAgreementUI( this );
+  dlg_signInUI =               new SignInUI( this );
+  dlg_createProfileUI =        new CreateProfileUI( this );
+  dlg_aboutUI =                new AboutUI( this );
+  dlg_preferencesUI =          new PreferencesUI( this );
+  dlg_pullUI =                 new PullUI( this );
+  dlg_deleteClientResourceUI = new DeleteResourceUI( this, false );
+  dlg_deleteServerResourceUI = new DeleteResourceUI( this, true );
+  dlg_addAuthorUI =            new AddAuthorUI( this );
+  dlg_addKeywordUI =           new AddKeywordUI( this );
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
@@ -232,7 +233,8 @@ MIDASDesktopUI::MIDASDesktopUI()
     dlg_signInUI, SLOT( removeProfile(std::string)));
   connect( dlg_createProfileUI, SIGNAL( serverURLSet(std::string)), this, SLOT( setServerURL(std::string)));
   connect( dlg_signInUI, SIGNAL( createProfileRequest() ), dlg_createProfileUI, SLOT( exec() ) );
-  connect( dlg_deleteResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteLocalResource(bool) ) );
+  connect( dlg_deleteClientResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteLocalResource(bool) ) );
+  connect( dlg_deleteServerResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteServerResource(bool) ) );
 
   connect( actionChoose_Local_Database, SIGNAL( triggered() ), this, SLOT( chooseLocalDatabase() ) );
 
@@ -246,7 +248,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( actionAdd_collection,   SIGNAL(triggered()), this, SLOT(addCollection()));
   connect( actionAdd_item,         SIGNAL(triggered()), this, SLOT(addItem()));
   connect( actionAdd_bitstream,    SIGNAL(triggered()), this, SLOT(addBitstream()));
-  connect( actionDelete_Resource,  SIGNAL(triggered()), dlg_deleteResourceUI, SLOT( exec() ) );
+  connect( actionDelete_Resource,  SIGNAL(triggered()), dlg_deleteClientResourceUI, SLOT( exec() ) );
+  connect( actionDelete_server,    SIGNAL(triggered()), dlg_deleteServerResourceUI, SLOT( exec() ) );
   connect( actionView_Directory,   SIGNAL(triggered()), this, SLOT(viewDirectory()));
 
   connect( searchItemsListWidget, SIGNAL( midasListWidgetItemClicked( QListWidgetItemMidasItem * ) ),
@@ -311,6 +314,8 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_pullUI;
   delete dlg_addAuthorUI;
   delete dlg_addKeywordUI;
+  delete dlg_deleteClientResourceUI;
+  delete dlg_deleteServerResourceUI;
   delete stateLabel;
   delete connectLabel;
   delete cancelButton;
@@ -373,23 +378,27 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     {
     this->actionPull_Resource->setEnabled( value );
     this->actionOpenURL->setEnabled( value );
+    this->actionDelete_server->setEnabled( value );
     }
 
   if ( activateAction & ACTION_COLLECTION  )
     {
     this->actionPull_Resource->setEnabled( value );
     this->actionOpenURL->setEnabled( value );
+    this->actionDelete_server->setEnabled( value );
     }
 
   if ( activateAction & ACTION_ITEM  )
     {
     this->actionPull_Resource->setEnabled( value );
     this->actionOpenURL->setEnabled( value );
+    this->actionDelete_server->setEnabled( value );
     }
 
   if ( activateAction & ACTION_BITSTREAM )
     {
     this->actionPull_Resource->setEnabled( value );
+    this->actionDelete_server->setEnabled( value );
     }
 
   if ( activateAction & ACTION_CLIENT_COMMUNITY )
@@ -901,6 +910,7 @@ void MIDASDesktopUI::displayServerResourceContextMenu( QContextMenuEvent* e )
     }
   menu.addAction( this->actionPull_Resource );
   menu.addAction( this->actionOpenURL );
+  menu.addAction( this->actionDelete_server );
   menu.exec( e->globalPos() );
 }
 
@@ -1046,7 +1056,7 @@ void MIDASDesktopUI::viewInBrowser()
 
 void MIDASDesktopUI::displayStatus(const QString& message)
 {
-  stateLabel->setText(message); 
+  stateLabel->setText(message);
 }
 
 void MIDASDesktopUI::signInOrOut()
@@ -1405,6 +1415,15 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
   std::stringstream text;
   text << "Deleted resource with uuid=" << uuid << ".";
   GetLog()->Message(text.str());
+}
+
+// Controller for deleting server resources
+void MIDASDesktopUI::deleteServerResource(bool val)
+{
+  /*const MidasTreeItem* resource = this->treeViewServer->getSelectedMidasTreeItem()->getType();
+  int id = resource->getId();
+  int type = resource->getType();
+  this->updateServerTreeView();*/
 }
 
 void MIDASDesktopUI::alertErrorInLog()
