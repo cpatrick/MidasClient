@@ -27,8 +27,6 @@ public:
   Bitstream();
   ~Bitstream();
 
-  // Fill the item given the id
-  bool Fill(unsigned int id, const std::vector<std::string>* fields=NULL);
   void Clear();
 
   // Set/Get the ID of the parent

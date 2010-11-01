@@ -967,7 +967,7 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
 
     // Get and save file size
     std::stringstream size;
-    size << kwsys::SystemTools::FileLength(path.c_str());
+    size << midasUtils::GetFileLength(path.c_str());
     mdo::Bitstream bitstream;
     bitstream.SetId(id);
     bitstream.SetName(name.c_str());
