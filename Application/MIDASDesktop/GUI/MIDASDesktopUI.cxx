@@ -23,6 +23,7 @@
 #include "mdsBitstream.h"
 #include "mwsNewResources.h"
 #include "mwsSearch.h"
+#include "mwsRestXMLParser.h"
 #include "midasAuthenticator.h"
 #include "midasLog.h"
 #include "midasSynchronizer.h"
@@ -1420,10 +1421,29 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
 // Controller for deleting server resources
 void MIDASDesktopUI::deleteServerResource(bool val)
 {
-  /*const MidasTreeItem* resource = this->treeViewServer->getSelectedMidasTreeItem()->getType();
+  const MidasTreeItem* resource = this->treeViewServer->getSelectedMidasTreeItem();
   int id = resource->getId();
-  int type = resource->getType();
-  this->updateServerTreeView();*/
+  std::string typeName = kwsys::SystemTools::LowerCase(midasUtils::GetTypeName(resource->getType()));
+
+  std::stringstream url;
+  url << "midas." << typeName << ".delete?id=" << id;
+
+  mws::RestXMLParser parser;
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  std::stringstream text;
+  if(mws::WebAPI::Instance()->Execute(url.str().c_str()))
+    {
+    text << "Successfully deleted " << typeName
+         << " with id=" << id << " from the server.";
+    this->Log->Message(text.str());
+    this->updateServerTreeView();
+    }
+  else
+    {
+    text << "Failed to delete " << typeName << " with id=" << id
+      << " from the server: " << mws::WebAPI::Instance()->GetErrorMessage();
+    this->Log->Error(text.str());
+    }
 }
 
 void MIDASDesktopUI::alertErrorInLog()
