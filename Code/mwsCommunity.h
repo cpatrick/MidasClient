@@ -36,8 +36,10 @@ public:
   bool Fetch();
   bool FetchTree();
   bool FetchParent();
-  void SetObject(mdo::Object* object);
   bool Commit();
+  bool Delete();
+
+  void SetObject(mdo::Object* object);
   void ResolveParents();
      
 protected:

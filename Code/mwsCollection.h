@@ -35,9 +35,10 @@ public:
   // Fill the collection
   bool Fetch();
   bool FetchParent();
-  void SetObject(mdo::Object* object);
   bool Commit();
-  
+  bool Delete();
+
+  void SetObject(mdo::Object* object);
 protected:
 
   friend class CollectionXMLParser;

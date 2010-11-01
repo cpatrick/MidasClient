@@ -277,4 +277,31 @@ bool Community::FetchParent()
   return true;
 }
 
+bool Community::Delete()
+{
+  if(!m_Community)
+    {
+    std::cerr << "Community::Delete() : Community not set" << std::endl;
+    return false;
+    }
+
+  if(!m_Community->GetId())
+    {
+    std::cerr << "Community::Delete() : Community id not set" << std::endl;
+    return false;
+    }
+       
+  RestXMLParser parser;
+  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+
+  std::stringstream url;
+  url << "midas.community.delete?id=" << m_Community->GetId();
+  if(!m_WebAPI->Execute(url.str().c_str()))
+    {
+    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    return false;
+    }
+  return true;
+}
+
 } // end namespace

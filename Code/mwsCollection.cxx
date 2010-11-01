@@ -134,9 +134,9 @@ bool Collection::Fetch()
   parser.AddTag("/rsp/introductory",m_Collection->GetIntroductoryText());
   parser.AddTag("/rsp/uuid",m_Collection->GetUuid());
   parser.AddTag("/rsp/parent",m_Collection->GetParent());
-  
+
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
-  
+
   std::stringstream url;
   url << "midas.collection.get?id=" << m_Collection->GetId();
   if(!m_WebAPI->Execute(url.str().c_str()))
@@ -164,6 +164,33 @@ bool Collection::FetchParent()
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(parent);
   return remote.Fetch();
+}
+
+bool Collection::Delete()
+{
+  if(!m_Collection)
+    {
+    std::cerr << "Collection::Delete() : Collection not set" << std::endl;
+    return false;
+    }
+
+  if(!m_Collection->GetId())
+    {
+    std::cerr << "Collection::Delete() : Collection id not set" << std::endl;
+    return false;
+    }
+       
+  RestXMLParser parser;
+  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+
+  std::stringstream url;
+  url << "midas.collection.delete?id=" << m_Collection->GetId();
+  if(!m_WebAPI->Execute(url.str().c_str()))
+    {
+    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    return false;
+    }
+  return true;
 }
 
 } // end namespace

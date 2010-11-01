@@ -163,43 +163,6 @@ bool Item::Commit()
   return true;
 }
 
-
-// Upload a bitstream
-unsigned int Item::UploadBitstream(unsigned int itemid, const char* filename)
-{
-  std::string bitstreamidstring;
-  
-  RestXMLParser* parser = m_WebAPI->GetRestXMLParser();  
-  parser->ClearTags();
-  parser->AddTag("/rsp/id", bitstreamidstring);
-    
-  std::stringstream url;
-  url << "midas.upload.bitstream?itemid=" << itemid;
-  
-  // We need to generate a uuid
-  url <<"&uuid=" << midasUtils::GenerateUUID().c_str();
-  if(!m_WebAPI->UploadFile(url.str().c_str(),filename))
-    {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
-    }
-  
-  unsigned int bitstreamid = atoi(bitstreamidstring.c_str());  
-  return bitstreamid;
-}
- 
-// Download a bitstream
-std::string Item::DownloadBitstream(const char* uuid, const char* filename)
-{
-  std::stringstream url;
-  url << "midas.bitstream.download?id=" << uuid;
-  if(!m_WebAPI->DownloadFile(url.str().c_str(),filename))
-    {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
-    return "";
-    }
-  return filename;
-}
-
 // Create a resource given an item id
 bool Item::CreateResource(unsigned int itemid)
 {
@@ -229,6 +192,33 @@ bool Item::FetchParent()
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(parent);
   return remote.Fetch();
+}
+
+bool Item::Delete()
+{
+  if(!m_Item)
+    {
+    std::cerr << "Item::Delete() : Item not set" << std::endl;
+    return false;
+    }
+
+  if(!m_Item->GetId())
+    {
+    std::cerr << "Item::Delete() : Item id not set" << std::endl;
+    return false;
+    }
+       
+  RestXMLParser parser;
+  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+
+  std::stringstream url;
+  url << "midas.item.delete?id=" << m_Item->GetId();
+  if(!m_WebAPI->Execute(url.str().c_str()))
+    {
+    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    return false;
+    }
+  return true;
 }
 
 } // end namespace

@@ -48,7 +48,7 @@ public:
   /// for an XML element
   virtual void CharacterDataHandler(const char *inData, int inLength)
     {
-     RestXMLParser::CharacterDataHandler(inData,inLength);
+    RestXMLParser::CharacterDataHandler(inData,inLength);
     }
   
   /** Set the bitstream object */
@@ -135,6 +135,33 @@ bool Bitstream::FetchParent()
   remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(parent);
   return remote.Fetch(); 
+}
+
+bool Bitstream::Delete()
+{
+  if(!m_Bitstream)
+    {
+    std::cerr << "Bitstream::Delete() : Bitstream not set" << std::endl;
+    return false;
+    }
+
+  if(!m_Bitstream->GetId())
+    {
+    std::cerr << "Bitstream::Delete() : Bitstream id not set" << std::endl;
+    return false;
+    }
+       
+  RestXMLParser parser;
+  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+
+  std::stringstream url;
+  url << "midas.bitstream.delete?id=" << m_Bitstream->GetId();
+  if(!m_WebAPI->Execute(url.str().c_str()))
+    {
+    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    return false;
+    }
+  return true;
 }
 
 } // end namespace

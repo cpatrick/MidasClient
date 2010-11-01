@@ -33,25 +33,13 @@ public:
   Item();
   ~Item();
 
-  // Fetch data from the MIDAS server
   bool Fetch();
-
-  // Fetch the parent collection
   bool FetchParent();
-
-  // Commit the data on the server 
   bool Commit();
-
+  bool Delete();
   
-  // Add the object
   void SetObject(mdo::Object* object);
 
-  // Upload a bitstream to MIDAS
-  unsigned int UploadBitstream(unsigned int itemid,const char* filename);
-  
-  // Download a bitstream from MIDAS
-  std::string DownloadBitstream(const char* uuid,const char* filename);
-  
   // Create a resource given an item id
   bool CreateResource(unsigned int itemid); 
    
