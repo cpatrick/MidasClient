@@ -3,7 +3,7 @@ include(MIDAS.cmake)
 
 enable_testing()
 
-add_test(DeleteDownloadedData "${CMAKE_COMMAND}" -E remove -f "${MIDASCPP_BINARY_DIR}/MIDAS_Data/879071fb20d959235fac207f36773851")
+add_test(DeleteDownloadedData "${CMAKE_COMMAND}" -E remove -f "${MIDASCPP_BINARY_DIR}/MIDAS_Data/879071fb20d959235fac207f36773851.png")
 
 set(MIDAS_REST_URL ${dashboard_midas_server_url})
 set(MIDAS_KEY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/TestKeys")

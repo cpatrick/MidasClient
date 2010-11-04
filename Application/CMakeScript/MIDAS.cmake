@@ -73,6 +73,7 @@ function(midas_add_test testName)
       # Split up the checksum extension from the real filename
       string(REGEX MATCH "\\.[^\\.]*$" hash_alg "${keyFile}")
       string(REGEX REPLACE "\\.[^\\.]*$" "" base_filename "${keyFile}")
+      string(REGEX MATCH "\\.[^\\.]*$" extension "${base_filename}")
       string(REPLACE "." "" hash_alg "${hash_alg}")
       string(TOUPPER "${hash_alg}" hash_alg)
 
@@ -87,7 +88,7 @@ function(midas_add_test testName)
       # Write the test script file for downloading
       file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/download_${checksum}.cmake"
   "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg}\")
-if(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}\")
+if(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}${extension}\")
   file(DOWNLOAD ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg} \"${MIDAS_DATA_DIR}/${testName}_${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
   list(GET status 0 exitCode)
   list(GET status 1 errMsg)
@@ -95,7 +96,7 @@ if(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}\")
     file(REMOVE \"${MIDAS_DATA_DIR}/${testName}_${checksum}\")
     message(FATAL_ERROR \"Error downloading ${checksum}: \${errMsg}\")
   endif(NOT exitCode EQUAL 0)
-  
+
   execute_process(COMMAND \"${CMAKE_COMMAND}\" -E md5sum \"${MIDAS_DATA_DIR}/${testName}_${checksum}\" OUTPUT_VARIABLE output)
   string(SUBSTRING \${output} 0 32 computedChecksum)
 
@@ -103,13 +104,13 @@ if(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}\")
     file(REMOVE \"${MIDAS_DATA_DIR}/${testName}_${checksum}\")
     message(FATAL_ERROR \"Error: Computed checksum (\${computedChecksum}) did not match expected (${checksum})\")
   else(NOT computedChecksum STREQUAL ${checksum})
-    file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${checksum}\" \"${MIDAS_DATA_DIR}/${checksum}\")
+    file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${checksum}\" \"${MIDAS_DATA_DIR}/${checksum}${extension}\")
   endif(NOT computedChecksum STREQUAL ${checksum})
-endif(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}\")
+endif(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}${extension}\")
 ")
 
       list(APPEND downloadScripts "${MIDAS_DATA_DIR}/FetchScripts/download_${checksum}.cmake")
-      list(APPEND testArgs "${MIDAS_DATA_DIR}/${checksum}")
+      list(APPEND testArgs "${MIDAS_DATA_DIR}/${checksum}${extension}")
     else(arg MATCHES "^MIDAS{[^}]*}$")
       list(APPEND testArgs ${arg})
     endif(arg MATCHES "^MIDAS{[^}]*}$")
