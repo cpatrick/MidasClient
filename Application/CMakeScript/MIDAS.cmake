@@ -58,7 +58,8 @@ function(midas_add_test testName)
   if(NOT DEFINED MIDAS_DATA_DIR)
     set(MIDAS_DATA_DIR "${PROJECT_BINARY_DIR}/MIDAS_Data")
   endif(NOT DEFINED MIDAS_DATA_DIR)
-  file(MAKE_DIRECTORY "${MIDAS_DATA_DIR}/FetchScripts")
+  file(MAKE_DIRECTORY "${MIDAS_DATA_DIR}/MIDAS_FetchScripts")
+  file(MAKE_DIRECTORY "${MIDAS_DATA_DIR}/MIDAS_Hashes")
 
   if(NOT DEFINED MIDAS_DOWNLOAD_TIMEOUT)
     set(MIDAS_DOWNLOAD_TIMEOUT_STR "")
@@ -72,10 +73,12 @@ function(midas_add_test testName)
       string(REGEX REPLACE "^MIDAS{([^}]*)}$" "\\1" keyFile "${arg}")
       # Split up the checksum extension from the real filename
       string(REGEX MATCH "\\.[^\\.]*$" hash_alg "${keyFile}")
-      string(REGEX REPLACE "\\.[^\\.]*$" "" base_filename "${keyFile}")
-      string(REGEX MATCH "\\.[^\\.]*$" extension "${base_filename}")
+      string(REGEX REPLACE "\\.[^\\.]*$" "" base_file "${keyFile}")
       string(REPLACE "." "" hash_alg "${hash_alg}")
       string(TOUPPER "${hash_alg}" hash_alg)
+      get_filename_component(base_filepath "${base_file}" PATH)
+      get_filename_component(base_filename "${base_file}" NAME)
+      get_filename_component(base_fileext  "${base_file}" EXT)
 
       # Resolve file location
       if(NOT EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
@@ -86,43 +89,53 @@ function(midas_add_test testName)
       file(READ "${MIDAS_KEY_DIR}/${keyFile}" checksum)
 
       # Write the test script file for downloading
-      file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/download_${checksum}.cmake"
+      file(WRITE "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/download_${checksum}.cmake"
   "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg}\")
-if(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}${extension}\")
-  file(DOWNLOAD ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg} \"${MIDAS_DATA_DIR}/${testName}_${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
+if(NOT EXISTS \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
+  file(DOWNLOAD ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg} \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${testName}_${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
   list(GET status 0 exitCode)
   list(GET status 1 errMsg)
   if(NOT exitCode EQUAL 0)
-    file(REMOVE \"${MIDAS_DATA_DIR}/${testName}_${checksum}\")
+    file(REMOVE \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${testName}_${checksum}\")
     message(FATAL_ERROR \"Error downloading ${checksum}: \${errMsg}\")
   endif(NOT exitCode EQUAL 0)
 
-  execute_process(COMMAND \"${CMAKE_COMMAND}\" -E md5sum \"${MIDAS_DATA_DIR}/${testName}_${checksum}\" OUTPUT_VARIABLE output)
+  execute_process(COMMAND \"${CMAKE_COMMAND}\" -E md5sum \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${testName}_${checksum}\" OUTPUT_VARIABLE output)
   string(SUBSTRING \${output} 0 32 computedChecksum)
 
   if(NOT computedChecksum STREQUAL ${checksum})
-    file(REMOVE \"${MIDAS_DATA_DIR}/${testName}_${checksum}\")
+    file(REMOVE \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${testName}_${checksum}\")
     message(FATAL_ERROR \"Error: Computed checksum (\${computedChecksum}) did not match expected (${checksum})\")
   else(NOT computedChecksum STREQUAL ${checksum})
-    file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${checksum}\" \"${MIDAS_DATA_DIR}/${checksum}${extension}\")
+    file(RENAME \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${testName}_${checksum}\" \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
   endif(NOT computedChecksum STREQUAL ${checksum})
-endif(NOT EXISTS \"${MIDAS_DATA_DIR}/${checksum}${extension}\")
+endif(NOT EXISTS \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
+
+# Add a symbolic link so we can use the human-readable filename in the command line
+file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${base_filepath}\")
+file(REMOVE \"${MIDAS_DATA_DIR}/${base_file}\")
+
+if(WIN32)
+  execute_process(COMMAND fsutil hardlink create \"${MIDAS_DATA_DIR}/${base_file}\" \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
+else(WIN32)
+  execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${base_file}\")
+endif(WIN32)
 ")
 
-      list(APPEND downloadScripts "${MIDAS_DATA_DIR}/FetchScripts/download_${checksum}.cmake")
-      list(APPEND testArgs "${MIDAS_DATA_DIR}/${checksum}${extension}")
+      list(APPEND downloadScripts "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/download_${checksum}.cmake")
+      list(APPEND testArgs "${MIDAS_DATA_DIR}/${base_file}")
     else(arg MATCHES "^MIDAS{[^}]*}$")
       list(APPEND testArgs ${arg})
     endif(arg MATCHES "^MIDAS{[^}]*}$")
   endforeach(arg)
 
-  file(WRITE "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake"
+  file(WRITE "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake"
        "#This is an auto generated file -- do not edit\n\n")
   foreach(downloadScript ${downloadScripts})
-    file(APPEND "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake" "include(\"${downloadScript}\")\n")
+    file(APPEND "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake" "include(\"${downloadScript}\")\n")
   endforeach(downloadScript)
 
-  add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DATA_DIR}/FetchScripts/${testName}_fetchData.cmake")
+  add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake")
   # Finally, create the test
   add_test(${testName} ${testArgs})
   set_tests_properties(${testName} PROPERTIES DEPENDS ${testName}_fetchData)
