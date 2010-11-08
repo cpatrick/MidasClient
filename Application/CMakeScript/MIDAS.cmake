@@ -116,7 +116,8 @@ file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${base_filepath}\")
 file(REMOVE \"${MIDAS_DATA_DIR}/${base_file}\")
 
 if(WIN32)
-  execute_process(COMMAND fsutil hardlink create \"${MIDAS_DATA_DIR}/${base_file}\" \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
+  # windows does not support symlinks, so we must duplicate the file
+  configure_file(\"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${base_file}\" COPYONLY)
 else(WIN32)
   execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${base_file}\")
 endif(WIN32)
@@ -136,6 +137,7 @@ endif(WIN32)
   endforeach(downloadScript)
 
   add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake")
+  set_tests_properties(${testName}_fetchData PROPERTIES FAIL_REGULAR_EXPRESSION "Error downloading")
   # Finally, create the test
   add_test(${testName} ${testArgs})
   set_tests_properties(${testName} PROPERTIES DEPENDS ${testName}_fetchData)
