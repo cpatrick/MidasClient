@@ -116,8 +116,8 @@ file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${base_filepath}\")
 file(REMOVE \"${MIDAS_DATA_DIR}/${base_file}\")
 
 if(WIN32)
-  # windows does not support symlinks, so we must duplicate the file
-  configure_file(\"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${base_file}\" COPYONLY)
+  # windows does not support symlinks, so we must duplicate the file for now
+  file(COPY \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\" DESTINATION \"${MIDAS_DATA_DIR}/${base_file}\")
 else(WIN32)
   execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${base_file}\")
 endif(WIN32)

@@ -74,7 +74,7 @@ bool WebAPI::Execute(const char* url)
   fullUrl << url;
 
   if(!m_APIToken.empty())
-    {  
+    {
     fullUrl << "&token=" << m_APIToken;
     }
   bool success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
