@@ -97,7 +97,7 @@ void PullUI::accept()
   delete m_SynchronizerThread;
 
   m_SynchronizerThread = new SynchronizerThread;
-  m_SynchronizerThread->SetParentUI(m_Parent);
+  m_SynchronizerThread->SetSynchronizer(m_Parent->getSynchronizer());
 
   if(cloneRadioButton->isChecked())
     {

@@ -1240,7 +1240,6 @@ void MIDASDesktopUI::pushResources()
 {
   this->displayStatus(tr("Pushing locally added resources..."));
   this->setProgressIndeterminate();
-  this->m_synch->SetOperation(midasSynchronizer::OPERATION_PUSH);
 
   if(m_SynchronizerThread)
     {
@@ -1248,8 +1247,16 @@ void MIDASDesktopUI::pushResources()
     }
   delete m_SynchronizerThread;
 
+  //this will be deleted by the thread
+  midasSynchronizer* synchronizer = new midasSynchronizer;
+  synchronizer->SetDatabase(m_synch->GetDatabase()->GetDatabasePath());
+  synchronizer->SetLog(this->m_synch->GetLog());
+  synchronizer->SetProgressReporter(this->m_progress);
+  synchronizer->SetServerURL(this->m_synch->GetServerURL());
+  synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
+
   m_SynchronizerThread = new SynchronizerThread;
-  m_SynchronizerThread->SetParentUI(this);
+  m_SynchronizerThread->SetSynchronizer(synchronizer);
 
   connect(m_SynchronizerThread, SIGNAL(enableActions(bool) ),
     this, SLOT(enableActions(bool) ) );

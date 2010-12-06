@@ -2,7 +2,6 @@
 #define __SynchronizerThread_H
 
 #include <QThread>
-#include "MIDASDesktopUI.h"
 #include "midasSynchronizer.h"
 
 /**
@@ -13,12 +12,13 @@ class SynchronizerThread : public QThread
   Q_OBJECT
 public:
 
-  void SetParentUI(MIDASDesktopUI* parent) { m_Parent = parent; }
+  void SetSynchronizer(midasSynchronizer* synch) { m_Synchronizer = synch; }
 
   virtual void run()
     {
     emit enableActions(false);
-    emit performReturned(m_Parent->getSynchronizer()->Perform());
+    emit performReturned(m_Synchronizer->Perform());
+    delete m_Synchronizer;
     emit enableActions(true);
     emit threadComplete();
     }
@@ -29,7 +29,7 @@ signals:
   void threadComplete();
 
 private:
-  MIDASDesktopUI* m_Parent;
+  midasSynchronizer* m_Synchronizer;
 };
 
 #endif
