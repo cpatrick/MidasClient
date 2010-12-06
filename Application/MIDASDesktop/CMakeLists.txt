@@ -93,7 +93,7 @@ set(MIDASDesktopUI_SRCS
   GUI/AddKeywordUI.cxx
 )
 
-set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MidasClient.rc)
+set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MIDASDesktop.rc)
 
 set(MIDASDesktopUI_UI_SRCS
   GUI/MIDASDesktopUI.ui
@@ -161,7 +161,7 @@ add_library(MIDASDesktopLib ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX})
 
 # MIDASDesktop Executable
 if(WIN32)
-  add_executable(MIDASDesktop WIN32 main.cxx)
+  add_executable(MIDASDesktop WIN32 main.cxx MIDASDesktop.rc)
 else(WIN32)
   add_executable(MIDASDesktop main.cxx)
 endif(WIN32)
