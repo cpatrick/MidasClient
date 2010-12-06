@@ -31,11 +31,11 @@ void ExpandTreeThread::run()
     emit expand(index);
     }
 
-  QModelIndex index = m_ParentModel->getIndexByUuid(m_Uuid);
+  /*QModelIndex index = m_ParentModel->getIndexByUuid(m_Uuid);
   if(index.isValid())
     {
     emit select(index);
-    }
+    }*/
 
   emit enableActions(true);
   emit threadComplete();

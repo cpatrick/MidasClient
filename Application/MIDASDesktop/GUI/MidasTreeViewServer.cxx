@@ -84,7 +84,7 @@ void MidasTreeViewServer::selectByUuid(std::string uuid)
     }
   delete m_ExpandTreeThread;
 
-  m_ExpandTreeThread = new ExpandTreeThread(this, 
+  m_ExpandTreeThread = new ExpandTreeThread(this,
     reinterpret_cast<MidasTreeModelServer*>(m_Model), uuid);
 
   connect(m_ExpandTreeThread, SIGNAL(threadComplete()),

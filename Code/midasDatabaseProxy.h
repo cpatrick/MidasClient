@@ -79,6 +79,7 @@ public:
     };
 
   mds::SQLiteDatabase* GetDatabase();
+  std::string GetDatabasePath() { return this->DatabasePath; }
 
   /**
    * Clean entries in the database
