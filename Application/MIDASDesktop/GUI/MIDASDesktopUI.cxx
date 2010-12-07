@@ -519,6 +519,7 @@ void MIDASDesktopUI::updateActionStateClient( const MidasTreeItem* item )
 
 void MIDASDesktopUI::updateClientTreeView()
 {
+  //TODO make this operation threaded
   this->treeViewClient->Update();
 }
 
@@ -1247,7 +1248,6 @@ void MIDASDesktopUI::pushResources()
     }
   delete m_SynchronizerThread;
 
-  //this will be deleted by the thread
   midasSynchronizer* synchronizer = new midasSynchronizer;
   synchronizer->SetDatabase(m_synch->GetDatabase()->GetDatabasePath());
   synchronizer->SetLog(this->m_synch->GetLog());
@@ -1257,6 +1257,7 @@ void MIDASDesktopUI::pushResources()
 
   m_SynchronizerThread = new SynchronizerThread;
   m_SynchronizerThread->SetSynchronizer(synchronizer);
+  m_SynchronizerThread->SetDelete(true); //delete this synchronizer object when done
 
   connect(m_SynchronizerThread, SIGNAL(enableActions(bool) ),
     this, SLOT(enableActions(bool) ) );

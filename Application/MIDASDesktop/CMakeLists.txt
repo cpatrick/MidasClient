@@ -76,6 +76,8 @@ set(MIDASDesktopUI_SRCS
   GUI/SynchronizerThread.h
   GUI/ExpandTreeThread.h
   GUI/ExpandTreeThread.cxx
+  GUI/ReadDatabaseThread.h
+  GUI/ReadDatabaseThread.cxx
   GUI/SearchThread.h
   GUI/SearchThread.cxx
   GUI/UnifyTreeThread.h
