@@ -2602,12 +2602,16 @@ bool SystemTools::FileIsDirectory(const char* name)
   // Remove any trailing slash from the name.
   char buffer[KWSYS_SYSTEMTOOLS_MAXPATH];
   size_t last = strlen(name)-1;
+
   if(last > 0 && (name[last] == '/' || name[last] == '\\')
     && strcmp(name, "/") !=0)
     {
-    memcpy(buffer, name, last);
-    buffer[last] = 0;
-    name = buffer;
+    if(last > 2 || (last <= 2 && name[1] != ':'))
+      {
+      memcpy(buffer, name, last);
+      buffer[last] = 0;
+      name = buffer;
+      }
     }
 
   // Now check the file node type.
