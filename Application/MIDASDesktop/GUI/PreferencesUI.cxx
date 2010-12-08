@@ -95,9 +95,11 @@ void PreferencesUI::accept()
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING, settingComboBox->currentIndex());
   m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::UNIFIED_TREE, copyResourcesCheckBox->isChecked());
 
-  if(kwsys::SystemTools::FileIsDirectory(workingDirEdit->text().toAscii()))
+  std::string dir = workingDirEdit->text().toStdString();
+  kwsys::SystemTools::ConvertToUnixSlashes(dir);
+  if(kwsys::SystemTools::FileIsDirectory(dir.c_str()))
     {
-    m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::ROOT_DIR, workingDirEdit->text().toStdString());
+    m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::ROOT_DIR, dir);
     }
 
   emit intervalChanged();

@@ -139,6 +139,7 @@ void CreateProfileUI::accept()
   apiKey = apiKeyEdit->text().trimmed().toStdString();
   serverURL = serverURLEdit->text().trimmed().toStdString();
   rootDir = rootDirEdit->text().trimmed().toStdString();
+  kwsys::SystemTools::ConvertToUnixSlashes(rootDir);
   QDialog::accept();
 
   emit serverURLSet(serverURL);
