@@ -881,3 +881,64 @@ std::string midasDatabaseProxy::GetUuidFromPath(std::string path)
 
   return uuid;
 }
+
+bool midasDatabaseProxy::CheckModifiedBitstreams()
+{
+  std::stringstream query;
+  query << "SELECT bitstream_id, last_modified, internal_id FROM bitstream "
+        << "WHERE location='1'";
+  this->Database->Open(this->DatabasePath.c_str());
+  this->Database->ExecuteQuery(query.str().c_str());
+
+  std::vector<midasBitstreamStamp> bitstreams;
+
+  while(this->Database->GetNextRow())
+    {
+    midasBitstreamStamp stamp;
+    stamp.Id = this->Database->GetValueAsInt(0);
+    stamp.LastModified = this->Database->GetValueAsInt(1);
+    stamp.Path = this->Database->GetValueAsString(2);
+    bitstreams.push_back(stamp);
+    }
+  this->Database->Close();
+
+  bool status = false;
+  for(std::vector<midasBitstreamStamp>::iterator i = bitstreams.begin();
+      i != bitstreams.end(); ++i)
+    {
+    if(!kwsys::SystemTools::FileExists(i->Path.c_str(), true))
+      {
+      std::stringstream text;
+      text << "Bitstream " << i->Path << " no longer exists in the filesystem."
+        << " Removing it from local MIDAS control." << std::endl;
+      this->Log->Message(text.str());
+      this->Log->Status(text.str());
+      this->DeleteResource(this->GetUuid(midasResourceType::BITSTREAM, i->Id));
+      status = true;
+      continue;
+      }
+
+    long int lastModified =
+      kwsys::SystemTools::ModifiedTime(i->Path.c_str());
+    if(lastModified != i->LastModified)
+      {
+      std::stringstream text;
+      text << "Bitstream " << i->Path << " was modified on disk. "
+        << "Marking resource as dirty." << std::endl;
+      this->Log->Message(text.str());
+      this->Log->Status(text.str());
+
+      std::stringstream query;
+      query << "UPDATE bitstream SET last_modified='" << lastModified
+        << "' WHERE bitstream_id='" << i->Id << "'";
+      this->Database->Open(this->DatabasePath.c_str());
+      this->Database->ExecuteQuery(query.str().c_str());
+      this->Database->Close();
+
+      this->MarkDirtyResource(
+        this->GetUuid(midasResourceType::BITSTREAM, i->Id),
+        midasDirtyAction::MODIFIED);
+      }
+    }
+  return status;
+}

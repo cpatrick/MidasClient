@@ -535,6 +535,7 @@ int midasCLI::SetRootDir(std::vector<std::string> args)
       "directory." << std::endl;
     return -1;
     }
+  kwsys::SystemTools::ConvertToUnixSlashes(root_dir);
   this->Synchronizer->GetDatabase()->SetSetting(
     midasDatabaseProxy::ROOT_DIR, root_dir);
 
@@ -545,6 +546,7 @@ int midasCLI::SetRootDir(std::vector<std::string> args)
 //-------------------------------------------------------------------
 bool midasCLI::ParseStatus(std::vector<std::string> args)
 {
+  this->Synchronizer->GetDatabase()->CheckModifiedBitstreams();
   std::vector<midasStatus> stats = this->Synchronizer->GetStatusEntries();
   for(std::vector<midasStatus>::iterator i = stats.begin(); i != stats.end();
       ++i)

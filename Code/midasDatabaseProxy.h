@@ -58,6 +58,13 @@ struct midasAuthProfile
   bool HasRootDir() { return RootDir == ""; }
 };
 
+struct midasBitstreamStamp
+{
+  std::string Path;
+  long int LastModified;
+  int Id;
+};
+
 class midasDatabaseProxy : public midasLogAware
 {
   friend class mds::Community;
@@ -155,6 +162,16 @@ public:
    * this will copy them underneath it and update their stored path
    */
   void UnifyTree();
+
+  /**
+   * Iterates over all the bitstreams known to the database
+   * Checks if they have been modified since last push/pull.
+   * If any were modified, marks them as dirty.
+   * If any were deleted, removes them from control.
+   * If any were modified or deleted, returns true,
+   * Otherwise false.
+   */
+  bool CheckModifiedBitstreams();
 protected:
   void InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);

@@ -42,6 +42,9 @@ public:
   void SetSize(std::string size) { m_Size = size; }
   std::string & GetSize() {return m_Size;}
 
+  void SetLastModified(long int time) { m_LastModified = time; }
+  long int GetLastModified() { return m_LastModified; }
+
   std::string GetTypeName() { return "Bitstream"; }
 
   Item* GetParentItem() { return m_ParentItem; }
@@ -56,6 +59,7 @@ protected:
   std::string  m_Name;
   std::string  m_Size;
   Item*        m_ParentItem;
+  long int     m_LastModified;
 
   bool fetched;
 };

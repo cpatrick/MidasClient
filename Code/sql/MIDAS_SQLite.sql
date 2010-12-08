@@ -267,6 +267,7 @@ CREATE TABLE bitstream (
     internal_id character varying(512),
     location smallint DEFAULT 0,
     deleted boolean,
+    last_modified bigint,
     store_number integer,
     sequence_id integer
 );

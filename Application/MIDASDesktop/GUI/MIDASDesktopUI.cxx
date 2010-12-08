@@ -985,6 +985,7 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
     bitstream.SetName(name.c_str());
     bitstream.SetSize(size.str());
     bitstream.SetUuid(uuid.c_str());
+    bitstream.SetLastModified(kwsys::SystemTools::ModifiedTime(path.c_str()));
     mds::Bitstream mdsBitstream;
     mdsBitstream.SetDatabase(m_database);
     mdsBitstream.SetObject(&bitstream);
@@ -1456,17 +1457,17 @@ void MIDASDesktopUI::deleteServerResource(bool val)
 
 void MIDASDesktopUI::alertErrorInLog()
 {
-  if(this->logAndSearchTabContainer->currentIndex() != 1)
+  if(this->logAndSearchTabContainer->currentIndex() != 2)
     {
-    this->logAndSearchTabContainer->setTabIcon(1, QPixmap(":icons/exclamation.png"));
+    this->logAndSearchTabContainer->setTabIcon(2, QPixmap(":icons/exclamation.png"));
     }
 }
 
 void MIDASDesktopUI::clearLogTabIcon(int index)
 {
-  if(index == 1)
+  if(index == 2)
     {
-    this->logAndSearchTabContainer->setTabIcon(1, QPixmap());
+    this->logAndSearchTabContainer->setTabIcon(2, QPixmap());
     }
 }
 

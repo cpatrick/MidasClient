@@ -379,6 +379,7 @@ int midasSynchronizer::Add()
     bitstream.SetId(id);
     bitstream.SetName(name.c_str());
     bitstream.SetSize(size.str());
+    bitstream.SetLastModified(kwsys::SystemTools::ModifiedTime(path.c_str()));
 
     mds::Bitstream mdsBitstream;
     mdsBitstream.SetObject(&bitstream);
@@ -579,6 +580,8 @@ bool midasSynchronizer::PullBitstream(int parentId)
     bitstream->GetUuid(), WORKING_DIR() + "/" + bitstream->GetName(),
     bitstream->GetName(), midasResourceType::ITEM, parentId, 0);
   bitstream->SetId(id);
+  std::string path = WORKING_DIR() + "/" + bitstream->GetName();
+  bitstream->SetLastModified(kwsys::SystemTools::ModifiedTime(path.c_str()));
   
   mds::Bitstream mdsBitstream;
   mdsBitstream.SetObject(bitstream);

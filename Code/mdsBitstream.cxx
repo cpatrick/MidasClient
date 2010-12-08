@@ -69,7 +69,8 @@ bool Bitstream::Commit()
   std::stringstream query;
   query << "UPDATE bitstream SET "
     << "size_bytes='" << m_Bitstream->GetSize() << "', "
-    << "name='" << midasUtils::EscapeForSQL(m_Bitstream->GetName())
+    << "name='" << midasUtils::EscapeForSQL(m_Bitstream->GetName()) << "', "
+    << "last_modified='" << m_Bitstream->GetLastModified()
     << "' WHERE bitstream_id='" << m_Bitstream->GetId() << "'";
 
   m_Database->Open();
