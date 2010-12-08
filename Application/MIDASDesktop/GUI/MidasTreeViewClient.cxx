@@ -61,6 +61,11 @@ void MidasTreeViewClient::SetDatabaseProxy(midasDatabaseProxy* proxy)
   this->m_Database = proxy;
 }
 
+midasDatabaseProxy* MidasTreeViewClient::GetDatabaseProxy()
+{
+  return this->m_Database;
+}
+
 void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent *event)
 {
   MidasBitstreamTreeItem* bitstream = NULL;

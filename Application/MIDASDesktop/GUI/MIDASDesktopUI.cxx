@@ -54,6 +54,7 @@
 #include "RefreshServerTreeThread.h"
 #include "SynchronizerThread.h"
 #include "SearchThread.h"
+#include "ReadDatabaseThread.h"
 // ------------- Threads -------------
 
 // ------------- TreeModel / TreeView -------------
@@ -275,6 +276,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   m_RefreshThread = NULL;
   m_SynchronizerThread = NULL;
   m_SearchThread = NULL;
+  m_ReadDatabaseThread = NULL;
   // ------------- thread init -----------------
 
   // ------------- setup client members and logging ----
@@ -326,9 +328,25 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete Log;
   delete m_progress;
   delete m_synch;
+  if(m_RefreshThread && m_RefreshThread->isRunning())
+    {
+    m_RefreshThread->terminate();
+    m_RefreshThread->wait();
+    }
   delete m_RefreshThread;
+  if(m_SynchronizerThread && m_SynchronizerThread->isRunning())
+    {
+    m_SynchronizerThread->terminate();
+    m_SynchronizerThread->wait();
+    }
   delete m_SynchronizerThread;
   delete m_SearchThread;
+  if(m_ReadDatabaseThread && m_ReadDatabaseThread->isRunning())
+    {
+    m_ReadDatabaseThread->terminate();
+    m_ReadDatabaseThread->wait();
+    }
+  delete m_ReadDatabaseThread;
   delete authorsEditor;
   delete keywordsEditor;
   delete mws::WebAPI::Instance()->GetRestAPI();
@@ -519,8 +537,22 @@ void MIDASDesktopUI::updateActionStateClient( const MidasTreeItem* item )
 
 void MIDASDesktopUI::updateClientTreeView()
 {
-  //TODO make this operation threaded
-  this->treeViewClient->Update();
+  if(m_ReadDatabaseThread)
+    {
+    disconnect(m_ReadDatabaseThread);
+    }
+  delete m_ReadDatabaseThread;
+
+  m_ReadDatabaseThread = new ReadDatabaseThread;
+  m_ReadDatabaseThread->SetParentUI(this);
+
+  connect(m_ReadDatabaseThread, SIGNAL( threadComplete() ), this, SLOT( resetStatus() ) );
+  connect(m_ReadDatabaseThread, SIGNAL( enableActions(bool) ), this, SLOT( enableClientActions(bool) ) );
+
+  displayStatus("Reading local database...");
+  setProgressIndeterminate();
+
+  m_ReadDatabaseThread->start();
 }
 
 void MIDASDesktopUI::updateServerTreeView()
@@ -548,6 +580,11 @@ void MIDASDesktopUI::enableActions(bool val)
 {
   this->activateActions(val, MIDASDesktopUI::ACTION_CONNECTED);
   this->cancelButton->setEnabled(!val);
+}
+
+void MIDASDesktopUI::enableClientActions(bool val)
+{
+  this->treeViewClient->setEnabled(val);
 }
 
 void MIDASDesktopUI::cancel()

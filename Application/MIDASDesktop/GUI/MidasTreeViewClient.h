@@ -17,6 +17,7 @@ public:
   ~MidasTreeViewClient();
 
   void SetDatabaseProxy(midasDatabaseProxy* proxy);
+  midasDatabaseProxy* GetDatabaseProxy();
 
 public slots:
   void expandAll();

@@ -12,7 +12,7 @@ class ReadDatabaseThread : public QThread
   Q_OBJECT
 public:
 
-  void SetParent(MIDASDesktopUI* parent) { m_Parent = parent; }
+  void SetParentUI(MIDASDesktopUI* parent) { m_Parent = parent; }
 
   virtual void run();
 

@@ -31,6 +31,7 @@ class ButtonDelegate;
 class RefreshServerTreeThread;
 class SynchronizerThread;
 class SearchThread;
+class ReadDatabaseThread;
 
 class QContextMenuEvent;
 class MidasTreeItem;
@@ -80,6 +81,7 @@ public:
   midasDatabaseProxy* getDatabaseProxy() { return m_database; }
   midasAuthenticator* getAuthenticator() { return m_auth; }
   midasSynchronizer* getSynchronizer() { return m_synch; }
+  midasProgressReporter* getProgress() { return m_progress; }
   QTextEdit* getLogTextEdit() { return log; }
 
 protected:
@@ -116,6 +118,7 @@ public slots:
   void finishedExpandingTree();
 
   void enableActions(bool val);
+  void enableClientActions(bool val);
 
   void enableResourceEditing(bool val);
 
@@ -241,6 +244,7 @@ private:
   RefreshServerTreeThread*    m_RefreshThread;
   SynchronizerThread*         m_SynchronizerThread;
   SearchThread*               m_SearchThread;
+  ReadDatabaseThread*         m_ReadDatabaseThread;
   // ----------- threads -----------------
 };
 

@@ -97,12 +97,17 @@ void PullUI::accept()
   delete m_SynchronizerThread;
 
   m_SynchronizerThread = new SynchronizerThread;
-  m_SynchronizerThread->SetSynchronizer(m_Parent->getSynchronizer());
+  midasSynchronizer* synchronizer = new midasSynchronizer;
+  synchronizer->SetDatabase(m_Parent->getSynchronizer()->GetDatabase()->GetDatabasePath());
+  synchronizer->SetLog(m_Parent->getSynchronizer()->GetLog());
+  synchronizer->SetProgressReporter(m_Parent->getProgress());
+  synchronizer->SetServerURL(m_Parent->getSynchronizer()->GetServerURL());
+  m_SynchronizerThread->SetSynchronizer(synchronizer);
 
   if(cloneRadioButton->isChecked())
     {
-    m_Parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_CLONE);
-    m_Parent->getSynchronizer()->SetRecursive(true);
+    synchronizer->SetOperation(midasSynchronizer::OPERATION_CLONE);
+    synchronizer->SetRecursive(true);
     m_Parent->GetLog()->Message("Cloning the server repository");
     m_Parent->displayStatus(tr("Cloning the server respository"));
 
@@ -116,19 +121,19 @@ void PullUI::accept()
     switch(m_ResourceType)
       {
       case midasResourceType::COMMUNITY:
-        m_Parent->getSynchronizer()->SetResourceType(midasResourceType::COMMUNITY);
+        synchronizer->SetResourceType(midasResourceType::COMMUNITY);
         m_TypeName = "Community";
         break;
       case midasResourceType::COLLECTION:
-        m_Parent->getSynchronizer()->SetResourceType(midasResourceType::COLLECTION);
+        synchronizer->SetResourceType(midasResourceType::COLLECTION);
         m_TypeName = "Collection";
         break;
       case midasResourceType::ITEM:
-        m_Parent->getSynchronizer()->SetResourceType(midasResourceType::ITEM);
+        synchronizer->SetResourceType(midasResourceType::ITEM);
         m_TypeName = "Item";
         break;
       case midasResourceType::BITSTREAM:
-        m_Parent->getSynchronizer()->SetResourceType(midasResourceType::BITSTREAM);
+        synchronizer->SetResourceType(midasResourceType::BITSTREAM);
         m_TypeName = "Bitstream";
         break;
       default:
@@ -136,9 +141,9 @@ void PullUI::accept()
       }
     std::stringstream idStr;
     idStr << m_PullId;
-    m_Parent->getSynchronizer()->SetServerHandle(idStr.str());
-    m_Parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_PULL);
-    m_Parent->getSynchronizer()->SetRecursive(recursiveCheckBox->isChecked());
+    synchronizer->SetServerHandle(idStr.str());
+    synchronizer->SetOperation(midasSynchronizer::OPERATION_PULL);
+    synchronizer->SetRecursive(recursiveCheckBox->isChecked());
 
     m_Parent->setProgressIndeterminate();
 

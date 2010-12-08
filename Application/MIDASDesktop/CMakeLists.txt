@@ -124,6 +124,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/SignInUI.h
   GUI/SignInThread.h
   GUI/SearchThread.h
+  GUI/ReadDatabaseThread.h
   GUI/AboutUI.h
   GUI/PreferencesUI.h
   GUI/MidasTreeView.h
