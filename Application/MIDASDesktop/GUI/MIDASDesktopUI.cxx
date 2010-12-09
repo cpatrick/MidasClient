@@ -55,6 +55,7 @@
 #include "SynchronizerThread.h"
 #include "SearchThread.h"
 #include "ReadDatabaseThread.h"
+#include "PollFilesystemThread.h"
 // ------------- Threads -------------
 
 // ------------- TreeModel / TreeView -------------
@@ -277,6 +278,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   m_SynchronizerThread = NULL;
   m_SearchThread = NULL;
   m_ReadDatabaseThread = NULL;
+  m_PollFilesystemThread = NULL;
   // ------------- thread init -----------------
 
   // ------------- setup client members and logging ----
@@ -1154,6 +1156,14 @@ void MIDASDesktopUI::signIn(bool ok)
       {
       refreshTimer->start();
       }
+
+    //start the filesystem monitoring thread
+    m_PollFilesystemThread = new PollFilesystemThread;
+    midasDatabaseProxy* db = new midasDatabaseProxy(this->m_database->GetDatabasePath());
+    db->SetLog(this->Log);
+    m_PollFilesystemThread->SetDatabase(db);
+    m_PollFilesystemThread->setPriority(QThread::LowestPriority);
+    m_PollFilesystemThread->start();
 
     // Satus bar
     std::string connect = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 

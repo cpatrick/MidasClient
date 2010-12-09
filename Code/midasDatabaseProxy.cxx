@@ -912,7 +912,6 @@ bool midasDatabaseProxy::CheckModifiedBitstreams()
       text << "Bitstream " << i->Path << " no longer exists in the filesystem."
         << " Removing it from local MIDAS control." << std::endl;
       this->Log->Message(text.str());
-      this->Log->Status(text.str());
       this->DeleteResource(this->GetUuid(midasResourceType::BITSTREAM, i->Id));
       status = true;
       continue;
@@ -926,7 +925,6 @@ bool midasDatabaseProxy::CheckModifiedBitstreams()
       text << "Bitstream " << i->Path << " was modified on disk. "
         << "Marking resource as dirty." << std::endl;
       this->Log->Message(text.str());
-      this->Log->Status(text.str());
 
       std::stringstream query;
       query << "UPDATE bitstream SET last_modified='" << lastModified
@@ -938,6 +936,7 @@ bool midasDatabaseProxy::CheckModifiedBitstreams()
       this->MarkDirtyResource(
         this->GetUuid(midasResourceType::BITSTREAM, i->Id),
         midasDirtyAction::MODIFIED);
+      status = true;
       }
     }
   return status;

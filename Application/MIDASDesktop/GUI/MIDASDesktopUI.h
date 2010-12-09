@@ -32,6 +32,7 @@ class RefreshServerTreeThread;
 class SynchronizerThread;
 class SearchThread;
 class ReadDatabaseThread;
+class PollFilesystemThread;
 
 class QContextMenuEvent;
 class MidasTreeItem;
@@ -245,6 +246,7 @@ private:
   SynchronizerThread*         m_SynchronizerThread;
   SearchThread*               m_SearchThread;
   ReadDatabaseThread*         m_ReadDatabaseThread;
+  PollFilesystemThread*       m_PollFilesystemThread;
   // ----------- threads -----------------
 };
 

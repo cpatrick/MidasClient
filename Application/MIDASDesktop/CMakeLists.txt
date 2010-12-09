@@ -78,6 +78,8 @@ set(MIDASDesktopUI_SRCS
   GUI/ExpandTreeThread.cxx
   GUI/ReadDatabaseThread.h
   GUI/ReadDatabaseThread.cxx
+  GUI/PollFilesystemThread.h
+  GUI/PollFilesystemThread.cxx
   GUI/SearchThread.h
   GUI/SearchThread.cxx
   GUI/UnifyTreeThread.h
@@ -125,6 +127,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/SignInThread.h
   GUI/SearchThread.h
   GUI/ReadDatabaseThread.h
+  GUI/PollFilesystemThread.h
   GUI/AboutUI.h
   GUI/PreferencesUI.h
   GUI/MidasTreeView.h
