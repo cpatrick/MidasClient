@@ -348,6 +348,13 @@ MIDASDesktopUI::~MIDASDesktopUI()
     m_ReadDatabaseThread->terminate();
     m_ReadDatabaseThread->wait();
     }
+
+  if(m_PollFilesystemThread && m_PollFilesystemThread->isRunning())
+    {
+    m_PollFilesystemThread->terminate();
+    m_PollFilesystemThread->wait();
+    }
+  delete m_PollFilesystemThread;
   delete m_ReadDatabaseThread;
   delete authorsEditor;
   delete keywordsEditor;
@@ -364,6 +371,10 @@ void MIDASDesktopUI::showNormal()
       {
       refreshTimer->stop();
       }
+    }
+  if(m_PollFilesystemThread)
+    {
+    m_PollFilesystemThread->Resume();
     }
   QMainWindow::showNormal();
   QMainWindow::activateWindow();
@@ -466,6 +477,12 @@ void MIDASDesktopUI::closeEvent(QCloseEvent *event)
         refreshTimer->start();
         }
       }
+    }
+
+  // stop filesystem polling (we don't care about updating the UI)
+  if(m_PollFilesystemThread)
+    {
+    m_PollFilesystemThread->Pause();
     }
 }
 
@@ -586,7 +603,7 @@ void MIDASDesktopUI::enableActions(bool val)
 
 void MIDASDesktopUI::enableClientActions(bool val)
 {
-  this->treeViewClient->setEnabled(val);
+  this->activateActions(val, MIDASDesktopUI::ACTION_LOCAL_DATABASE);
 }
 
 void MIDASDesktopUI::cancel()
@@ -1157,14 +1174,6 @@ void MIDASDesktopUI::signIn(bool ok)
       refreshTimer->start();
       }
 
-    //start the filesystem monitoring thread
-    m_PollFilesystemThread = new PollFilesystemThread;
-    midasDatabaseProxy* db = new midasDatabaseProxy(this->m_database->GetDatabasePath());
-    db->SetLog(this->Log);
-    m_PollFilesystemThread->SetDatabase(db);
-    m_PollFilesystemThread->setPriority(QThread::LowestPriority);
-    m_PollFilesystemThread->start();
-
     // Satus bar
     std::string connect = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 
     connectLabel->setText( connect.c_str() );
@@ -1229,6 +1238,16 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     this->treeViewClient->collapseAll();
     setTimerInterval();
     adjustTimerSettings();
+
+    //start the filesystem monitoring thread
+    m_PollFilesystemThread = new PollFilesystemThread;
+    midasDatabaseProxy* db = new midasDatabaseProxy(this->m_database->GetDatabasePath());
+    db->SetLog(this->Log);
+    m_PollFilesystemThread->SetDatabase(db);
+    m_PollFilesystemThread->setPriority(QThread::LowestPriority);
+
+    connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()));
+    m_PollFilesystemThread->start();
     }
   else
     {

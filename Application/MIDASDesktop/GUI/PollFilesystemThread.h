@@ -22,11 +22,17 @@ public:
 
   virtual void run();
 
+  // Stop filesystem polling
+  void Pause();
+  // Resume filesystem polling
+  void Resume();
+
 signals:
   void needToRefresh();
 
 private:
   midasDatabaseProxy* m_Database;
+  bool m_Run;
 };
 
 #endif
