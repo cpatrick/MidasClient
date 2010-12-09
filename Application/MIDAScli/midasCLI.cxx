@@ -514,6 +514,7 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
     }
   else if(args.size())
     {
+    this->Synchronizer->GetDatabase()->CheckModifiedBitstreams();
     this->ServerURL = args[0];
     }
   return true;
