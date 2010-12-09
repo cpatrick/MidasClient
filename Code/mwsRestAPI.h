@@ -84,20 +84,22 @@ public:
               void * fprogress_data=NULL,
               const char* authentication = "");
 
- /** Set cURL in verbose mode */
- void SetVerbose(bool verbose);
+  /** Set cURL in verbose mode */
+  void SetVerbose(bool verbose);
 
- /** Set the XML parser */
- void SetXMLParser(mws::RestXMLParser* parser);
+  /** Set the XML parser */
+  void SetXMLParser(mws::RestXMLParser* parser);
 
- mws::RestXMLParser* GetXMLParser();
- 
- /** XML parsing */
- bool Parse(const char* buffer,unsigned long length);
+  mws::RestXMLParser* GetXMLParser();
+
+  /** XML parsing */
+  bool Parse(const char* buffer,unsigned long length);
    
- /** Used by cURL */
- IO_MODE GetOutputMode();
-     
+  /** Used by cURL */
+  IO_MODE GetOutputMode();
+
+  void Cancel();
+  bool ShouldCancel();
 protected:
 
   // memory mgt
@@ -113,6 +115,7 @@ protected:
   CURLcode m_CurlCode;
   CURL * m_cURL;
   bool m_Verbose;
+  bool m_Cancel;
   
   // server
   std::string m_ServerUrl;

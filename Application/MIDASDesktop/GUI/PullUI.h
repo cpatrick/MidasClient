@@ -21,6 +21,8 @@ public:
   void setClone();
   void setRecursive(bool value);
 
+  SynchronizerThread* getSynchronizerThread();
+
   void init(); 
 
 signals:

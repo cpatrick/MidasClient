@@ -25,6 +25,11 @@ PullUI::~PullUI()
   delete m_SynchronizerThread;
 }
 
+SynchronizerThread* PullUI::getSynchronizerThread()
+{
+  return m_SynchronizerThread;
+}
+
 void PullUI::resetState()
 {
   this->m_PullId = 0;

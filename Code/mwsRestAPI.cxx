@@ -34,6 +34,7 @@ RestAPI::RestAPI()
   fprogress = NULL;
   m_Verbose = false;
   m_XMLParser = NULL;
+  m_Cancel = false;
 }
 
 /** Destructor */
@@ -140,6 +141,7 @@ bool RestAPI::Execute(const char*  url,
                       const char*  post_data,
                       const char * authentication)
 {
+  m_Cancel = false;
   if(!m_cURL)
     {
     std::cout << "Execute: cURL not initialized" << std::endl;
@@ -183,6 +185,7 @@ bool RestAPI::Download(const std::string &filename, std::string url, IO_MODE out
                        curl_progress_callback fprogress, void * fprogress_data,
                        const char* authentication)
 {
+  m_Cancel = false;
   std::string URL = url;
   if(!m_ServerUrl.empty())
     {
@@ -234,6 +237,7 @@ bool RestAPI::Download(const std::string &filename, std::string url, IO_MODE out
 bool RestAPI::UploadPost(const char* filename, std::string url, curl_progress_callback fprogress,
                          void * fprogress_data, const char* authentication)
 {
+  m_Cancel = false;
   std::string URL = url;
   if(!m_ServerUrl.empty())
     {
@@ -283,6 +287,7 @@ bool RestAPI::UploadPost(const char* filename, std::string url, curl_progress_ca
 bool RestAPI::Upload(const std::string &data, std::string url, curl_progress_callback fprogress,
                      void * fprogress_data, const char* authentication)
 {
+  m_Cancel = false;
   std::string URL = url;
   if(!m_ServerUrl.empty())
     {
@@ -376,6 +381,17 @@ void RestAPI::Finalize()
   m_Initialized = false;  
 }
 
+/** Cancel an upload or download */
+void RestAPI::Cancel()
+{
+  m_Cancel = true;
+}
+
+/** Whether download or upload should be aborted */
+bool RestAPI::ShouldCancel()
+{
+  return m_Cancel;
+}
 
 //--------------------------------------------------------------------------------------------------
 RestAPI::IO_MODE RestAPI::GetOutputMode()
@@ -462,7 +478,11 @@ bool RestAPI::Parse(const char* buffer,unsigned long length)
 static size_t Curl_output_function(void *ptr, size_t size, size_t nitems, void *userp)
 {
   char *buffer = (char*)ptr;
-  RestAPI * restAPI = (RestAPI*)userp; 
+  RestAPI * restAPI = (RestAPI*)userp;
+  if(restAPI->ShouldCancel())
+    {
+    return 0;
+    }
 
   size_t length = size*nitems;   
   switch (restAPI->GetOutputMode())
@@ -482,7 +502,11 @@ static size_t Curl_output_function(void *ptr, size_t size, size_t nitems, void *
 static size_t Curl_read_function(void *bufptr, size_t size, size_t nitems, void *userp)
 {
   char *buffer = (char*)bufptr;
-  RestAPI * restAPI = (RestAPI*)userp; 
+  RestAPI * restAPI = (RestAPI*)userp;
+  if(restAPI->ShouldCancel())
+    {
+    return 0;
+    }
   size_t length = size*nitems;
   restAPI->GetInputStream()->read(buffer, length);
   return restAPI->GetInputStream()->gcount();

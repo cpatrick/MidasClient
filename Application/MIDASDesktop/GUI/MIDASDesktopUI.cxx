@@ -606,9 +606,17 @@ void MIDASDesktopUI::enableClientActions(bool val)
   this->activateActions(val, MIDASDesktopUI::ACTION_LOCAL_DATABASE);
 }
 
+//Send cancel signals to any active push or pull operation
 void MIDASDesktopUI::cancel()
 {
-  this->m_synch->Cancel();
+  if(m_SynchronizerThread)
+    {
+    m_SynchronizerThread->Cancel();
+    }
+  if(dlg_pullUI->getSynchronizerThread())
+    {
+    dlg_pullUI->getSynchronizerThread()->Cancel();
+    }
 }
 
 void MIDASDesktopUI::resetStatus()

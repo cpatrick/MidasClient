@@ -30,6 +30,8 @@ public:
     emit threadComplete();
     }
 
+  void Cancel() { m_Synchronizer->Cancel(); }
+
 signals:
   void enableActions(bool val);
   void performReturned(int rc);

@@ -573,8 +573,26 @@ bool midasSynchronizer::PullBitstream(int parentId)
   status << "Downloading bitstream " << bitstream->GetName();
   this->Log->Status(status.str());
 
-  mws::WebAPI::Instance()->DownloadFile(fields.str().c_str(),
-                             bitstream->GetName().c_str());
+  if(!mws::WebAPI::Instance()->DownloadFile(fields.str().c_str(),
+                             bitstream->GetName().c_str()))
+    {
+    //delete the partial data and error out.
+    kwsys::SystemTools::RemoveFile(bitstream->GetName().c_str());
+
+    std::stringstream text;
+    if(this->ShouldCancel)
+      {
+      text << "Download canceled by user.";
+      this->Log->Message(text.str());
+      }
+    else
+      {
+      text << "Connection error during download. "
+        << mws::WebAPI::Instance()->GetErrorMessage();
+      this->Log->Error(text.str());
+      }
+    this->Log->Status(text.str());
+    }
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
     bitstream->GetUuid(), WORKING_DIR() + "/" + bitstream->GetName(),
@@ -1411,6 +1429,7 @@ void midasSynchronizer::Reset()
 void midasSynchronizer::Cancel()
 {
   this->ShouldCancel = true;
+  mws::WebAPI::Instance()->GetRestAPI()->Cancel();
 }
 
 //-------------------------------------------------------------------
