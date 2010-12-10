@@ -83,6 +83,7 @@ public:
   midasAuthenticator* getAuthenticator() { return m_auth; }
   midasSynchronizer* getSynchronizer() { return m_synch; }
   midasProgressReporter* getProgress() { return m_progress; }
+  PollFilesystemThread* getPollFilesystemThread() { return m_PollFilesystemThread; }
   QTextEdit* getLogTextEdit() { return log; }
 
 protected:

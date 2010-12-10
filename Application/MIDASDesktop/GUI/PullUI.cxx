@@ -5,6 +5,7 @@
 #include "midasAuthenticator.h"
 #include "midasDatabaseProxy.h"
 #include "midasSynchronizer.h"
+#include "PollFilesystemThread.h"
 
 /** Constructor */
 PullUI::PullUI(MIDASDesktopUI *parent):
@@ -157,6 +158,7 @@ void PullUI::accept()
   connect(m_SynchronizerThread, SIGNAL( threadComplete() ), m_Parent, SLOT( setProgressEmpty() ) );
   connect(m_SynchronizerThread, SIGNAL( enableActions(bool) ), m_Parent, SLOT( enableActions(bool) ) );
 
+  m_Parent->getPollFilesystemThread()->Pause();
   m_SynchronizerThread->start();
 
   QDialog::accept();
@@ -181,6 +183,7 @@ void PullUI::pulled(int rc)
     m_Parent->GetLog()->Error(text.str());
     }
   emit pulledResources();
+  m_Parent->getPollFilesystemThread()->Resume();
   m_Parent->displayStatus(text.str().c_str());
   m_Parent->setProgressEmpty();
 }
@@ -204,6 +207,7 @@ void PullUI::cloned(int rc)
     m_Parent->GetLog()->Error(text);
     }
   emit pulledResources();
+  m_Parent->getPollFilesystemThread()->Resume();
   m_Parent->displayStatus(text.c_str());
   m_Parent->setProgressEmpty();
 }

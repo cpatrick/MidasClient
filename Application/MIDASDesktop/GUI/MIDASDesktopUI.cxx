@@ -1496,10 +1496,12 @@ void MIDASDesktopUI::finishedExpandingTree()
 
 void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
 {
+  m_PollFilesystemThread->Pause();
   std::string uuid = this->treeViewClient->getSelectedMidasTreeItem()->getUuid();
   this->m_database->DeleteResource(uuid, deleteFiles);
 
   this->updateClientTreeView();
+  m_PollFilesystemThread->Resume();
   std::stringstream text;
   text << "Deleted resource with uuid=" << uuid << ".";
   GetLog()->Message(text.str());

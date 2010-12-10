@@ -4,6 +4,7 @@
 PollFilesystemThread::PollFilesystemThread()
 {
   m_Run = true;
+  m_DatabaseLocked = false;
 }
 
 PollFilesystemThread::~PollFilesystemThread()
@@ -14,6 +15,7 @@ PollFilesystemThread::~PollFilesystemThread()
 void PollFilesystemThread::Pause()
 {
   m_Run = false;
+  while(m_DatabaseLocked) {}
 }
 
 void PollFilesystemThread::Resume()
@@ -25,9 +27,14 @@ void PollFilesystemThread::run()
 {
   while(true)
     {
-    if(m_Run && m_Database->CheckModifiedBitstreams())
+    if(m_Run)
       {
-      emit needToRefresh();
+      m_DatabaseLocked = true;
+      if(m_Run && m_Database->CheckModifiedBitstreams())
+        {
+        emit needToRefresh();
+        }
+      m_DatabaseLocked = false;
       }
     this->sleep(5);
     }

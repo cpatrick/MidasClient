@@ -22,7 +22,7 @@ public:
 
   virtual void run();
 
-  // Stop filesystem polling
+  // Stop filesystem polling and wait for current poll to finish
   void Pause();
   // Resume filesystem polling
   void Resume();
@@ -33,6 +33,7 @@ signals:
 private:
   midasDatabaseProxy* m_Database;
   bool m_Run;
+  bool m_DatabaseLocked;
 };
 
 #endif
