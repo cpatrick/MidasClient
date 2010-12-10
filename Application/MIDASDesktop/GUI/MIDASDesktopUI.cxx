@@ -508,6 +508,7 @@ void MIDASDesktopUI::updateActionState( const MidasTreeItem* item )
   this->activateActions( false, ACTION_ALL_CONNECTED );
   this->dlg_pullUI->setPullId(item->getId());
   this->dlg_pullUI->setResourceType(item->getType());
+  this->dlg_pullUI->setResourceName(item->data(0).toString().toStdString());
 
   if (item->getType() == midasResourceType::COMMUNITY)
     {

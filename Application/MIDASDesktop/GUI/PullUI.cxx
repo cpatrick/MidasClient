@@ -72,6 +72,11 @@ void PullUI::setResourceType(int type)
   m_ResourceType = type;
 }
 
+void PullUI::setResourceName(std::string name)
+{
+  m_Name = name;
+}
+
 /** */
 void PullUI::init()
 {
@@ -169,7 +174,7 @@ void PullUI::pulled(int rc)
   std::stringstream text;
   if(rc == MIDAS_OK)
     {
-    text << "Successfully pulled " << m_TypeName << " with id=" << m_PullId;
+    text << "Successfully pulled " << m_TypeName << ": " << m_Name;
     m_Parent->GetLog()->Message(text.str());
     }
   else if(rc == MIDAS_CANCELED)
@@ -179,7 +184,7 @@ void PullUI::pulled(int rc)
     }
   else
     {
-    text << "Failed to pull " << m_TypeName << " with id=" << m_PullId;
+    text << "Failed to pull " << m_TypeName << ": " << m_Name;
     m_Parent->GetLog()->Error(text.str());
     }
   emit pulledResources();

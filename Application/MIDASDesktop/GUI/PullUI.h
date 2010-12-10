@@ -17,6 +17,7 @@ public:
 
   void setPullId(int id);
   void setResourceType(int type);
+  void setResourceName(std::string name);
   void setPull();
   void setClone();
   void setRecursive(bool value);
@@ -42,6 +43,7 @@ private:
   MIDASDesktopUI* m_Parent;
   SynchronizerThread* m_SynchronizerThread;
   std::string m_TypeName;
+  std::string m_Name;
   int m_PullId;
   int m_ResourceType;
   
