@@ -85,7 +85,7 @@ bool RestAPI::SetCurlOptions(const char* url,
 {
   if(!m_cURL)
     {
-    std::cout << "SetStdCurlOption m_cURL is not initialized" << std::endl;
+    std::cout << "SetCurlOptions m_cURL is not initialized" << std::endl;
     return false;
     }
   curl_easy_setopt(m_cURL, CURLOPT_WRITEFUNCTION, Curl_output_function);
@@ -505,7 +505,7 @@ static size_t Curl_read_function(void *bufptr, size_t size, size_t nitems, void 
   RestAPI * restAPI = (RestAPI*)userp;
   if(restAPI->ShouldCancel())
     {
-    return 0;
+    return CURL_READFUNC_ABORT;
     }
   size_t length = size*nitems;
   restAPI->GetInputStream()->read(buffer, length);

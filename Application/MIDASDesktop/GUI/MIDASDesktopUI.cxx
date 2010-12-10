@@ -556,6 +556,10 @@ void MIDASDesktopUI::updateActionStateClient( const MidasTreeItem* item )
 
 void MIDASDesktopUI::updateClientTreeView()
 {
+  if(m_ReadDatabaseThread && m_ReadDatabaseThread->isRunning())
+    {
+    return;
+    }
   if(m_ReadDatabaseThread)
     {
     disconnect(m_ReadDatabaseThread);
