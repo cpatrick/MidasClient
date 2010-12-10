@@ -233,7 +233,7 @@ bool Collection::FetchTree()
   return true;
 }
 
-bool Collection::Delete()
+bool Collection::Delete(bool deleteOnDisk)
 {
   std::vector<int> children;
   std::stringstream query;
@@ -258,9 +258,11 @@ bool Collection::Delete()
     mds::Item mdsItem;
     mdo::Item* item = new mdo::Item;
     item->SetId(*i);
+    item->SetUuid(m_Database->GetUuid(midasResourceType::ITEM, *i).c_str());
     mdsItem.SetObject(item);
     mdsItem.SetDatabase(m_Database);
-    ok &= mdsItem.Delete();
+    mdsItem.SetPath(m_Database->GetRecordByUuid(item->GetUuid()).Path);
+    ok &= mdsItem.Delete(deleteOnDisk);
     delete item;
 
     if(!ok)
@@ -290,14 +292,40 @@ bool Collection::Delete()
     m_Database->GetDatabase()->Close();
     return false;
     }
+
+  query.str(std::string());
+  query << "DELETE FROM dirty_resource WHERE uuid='" <<
+    m_Collection->GetUuid() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  query.str(std::string());
+  query << "DELETE FROM resource_uuid WHERE uuid='" <<
+    m_Collection->GetUuid() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
   m_Database->GetDatabase()->ExecuteQuery("COMMIT");
   m_Database->GetDatabase()->Close();
-  return true;
+  return deleteOnDisk ?
+    kwsys::SystemTools::RemoveADirectory(this->m_Path.c_str()) : true;
 }
 
 void Collection::SetObject(mdo::Object* object)
 {  
   m_Collection = reinterpret_cast<mdo::Collection*>(object);
+}
+
+void Collection::SetPath(std::string path)
+{
+  m_Path = path;
 }
 
 void Collection::ParentPathChanged(std::string parentPath)

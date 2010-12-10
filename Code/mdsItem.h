@@ -30,16 +30,17 @@ public:
   bool Fetch();
   bool Commit();
   bool FetchTree();
-  bool Delete();
+  bool Delete(bool deleteOnDisk);
 
   void ParentPathChanged(std::string parentPath);
   
   // Add the object
   void SetObject(mdo::Object* object);
+  void SetPath(std::string path);
 
 protected:
   mdo::Item* m_Item;
-
+  std::string m_Path;
 };
 
 } //end namespace

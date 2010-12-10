@@ -258,7 +258,7 @@ bool Item::FetchTree()
   return true;
 }
 
-bool Item::Delete()
+bool Item::Delete(bool deleteOnDisk)
 {
   std::vector<int> children;
   std::stringstream query;
@@ -283,9 +283,11 @@ bool Item::Delete()
     mds::Bitstream mdsBitstream;
     mdo::Bitstream* bitstream = new mdo::Bitstream;
     bitstream->SetId(*i);
+    bitstream->SetUuid(m_Database->GetUuid(midasResourceType::BITSTREAM, *i).c_str());
     mdsBitstream.SetObject(bitstream);
     mdsBitstream.SetDatabase(m_Database);
-    ok &= mdsBitstream.Delete();
+    mdsBitstream.SetPath(m_Database->GetRecordByUuid(bitstream->GetUuid()).Path);
+    ok &= mdsBitstream.Delete(deleteOnDisk);
     delete bitstream;
 
     if(!ok)
@@ -325,14 +327,42 @@ bool Item::Delete()
     m_Database->GetDatabase()->Close();
     return false;
     }
+
+  query.str(std::string());
+  query << "DELETE FROM dirty_resource WHERE uuid='" <<
+    m_Item->GetUuid() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  query.str(std::string());
+  query << "DELETE FROM resource_uuid WHERE uuid='" <<
+    m_Item->GetUuid() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
   m_Database->GetDatabase()->ExecuteQuery("COMMIT");
   m_Database->GetDatabase()->Close();
-  return true;
+
+  return deleteOnDisk ?
+    kwsys::SystemTools::RemoveADirectory(this->m_Path.c_str()) :
+    true;
 }
 
 void Item::SetObject(mdo::Object* object)
 {  
   m_Item = reinterpret_cast<mdo::Item*>(object);
+}
+
+void Item::SetPath(std::string path)
+{
+  m_Path = path;
 }
 
 void Item::ParentPathChanged(std::string parentPath)

@@ -283,7 +283,7 @@ bool Community::FetchTree()
   return true;
 }
 
-bool Community::Delete()
+bool Community::Delete(bool deleteOnDisk)
 {
   std::vector<int> children;
   std::stringstream query;
@@ -308,9 +308,11 @@ bool Community::Delete()
     mds::Community mdsComm;
     mdo::Community* comm = new mdo::Community;
     comm->SetId(*i);
+    comm->SetUuid(m_Database->GetUuid(midasResourceType::COMMUNITY, *i).c_str());
     mdsComm.SetObject(comm);
     mdsComm.SetDatabase(m_Database);
-    ok &= mdsComm.Delete();
+    mdsComm.SetPath(m_Database->GetRecordByUuid(comm->GetUuid()).Path);
+    ok &= mdsComm.Delete(deleteOnDisk);
     delete comm;
 
     if(!ok)
@@ -337,9 +339,11 @@ bool Community::Delete()
     mds::Collection mdsColl;
     mdo::Collection* coll = new mdo::Collection;
     coll->SetId(*i);
+    coll->SetUuid(m_Database->GetUuid(midasResourceType::COLLECTION, *i).c_str());
     mdsColl.SetObject(coll);
     mdsColl.SetDatabase(m_Database);
-    ok &= mdsColl.Delete();
+    mdsColl.SetPath(m_Database->GetRecordByUuid(coll->GetUuid()).Path);
+    ok &= mdsColl.Delete(deleteOnDisk);
     delete coll;
 
     if(!ok)
@@ -379,14 +383,40 @@ bool Community::Delete()
     m_Database->GetDatabase()->Close();
     return false;
     }
+
+  query.str(std::string());
+  query << "DELETE FROM dirty_resource WHERE uuid='" <<
+    m_Community->GetUuid() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  query.str(std::string());
+  query << "DELETE FROM resource_uuid WHERE uuid='" <<
+    m_Community->GetUuid() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
   m_Database->GetDatabase()->ExecuteQuery("COMMIT");
   m_Database->GetDatabase()->Close();
-  return true;
+  return deleteOnDisk ?
+    kwsys::SystemTools::RemoveADirectory(this->m_Path.c_str()) : true;
 }
 
 void Community::SetObject(mdo::Object* object)
 {  
   m_Community = reinterpret_cast<mdo::Community*>(object);
+}
+
+void Community::SetPath(std::string path)
+{
+  m_Path = path;
 }
 
 void Community::ParentPathChanged(std::string parentPath)

@@ -30,16 +30,18 @@ public:
   bool Fetch();
   bool Commit();
   bool FetchTree();
-  bool Delete();
+  bool Delete(bool deleteOnDisk);
 
   void ParentPathChanged(std::string parentPath);
 
   void SetObject(mdo::Object* object);
   void SetRecursive(bool recurse);
+  void SetPath(std::string path);
 
 protected:
   bool            m_Recurse;
   mdo::Community* m_Community;
+  std::string     m_Path;
 
 };
 

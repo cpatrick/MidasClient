@@ -30,15 +30,17 @@ public:
   bool Fetch();
   bool Commit();
   bool FetchTree();
-  bool Delete();
+  bool Delete(bool deleteOnDisk);
 
   void ParentPathChanged(std::string parentPath);
 
   void SetObject(mdo::Object* object);
+  void SetPath(std::string path);
 
 protected:
 
   mdo::Bitstream* m_Bitstream;
+  std::string     m_Path;
 };
 
 } //end namespace

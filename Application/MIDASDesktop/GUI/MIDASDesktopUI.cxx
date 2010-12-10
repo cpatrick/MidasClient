@@ -1516,13 +1516,16 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
     {
     this->Log->Error("Error: Delete failed on resource " + name);
     }
+  else
+    {
+    std::stringstream text;
+    text << "Deleted resource " << 
+      treeViewClient->getSelectedMidasTreeItem()->data(0).toString().toStdString();
+    GetLog()->Message(text.str());
+    }
   m_PollFilesystemThread->Resume();
 
   this->updateClientTreeView();
-  std::stringstream text;
-  text << "Deleted resource " << 
-    treeViewClient->getSelectedMidasTreeItem()->data(0).toString().toStdString();
-  GetLog()->Message(text.str());
 }
 
 // Controller for deleting server resources

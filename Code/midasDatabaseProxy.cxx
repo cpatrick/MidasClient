@@ -646,63 +646,45 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
     case midasResourceType::COMMUNITY:
       comm = new mdo::Community;
       comm->SetId(record.Id);
+      comm->SetUuid(uuid.c_str());
       mdsComm.SetObject(comm);
       mdsComm.SetDatabase(this);
-      ok = mdsComm.Delete();
+      mdsComm.SetPath(record.Path);
+      ok = mdsComm.Delete(deleteFiles);
       delete comm;
       break;
     case midasResourceType::COLLECTION:
       coll = new mdo::Collection;
       coll->SetId(record.Id);
+      coll->SetUuid(uuid.c_str());
       mdsColl.SetObject(coll);
       mdsColl.SetDatabase(this);
-      ok = mdsColl.Delete();
+      mdsColl.SetPath(record.Path);
+      ok = mdsColl.Delete(deleteFiles);
       delete coll;
       break;
     case midasResourceType::ITEM:
       item = new mdo::Item;
       item->SetId(record.Id);
+      item->SetUuid(uuid.c_str());
       mdsItem.SetObject(item);
       mdsItem.SetDatabase(this);
-      ok = mdsItem.Delete();
+      mdsItem.SetPath(record.Path);
+      ok = mdsItem.Delete(deleteFiles);
       delete item;
       break;
     case midasResourceType::BITSTREAM:
       bitstream = new mdo::Bitstream;
       bitstream->SetId(record.Id);
+      bitstream->SetUuid(uuid.c_str());
       mdsBitstream.SetObject(bitstream);
       mdsBitstream.SetDatabase(this);
-      ok = mdsBitstream.Delete();
+      mdsBitstream.SetPath(record.Path);
+      ok = mdsBitstream.Delete(deleteFiles);
       delete bitstream;
       break;
     default:
       return false;
-    }
-
-  if(ok)
-    {
-    std::stringstream query;
-    query << "DELETE FROM dirty_resource WHERE uuid='" << uuid << "'";
-    this->Database->Open(this->DatabasePath.c_str());
-    ok &= this->Database->ExecuteQuery(query.str().c_str());
-
-    query.str(std::string());
-    query << "DELETE FROM resource_uuid WHERE uuid='" << uuid << "'";
-    this->Database->Open(this->DatabasePath.c_str());
-    ok &= this->Database->ExecuteQuery(query.str().c_str());
-    this->Database->Close();
-
-    if(deleteFiles)
-      {
-      if(record.Type == midasResourceType::BITSTREAM)
-        {
-        ok &= kwsys::SystemTools::RemoveFile(record.Path.c_str());
-        }
-      else
-        {
-        ok &= kwsys::SystemTools::RemoveADirectory(record.Path.c_str());
-        }
-      }
     }
   return ok;
 }
