@@ -234,7 +234,7 @@ bool Item::FetchTree()
     "FROM bitstream, resource_uuid WHERE resource_uuid.resource_id=bitstream.bitstream_id "
     "AND resource_uuid.resource_type_id='" << midasResourceType::BITSTREAM << "' AND "
     "bitstream.bitstream_id IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
-    << m_Item->GetId() << ") ORDER BY bitstream.name ASC";
+    << m_Item->GetId() << ") ORDER BY bitstream.name COLLATE NOCASE ASC";
   m_Database->Open();
   m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
 

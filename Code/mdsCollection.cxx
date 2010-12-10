@@ -201,7 +201,7 @@ bool Collection::FetchTree()
     "WHERE resource_uuid.resource_type_id='" << midasResourceType::ITEM << "' AND "
     "resource_uuid.resource_id=item.item_id AND item.item_id IN (SELECT item_id FROM "
     "collection2item WHERE collection_id=" << m_Collection->GetId() << ") "
-    "ORDER BY item.title ASC";
+    "ORDER BY item.title COLLATE NOCASE ASC";
   m_Database->Open();
   m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
 

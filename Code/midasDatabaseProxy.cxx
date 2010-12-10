@@ -595,7 +595,7 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
   query << "SELECT resource_uuid.uuid, community.community_id, community.name "
     "FROM community, resource_uuid WHERE resource_uuid.resource_id=community.community_id AND "
     "resource_uuid.resource_type_id='" << midasResourceType::COMMUNITY << "' AND community.community_id "
-    "NOT IN (SELECT child_comm_id FROM community2community) ORDER BY community.name ASC";
+    "NOT IN (SELECT child_comm_id FROM community2community) ORDER BY community.name COLLATE NOCASE ASC";
 
   this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery(query.str().c_str());

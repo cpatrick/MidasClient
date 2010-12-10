@@ -213,7 +213,7 @@ bool Community::FetchTree()
     << midasResourceType::COMMUNITY << "' AND resource_uuid.resource_id="
     "community.community_id AND community.community_id IN "
     "(SELECT child_comm_id FROM community2community WHERE parent_comm_id="
-    << m_Community->GetId() << ") ORDER BY community.name ASC";
+    << m_Community->GetId() << ") ORDER BY community.name COLLATE NOCASE ASC";
   m_Database->Open();
   m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
 
@@ -250,7 +250,7 @@ bool Community::FetchTree()
     << midasResourceType::COLLECTION << "' AND resource_uuid.resource_id="
     "collection.collection_id AND collection.collection_id IN (SELECT collection_id "
     "FROM community2collection WHERE community_id=" << m_Community->GetId() << ")"
-    << " ORDER BY collection.name ASC";
+    << " ORDER BY collection.name COLLATE NOCASE ASC";
   m_Database->Open();
   m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
 
