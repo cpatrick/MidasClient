@@ -895,8 +895,11 @@ void MIDASDesktopUI::infoPanel(MidasBitstreamTreeItem* bitstreamTreeItem, bool e
   midasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
 
   midasTreeItemInfoTable->clearSelection();
-  midasTreeItemInfoTable->setRowCount(2);
-  int i = 0;
+  int i = 2;
+  
+  if(bitstream->GetPath() != "" || edit) i++;
+  midasTreeItemInfoTable->setRowCount(i);
+  i = 0;
 
   midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
   midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Filename", QTableWidgetDescriptionItem::Bold));
@@ -909,6 +912,15 @@ void MIDASDesktopUI::infoPanel(MidasBitstreamTreeItem* bitstreamTreeItem, bool e
   midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, midasUtils::FileSizeString(strtod(bitstream->GetSize().c_str(), 0)).c_str(), BITSTREAM_SIZE, QTableWidgetDescriptionItem::Tooltip));
   midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
   i++;
+
+  if(bitstream->GetPath() != "")
+    {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Location", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, bitstream->GetPath().c_str(), BITSTREAM_PATH, QTableWidgetDescriptionItem::Tooltip));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
 
   midasTreeItemInfoTable->resizeColumnsToContents();
 }

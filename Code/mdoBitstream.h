@@ -45,6 +45,9 @@ public:
   void SetLastModified(long int time) { m_LastModified = time; }
   long int GetLastModified() { return m_LastModified; }
 
+  void SetPath(std::string path) { m_Path = path; }
+  std::string GetPath() { return m_Path; }
+
   std::string GetTypeName() { return "Bitstream"; }
 
   Item* GetParentItem() { return m_ParentItem; }
@@ -58,6 +61,7 @@ protected:
   std::string  m_Parent;
   std::string  m_Name;
   std::string  m_Size;
+  std::string  m_Path;
   Item*        m_ParentItem;
   long int     m_LastModified;
 

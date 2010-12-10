@@ -22,7 +22,8 @@ enum MIDASFields
     ITEM_KEYWORDS,
     ITEM_DESCRIPTION,
     BITSTREAM_NAME,
-    BITSTREAM_SIZE
+    BITSTREAM_SIZE,
+    BITSTREAM_PATH
     }; 
     
 class QContextMenuEvent; 

@@ -46,7 +46,7 @@ bool Bitstream::Fetch()
     }
 
   std::stringstream query;
-  query << "SELECT size_bytes, name FROM bitstream WHERE bitstream_id='"
+  query << "SELECT size_bytes, name, internal_id FROM bitstream WHERE bitstream_id='"
     << m_Bitstream->GetId() << "'";
   m_Database->Open();
   m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
@@ -57,6 +57,7 @@ bool Bitstream::Fetch()
     val << m_Database->GetDatabase()->GetValueAsInt64(0);
     m_Bitstream->SetSize(val.str());
     m_Bitstream->SetName(m_Database->GetDatabase()->GetValueAsString(1));
+    m_Bitstream->SetPath(m_Database->GetDatabase()->GetValueAsString(2));
     }
   m_Bitstream->SetFetched(true);
   m_Database->Close();
