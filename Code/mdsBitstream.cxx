@@ -94,7 +94,13 @@ bool Bitstream::FetchTree()
 
 bool Bitstream::Delete()
 {
-  return true;
+  bool ok;
+  std::stringstream query;
+  query << "DELETE FROM bitstream WHERE bitstream_id='" << m_Bitstream->GetId() << "'";
+  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
+  ok = m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  m_Database->GetDatabase()->Close();
+  return ok;
 }
 
 // Add the object

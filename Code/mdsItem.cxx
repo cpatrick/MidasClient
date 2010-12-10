@@ -234,7 +234,7 @@ bool Item::FetchTree()
     "FROM bitstream, resource_uuid WHERE resource_uuid.resource_id=bitstream.bitstream_id "
     "AND resource_uuid.resource_type_id='" << midasResourceType::BITSTREAM << "' AND "
     "bitstream.bitstream_id IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
-    << m_Item->GetId() << ")";
+    << m_Item->GetId() << ") ORDER BY bitstream.name ASC";
   m_Database->Open();
   m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
 
@@ -260,6 +260,73 @@ bool Item::FetchTree()
 
 bool Item::Delete()
 {
+  std::vector<int> children;
+  std::stringstream query;
+  query << "SELECT bitstream_id FROM item2bitstream WHERE "
+    "item_id='" << m_Item->GetId() << "'";
+  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  while(m_Database->GetDatabase()->GetNextRow())
+    {
+    children.push_back(m_Database->GetDatabase()->GetValueAsInt(0));
+    }
+  m_Database->GetDatabase()->Close();
+  bool ok = true;
+  for(std::vector<int>::iterator i = children.begin();
+      i != children.end(); ++i)
+    {
+    mds::Bitstream mdsBitstream;
+    mdo::Bitstream* bitstream = new mdo::Bitstream;
+    bitstream->SetId(*i);
+    mdsBitstream.SetObject(bitstream);
+    mdsBitstream.SetDatabase(m_Database);
+    ok &= mdsBitstream.Delete();
+    delete bitstream;
+
+    if(!ok)
+      {
+      return false;
+      }
+    }
+
+  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
+  m_Database->GetDatabase()->ExecuteQuery("BEGIN");
+  query.str(std::string());
+  query << "DELETE FROM item2bitstream WHERE item_id='" <<
+    m_Item->GetId() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  query.str(std::string());
+  query << "DELETE FROM metadatavalue WHERE item_id='" <<
+    m_Item->GetId() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  query.str(std::string());
+  query << "DELETE FROM item WHERE item_id='" <<
+    m_Item->GetId() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+  m_Database->GetDatabase()->ExecuteQuery("COMMIT");
+  m_Database->GetDatabase()->Close();
   return true;
 }
 

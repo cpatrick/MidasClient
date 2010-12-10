@@ -200,7 +200,8 @@ bool Collection::FetchTree()
   query << "SELECT item.item_id, item.title, resource_uuid.uuid FROM item, resource_uuid "
     "WHERE resource_uuid.resource_type_id='" << midasResourceType::ITEM << "' AND "
     "resource_uuid.resource_id=item.item_id AND item.item_id IN (SELECT item_id FROM "
-    "collection2item WHERE collection_id=" << m_Collection->GetId() << ")";
+    "collection2item WHERE collection_id=" << m_Collection->GetId() << ") "
+    "ORDER BY item.title ASC";
   m_Database->Open();
   m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
 
@@ -234,6 +235,63 @@ bool Collection::FetchTree()
 
 bool Collection::Delete()
 {
+  std::vector<int> children;
+  std::stringstream query;
+  query << "SELECT item_id FROM collection2item WHERE "
+    "collection_id='" << m_Collection->GetId() << "'";
+  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  while(m_Database->GetDatabase()->GetNextRow())
+    {
+    children.push_back(m_Database->GetDatabase()->GetValueAsInt(0));
+    }
+  m_Database->GetDatabase()->Close();
+  bool ok = true;
+  for(std::vector<int>::iterator i = children.begin();
+      i != children.end(); ++i)
+    {
+    mds::Item mdsItem;
+    mdo::Item* item = new mdo::Item;
+    item->SetId(*i);
+    mdsItem.SetObject(item);
+    mdsItem.SetDatabase(m_Database);
+    ok &= mdsItem.Delete();
+    delete item;
+
+    if(!ok)
+      {
+      return false;
+      }
+    }
+
+  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
+  m_Database->GetDatabase()->ExecuteQuery("BEGIN");
+  query.str(std::string());
+  query << "DELETE FROM collection2item WHERE collection_id='" <<
+    m_Collection->GetId() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  query.str(std::string());
+  query << "DELETE FROM collection WHERE collection_id='" <<
+    m_Collection->GetId() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+  m_Database->GetDatabase()->ExecuteQuery("COMMIT");
+  m_Database->GetDatabase()->Close();
   return true;
 }
 

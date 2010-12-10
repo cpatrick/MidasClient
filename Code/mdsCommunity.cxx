@@ -213,7 +213,7 @@ bool Community::FetchTree()
     << midasResourceType::COMMUNITY << "' AND resource_uuid.resource_id="
     "community.community_id AND community.community_id IN "
     "(SELECT child_comm_id FROM community2community WHERE parent_comm_id="
-    << m_Community->GetId() << ")";
+    << m_Community->GetId() << ") ORDER BY community.name ASC";
   m_Database->Open();
   m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
 
@@ -249,7 +249,8 @@ bool Community::FetchTree()
     "FROM collection, resource_uuid WHERE resource_uuid.resource_type_id='"
     << midasResourceType::COLLECTION << "' AND resource_uuid.resource_id="
     "collection.collection_id AND collection.collection_id IN (SELECT collection_id "
-    "FROM community2collection WHERE community_id=" << m_Community->GetId() << ")";
+    "FROM community2collection WHERE community_id=" << m_Community->GetId() << ")"
+    << " ORDER BY collection.name ASC";
   m_Database->Open();
   m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
 
@@ -284,6 +285,102 @@ bool Community::FetchTree()
 
 bool Community::Delete()
 {
+  std::vector<int> children;
+  std::stringstream query;
+  query << "SELECT child_comm_id FROM community2community WHERE "
+    "parent_comm_id='" << m_Community->GetId() << "'";
+  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  while(m_Database->GetDatabase()->GetNextRow())
+    {
+    children.push_back(m_Database->GetDatabase()->GetValueAsInt(0));
+    }
+  m_Database->GetDatabase()->Close();
+  bool ok = true;
+  for(std::vector<int>::iterator i = children.begin();
+      i != children.end(); ++i)
+    {
+    mds::Community mdsComm;
+    mdo::Community* comm = new mdo::Community;
+    comm->SetId(*i);
+    mdsComm.SetObject(comm);
+    mdsComm.SetDatabase(m_Database);
+    ok &= mdsComm.Delete();
+    delete comm;
+
+    if(!ok)
+      {
+      return false;
+      }
+    }
+
+  query.str(std::string());
+  query << "SELECT collection_id FROM community2collection WHERE "
+    "community_id='" << m_Community->GetId() << "'";
+  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
+  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+
+  children.clear();
+  while(m_Database->GetDatabase()->GetNextRow())
+    {
+    children.push_back(m_Database->GetDatabase()->GetValueAsInt(0)); 
+    }
+  m_Database->GetDatabase()->Close();
+  for(std::vector<int>::iterator i = children.begin();
+      i != children.end(); ++i)
+    {
+    mds::Collection mdsColl;
+    mdo::Collection* coll = new mdo::Collection;
+    coll->SetId(*i);
+    mdsColl.SetObject(coll);
+    mdsColl.SetDatabase(m_Database);
+    ok &= mdsColl.Delete();
+    delete coll;
+
+    if(!ok)
+      {
+      return false;
+      }
+    }
+
+  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
+  m_Database->GetDatabase()->ExecuteQuery("BEGIN");
+  query.str(std::string());
+  query << "DELETE FROM community2community WHERE parent_comm_id='" <<
+    m_Community->GetId() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  query.str(std::string());
+  query << "DELETE FROM community2collection WHERE community_id='" <<
+    m_Community->GetId() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  query.str(std::string());
+  query << "DELETE FROM community WHERE community_id='" <<
+    m_Community->GetId() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+  m_Database->GetDatabase()->ExecuteQuery("COMMIT");
+  m_Database->GetDatabase()->Close();
   return true;
 }
 
