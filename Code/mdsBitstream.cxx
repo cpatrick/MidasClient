@@ -136,8 +136,11 @@ bool Bitstream::Delete(bool deleteOnDisk)
     }
   m_Database->GetDatabase()->ExecuteQuery("COMMIT");
   m_Database->GetDatabase()->Close();
-  return deleteOnDisk ?
-    kwsys::SystemTools::RemoveFile(this->m_Path.c_str()) : true;
+  if(deleteOnDisk)
+    {
+    kwsys::SystemTools::RemoveFile(this->m_Path.c_str());
+    }
+  return true;
 }
 
 // Add the object

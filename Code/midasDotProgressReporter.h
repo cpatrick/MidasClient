@@ -25,9 +25,11 @@ class midasDotProgressReporter : midasProgressReporter
     ~midasDotProgressReporter();
 
     void UpdateProgress(double current, double max);
+    void UpdateOverallProgress(int value);
     void ResetProgress();
     void SetMessage(std::string message);
     void SetIndeterminate();
+    void SetMaxOverall(int max);
   protected:
     void PrintBar();
 

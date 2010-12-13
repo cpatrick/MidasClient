@@ -35,6 +35,7 @@ public:
   static std::string EscapeName(std::string name);
   static int64 GetFileLength(const char* filename);
   static std::string FileSizeString(int64 bytes);
+  static std::string FileSizeString(double bytes);
   static std::string GetTypeName(int type);
   static bool IsDatabaseValid(std::string path);
   static bool CreateNewDatabase(std::string path);

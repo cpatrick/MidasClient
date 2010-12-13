@@ -123,6 +123,8 @@ protected:
   /* Reset the synchronizer to its starting state */
   void Reset();
 
+  void CountBitstreams();
+
   void ChangeToRootDir();
   std::string ResolveAddPath();
 
@@ -134,6 +136,8 @@ protected:
   std::string ServerHandle;
   std::string LastDir;
   std::string Uuid;
+  int CurrentBitstreams;
+  int TotalBitstreams;
 
   /* Pull entire subtree of resources that are pulled?*/
   bool Recursive;

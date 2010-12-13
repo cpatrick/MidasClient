@@ -104,6 +104,12 @@ public slots:
   void resetStatus();
   // ------------- status bar -------------
 
+  //-------------- progress tab -----------
+  void currentFileMessage(const QString& message);
+  void overallProgressUpdate(int current, int max);
+  void currentProgressUpdate(double current, double max);
+  //-------------- progress tab -----------
+
   void signInOrOut();
   void signIn(bool ok);
   void signOut();

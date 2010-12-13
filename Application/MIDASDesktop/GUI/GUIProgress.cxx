@@ -33,6 +33,7 @@ GUIProgress::~GUIProgress()
 
 void GUIProgress::UpdateProgress(double current, double max)
 {
+  emit CurrentProgress(current, max);
   if (max == 0 || this->Done) return;
   double fraction = current / max;
   int percent = static_cast<int>(fraction * 100.0);
@@ -46,8 +47,14 @@ void GUIProgress::UpdateProgress(double current, double max)
     }
 }
 
+void GUIProgress::UpdateOverallProgress(int value)
+{
+  emit OverallProgress(value, m_Max);
+}
+
 void GUIProgress::SetMessage(std::string message)
 {
+  emit ProgressMessage(message.c_str());
 }
 
 void GUIProgress::SetIndeterminate()

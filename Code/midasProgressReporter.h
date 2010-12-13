@@ -19,14 +19,18 @@
  */
 class midasProgressReporter
 {
-  public:
-    midasProgressReporter() {}
-    virtual ~midasProgressReporter() {}
+public:
+  midasProgressReporter() { m_Max = 0; }
+  virtual ~midasProgressReporter() {}
 
-    virtual void UpdateProgress(double current, double max) = 0;
-    virtual void ResetProgress() = 0;
-    virtual void SetMessage(std::string message) = 0;
-    virtual void SetIndeterminate() = 0;
+  virtual void UpdateProgress(double current, double max) = 0;
+  virtual void UpdateOverallProgress(int value) = 0;
+  virtual void SetMaxOverall(int max) { m_Max = max; }
+  virtual void ResetProgress() = 0;
+  virtual void SetMessage(std::string message) = 0;
+  virtual void SetIndeterminate() = 0;
+protected:
+  int m_Max;
 };
 
 #endif

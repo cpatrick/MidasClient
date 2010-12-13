@@ -296,6 +296,12 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_editMode = false;
   // ------------- setup client members and logging ----
 
+  // ------------- Progress bar ------------------------
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( ProgressMessage(const QString&) ), this, SLOT( currentFileMessage(const QString&) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgress(int, int) ), this, SLOT( overallProgressUpdate(int, int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( CurrentProgress(double, double) ), this, SLOT( currentProgressUpdate(double, double) ) );
+  // ------------- Progress bar ------------------------
+
   // ------------- Handle stored settings -------------
   QSettings settings("Kitware", "MIDASDesktop");
   std::string lastDatabase =
@@ -1298,10 +1304,10 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     midasDatabaseProxy* db = new midasDatabaseProxy(this->m_database->GetDatabasePath());
     db->SetLog(this->Log);
     m_PollFilesystemThread->SetDatabase(db);
-    m_PollFilesystemThread->setPriority(QThread::LowestPriority);
 
     connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()));
     m_PollFilesystemThread->start();
+    m_PollFilesystemThread->setPriority(QThread::LowestPriority);
     }
   else
     {
@@ -1676,4 +1682,47 @@ void MIDASDesktopUI::newDBFinished()
     {
     this->Log->Error("Failed to create new local database.");
     }
+}
+
+void MIDASDesktopUI::currentFileMessage(const QString& message)
+{
+  std::string labelText = "Current File: " + message.toStdString();
+  this->currentFilenameLabel->setText(labelText.c_str());
+}
+
+void MIDASDesktopUI::overallProgressUpdate(int current, int max)
+{
+  std::stringstream text;
+  text << "Overall Progress: " << current << " / " << max << " files transferred";
+  this->overallProgressLabel->setText(text.str().c_str());
+
+  progressBar_overall->setMaximum(max);
+  progressBar_overall->setValue(current);
+}
+
+void MIDASDesktopUI::currentProgressUpdate(double current, double max)
+{
+  std::string currentText = midasUtils::FileSizeString(current);
+  std::string maxText = midasUtils::FileSizeString(max);
+  std::stringstream text;
+  if(max == 0)
+    {
+    text << "Progress: Calculating...";
+    }
+  else
+    {
+    text << "Progress: " << currentText << " / " << maxText;
+    }
+  this->currentProgressLabel->setText(text.str().c_str());
+
+  if (max == 0)
+    {
+    progressBar_current->setMaximum(100);
+    progressBar_current->setValue(0);
+    return;
+    }
+  double fraction = current / max;
+  int percent = static_cast<int>(fraction * 100.0);
+  progressBar_current->setMaximum(100);
+  progressBar_current->setValue(percent);
 }

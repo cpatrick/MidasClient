@@ -24,6 +24,7 @@ public:
   ~GUIProgress();
 
   void UpdateProgress(double current, double max);
+  void UpdateOverallProgress(int value);
   void ResetProgress();
   void SetMessage(std::string message);
   void SetIndeterminate();
@@ -32,6 +33,9 @@ signals:
   void UpdateProgressMin(int val);
   void UpdateProgressMax(int val);
   void UpdateProgressValue(int val);
+  void ProgressMessage(const QString& message);
+  void OverallProgress(int current, int max);
+  void CurrentProgress(double current, double max);
 protected:
   QProgressBar* m_progressBar;
 

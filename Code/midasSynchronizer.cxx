@@ -49,6 +49,8 @@ midasSynchronizer::midasSynchronizer()
   this->Log = new midasStdOutLog();
   this->Database = "";
   this->DatabaseProxy = NULL;
+  this->CurrentBitstreams = 0;
+  this->TotalBitstreams = 0;
   this->Authenticator = new midasAuthenticator;
   this->Authenticator->SetLog(this->Log);
 }
@@ -212,6 +214,7 @@ int midasSynchronizer::Perform()
     }
 
   std::string temp = WORKING_DIR();
+  this->CountBitstreams();
 
   switch(this->Operation)
     {
@@ -551,6 +554,12 @@ bool midasSynchronizer::PullBitstream(int parentId)
   midasResourceRecord record =
     this->DatabaseProxy->GetRecordByUuid(bitstream->GetUuid());
 
+  this->Progress->SetMessage(bitstream->GetName());
+
+  this->CurrentBitstreams++;
+  this->Progress->UpdateOverallProgress(this->CurrentBitstreams);
+  this->Progress->UpdateProgress(0, 0);
+
   //TODO check md5 sum of file at location against server's checksum?
   if(record.Path != "" &&
      kwsys::SystemTools::FileExists(record.Path.c_str(), true))
@@ -592,6 +601,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
       this->Log->Error(text.str());
       }
     this->Log->Status(text.str());
+    return false;
     }
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
@@ -1031,6 +1041,10 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
 
   delete bitstream;
 
+  this->CurrentBitstreams++;
+  this->Progress->UpdateOverallProgress(this->CurrentBitstreams);
+  this->Progress->SetMessage(name);
+
   if(midasUtils::GetFileLength(record->Path.c_str()) == 0)
     {
     std::stringstream text;
@@ -1423,6 +1437,9 @@ void midasSynchronizer::Reset()
   this->Uuid = "";
   this->SetResourceType(midasResourceType::NONE);
   this->Log->Status("");
+  this->CurrentBitstreams = 0;
+  this->TotalBitstreams = 0;
+  this->Progress->SetMessage("");
 }
 
 //-------------------------------------------------------------------
@@ -1473,4 +1490,54 @@ std::string midasSynchronizer::ResolveAddPath()
     }
 
   return path;
+}
+
+void midasSynchronizer::CountBitstreams()
+{
+  if(this->Operation == midasSynchronizer::OPERATION_PULL
+     && this->Recursive)
+    {
+    if(this->ResourceType == midasResourceType::BITSTREAM)
+      {
+      this->TotalBitstreams = 1;
+      return;
+      }
+    std::string count;
+    mws::RestXMLParser parser;
+    parser.AddTag("/rsp/count", count);
+
+    mws::WebAPI::Instance()->SetPostData("");
+    mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+
+    std::stringstream fields;
+    fields << "midas.bitstream.count?id=" << this->ServerHandle
+      << "&type=" << this->ResourceType;
+
+    this->Progress->SetIndeterminate();
+    this->Log->Status("Counting total bitstreams under the object...");
+    mws::WebAPI::Instance()->Execute(fields.str().c_str());
+    this->Progress->ResetProgress();
+    this->Log->Status("");
+
+    this->TotalBitstreams = atoi(count.c_str());
+    this->Progress->SetMaxOverall(this->TotalBitstreams);
+    this->Progress->UpdateOverallProgress(0);
+    }
+  else if(this->Operation == midasSynchronizer::OPERATION_PUSH)
+    {
+    int count = 0;
+    std::vector<midasStatus> status = this->DatabaseProxy->GetStatusEntries();
+
+    for(std::vector<midasStatus>::iterator i = status.begin();
+        i != status.end(); ++i)
+      {
+      if(i->GetType() == midasResourceType::BITSTREAM)
+        {
+        count++;
+        }
+      }
+    this->TotalBitstreams = count;
+    this->Progress->SetMaxOverall(count);
+    this->Progress->UpdateOverallProgress(0);
+    }
 }

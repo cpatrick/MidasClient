@@ -459,7 +459,7 @@
              <item>
               <widget class="QLabel" name="overallProgressLabel">
                <property name="text">
-                <string>File:</string>
+                <string>Overall Progress:</string>
                </property>
               </widget>
              </item>
@@ -478,12 +478,15 @@
                <property name="text">
                 <string>Current File:</string>
                </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item>
               <widget class="QLabel" name="currentProgressLabel">
                <property name="text">
-                <string>Downloaded:</string>
+                <string>Progress:</string>
                </property>
               </widget>
              </item>
@@ -949,6 +952,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

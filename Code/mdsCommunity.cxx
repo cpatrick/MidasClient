@@ -406,8 +406,11 @@ bool Community::Delete(bool deleteOnDisk)
     }
   m_Database->GetDatabase()->ExecuteQuery("COMMIT");
   m_Database->GetDatabase()->Close();
-  return deleteOnDisk ?
-    kwsys::SystemTools::RemoveADirectory(this->m_Path.c_str()) : true;
+  if(deleteOnDisk)
+    {
+    kwsys::SystemTools::RemoveADirectory(this->m_Path.c_str());
+    }
+  return true;
 }
 
 void Community::SetObject(mdo::Object* object)
