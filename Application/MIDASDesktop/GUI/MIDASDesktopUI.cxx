@@ -1301,7 +1301,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     m_PollFilesystemThread->setPriority(QThread::LowestPriority);
 
     connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()));
-    //m_PollFilesystemThread->start();
+    m_PollFilesystemThread->start();
     }
   else
     {
