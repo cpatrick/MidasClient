@@ -329,6 +329,16 @@ bool Item::Delete(bool deleteOnDisk)
     }
 
   query.str(std::string());
+  query << "DELETE FROM collection2item WHERE item_id='" <<
+    m_Item->GetId() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  query.str(std::string());
   query << "DELETE FROM dirty_resource WHERE uuid='" <<
     m_Item->GetUuid() << "'";
   if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))

@@ -356,6 +356,7 @@ bool Community::Delete(bool deleteOnDisk)
   m_Database->GetDatabase()->ExecuteQuery("BEGIN");
   query.str(std::string());
   query << "DELETE FROM community2community WHERE parent_comm_id='" <<
+    m_Community->GetId() << "' OR child_comm_id='" <<
     m_Community->GetId() << "'";
   if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
     {

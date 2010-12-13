@@ -106,6 +106,16 @@ bool Bitstream::Delete(bool deleteOnDisk)
     }
 
   query.str(std::string());
+  query << "DELETE FROM item2bitstream WHERE bitstream_id='" <<
+    m_Bitstream->GetId() << "'";
+  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+    {
+    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
+    m_Database->GetDatabase()->Close();
+    return false;
+    }
+
+  query.str(std::string());
   query << "DELETE FROM dirty_resource WHERE uuid='" <<
     m_Bitstream->GetUuid() << "'";
   if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
