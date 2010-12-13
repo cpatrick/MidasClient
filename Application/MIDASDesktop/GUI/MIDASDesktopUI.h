@@ -7,6 +7,9 @@
 #include <QSystemTrayIcon>
 #include <QCloseEvent>
 #include <QTimer>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QtConcurrentRun>
 
 #include "ui_MIDASDesktopUI.h"
 #include "midasLogAware.h"
@@ -108,6 +111,7 @@ public slots:
                      std::string apiName, std::string apiKey,
                      std::string rootDir);
   void chooseLocalDatabase();
+  void createLocalDatabase();
   void setLocalDatabase(std::string file);
   void deleteLocalResource(bool deleteFiles);
   void deleteServerResource(bool val);
@@ -189,6 +193,7 @@ public slots:
   void clearLogTabIcon(int index);
   // ------------- log ----------------
 
+  void newDBFinished();
 private:
   
   void infoPanel(MidasCommunityTreeItem* node, bool editable);
@@ -248,6 +253,7 @@ private:
   SearchThread*               m_SearchThread;
   ReadDatabaseThread*         m_ReadDatabaseThread;
   PollFilesystemThread*       m_PollFilesystemThread;
+  QFutureWatcher<bool>        m_CreateDBWatcher;
   // ----------- threads -----------------
 };
 

@@ -240,6 +240,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( dlg_deleteServerResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteServerResource(bool) ) );
 
   connect( actionChoose_Local_Database, SIGNAL( triggered() ), this, SLOT( chooseLocalDatabase() ) );
+  connect( actionNew_Local_Database, SIGNAL( triggered() ), this, SLOT( createLocalDatabase() ) );
 
   connect( actionSign_In,      SIGNAL( triggered() ), this, SLOT( signInOrOut() ) );
   connect( actionQuit,         SIGNAL( triggered() ), qApp, SLOT( quit() ) );
@@ -279,6 +280,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   m_SearchThread = NULL;
   m_ReadDatabaseThread = NULL;
   m_PollFilesystemThread = NULL;
+  connect(&m_CreateDBWatcher, SIGNAL(finished()), this, SLOT(newDBFinished()));
   // ------------- thread init -----------------
 
   // ------------- setup client members and logging ----
@@ -1229,6 +1231,32 @@ void MIDASDesktopUI::chooseLocalDatabase()
   setLocalDatabase(file.toStdString());
 }
 
+void MIDASDesktopUI::createLocalDatabase()
+{
+  std::string file = QFileDialog::getSaveFileName(this,
+    tr("New Database File"),
+    QDir::current().absolutePath(),
+    tr("Database Files (*.db)"), 0,
+    QFileDialog::ShowDirsOnly).toStdString();
+
+  if(kwsys::SystemTools::FileExists(file.c_str()))
+    {
+    std::stringstream text;
+    text << "Error: " << file << " already exists.  Choose a new file name.";
+    this->Log->Error(text.str());
+    return;
+    }
+
+  if(file != "")
+    {
+    this->Log->Message("Creating new local database at " + file);
+    this->actionNew_Local_Database->setEnabled(false);
+    this->setProgressIndeterminate();
+    QFuture<bool> future = QtConcurrent::run(midasUtils::CreateNewDatabase, file);
+    m_CreateDBWatcher.setFuture(future);
+    }
+}
+
 void MIDASDesktopUI::setLocalDatabase(std::string file)
 {
   if(file == "" || !midasUtils::IsDatabaseValid(file))
@@ -1257,10 +1285,11 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     settings.setValue("lastDatabase", file.c_str());
     settings.sync();
     this->displayStatus(tr("Opened database successfully."));
+    this->Log->Message("Opened database " + file);
     this->treeViewClient->SetDatabaseProxy(m_database);
     this->activateActions(true, MIDASDesktopUI::ACTION_LOCAL_DATABASE);
-    this->updateClientTreeView();
     this->treeViewClient->collapseAll();
+    this->updateClientTreeView();
     setTimerInterval();
     adjustTimerSettings();
 
@@ -1272,12 +1301,12 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     m_PollFilesystemThread->setPriority(QThread::LowestPriority);
 
     connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()));
-    m_PollFilesystemThread->start();
+    //m_PollFilesystemThread->start();
     }
   else
     {
     std::stringstream text;
-    text << "The path " << file << " does not refer to a valid MidasDesktop "
+    text << "The path " << file << " does not refer to a valid MIDASDesktop "
       "database.";
     GetLog()->Error(text.str());
     }
@@ -1632,5 +1661,19 @@ void MIDASDesktopUI::resourceEdited(QTableWidgetItem* row)
 
     editor.Save(row);
     disconnect(&editor);
+    }
+}
+
+void MIDASDesktopUI::newDBFinished()
+{
+  this->actionNew_Local_Database->setEnabled(true);
+  this->setProgressEmpty();
+  if(m_CreateDBWatcher.result())
+    {
+    this->Log->Message("New local database created successfully.");
+    }
+  else
+    {
+    this->Log->Error("Failed to create new local database.");
     }
 }

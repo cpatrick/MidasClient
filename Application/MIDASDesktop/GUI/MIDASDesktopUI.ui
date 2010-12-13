@@ -589,6 +589,7 @@
     <property name="title">
      <string>Settings</string>
     </property>
+    <addaction name="actionNew_Local_Database"/>
     <addaction name="actionChoose_Local_Database"/>
     <addaction name="actionCreate_Profile"/>
     <addaction name="actionPreferences"/>
@@ -909,6 +910,18 @@
     <string>Delete Resource</string>
    </property>
   </action>
+  <action name="actionNew_Local_Database">
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/document_add.png</normaloff>:/icons/document_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>New Local Database...</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a new empty SQLite database file</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -936,6 +949,9 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
