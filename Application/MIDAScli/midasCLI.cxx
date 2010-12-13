@@ -636,8 +636,21 @@ int midasCLI::PerformDelete(std::vector<std::string> args)
     return -2;
     }
 
-  return this->Synchronizer->GetDatabase()->
-    DeleteResource(uuid, deleteOnDisk) ? 0 : -3;
+  if(this->Synchronizer->GetDatabase()->
+     DeleteResource(uuid, deleteOnDisk))
+    {
+    std::stringstream text;
+    text << "Deleted resource at " << path << std::endl;
+    this->Log->Message(text.str());
+    return 0;
+    }
+  else
+    {
+    std::stringstream text;
+    text << "Error: failed to delete resource at " << path << std::endl;
+    this->Log->Error(text.str());
+    return -3;
+    }
 }
 
 int midasCLI::PerformSetMetadata(std::vector<std::string> args)
