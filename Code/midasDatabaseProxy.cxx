@@ -690,73 +690,185 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
 }
 
 //--------------------------------------------------------------------------
-void midasDatabaseProxy::UnifyTree()
+bool midasDatabaseProxy::UnifyTree()
 {
+  std::string rootDir = this->GetSetting(midasDatabaseProxy::ROOT_DIR);
+  kwsys::SystemTools::ConvertToUnixSlashes(rootDir);
+  rootDir = midasUtils::TrimTrailingSlash(rootDir);
+  this->Log->Message("Copying all resources under " + rootDir);
   std::vector<mdo::Community*> topLevel = this->GetTopLevelCommunities(true);
 
+  bool ok = true;
   for(std::vector<mdo::Community*>::iterator i = topLevel.begin();
       i != topLevel.end(); ++i)
     {
-    this->MergeOnDisk(*i);
+    ok &= this->Relocate(*i, rootDir);
     }
+  return ok;
 }
 
 //--------------------------------------------------------------------------
-void midasDatabaseProxy::MergeOnDisk(mdo::Community* comm)
+bool midasDatabaseProxy::Relocate(mdo::Community* comm, std::string parentDir)
 {
-  std::vector<mdo::Community*>::const_iterator i =
-    comm->GetCommunities().begin();
-  for(; i != comm->GetCommunities().end(); ++i)
+  std::string copyTo = parentDir + "/" +
+    midasUtils::EscapeName(comm->GetName());
+  
+  std::stringstream text;
+  text << "Relocating community to " << copyTo << std::endl;
+  this->Log->Status(text.str());
+  if(!kwsys::SystemTools::FileIsDirectory(copyTo.c_str())
+     && !kwsys::SystemTools::MakeDirectory(copyTo.c_str()))
     {
-    //TODO copy community directory under parent
-    MergeOnDisk(*i);
+    std::stringstream error;
+    error << "Error: unable to create community directory at "
+      << copyTo << std::endl;
+    this->Log->Error(error.str());
+    return false;
     }
 
-  std::vector<mdo::Collection*>::const_iterator j =
-    comm->GetCollections().begin();
-  for(; j != comm->GetCollections().end(); ++j)
+  std::stringstream query;
+  query << "UPDATE resource_uuid SET path='" << copyTo <<
+    "' WHERE uuid='" << comm->GetUuid() << "'";
+  this->Database->Open(this->DatabasePath.c_str());
+  this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
+
+  bool ok = true;
+  for(std::vector<mdo::Community*>::const_iterator i =
+      comm->GetCommunities().begin(); i != comm->GetCommunities().end(); ++i)
     {
-    //TODO copy collection directory under parent
-    MergeOnDisk(*j);
+    ok &= this->Relocate(*i, copyTo);
     }
+  for(std::vector<mdo::Collection*>::const_iterator i =
+      comm->GetCollections().begin(); i != comm->GetCollections().end(); ++i)
+    {
+    ok &= this->Relocate(*i, copyTo);
+    }
+  return ok;
 }
 
 //--------------------------------------------------------------------------
-void midasDatabaseProxy::MergeOnDisk(mdo::Collection* coll)
+bool midasDatabaseProxy::Relocate(mdo::Collection* coll, std::string parentDir)
 {
-  std::vector<mdo::Item*>::const_iterator i =
-    coll->GetItems().begin();
-  for(; i != coll->GetItems().end(); ++i)
+  std::string copyTo = parentDir + "/" +
+    midasUtils::EscapeName(coll->GetName());
+  
+  std::stringstream text;
+  text << "Relocating collection to " << copyTo << std::endl;
+  this->Log->Status(text.str());
+  if(!kwsys::SystemTools::FileIsDirectory(copyTo.c_str())
+     && !kwsys::SystemTools::MakeDirectory(copyTo.c_str()))
     {
-    MergeOnDisk(*i);
+    std::stringstream error;
+    error << "Error: unable to create collection directory at "
+      << copyTo << std::endl;
+    this->Log->Error(error.str());
+    return false;
     }
+
+  std::stringstream query;
+  query << "UPDATE resource_uuid SET path='" << copyTo <<
+    "' WHERE uuid='" << coll->GetUuid() << "'";
+  this->Database->Open(this->DatabasePath.c_str());
+  this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
+
+  bool ok = true;
+  for(std::vector<mdo::Item*>::const_iterator i = coll->GetItems().begin();
+      i != coll->GetItems().end(); ++i)
+    {
+    ok &= this->Relocate(*i, copyTo);
+    }
+  return ok;
 }
 
 //--------------------------------------------------------------------------
-void midasDatabaseProxy::MergeOnDisk(mdo::Item* item)
+bool midasDatabaseProxy::Relocate(mdo::Item* item, std::string parentDir)
 {
-  std::string itemPath = this->GetRecordByUuid(item->GetUuid()).Path;
-  kwsys::SystemTools::ConvertToUnixSlashes(itemPath);
+  std::string copyTo = parentDir + "/" +
+    midasUtils::EscapeName(item->GetName());
+  
+  std::stringstream text;
+  text << "Relocating item to " << copyTo << std::endl;
+  this->Log->Status(text.str());
+  if(!kwsys::SystemTools::FileIsDirectory(copyTo.c_str())
+     && !kwsys::SystemTools::MakeDirectory(copyTo.c_str()))
+    {
+    std::stringstream error;
+    error << "Error: unable to create item directory at " << copyTo
+      << std::endl;
+    this->Log->Error(error.str());
+    return false;
+    }
 
+  std::stringstream query;
+  query << "UPDATE resource_uuid SET path='" << copyTo <<
+    "' WHERE uuid='" << item->GetUuid() << "'";
+  this->Database->Open(this->DatabasePath.c_str());
+  this->Database->ExecuteQuery(query.str().c_str());
+  this->Database->Close();
+
+  bool ok = true;
   for(std::vector<mdo::Bitstream*>::const_iterator i =
       item->GetBitstreams().begin(); i != item->GetBitstreams().end(); ++i)
     {
-    std::string path = this->GetRecordByUuid((*i)->GetUuid()).Path;
-    std::string copyTo = itemPath + "/" + midasUtils::EscapeName(
-      (*i)->GetName());
-    kwsys::SystemTools::CopyAFile(path.c_str(),
-      copyTo.c_str());
-
-    if(!kwsys::SystemTools::ComparePath(path.c_str(), copyTo.c_str()))
-      {
-      std::stringstream query;
-      query << "UPDATE resource_uuid SET path='" << copyTo <<
-        "' WHERE uuid='" << (*i)->GetUuid() << "'";
-      this->Database->Open(this->DatabasePath.c_str());
-      this->Database->ExecuteQuery(query.str().c_str());
-      this->Database->Close();
-      }
+    ok &= this->Relocate(*i, copyTo);
     }
+  return ok;
+}
+
+//--------------------------------------------------------------------------
+bool midasDatabaseProxy::Relocate(mdo::Bitstream* bitstream,
+                                  std::string parentDir)
+{
+  std::string copyTo = parentDir + "/" +
+    midasUtils::EscapeName(bitstream->GetName());
+  std::string path = this->GetRecordByUuid(bitstream->GetUuid()).Path;
+  if(kwsys::SystemTools::ComparePath(path.c_str(), copyTo.c_str()))
+    {
+    return true; //if the new path is the same as old one, don't copy
+    }
+  
+  std::stringstream text;
+  text << "Relocating bitstream to " << copyTo << std::endl;
+  this->Log->Status(text.str());
+  if(!kwsys::SystemTools::CopyAFile(path.c_str(),
+    copyTo.c_str()))
+    {
+    std::stringstream error;
+    error << "Error: unable to copy bitstream to " << copyTo << std::endl;
+    this->Log->Error(error.str());
+    return false;
+    }
+  long lastModified = kwsys::SystemTools::ModifiedTime(copyTo.c_str());
+
+  this->Database->Open(this->DatabasePath.c_str());
+  this->Database->ExecuteQuery("BEGIN");
+
+  std::stringstream query;
+  query << "UPDATE resource_uuid SET path='" << copyTo <<
+    "' WHERE uuid='" << bitstream->GetUuid() << "'";
+  if(!this->Database->ExecuteQuery(query.str().c_str()))
+    {
+    this->Database->ExecuteQuery("ROLLBACK");
+    this->Database->Close();
+    return false;
+    }
+  
+  query.str(std::string());
+  query << "UPDATE bitstream SET internal_id='" << copyTo <<
+    "', last_modified='" << lastModified << "' WHERE bitstream_id='"
+    << bitstream->GetId() << "'";
+  if(!this->Database->ExecuteQuery(query.str().c_str()))
+    {
+    this->Database->ExecuteQuery("ROLLBACK");
+    this->Database->Close();
+    return false;
+    }
+  
+  this->Database->ExecuteQuery("COMMIT");
+  this->Database->Close();
+  return true;
 }
 
 //--------------------------------------------------------------------------

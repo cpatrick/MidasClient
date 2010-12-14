@@ -18,11 +18,38 @@ PreferencesUI::PreferencesUI(MIDASDesktopUI *parent):
     SLOT( enableActions(int) ) );
   connect(workingDirBrowseButton, SIGNAL(released()), this,
     SLOT( selectWorkingDir() ) );
+  connect(copyNowButton, SIGNAL(released()), this,
+    SLOT( unifyTree() ) );
 }
 
 PreferencesUI::~PreferencesUI()
 {
   delete m_UnifyTreeThread;
+}
+
+void PreferencesUI::unifyTree()
+{
+  this->accept();
+
+  if(m_UnifyTreeThread)
+    {
+    if(m_UnifyTreeThread->isRunning())
+      {
+      m_parent->GetLog()->Error("Tree copy thread is already running!");
+      return;
+      }
+    disconnect(m_UnifyTreeThread);
+    }
+  delete m_UnifyTreeThread;
+
+  m_UnifyTreeThread = new UnifyTreeThread(m_parent);
+    
+  connect(m_UnifyTreeThread, SIGNAL(threadComplete()), this, SLOT(unifyTreeDone()));
+
+  m_parent->displayStatus("Copying resources into a single tree...");
+  m_parent->setProgressIndeterminate();
+
+  m_UnifyTreeThread->start();
 }
 
 void PreferencesUI::reset()
@@ -104,24 +131,6 @@ void PreferencesUI::accept()
 
   emit intervalChanged();
   emit settingChanged();
-
-  if(copyResourcesCheckBox->isChecked() && !m_UnifiedTree)
-    {
-    if(m_UnifyTreeThread)
-      {
-      disconnect(m_UnifyTreeThread);
-      }
-    delete m_UnifyTreeThread;
-
-    m_UnifyTreeThread = new UnifyTreeThread(m_parent);
-    
-    connect(m_UnifyTreeThread, SIGNAL(threadComplete()), this, SLOT(unifyTreeDone()));
-
-    m_parent->displayStatus("Copying resources into a single tree...");
-    m_parent->setProgressIndeterminate();
-
-    m_UnifyTreeThread->start();
-    }
 
   QDialog::accept();
 }

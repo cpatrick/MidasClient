@@ -161,7 +161,7 @@ public:
    * If any resources are located outside the current root on disk,
    * this will copy them underneath it and update their stored path
    */
-  void UnifyTree();
+  bool UnifyTree();
 
   /**
    * Iterates over all the bitstreams known to the database
@@ -181,9 +181,10 @@ protected:
   int InsertCommunity(std::string name);
   int InsertItem(std::string name);
 
-  void MergeOnDisk(mdo::Community* comm);
-  void MergeOnDisk(mdo::Collection* coll);
-  void MergeOnDisk(mdo::Item* item);
+  bool Relocate(mdo::Community* comm, std::string parentDir);
+  bool Relocate(mdo::Collection* coll, std::string parentDir);
+  bool Relocate(mdo::Item* item, std::string parentDir);
+  bool Relocate(mdo::Bitstream* bitstream, std::string parentDir);
 
   std::string GetKeyName(MidasAppSetting setting);
 

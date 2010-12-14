@@ -213,6 +213,22 @@ void midasUtils::StringTrim(std::string& str)
 }
 
 //-------------------------------------------------------------------
+std::string midasUtils::TrimTrailingSlash(std::string str)
+{
+  if(kwsys::SystemTools::StringEndsWith(str.c_str(), "/")
+     && str.length() > 1)
+    {
+    str = str.substr(0, str.find_last_of("/"));
+    }
+  else if(kwsys::SystemTools::StringEndsWith(str.c_str(), "\\")
+          && str.length() > 1)
+    {
+    str = str.substr(0, str.find_last_of("\\"));
+    }
+  return str;
+}
+
+//-------------------------------------------------------------------
 std::string midasUtils::GetTypeName(int type)
 {
   switch(type)

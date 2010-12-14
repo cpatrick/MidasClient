@@ -147,6 +147,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   connectLabel  = new QLabel();
   cancelButton  = new QPushButton();
 
+  stateLabel->setWordWrap(true);
+
   progressBar->setTextVisible(false);
 
   connectLabel->setAlignment( Qt::AlignCenter );
@@ -1038,9 +1040,11 @@ void MIDASDesktopUI::addBitstream()
 
   if(files.size())
     {
+    m_PollFilesystemThread->Pause();
     addBitstreams(reinterpret_cast<MidasItemTreeItem*>(
       const_cast<MidasTreeItem*>(
       treeViewClient->getSelectedMidasTreeItem())), files);
+    m_PollFilesystemThread->Resume();
     }
 }
 
@@ -1050,6 +1054,7 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
   for(QStringList::const_iterator i = files.begin(); i != files.end(); ++i)
     {
     std::string path = i->toStdString();
+    kwsys::SystemTools::ConvertToUnixSlashes(path);
     std::string name = kwsys::SystemTools::GetFilenameName(path.c_str());
     std::string uuid = midasUtils::GenerateUUID();
     

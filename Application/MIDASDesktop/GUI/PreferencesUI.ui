@@ -150,11 +150,22 @@ p, li { white-space: pre-wrap; }
             </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="copyResourcesCheckBox">
-             <property name="text">
-              <string>Copy all resources into this tree</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QCheckBox" name="copyResourcesCheckBox">
+               <property name="text">
+                <string>Copy all resources into this tree</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="copyNowButton">
+               <property name="text">
+                <string>Copy Now</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QLabel" name="uiLabel">
@@ -268,8 +279,8 @@ p, li { white-space: pre-wrap; }
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>287</width>
-            <height>279</height>
+            <width>234</width>
+            <height>185</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
