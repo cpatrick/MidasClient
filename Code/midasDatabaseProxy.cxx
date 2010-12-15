@@ -829,6 +829,7 @@ bool midasDatabaseProxy::Relocate(mdo::Bitstream* bitstream,
     return true; //if the new path is the same as old one, don't copy
     }
   
+  bitstream->SetFetched(false);
   std::stringstream text;
   text << "Relocating bitstream to " << copyTo << std::endl;
   this->Log->Status(text.str());
