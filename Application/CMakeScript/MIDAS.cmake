@@ -71,7 +71,7 @@ function(midas_add_test testName)
   foreach(arg ${ARGN})
     if(arg MATCHES "MIDAS{[^}]*}")
       string(REGEX MATCH "MIDAS{([^}]*)}" toReplace "${arg}")
-      string(REGEX REPLACE "MIDAS{([^}]*)}" "\\1" keyFile "${arg}")
+      string(REGEX REPLACE "MIDAS{([^}]*)}" "\\1" keyFile "${toReplace}")
       # Split up the checksum extension from the real filename
       string(REGEX MATCH "\\.[^\\.]*$" hash_alg "${keyFile}")
       string(REGEX REPLACE "\\.[^\\.]*$" "" base_file "${keyFile}")
