@@ -70,6 +70,7 @@ function(midas_add_test testName)
   # Substitute the downloaded file argument(s)
   foreach(arg ${ARGN})
     if(arg MATCHES "MIDAS{[^}]*}")
+      string(REGEX MATCH "MIDAS{([^}]*)}" toReplace "${arg}")
       string(REGEX REPLACE "MIDAS{([^}]*)}" "\\1" keyFile "${arg}")
       # Split up the checksum extension from the real filename
       string(REGEX MATCH "\\.[^\\.]*$" hash_alg "${keyFile}")
@@ -125,10 +126,11 @@ endif(WIN32)
 ")
 
       list(APPEND downloadScripts "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/download_${checksum}.cmake")
-      list(APPEND testArgs "${MIDAS_DATA_DIR}/${base_file}")
-    else(arg MATCHES "^MIDAS{[^}]*}$")
+      string(REGEX REPLACE toReplace "${MIDAS_DATA_DIR}/${base_file}" newArg "${arg}")
+      list(APPEND testArgs ${newArg})
+    else(arg MATCHES "MIDAS{[^}]*}")
       list(APPEND testArgs ${arg})
-    endif(arg MATCHES "^MIDAS{[^}]*}$")
+    endif(arg MATCHES "MIDAS{[^}]*}")
   endforeach(arg)
 
   file(WRITE "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake"
