@@ -140,4 +140,5 @@ void PreferencesUI::unifyTreeDone()
   m_parent->displayStatus("Finished unifying resources on disk.");
   m_parent->GetLog()->Message("Finished unifying resources on disk.");
   m_parent->setProgressEmpty();
+  m_parent->updateClientTreeView();
 }

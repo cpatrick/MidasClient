@@ -1500,6 +1500,8 @@ void midasSynchronizer::CountBitstreams()
     if(this->ResourceType == midasResourceType::BITSTREAM)
       {
       this->TotalBitstreams = 1;
+      this->Progress->SetMaxOverall(this->TotalBitstreams);
+      this->Progress->UpdateOverallProgress(0);
       return;
       }
     std::string count;

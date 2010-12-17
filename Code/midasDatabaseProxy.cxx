@@ -710,8 +710,7 @@ bool midasDatabaseProxy::UnifyTree()
 //--------------------------------------------------------------------------
 bool midasDatabaseProxy::Relocate(mdo::Community* comm, std::string parentDir)
 {
-  std::string copyTo = parentDir + "/" +
-    midasUtils::EscapeName(comm->GetName());
+  std::string copyTo = parentDir + "/" + comm->GetName();
   
   std::stringstream text;
   text << "Relocating community to " << copyTo << std::endl;
@@ -750,8 +749,7 @@ bool midasDatabaseProxy::Relocate(mdo::Community* comm, std::string parentDir)
 //--------------------------------------------------------------------------
 bool midasDatabaseProxy::Relocate(mdo::Collection* coll, std::string parentDir)
 {
-  std::string copyTo = parentDir + "/" +
-    midasUtils::EscapeName(coll->GetName());
+  std::string copyTo = parentDir + "/" + coll->GetName();
   
   std::stringstream text;
   text << "Relocating collection to " << copyTo << std::endl;
@@ -785,8 +783,7 @@ bool midasDatabaseProxy::Relocate(mdo::Collection* coll, std::string parentDir)
 //--------------------------------------------------------------------------
 bool midasDatabaseProxy::Relocate(mdo::Item* item, std::string parentDir)
 {
-  std::string copyTo = parentDir + "/" +
-    midasUtils::EscapeName(item->GetName());
+  std::string copyTo = parentDir + "/" + item->GetName();
   
   std::stringstream text;
   text << "Relocating item to " << copyTo << std::endl;
@@ -821,8 +818,7 @@ bool midasDatabaseProxy::Relocate(mdo::Item* item, std::string parentDir)
 bool midasDatabaseProxy::Relocate(mdo::Bitstream* bitstream,
                                   std::string parentDir)
 {
-  std::string copyTo = parentDir + "/" +
-    midasUtils::EscapeName(bitstream->GetName());
+  std::string copyTo = parentDir + "/" + bitstream->GetName();
   std::string path = this->GetRecordByUuid(bitstream->GetUuid()).Path;
   if(kwsys::SystemTools::ComparePath(path.c_str(), copyTo.c_str()))
     {
