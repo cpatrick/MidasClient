@@ -1040,17 +1040,16 @@ void MIDASDesktopUI::addBitstream()
 
   if(files.size())
     {
-    m_PollFilesystemThread->Pause();
     addBitstreams(reinterpret_cast<MidasItemTreeItem*>(
       const_cast<MidasTreeItem*>(
       treeViewClient->getSelectedMidasTreeItem())), files);
-    m_PollFilesystemThread->Resume();
     }
 }
 
 void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
                                    const QStringList & files)
 {
+  m_PollFilesystemThread->Pause();
   for(QStringList::const_iterator i = files.begin(); i != files.end(); ++i)
     {
     std::string path = i->toStdString();
@@ -1094,6 +1093,7 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
       this->GetLog()->Message(text.str());
       }
     }
+  m_PollFilesystemThread->Resume();
   this->updateClientTreeView();
 }
 
