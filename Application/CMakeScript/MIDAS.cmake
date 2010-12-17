@@ -134,7 +134,7 @@ endif(WIN32)
 ")
 
       list(APPEND downloadScripts "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/download_${checksum}.cmake")
-      string(REGEX REPLACE toReplace "${MIDAS_DATA_DIR}/${base_file}" newArg "${arg}")
+      string(REGEX REPLACE ${toReplace} "${MIDAS_DATA_DIR}/${base_file}" newArg "${arg}")
       list(APPEND testArgs ${newArg})
     else(arg MATCHES "MIDAS{[^}]*}")
       list(APPEND testArgs ${arg})
