@@ -49,11 +49,11 @@
 function(midas_add_test)
   # Determine the test name.
   list(GET ARGN 0 firstArg)
-  if(firstArg EQUAL "NAME")
+  if(firstArg STREQUAL "NAME")
     list(GET ARGN 1 testName)
-  else(firstArg EQUAL "NAME")
+  else(firstArg STREQUAL "NAME")
     list(GET ARGN 0 testName)
-  endif(firstArg EQUAL "NAME")
+  endif(firstArg STREQUAL "NAME")
 
   if(NOT DEFINED MIDAS_REST_URL)
     message(FATAL_ERROR "You must set MIDAS_REST_URL to the URL of the MIDAS REST API.")
