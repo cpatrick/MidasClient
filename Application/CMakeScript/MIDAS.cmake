@@ -151,6 +151,6 @@ endif(WIN32)
   add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake")
   set_tests_properties(${testName}_fetchData PROPERTIES FAIL_REGULAR_EXPRESSION "(Error downloading)|(Error: Computed checksum)")
   # Finally, create the test
-  add_test(${testName} ${testArgs})
+  add_test(${testArgs})
   set_tests_properties(${testName} PROPERTIES DEPENDS ${testName}_fetchData)
 endfunction(midas_add_test)
