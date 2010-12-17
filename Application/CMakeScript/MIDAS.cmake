@@ -46,7 +46,15 @@
 # See the License for more information.
 #=============================================================================
 
-function(midas_add_test testName)
+function(midas_add_test)
+  # Determine the test name.
+  list(GET ARGN 0 firstArg)
+  if(firstArg EQUAL "NAME")
+    list(GET ARGN 1 testName)
+  else(firstArg EQUAL "NAME")
+    list(GET ARGN 0 testName)
+  endif(firstArg EQUAL "NAME")
+
   if(NOT DEFINED MIDAS_REST_URL)
     message(FATAL_ERROR "You must set MIDAS_REST_URL to the URL of the MIDAS REST API.")
   endif(NOT DEFINED MIDAS_REST_URL)
