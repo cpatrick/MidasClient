@@ -34,7 +34,7 @@
 #   if the file test.php had already existed on disk.
 #
 # NOTES:
-# * The MIDAS{} substitution method can also be passed a relative path
+# * The MIDAS*{} substitution methods can also be passed a relative path
 #   from the MIDAS_KEY_DIR to the key file, so that you can place key files
 #   in subdirectories under MIDAS_KEY_DIR. Ex: MIDAS{test1/input/foo.png.md5}
 #
