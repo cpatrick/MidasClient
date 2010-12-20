@@ -23,6 +23,9 @@
 #         MIDAS{foo.ext.md5}, the actual file foo.ext will be
 #         substituted for it at test time once the file is downloaded,
 #         assuming the keyfile foo.ext.md5 exists in MIDAS_KEY_DIR.
+#         If an arg is of the form MIDAS_FETCH_ONLY{foo.ext.md5},
+#         it will be downloaded prior to running the test, but it will
+#         not be passed as an argument to the test.
 #
 # EXAMPLE:
 #  midas_add_test(someTest php MIDAS{test.php.md5})
