@@ -104,6 +104,11 @@ function(midas_add_test)
       file(READ "${MIDAS_KEY_DIR}/${keyFile}" checksum)
 
       # Write the test script file for downloading
+      if(UNIX)
+        set(cmake_symlink create_symlink)
+      else()
+        set(cmake_symlink copy) # Windows has no symlinks; copy instead.
+      endif()
       file(WRITE "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/fetch_${checksum}_${base_filename}.cmake"
   "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg}\")
 if(NOT EXISTS \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
@@ -127,17 +132,11 @@ if(NOT EXISTS \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
   endif(NOT computedChecksum STREQUAL ${checksum})
 endif(NOT EXISTS \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
 
-# Add a symbolic link so we can use the human-readable filename in the command line
+# Create a human-readable file name for the data.
 file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${base_filepath}\")
-file(REMOVE \"${MIDAS_DATA_DIR}/${base_file}\")
-
-if(WIN32)
-  # windows does not support symlinks, so we must duplicate the file for now
-  configure_file(\"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" COPYONLY)
-  file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" \"${MIDAS_DATA_DIR}/${base_file}\")
-else(WIN32)
-  execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${base_file}\")
-endif(WIN32)
+file(REMOVE \"${MIDAS_DATA_DIR}/${testName}_${base_file}\")
+execute_process(COMMAND \"${CMAKE_COMMAND}\" -E ${cmake_symlink} \"MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" WORKING_DIRECTORY \"${MIDAS_DATA_DIR}\")
+file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" \"${MIDAS_DATA_DIR}/${base_file}\")
 ")
 
       list(APPEND downloadScripts "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/fetch_${checksum}_${base_filename}.cmake")
