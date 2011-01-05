@@ -1042,8 +1042,6 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
   delete bitstream;
 
   this->CurrentBitstreams++;
-  this->Progress->UpdateOverallProgress(this->CurrentBitstreams);
-  this->Progress->SetMessage(name);
 
   if(midasUtils::GetFileLength(record->Path.c_str()) == 0)
     {
@@ -1082,6 +1080,7 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
     {
     mws::WebAPI::Instance()->GetRestAPI()->SetProgressCallback(
       ProgressCallback, this->Progress);
+    this->Progress->UpdateOverallProgress(this->CurrentBitstreams);
     this->Progress->SetMessage(name);
     this->Progress->ResetProgress();
     }
