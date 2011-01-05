@@ -94,10 +94,9 @@ protected:
 
 public slots:
   void showNormal();
+  void cancel();
 
   void resourceEdited(QTableWidgetItem* item);
-
-  void cancel();
 
   // ------------- status bar -------------
   void displayStatus(const QString& message);
@@ -245,6 +244,7 @@ private:
 
   bool                        m_signIn;
   bool                        m_editMode;
+  bool                        m_cancel;
   midasDatabaseProxy*         m_database;
   midasAuthenticator*         m_auth;
   midasSynchronizer*          m_synch;

@@ -296,6 +296,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_synch->SetProgressReporter(m_progress);
   this->m_signIn = false;
   this->m_editMode = false;
+  this->m_cancel = false;
   // ------------- setup client members and logging ----
 
   // ------------- Progress bar ------------------------
@@ -631,6 +632,10 @@ void MIDASDesktopUI::cancel()
   if(dlg_pullUI->getSynchronizerThread())
     {
     dlg_pullUI->getSynchronizerThread()->Cancel();
+    }
+  if(m_dirtyUuids.size())
+    {
+    m_cancel = true;
     }
 }
 
@@ -1505,6 +1510,12 @@ void MIDASDesktopUI::storeLastPollTime()
 
 void MIDASDesktopUI::decorateServerTree()
 {
+  if(m_cancel)
+    {
+    m_cancel = false;
+    m_dirtyUuids.clear();
+    return;
+    }
   if(m_dirtyUuids.size())
     {
     enableActions(false);
