@@ -77,6 +77,7 @@ set(MIDASRest_SRCS
 )
 
 set(MIDASSynch_SRCS
+  midasAgreementHandler.h
   midasAuthenticator.cxx
   midasAuthenticator.h
   midasDatabaseProxy.cxx

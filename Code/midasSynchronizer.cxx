@@ -29,6 +29,7 @@
 #include "mwsRestXMLParser.h"
 #include "midasAuthenticator.h"
 #include "midasStatus.h"
+#include "midasAgreementHandler.h"
 
 #define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
 #define CHANGE_DIR kwsys::SystemTools::ChangeDirectory
@@ -116,6 +117,11 @@ void midasSynchronizer::SetLog(midasLog* log)
 midasDatabaseProxy* midasSynchronizer::GetDatabase()
 {
   return this->DatabaseProxy;
+}
+
+void midasSynchronizer::SetAgreementHandler(midasAgreementHandler* handler)
+{
+  this->AgreementHandler = handler;
 }
 
 void midasSynchronizer::SetProgressReporter(midasProgressReporter* progress)
@@ -531,7 +537,14 @@ bool midasSynchronizer::PullBitstream(int parentId)
 
   if(bitstream->HasAgreement() && this->AgreementHandler)
     {
-    // Invoke agreement handler here.
+    if(!this->AgreementHandler->HandleAgreement(this))
+      {
+      std::stringstream text;
+      text << "You have not agreed to the license. Canceling pull."
+        << std::endl;
+      this->Log->Error(text.str());
+      return false;
+      }
     }
 
   // Pull any parents we need
@@ -651,7 +664,14 @@ bool midasSynchronizer::PullCollection(int parentId)
 
   if(collection->HasAgreement() && this->AgreementHandler)
     {
-    // Invoke agreement handler here.
+    if(!this->AgreementHandler->HandleAgreement(this))
+      {
+      std::stringstream text;
+      text << "You have not agreed to the license. Canceling pull."
+        << std::endl;
+      this->Log->Error(text.str());
+      return false;
+      }
     }
 
   std::stringstream status;
@@ -778,7 +798,14 @@ bool midasSynchronizer::PullCommunity(int parentId)
 
   if(community->HasAgreement() && this->AgreementHandler)
     {
-    // Invoke agreement handler here.
+    if(!this->AgreementHandler->HandleAgreement(this))
+      {
+      std::stringstream text;
+      text << "You have not agreed to the license. Canceling pull."
+        << std::endl;
+      this->Log->Error(text.str());
+      return false;
+      }
     }
 
   // Pull any parents we need
@@ -886,7 +913,14 @@ bool midasSynchronizer::PullItem(int parentId)
 
   if(item->HasAgreement() && this->AgreementHandler)
     {
-    // Invoke agreement handler here.
+    if(!this->AgreementHandler->HandleAgreement(this))
+      {
+      std::stringstream text;
+      text << "You have not agreed to the license. Canceling pull."
+        << std::endl;
+      this->Log->Error(text.str());
+      return false;
+      }
     }
 
   std::stringstream status;

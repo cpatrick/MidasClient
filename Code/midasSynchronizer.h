@@ -84,6 +84,8 @@ public:
   midasProgressReporter* GetProgressReporter();
   void DeleteProgressReporter();
 
+  void SetAgreementHandler(midasAgreementHandler* handler);
+
   void SetClientHandle(std::string handle);
   std::string GetClientHandle();
 
