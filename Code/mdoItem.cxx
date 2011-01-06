@@ -43,22 +43,10 @@ void Item::Clear()
   this->m_Description = "";
   this->m_Uuid = "";
   this->m_Parent = "";
+  this->m_HasAgreement = "0";
   this->m_Keywords.clear();
   this->m_Authors.clear();
   this->m_Bitstreams.clear();
-}
-
-/** Upload a bitstream to MIDAS */
-unsigned int Item::UploadBitstream(unsigned int itemid,const char* filename)
-{
-  return 1;
-}
-  
-/** Download a bitstream from MIDAS.
- *  For now we cache to any of the interfaces that are acting as a cache */
-std::string Item::DownloadBitstream(const char* uuid,const char* filename)
-{
-  return m_Proxy->DownloadBitstream(uuid,filename);
 }
 
 std::string Item::GetAuthorsString()

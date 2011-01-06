@@ -142,6 +142,7 @@ bool Item::Fetch()
   parser.AddTag("/rsp/uuid",m_Item->GetUuid());
   parser.AddTag("/rsp/parent",m_Item->GetParent());
   parser.AddTag("/rsp/description",m_Item->GetDescription());
+  parser.AddTag("/rsp/hasAgreement",m_Item->RefAgreement());
   
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
   

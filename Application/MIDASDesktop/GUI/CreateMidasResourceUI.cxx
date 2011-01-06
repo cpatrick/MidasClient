@@ -7,12 +7,17 @@
 #include "MIDASDesktopUI.h"
 #include "mwsSettings.h"
 #include "midasSynchronizer.h"
+#include "midasDatabaseProxy.h"
+#include "midasAuthenticator.h"
 
 #include "MidasTreeItem.h"
 #include "MidasTreeModel.h"
 #include "MidasTreeModelClient.h"
 #include "MidasCommunityTreeItem.h"
 #include "MidasCollectionTreeItem.h"
+
+#include "mdoCommunity.h"
+#include "mdoCollection.h"
 
 #include "midasStandardIncludes.h"
 

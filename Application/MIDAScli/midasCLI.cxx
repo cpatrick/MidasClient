@@ -22,6 +22,12 @@
 #include "mdsCollection.h"
 #include "mdsItem.h"
 #include "mdsBitstream.h"
+#include "mwsWebAPI.h"
+#include "midasAuthenticator.h"
+#include "mdoCommunity.h"
+#include "mdoCollection.h"
+#include "mdoItem.h"
+#include "mdoBitstream.h"
 
 
 midasCLI::midasCLI()

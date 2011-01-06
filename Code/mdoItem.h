@@ -53,13 +53,6 @@ public:
   // Set/Get the abstract of the item
   void SetAbstract(const char* abstract) { m_Abstract = abstract; }
   std::string & GetAbstract() {return m_Abstract;}
-
-  // Upload a bitstream to MIDAS
-  unsigned int UploadBitstream(unsigned int itemid,const char* filename);
-  
-  // Download a bitstream from MIDAS
-  // If the bitstream can be access locally then a new filename is returned
-  std::string DownloadBitstream(const char* uuid,const char* filename);
   
   void SetAuthors(std::vector<std::string> authors) { m_Authors = authors; }
   void AddAuthor(std::string author) { m_Authors.push_back(author); }

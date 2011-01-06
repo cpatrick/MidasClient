@@ -27,6 +27,8 @@
 #include "midasDatabaseProxy.h"
 #include "midasStdOutLog.h"
 #include "mwsRestXMLParser.h"
+#include "midasAuthenticator.h"
+#include "midasStatus.h"
 
 #define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
 #define CHANGE_DIR kwsys::SystemTools::ChangeDirectory
@@ -49,6 +51,7 @@ midasSynchronizer::midasSynchronizer()
   this->Log = new midasStdOutLog();
   this->Database = "";
   this->DatabaseProxy = NULL;
+  this->AgreementHandler = NULL;
   this->CurrentBitstreams = 0;
   this->TotalBitstreams = 0;
   this->Authenticator = new midasAuthenticator;
@@ -526,6 +529,11 @@ bool midasSynchronizer::PullBitstream(int parentId)
     return false;
     }
 
+  if(bitstream->HasAgreement() && this->AgreementHandler)
+    {
+    // Invoke agreement handler here.
+    }
+
   // Pull any parents we need
   if(parentId == NO_PARENT)
     {
@@ -554,19 +562,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
   midasResourceRecord record =
     this->DatabaseProxy->GetRecordByUuid(bitstream->GetUuid());
 
-  this->Progress->SetMessage(bitstream->GetName());
-
   this->CurrentBitstreams++;
-  this->Progress->UpdateOverallProgress(this->CurrentBitstreams);
-  this->Progress->UpdateProgress(0, 0);
-
-  //TODO check md5 sum of file at location against server's checksum?
-  if(record.Path != "" &&
-     kwsys::SystemTools::FileExists(record.Path.c_str(), true))
-    {
-    //we already have this bitstream, no need to download again
-    return true;
-    }
 
   std::stringstream fields;
   fields << "midas.bitstream.download?id=" << this->GetServerHandle();
@@ -576,7 +572,16 @@ bool midasSynchronizer::PullBitstream(int parentId)
     mws::WebAPI::Instance()->GetRestAPI()->SetProgressCallback(
       ProgressCallback, this->Progress);
     this->Progress->SetMessage(bitstream->GetName());
+    this->Progress->UpdateOverallProgress(this->CurrentBitstreams);
+    this->Progress->UpdateProgress(0, 0);
     this->Progress->ResetProgress();
+    }
+
+  if(record.Path != "" &&
+     kwsys::SystemTools::FileExists(record.Path.c_str(), true))
+    {
+    //we already have this bitstream, no need to download again
+    return true;
     }
   std::stringstream status;
   status << "Downloading bitstream " << bitstream->GetName();
@@ -642,6 +647,11 @@ bool midasSynchronizer::PullCollection(int parentId)
       << std::endl;
     Log->Error(text.str());
     return false;
+    }
+
+  if(collection->HasAgreement() && this->AgreementHandler)
+    {
+    // Invoke agreement handler here.
     }
 
   std::stringstream status;
@@ -766,6 +776,11 @@ bool midasSynchronizer::PullCommunity(int parentId)
   remote.SetObject(community);
   remote.Fetch();
 
+  if(community->HasAgreement() && this->AgreementHandler)
+    {
+    // Invoke agreement handler here.
+    }
+
   // Pull any parents we need
   if(parentId == NO_PARENT && community->GetParentId())
     {
@@ -867,6 +882,11 @@ bool midasSynchronizer::PullItem(int parentId)
       << std::endl;
     Log->Error(text.str());
     return false;
+    }
+
+  if(item->HasAgreement() && this->AgreementHandler)
+    {
+    // Invoke agreement handler here.
     }
 
   std::stringstream status;

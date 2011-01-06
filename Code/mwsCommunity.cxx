@@ -222,6 +222,7 @@ bool Community::Fetch()
   parser.AddTag("/rsp/introductory",m_Community->GetIntroductoryText());
   parser.AddTag("/rsp/uuid",m_Community->GetUuid());
   parser.AddTag("/rsp/parent",m_Community->GetParent());
+  parser.AddTag("/rsp/hasAgreement",m_Community->RefAgreement());
   
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
   

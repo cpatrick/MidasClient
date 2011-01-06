@@ -31,6 +31,7 @@ public:
     m_Proxy = new Proxy();
     m_Proxy->SetObject(this);
     m_Dirty = false;
+    m_HasAgreement = "0";
     }
     
   virtual ~Object()
@@ -54,6 +55,9 @@ public:
   virtual std::string & GetName() = 0;
   virtual std::string GetTypeName() = 0;
 
+  virtual std::string & RefAgreement() { return m_HasAgreement; }
+  virtual bool HasAgreement() { return m_HasAgreement == "1"; }
+
   virtual bool SetValue(std::string key,
                         std::string value,
                         bool append = false)
@@ -65,6 +69,7 @@ protected:
 
   Proxy* m_Proxy;
   bool m_Dirty;
+  std::string m_HasAgreement;
   std::string m_Uuid;
   int m_Id;
 };

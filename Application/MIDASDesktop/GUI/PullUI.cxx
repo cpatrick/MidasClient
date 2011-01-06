@@ -114,6 +114,7 @@ void PullUI::accept()
   synchronizer->SetProgressReporter(m_Parent->getProgress());
   synchronizer->SetServerURL(m_Parent->getSynchronizer()->GetServerURL());
   m_SynchronizerThread->SetSynchronizer(synchronizer);
+  m_SynchronizerThread->SetDelete(true);
 
   if(cloneRadioButton->isChecked())
     {

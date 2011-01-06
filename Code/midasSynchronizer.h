@@ -13,13 +13,19 @@
 #define MIDASSYNCHRONIZER_H
 
 #include "midasStandardIncludes.h"
-#include "midasProgressReporter.h"
-#include "midasDatabaseProxy.h"
-#include "midasAuthenticator.h"
-#include "midasStatus.h"
 #include "midasLogAware.h"
-#include "mwsWebAPI.h"
-#include "mdoCommunity.h"
+
+struct midasResourceRecord;
+class midasStatus;
+class midasProgressReporter;
+class midasDatabaseProxy;
+class midasAuthenticator;
+class midasAgreementHandler;
+
+namespace mdo
+{
+  class Community;
+}
 
 //The following define error codes returned by midas functions
 #define MIDAS_OK                    0
@@ -151,6 +157,7 @@ protected:
   std::string Database;
   midasDatabaseProxy* DatabaseProxy;
   midasAuthenticator* Authenticator;
+  midasAgreementHandler* AgreementHandler;
 };
 
 #endif
