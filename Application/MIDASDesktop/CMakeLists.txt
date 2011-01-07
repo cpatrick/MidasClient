@@ -30,20 +30,20 @@ set(MIDASDesktopUI_SRCS
   GUI/CreateProfileUI.h
   GUI/DeleteResourceUI.h
   GUI/DeleteResourceUI.cxx
-  GUI/UploadAgreementUI.cxx
-  GUI/UploadAgreementUI.h
   GUI/AboutUI.cxx
   GUI/AboutUI.h
   GUI/PreferencesUI.h
   GUI/PreferencesUI.cxx
   GUI/PullUI.cxx
   GUI/PullUI.h
+  GUI/GUIAgreement.cxx
+  GUI/GUIAgreement.h
   GUI/GUILogger.cxx
   GUI/GUILogger.h
   GUI/GUIProgress.cxx
   GUI/GUIProgress.h
-  GUI/MidasTreeView.h
   GUI/MidasTreeView.cxx
+  GUI/MidasTreeView.h
   GUI/MidasTreeViewServer.cxx
   GUI/MidasTreeViewServer.h
   GUI/MidasTreeViewClient.cxx
@@ -95,6 +95,8 @@ set(MIDASDesktopUI_SRCS
   GUI/AddAuthorUI.cxx
   GUI/AddKeywordUI.h
   GUI/AddKeywordUI.cxx
+  GUI/AgreementUI.h
+  GUI/AgreementUI.cxx
 )
 
 set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MIDASDesktop.rc)
@@ -104,7 +106,6 @@ set(MIDASDesktopUI_UI_SRCS
   GUI/CreateMidasResourceUI.ui
   GUI/CreateProfileUI.ui
   GUI/DeleteResourceUI.ui
-  GUI/UploadAgreementUI.ui
   GUI/SignInUI.ui
   GUI/AboutUI.ui
   GUI/ProcessingStatusUI.ui
@@ -112,6 +113,7 @@ set(MIDASDesktopUI_UI_SRCS
   GUI/PreferencesUI.ui
   GUI/AddAuthorUI.ui
   GUI/AddKeywordUI.ui
+  GUI/AgreementUI.ui
 )
 
 set(MIDASDesktopUI_RCCS MIDASDesktopIcons.qrc)
@@ -122,7 +124,6 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/CreateProfileUI.h
   GUI/DeleteResourceUI.h
   GUI/PullUI.h
-  GUI/UploadAgreementUI.h 
   GUI/SignInUI.h
   GUI/SignInThread.h
   GUI/SearchThread.h
@@ -149,6 +150,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/ExpandTreeThread.h
   GUI/SynchronizerThread.h
   GUI/UnifyTreeThread.h
+  GUI/GUIAgreement.h
   GUI/GUIProgress.h
   GUI/GUILogger.h
   GUI/ResourceEdit.h
@@ -157,6 +159,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/ButtonEditUI.h
   GUI/AddAuthorUI.h
   GUI/AddKeywordUI.h
+  GUI/AgreementUI.h
 )
 
 QT4_WRAP_CPP(MIDASDesktopUI_SRCS ${MIDASDesktopUI_MOC_SRCS})

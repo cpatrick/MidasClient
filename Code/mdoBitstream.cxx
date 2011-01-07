@@ -37,7 +37,7 @@ void Bitstream::Clear()
   this->m_Size = "";
   this->m_Name = "";
   this->m_Parent = "";
-  this->m_HasAgreement = "0";
+  this->m_HasAgreement = "";
 }
 
 } // end namespace

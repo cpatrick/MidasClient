@@ -14,7 +14,6 @@
 #include "ui_MIDASDesktopUI.h"
 #include "midasLogAware.h"
 
-class UploadAgreementUI;
 class CreateMidasResourceUI; 
 class SignInUI;
 class PullUI;
@@ -24,11 +23,13 @@ class AboutUI;
 class PreferencesUI;
 class AddAuthorUI;
 class AddKeywordUI;
+class AgreementUI;
 
 class midasSynchronizer;
 class midasAuthenticator;
 class midasDatabaseProxy;
 class midasProgressReporter;
+class midasAgreementHandler;
 class ButtonDelegate;
 
 class RefreshServerTreeThread;
@@ -87,6 +88,7 @@ public:
   midasSynchronizer* getSynchronizer() { return m_synch; }
   midasProgressReporter* getProgress() { return m_progress; }
   PollFilesystemThread* getPollFilesystemThread() { return m_PollFilesystemThread; }
+  midasAgreementHandler* getAgreementHandler() { return m_agreementHandler; }
   QTextEdit* getLogTextEdit() { return log; }
 
 protected:
@@ -112,6 +114,8 @@ public slots:
   void signInOrOut();
   void signIn(bool ok);
   void signOut();
+  void checkingUserAgreement();
+  void showUserAgreementDialog();
   void createProfile(std::string name, std::string email,
                      std::string apiName, std::string apiKey,
                      std::string rootDir);
@@ -210,7 +214,6 @@ private:
   CreateMidasResourceUI *     dlg_createMidasResourceUI;
   CreateProfileUI *           dlg_createProfileUI;
   SignInUI *                  dlg_signInUI;
-  UploadAgreementUI *         dlg_uploadAgreementUI;
   AboutUI *                   dlg_aboutUI;
   PreferencesUI *             dlg_preferencesUI;
   PullUI *                    dlg_pullUI;
@@ -218,6 +221,7 @@ private:
   DeleteResourceUI*           dlg_deleteServerResourceUI;
   AddAuthorUI*                dlg_addAuthorUI;
   AddKeywordUI*               dlg_addKeywordUI;
+  AgreementUI*                dlg_agreementUI;
   // ------------- UI Dialogs -------------
 
   // ------------- status bar -------------
@@ -250,6 +254,7 @@ private:
   midasSynchronizer*          m_synch;
   std::string                 m_url;
   midasProgressReporter*      m_progress;
+  midasAgreementHandler*      m_agreementHandler;
   std::vector<std::string>    m_dirtyUuids;
   std::vector<mdo::Object*>   m_SearchResults;
 

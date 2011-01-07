@@ -31,7 +31,7 @@ public:
     m_Proxy = new Proxy();
     m_Proxy->SetObject(this);
     m_Dirty = false;
-    m_HasAgreement = "0";
+    m_HasAgreement = "";
     }
     
   virtual ~Object()

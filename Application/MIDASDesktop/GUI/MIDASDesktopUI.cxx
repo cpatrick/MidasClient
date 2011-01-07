@@ -30,6 +30,7 @@
 #include "midasDatabaseProxy.h"
 #include "midasProgressReporter.h"
 
+#include "GUIAgreement.h"
 #include "GUILogger.h"
 #include "GUIProgress.h"
 #include "Utils.h"
@@ -37,17 +38,17 @@
 #include "ButtonDelegate.h"
 
 // ------------- Dialogs -------------
-#include "CreateMidasResourceUI.h"
-#include "CreateProfileUI.h"
-#include "DeleteResourceUI.h"
-#include "UploadAgreementUI.h"
-#include "SignInUI.h"
 #include "AboutUI.h"
 #include "AddKeywordUI.h"
 #include "AddAuthorUI.h"
+#include "AgreementUI.h"
+#include "CreateMidasResourceUI.h"
+#include "CreateProfileUI.h"
+#include "DeleteResourceUI.h"
 #include "PreferencesUI.h"
-#include "PullUI.h"
 #include "ProcessingStatusUI.h"
+#include "PullUI.h"
+#include "SignInUI.h"
 // ------------- Dialogs -------------
 
 // ------------- Threads -------------
@@ -101,7 +102,6 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- Instantiate and setup UI dialogs -------------
   dlg_createMidasResourceUI =  new CreateMidasResourceUI( this );
-  dlg_uploadAgreementUI =      new UploadAgreementUI( this );
   dlg_signInUI =               new SignInUI( this );
   dlg_createProfileUI =        new CreateProfileUI( this );
   dlg_aboutUI =                new AboutUI( this );
@@ -111,6 +111,9 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_deleteServerResourceUI = new DeleteResourceUI( this, true );
   dlg_addAuthorUI =            new AddAuthorUI( this );
   dlg_addKeywordUI =           new AddKeywordUI( this );
+  m_agreementHandler =         new GUIAgreement( this );
+  dlg_agreementUI =            new AgreementUI( this,
+    dynamic_cast<GUIAgreement*>(this->m_agreementHandler) );
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
@@ -326,10 +329,10 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_createProfileUI;
   delete dlg_preferencesUI;
   delete dlg_createMidasResourceUI;
-  delete dlg_uploadAgreementUI;
   delete dlg_pullUI;
   delete dlg_addAuthorUI;
   delete dlg_addKeywordUI;
+  delete dlg_agreementUI;
   delete dlg_deleteClientResourceUI;
   delete dlg_deleteServerResourceUI;
   delete stateLabel;
@@ -341,6 +344,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete Log;
   delete m_progress;
   delete m_synch;
+  delete m_agreementHandler;
   if(m_RefreshThread && m_RefreshThread->isRunning())
     {
     m_RefreshThread->terminate();
@@ -1741,4 +1745,14 @@ void MIDASDesktopUI::currentProgressUpdate(double current, double max)
   int percent = static_cast<int>(fraction * 100.0);
   progressBar_current->setMaximum(100);
   progressBar_current->setValue(percent);
+}
+
+void MIDASDesktopUI::showUserAgreementDialog()
+{
+  dlg_agreementUI->exec();
+}
+
+void MIDASDesktopUI::checkingUserAgreement()
+{
+  this->Log->Status("Checking license agreement...");
 }
