@@ -15,6 +15,7 @@ public:
 
 public slots:
   void exec();
+  void openBrowser();
 
 private:
   MIDASDesktopUI* m_Parent;

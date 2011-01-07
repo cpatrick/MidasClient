@@ -30,6 +30,15 @@ bool GUIAgreement::HandleAgreement(midasSynchronizer *synch)
     return false;
     }
 
+  m_Url = mws::WebAPI::Instance()->GetServerUrl();
+  kwsys::SystemTools::ReplaceString(m_Url, "/api/rest", "");
+  m_Url = midasUtils::TrimTrailingSlash(m_Url);
+  m_Url += "/";
+  m_Url += kwsys::SystemTools::LowerCase(
+    midasUtils::GetTypeName(synch->GetResourceType()));
+  m_Url += "/view/";
+  m_Url += synch->GetServerHandle();
+
   //as long as they hit ok, keep presenting the dialog until
   //they are verified as a member of the agreed group
   while(true)
@@ -79,7 +88,12 @@ bool GUIAgreement::checkUserHasAgreed(midasSynchronizer* synch)
     error << "Failed when querying server for user agreement validation: "
       << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     m_Parent->GetLog()->Error(error.str());
+    return true;
     }
-
   return hasAgreed == "1";
+}
+
+std::string GUIAgreement::getUrl()
+{
+  return m_Url;
 }

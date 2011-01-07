@@ -554,10 +554,12 @@ bool midasSynchronizer::PullBitstream(int parentId)
     this->Recursive = false;
     std::string handle = this->ServerHandle;
     this->ServerHandle = bitstream->GetParent();
+    this->ResourceType = midasResourceType::ITEM;
 
     this->PullItem(NO_PARENT);
     CHANGE_DIR(this->LastDir.c_str());
 
+    this->ResourceType = midasResourceType::BITSTREAM;
     this->ServerHandle = handle;
     this->Recursive = recurse;
     parentId = this->LastId;
@@ -685,10 +687,12 @@ bool midasSynchronizer::PullCollection(int parentId)
     this->Recursive = false;
     std::string handle = this->ServerHandle;
     this->ServerHandle = collection->GetParent();
+    this->ResourceType = midasResourceType::COMMUNITY;
 
     this->PullCommunity(NO_PARENT);
     CHANGE_DIR(this->LastDir.c_str());
 
+    this->ResourceType = midasResourceType::COLLECTION;
     this->ServerHandle = handle;
     this->Recursive = recurse;
     parentId = this->LastId;
@@ -934,10 +938,11 @@ bool midasSynchronizer::PullItem(int parentId)
     this->Recursive = false;
     std::string handle = this->ServerHandle;
     this->ServerHandle = item->GetParent();
-
+    this->ResourceType = midasResourceType::COLLECTION;
     this->PullCollection(NO_PARENT);
     CHANGE_DIR(this->LastDir.c_str());
 
+    this->ResourceType = midasResourceType::ITEM;
     this->ServerHandle = handle;
     this->Recursive = recurse;
     parentId = this->LastId;

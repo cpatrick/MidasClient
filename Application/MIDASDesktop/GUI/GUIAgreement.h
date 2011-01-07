@@ -27,6 +27,7 @@ public:
   ~GUIAgreement();
 
   bool HandleAgreement(midasSynchronizer* synch);
+  std::string getUrl();
 
 public slots:
   void finish();
@@ -42,6 +43,7 @@ private:
   MIDASDesktopUI* m_Parent;
   bool m_Done;
   bool m_Canceled;
+  std::string m_Url;
 };
 
 #endif
