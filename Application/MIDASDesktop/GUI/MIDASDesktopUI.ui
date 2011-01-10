@@ -943,6 +943,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/zip-icon.gif</normaloff>:/icons/zip-icon.gif</iconset>
+   </property>
    <property name="text">
     <string>Download key files (zip)</string>
    </property>
@@ -950,6 +954,10 @@
   <action name="actionDownload_key_files_tgz">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/zip-icon.gif</normaloff>:/icons/zip-icon.gif</iconset>
    </property>
    <property name="text">
     <string>Download key files (tgz)</string>

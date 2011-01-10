@@ -52,5 +52,6 @@
     <file>icons/MIDAS_Desktop_Icon_Red_v3.png</file>
     <file>icons/save.png</file>
     <file>icons/search.png</file>
+    <file>icons/zip-icon.gif</file>
   </qresource>
 </RCC>

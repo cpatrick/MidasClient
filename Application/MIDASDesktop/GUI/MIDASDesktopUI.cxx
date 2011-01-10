@@ -985,7 +985,7 @@ void MIDASDesktopUI::displayClientResourceContextMenu( QContextMenuEvent* e )
       }
     else if ( ( bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>( item ) ) != NULL )
       {
-      // put any bitstream-only actions here
+      menu.addAction( this->actionSwap_with_MD5_reference );
       }
     menu.addSeparator();
     menu.addAction( this->actionView_Directory );
