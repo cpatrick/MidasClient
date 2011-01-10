@@ -612,6 +612,11 @@
      <addaction name="actionPull_Resource"/>
      <addaction name="actionOpenURL"/>
      <addaction name="actionDelete_server"/>
+     <addaction name="separator"/>
+     <addaction name="actionDownload_key_files_zip"/>
+     <addaction name="actionDownload_key_files_tgz"/>
+     <addaction name="separator"/>
+     <addaction name="actionDownload_key_file"/>
     </widget>
     <widget class="QMenu" name="menuClient">
      <property name="title">
@@ -631,6 +636,7 @@
      <addaction name="actionAdd_bitstream"/>
      <addaction name="separator"/>
      <addaction name="actionPush_Resources"/>
+     <addaction name="actionSwap_with_MD5_reference"/>
      <addaction name="actionDelete_Resource"/>
      <addaction name="separator"/>
      <addaction name="actionView_Directory"/>
@@ -925,6 +931,38 @@
     <string>Create a new empty SQLite database file</string>
    </property>
   </action>
+  <action name="actionSwap_with_MD5_reference">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Swap with MD5 reference</string>
+   </property>
+  </action>
+  <action name="actionDownload_key_files_zip">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Download key files (zip)</string>
+   </property>
+  </action>
+  <action name="actionDownload_key_files_tgz">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Download key files (tgz)</string>
+   </property>
+  </action>
+  <action name="actionDownload_key_file">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Download key file</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -952,6 +990,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

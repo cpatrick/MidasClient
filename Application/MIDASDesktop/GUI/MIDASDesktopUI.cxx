@@ -78,7 +78,7 @@ MIDASDesktopUI::MIDASDesktopUI()
 {
   setupUi(this); // this sets up GUI
   int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
-  srand (time); //init random number generator 
+  srand (time); //init random number generator
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
   
   // ------------- Instantiate and setup tray icon -------------
@@ -440,12 +440,15 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     this->actionPull_Resource->setEnabled( value );
     this->actionOpenURL->setEnabled( value );
     this->actionDelete_server->setEnabled( value );
+    this->actionDownload_key_files_tgz->setEnabled( value );
+    this->actionDownload_key_files_zip->setEnabled( value );
     }
 
   if ( activateAction & ACTION_BITSTREAM )
     {
     this->actionPull_Resource->setEnabled( value );
     this->actionDelete_server->setEnabled( value );
+    this->actionDownload_key_file->setEnabled( value );
     }
 
   if ( activateAction & ACTION_CLIENT_COMMUNITY )
@@ -1001,18 +1004,34 @@ void MIDASDesktopUI::displayServerResourceContextMenu( QContextMenuEvent* e )
 {
   QMenu menu( this );
   QModelIndex index = treeViewServer->indexAt( e->pos() );
+  MidasTreeItem * item = const_cast<MidasTreeItem*>( 
+                         reinterpret_cast<MidasTreeModelClient*>(treeViewServer->model())->midasTreeItem( index ) );
+  MidasItemTreeItem * itemTreeItem = NULL;
+  MidasBitstreamTreeItem * bitstreamTreeItem = NULL;
 
   if ( index.isValid() )
     {
-    treeViewServer->selectionModel()->select( index, QItemSelectionModel::SelectCurrent ); 
+    menu.addAction( this->actionPull_Resource );
+    menu.addAction( this->actionOpenURL );
+    menu.addAction( this->actionDelete_server );
+    treeViewServer->selectionModel()->select( index, QItemSelectionModel::SelectCurrent );
+    if ( ( itemTreeItem = dynamic_cast<MidasItemTreeItem*>( item ) ) != NULL )
+      {
+      menu.addSeparator();
+      menu.addAction( this->actionDownload_key_files_tgz );
+      menu.addAction( this->actionDownload_key_files_zip );
+      }
+    else if ( ( bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>( item ) ) != NULL )
+      {
+      menu.addSeparator();
+      menu.addAction( this->actionDownload_key_file );
+      }
     }
   else 
     {
-    treeViewServer->selectionModel()->clearSelection(); 
+    treeViewServer->selectionModel()->clearSelection();
+    return;
     }
-  menu.addAction( this->actionPull_Resource );
-  menu.addAction( this->actionOpenURL );
-  menu.addAction( this->actionDelete_server );
   menu.exec( e->globalPos() );
 }
 
