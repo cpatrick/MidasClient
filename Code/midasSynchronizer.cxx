@@ -112,6 +112,10 @@ void midasSynchronizer::SetLog(midasLog* log)
   delete this->Log;
   this->Log = log;
   this->Authenticator->SetLog(log);
+  if(this->DatabaseProxy)
+    {
+    this->DatabaseProxy->SetLog(log);
+    }
 }
 
 midasDatabaseProxy* midasSynchronizer::GetDatabase()
