@@ -233,6 +233,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( actionPush_Resources,          SIGNAL( triggered() ), this, SLOT( pushResources() ) );
   connect( actionPull_Resource,           SIGNAL( triggered() ), dlg_pullUI, SLOT( exec() ) );
   connect( actionOpenURL,                 SIGNAL( triggered() ), this, SLOT( viewInBrowser() ) );
+  //connect( actionSwap_with_MD5_reference, SIGNAL( triggered() ), this, SLOT( 
 
   connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
   connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string, std::string)),

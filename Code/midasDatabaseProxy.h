@@ -141,7 +141,6 @@ public:
    * Add a child/parent relationship to the database
    */
   bool AddChild(int parentType, int parentId, int childType, int childId);
-  bool AddChild(std::string parentUuid, int childType, int childId);
 
   std::string GetUuidFromPath(std::string path);
   std::string GetUuid(int type, int id);
@@ -173,7 +172,7 @@ public:
    */
   bool CheckModifiedBitstreams();
 protected:
-  void InsertResourceRecord(int type, int id,
+  bool InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);
 
   int InsertBitstream(std::string path, std::string name);

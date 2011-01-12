@@ -78,8 +78,15 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
     {
     return -1;
     }
+  midasResourceRecord parent;
+  if(parentUuid != "") //fetch parent before starting db transaction
+    {
+    parent = this->GetRecordByUuid(parentUuid);
+    }
   if(!this->ResourceExists(uuid))
     {
+    this->Database->Open(this->DatabasePath.c_str());
+    this->Database->ExecuteQuery("BEGIN");
     int id = -1;
     switch(type)
       {
@@ -98,14 +105,32 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
       default:
         break;
       }
-    if(id > 0)
+    if(id <= 0)
       {
-      this->InsertResourceRecord(type, id, path, uuid, parentId);
-      if(parentUuid != "")
-        {
-        this->AddChild(parentUuid, type, id);
-        }
+      this->Log->Error("Failed to insert resource.");
+      this->Database->ExecuteQuery("ROLLBACK");
+      this->Database->Close();
+      return -1;
       }
+
+    if(!this->InsertResourceRecord(type, id, path, uuid, parentId))
+      {
+      this->Log->Error("Failed to insert resource uuid record.");
+      this->Database->ExecuteQuery("ROLLBACK");
+      this->Database->Close();
+      return -1;
+      }
+
+    if(parentUuid != "" && !this->AddChild(parent.Type, parent.Id, type, id))
+      {
+      this->Log->Error(
+        "Failed to add parent/child relationship to database.");
+      this->Database->ExecuteQuery("ROLLBACK");
+      this->Database->Close();
+      return -1;
+      }
+    this->Database->ExecuteQuery("COMMIT");
+    this->Database->Close();
     return id;
     }
   else
@@ -324,14 +349,6 @@ midasResourceRecord midasDatabaseProxy::GetRecordByUuid(std::string uuid)
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::AddChild(std::string parentUuid,
-                                  int childType, int childId)
-{
-  midasResourceRecord record = this->GetRecordByUuid(parentUuid);
-  return this->AddChild(record.Type, record.Id, childType, childId);
-}
-
-//-------------------------------------------------------------------------
 bool midasDatabaseProxy::AddChild(int parentType, int parentId,
                                   int childType, int childId)
 {
@@ -385,10 +402,7 @@ bool midasDatabaseProxy::AddChild(int parentType, int parentId,
     }
   query << parent << "2" << child << " (" << parentCol << "_id, " << childCol
     << "_id) VALUES ('" << parentId << "', '" << childId << "')";
-  this->Database->Open(this->DatabasePath.c_str());
-  bool ok = this->Database->ExecuteQuery(query.str().c_str());
-  this->Database->Close();
-  return ok;
+  return this->Database->ExecuteQuery(query.str().c_str());
 }
 
 //-------------------------------------------------------------------------
@@ -397,11 +411,12 @@ int midasDatabaseProxy::InsertBitstream(std::string path, std::string name)
   std::stringstream query;
   query << "INSERT INTO bitstream (location, internal_id, name) VALUES ('1','"
     << path << "', '" << name << "')";
-  this->Database->Open(this->DatabasePath.c_str());
-  this->Database->ExecuteQuery(query.str().c_str());
-  int id = this->Database->GetLastInsertId();
-  this->Database->Close();
-  return id;
+
+  if(!this->Database->ExecuteQuery(query.str().c_str()))
+    {
+    return -1;
+    }
+  return this->Database->GetLastInsertId();
 }
 
 //-------------------------------------------------------------------------
@@ -409,11 +424,12 @@ int midasDatabaseProxy::InsertCollection(std::string name)
 {
   std::stringstream query;
   query << "INSERT INTO collection (name) VALUES ('" << name << "')";
-  this->Database->Open(this->DatabasePath.c_str());
-  this->Database->ExecuteQuery(query.str().c_str());
-  int id = this->Database->GetLastInsertId();
-  this->Database->Close();
-  return id;
+
+  if(!this->Database->ExecuteQuery(query.str().c_str()))
+    {
+    return -1;
+    }
+  return this->Database->GetLastInsertId();
 }
 
 //-------------------------------------------------------------------------
@@ -421,8 +437,11 @@ int midasDatabaseProxy::InsertCommunity(std::string name)
 {
   std::stringstream query;
   query << "INSERT INTO community (name) VALUES ('" << name << "')";
-  this->Database->Open(this->DatabasePath.c_str());
-  this->Database->ExecuteQuery(query.str().c_str());
+
+  if(!this->Database->ExecuteQuery(query.str().c_str()))
+    {
+    return -1;
+    }
   return this->Database->GetLastInsertId();
 }
 
@@ -431,13 +450,16 @@ int midasDatabaseProxy::InsertItem(std::string name)
 {
   std::stringstream query;
   query << "INSERT INTO item (title) VALUES ('" << name << "')";
-  this->Database->Open(this->DatabasePath.c_str());
-  this->Database->ExecuteQuery(query.str().c_str());
+
+  if(!this->Database->ExecuteQuery(query.str().c_str()))
+    {
+    return -1;
+    }
   return this->Database->GetLastInsertId();
 }
 
 //-------------------------------------------------------------------------
-void midasDatabaseProxy::InsertResourceRecord(int type, int id,
+bool midasDatabaseProxy::InsertResourceRecord(int type, int id,
                                               std::string path,
                                               std::string uuid, int parentId)
 {
@@ -445,9 +467,7 @@ void midasDatabaseProxy::InsertResourceRecord(int type, int id,
   query << "INSERT INTO resource_uuid (resource_type_id, resource_id, path, "
     "uuid, server_parent) VALUES ('" << type << "', '" << id << "', '"
     << path << "', '" << uuid << "', '" << parentId << "')";
-  this->Database->Open(this->DatabasePath.c_str());
-  this->Database->ExecuteQuery(query.str().c_str());
-  this->Database->Close();
+  return this->Database->ExecuteQuery(query.str().c_str());
 }
 
 //-------------------------------------------------------------------------
