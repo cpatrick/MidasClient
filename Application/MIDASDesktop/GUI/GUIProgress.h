@@ -36,10 +36,13 @@ signals:
   void ProgressMessage(const QString& message);
   void OverallProgress(int current, int max);
   void CurrentProgress(double current, double max);
+  void Speed(double bytesPerSec);
 protected:
   QProgressBar* m_progressBar;
 
   bool Done;
+  double LastTime;
+  double LastAmount;
 };
 
 #endif

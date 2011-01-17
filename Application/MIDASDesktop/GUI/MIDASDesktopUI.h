@@ -109,6 +109,7 @@ public slots:
   void currentFileMessage(const QString& message);
   void overallProgressUpdate(int current, int max);
   void currentProgressUpdate(double current, double max);
+  void progressSpeedUpdate(double bytesPerSec);
   //-------------- progress tab -----------
 
   void signInOrOut();

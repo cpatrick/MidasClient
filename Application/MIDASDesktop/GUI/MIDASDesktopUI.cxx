@@ -307,6 +307,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( ProgressMessage(const QString&) ), this, SLOT( currentFileMessage(const QString&) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgress(int, int) ), this, SLOT( overallProgressUpdate(int, int) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( CurrentProgress(double, double) ), this, SLOT( currentProgressUpdate(double, double) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( Speed(double) ), this, SLOT( progressSpeedUpdate(double) ) );
   // ------------- Progress bar ------------------------
 
   // ------------- Handle stored settings -------------
@@ -932,7 +933,7 @@ void MIDASDesktopUI::infoPanel(MidasBitstreamTreeItem* bitstreamTreeItem, bool e
 
   midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
   midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Size", QTableWidgetDescriptionItem::Bold));
-  midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, midasUtils::FileSizeString(strtod(bitstream->GetSize().c_str(), 0)).c_str(), BITSTREAM_SIZE, QTableWidgetDescriptionItem::Tooltip));
+  midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, midasUtils::BytesToString(strtod(bitstream->GetSize().c_str(), 0)).c_str(), BITSTREAM_SIZE, QTableWidgetDescriptionItem::Tooltip));
   midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
   i++;
 
@@ -1742,8 +1743,8 @@ void MIDASDesktopUI::overallProgressUpdate(int current, int max)
 
 void MIDASDesktopUI::currentProgressUpdate(double current, double max)
 {
-  std::string currentText = midasUtils::FileSizeString(current);
-  std::string maxText = midasUtils::FileSizeString(max);
+  std::string currentText = midasUtils::BytesToString(current);
+  std::string maxText = midasUtils::BytesToString(max);
   std::stringstream text;
   if(max == 0)
     {
@@ -1765,6 +1766,21 @@ void MIDASDesktopUI::currentProgressUpdate(double current, double max)
   int percent = static_cast<int>(fraction * 100.0);
   progressBar_current->setMaximum(100);
   progressBar_current->setValue(percent);
+}
+
+void MIDASDesktopUI::progressSpeedUpdate(double bytesPerSec)
+{
+  std::stringstream text;
+  if(bytesPerSec == 0)
+    {
+    text << "Speed: Calculating...";
+    }
+  else
+    {
+    text << "Speed: " << midasUtils::BytesToString(bytesPerSec)
+         << " / sec";
+    }
+  this->speedLabel->setText(text.str().c_str());
 }
 
 void MIDASDesktopUI::showUserAgreementDialog()

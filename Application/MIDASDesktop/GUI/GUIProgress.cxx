@@ -18,6 +18,8 @@ GUIProgress::GUIProgress(QProgressBar* progressBar)
   this->m_progressBar->setMaximum(100);
   this->m_progressBar->setTextVisible(false);
   this->ResetProgress();
+  this->LastTime = 0;
+  this->LastAmount = 0;
 
   connect(this, SIGNAL(UpdateProgressMin(int)),
     m_progressBar, SLOT( setMinimum(int) ) );
@@ -41,9 +43,24 @@ void GUIProgress::UpdateProgress(double current, double max)
   emit UpdateProgressMax(100);
   emit UpdateProgressValue(percent);
 
+  if(this->LastTime != 0)
+    {
+    double elapsedTime = kwsys::SystemTools::GetTime() - this->LastTime;
+    double bytesDownloaded = current - this->LastAmount;
+    double speed = bytesDownloaded / elapsedTime;
+    emit Speed(speed); //"instantaneous" speed of upload/download
+    }
+  else
+    {
+    emit Speed(0);
+    }
+  this->LastTime = kwsys::SystemTools::GetTime();
+  this->LastAmount = current;
+
   if(current == max)
     {
     this->Done = true;
+    this->LastTime = 0;
     }
 }
 

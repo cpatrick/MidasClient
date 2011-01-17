@@ -105,13 +105,13 @@ int64 midasUtils::GetFileLength(const char* filename)
 }
 
 //-------------------------------------------------------------------
-std::string midasUtils::FileSizeString(int64 bytes)
+std::string midasUtils::BytesToString(int64 bytes)
 {
-  return midasUtils::FileSizeString(static_cast<double>(bytes));
+  return midasUtils::BytesToString(static_cast<double>(bytes));
 }
 
 //-------------------------------------------------------------------
-std::string midasUtils::FileSizeString(double bytes)
+std::string midasUtils::BytesToString(double bytes)
 {
   std::stringstream text;
   double amount;

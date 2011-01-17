@@ -501,6 +501,20 @@
               </widget>
              </item>
              <item>
+              <widget class="QLabel" name="speedLabel">
+               <property name="text">
+                <string>Speed:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="estimatedTimeLabel">
+               <property name="text">
+                <string>Estimated Time Remaining:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="verticalSpacer">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -1002,6 +1016,7 @@
   <tabstop>searchQueryEdit</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
