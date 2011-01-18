@@ -23,6 +23,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <kwsys/MD5.h>
 
 #define UUID_LENGTH 45
 
@@ -324,4 +325,23 @@ double midasUtils::StringToDouble(const std::string& num)
     return 0;
     }
   return x;
+}
+
+std::string midasUtils::CreateDefaultAPIKey(const std::string& email,
+                                            const std::string& password,
+                                            const std::string& appName)
+{
+  std::string digest = email + password + appName;
+  return midasUtils::ComputeStringMD5(digest.c_str());
+}
+
+std::string midasUtils::ComputeStringMD5(const char* input)
+{
+  char md5out[32];
+  kwsysMD5* md5 = kwsysMD5_New();
+  kwsysMD5_Initialize(md5);
+  kwsysMD5_Append(md5, reinterpret_cast<unsigned char const*>(input), -1);
+  kwsysMD5_FinalizeHex(md5, md5out);
+  kwsysMD5_Delete(md5);
+  return std::string(md5out, 32);
 }

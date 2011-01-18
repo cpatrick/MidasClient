@@ -48,6 +48,10 @@ public:
                        std::vector<std::string>& tokens,
                        const std::string& delimiters = " ",
                        bool trimspaces = true);
+  static std::string CreateDefaultAPIKey(const std::string& email,
+                                         const std::string& password,
+                                         const std::string& appName);
+  static std::string ComputeStringMD5(const char* input);
 };
 
 #endif

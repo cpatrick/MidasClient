@@ -65,12 +65,6 @@ public:
   bool Login(const char* applicationname,
              const char* email, 
              const char* apikey);
-             
-  // Login to MIDAS with password (not recommended)
-  // Password should be encrypted
-  bool LoginWithPassword(const char* applicationname,
-                         const char* email, 
-                         const char* password);
 
   // Return the REST API
   RestAPI* GetRestAPI() {return m_RestAPI;}

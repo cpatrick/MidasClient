@@ -195,29 +195,4 @@ bool WebAPI::Login(const char* appname,
   return true;
 }
 
-// Login with email and password
-// Password should be encrypted
-bool WebAPI::LoginWithPassword(const char* appname,
-                               const char* email, 
-                               const char* password)
-{
-  RestXMLParser* parser = this->GetRestXMLParser();
-  parser->AddTag("/rsp/token",m_APIToken);
-  std::stringstream url;
-  url << "midas.login?email=" << email;
-  url << "&password=" << password;
-  url << "&appname=" << appname;
-  if(!this->Execute(url.str().c_str()))
-    {
-    std::cout << this->GetErrorMessage() << std::endl;
-    return false;
-    }
-  
-  if(m_APIToken.size() < 40)
-    {
-    return false;
-    }    
-  return true;
-}
-
 } // end namespace

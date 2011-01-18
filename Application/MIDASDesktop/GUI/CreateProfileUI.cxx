@@ -31,8 +31,7 @@ void CreateProfileUI::init()
 {
   emailEdit->setText("");
   profileNameEdit->setText("");
-  apiKeyEdit->setText("");
-  apiNameEdit->setText("");
+  passwordEdit->setText("");
   rootDirEdit->setText("");
 
   anonymousCheckBox->setChecked(false);
@@ -54,12 +53,11 @@ void CreateProfileUI::init()
 
 void CreateProfileUI::fillData(const QString& name)
 {
+  passwordEdit->setText("");
   if(profileComboBox->currentIndex() == 0)
     {
     profileNameEdit->setText("");
     emailEdit->setText("");
-    apiKeyEdit->setText("");
-    apiNameEdit->setText(this->anonymousCheckBox->isChecked() ? "" : "MIDASDesktop");
     serverURLEdit->setText("");
     deleteButton->setEnabled(false);
     }
@@ -70,8 +68,6 @@ void CreateProfileUI::fillData(const QString& name)
 
     profileNameEdit->setText(profile.Name.c_str());
     emailEdit->setText(profile.User.c_str());
-    apiKeyEdit->setText(profile.ApiKey.c_str());
-    apiNameEdit->setText(profile.AppName.c_str());
     serverURLEdit->setText(profile.Url.c_str());
     rootDirEdit->setText(profile.RootDir.c_str());
 
@@ -92,12 +88,10 @@ void CreateProfileUI::anonymousChanged(int state)
   if(checked)
     {
     emailEdit->setText("");
-    apiKeyEdit->setText("");
-    apiNameEdit->setText("");
+    passwordEdit->setText("");
     }
   emailEdit->setEnabled(!checked);
-  apiKeyEdit->setEnabled(!checked);
-  apiNameEdit->setEnabled(!checked);
+  passwordEdit->setEnabled(!checked);
 }
 
 void CreateProfileUI::rootDirChecked(int state)
@@ -129,21 +123,27 @@ void CreateProfileUI::accept()
 {
   if(profileNameEdit->text().trimmed().toStdString() == "")
     {
-    QMessageBox::critical(this, "Error", "You must enter a profile name");
+    QMessageBox::critical(this, "Error", "You must enter a profile name.");
     return;
     }
-  std::string profileName, email, apiName, apiKey, serverURL, rootDir;
+  if(anonymousCheckBox->isChecked() && passwordEdit->text().toStdString() == "")
+    {
+    QMessageBox::critical(this, "Error", "You must enter a password or choose anonymous access.");
+    return;
+    }
+  std::string profileName, email, password, serverURL, rootDir;
   profileName = profileNameEdit->text().trimmed().toStdString();
   email = emailEdit->text().trimmed().toStdString();
-  apiName = apiNameEdit->text().trimmed().toStdString();
-  apiKey = apiKeyEdit->text().trimmed().toStdString();
+  password = passwordEdit->text().toStdString();
   serverURL = serverURLEdit->text().trimmed().toStdString();
   rootDir = rootDirEdit->text().trimmed().toStdString();
   kwsys::SystemTools::ConvertToUnixSlashes(rootDir);
   QDialog::accept();
 
+  std::string apiKey = midasUtils::CreateDefaultAPIKey(email, password, "Default");
+
   emit serverURLSet(serverURL);
-  emit createdProfile(profileName, email, apiName, apiKey, rootDir);
+  emit createdProfile(profileName, email, "Default", apiKey, rootDir);
 }
 
 void CreateProfileUI::deleteProfile()
