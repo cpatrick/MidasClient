@@ -53,11 +53,15 @@ void GUIProgress::UpdateProgress(double current, double max)
 
     double estimatedTimeLeft = (max - current) / speed;
     emit EstimatedTime(estimatedTimeLeft);
+
+    m_Total += bytesDownloaded;
     }
   else
     {
     emit Speed(0);
     emit EstimatedTime(0);
+
+    m_Total += current;
     }
   this->LastTime = currentTime;
   this->LastAmount = current;
@@ -67,11 +71,18 @@ void GUIProgress::UpdateProgress(double current, double max)
     this->Done = true;
     this->LastTime = 0;
     }
+  emit OverallProgressTotal(m_Total, m_MaxTotal);
 }
 
-void GUIProgress::UpdateOverallProgress(int value)
+void GUIProgress::UpdateOverallCount(int value)
 {
-  emit OverallProgress(value, m_Max);
+  emit OverallProgressCount(value, m_MaxCount);
+}
+
+void GUIProgress::UpdateTotalProgress(double value)
+{
+  m_Total += value;
+  emit OverallProgressTotal(m_Total, m_MaxTotal);
 }
 
 void GUIProgress::SetMessage(std::string message)

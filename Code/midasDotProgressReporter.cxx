@@ -36,13 +36,17 @@ void midasDotProgressReporter::UpdateProgress(double current, double max)
     }
 }
 
-void midasDotProgressReporter::SetMaxOverall(int max)
+void midasDotProgressReporter::SetMaxCount(int max)
 {
-  midasProgressReporter::SetMaxOverall(max);
+  midasProgressReporter::SetMaxCount(max);
   std::cout << "Total count: " << max << std::endl;
 }
 
-void midasDotProgressReporter::UpdateOverallProgress(int value)
+void midasDotProgressReporter::UpdateOverallCount(int value)
+{
+}
+
+void midasDotProgressReporter::UpdateTotalProgress(double value)
 {
 }
 

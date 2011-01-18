@@ -591,7 +591,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
     mws::WebAPI::Instance()->GetRestAPI()->SetProgressCallback(
       ProgressCallback, this->Progress);
     this->Progress->SetMessage(bitstream->GetName());
-    this->Progress->UpdateOverallProgress(this->CurrentBitstreams);
+    this->Progress->UpdateOverallCount(this->CurrentBitstreams);
     this->Progress->UpdateProgress(0, 0);
     this->Progress->ResetProgress();
     }
@@ -600,6 +600,17 @@ bool midasSynchronizer::PullBitstream(int parentId)
      kwsys::SystemTools::FileExists(record.Path.c_str(), true))
     {
     //we already have this bitstream, no need to download again
+    if(this->Progress)
+      {
+      mds::Bitstream mdsBitstream;
+      mdo::Bitstream bitstream;
+      bitstream.SetId(record.Id);
+      mdsBitstream.SetObject(&bitstream);
+      mdsBitstream.SetDatabase(this->DatabaseProxy);
+      mdsBitstream.Fetch();
+      this->Progress->UpdateTotalProgress(
+        midasUtils::StringToDouble(bitstream.GetSize()));
+      }
     return true;
     }
   std::stringstream status;
@@ -1143,7 +1154,7 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
     {
     mws::WebAPI::Instance()->GetRestAPI()->SetProgressCallback(
       ProgressCallback, this->Progress);
-    this->Progress->UpdateOverallProgress(this->CurrentBitstreams);
+    this->Progress->UpdateOverallCount(this->CurrentBitstreams);
     this->Progress->SetMessage(name);
     this->Progress->ResetProgress();
     }
@@ -1562,13 +1573,15 @@ void midasSynchronizer::CountBitstreams()
     if(this->ResourceType == midasResourceType::BITSTREAM)
       {
       this->TotalBitstreams = 1;
-      this->Progress->SetMaxOverall(this->TotalBitstreams);
-      this->Progress->UpdateOverallProgress(0);
+      this->Progress->SetMaxCount(this->TotalBitstreams);
+      this->Progress->UpdateOverallCount(0);
       return;
       }
     std::string count;
+    std::string size;
     mws::RestXMLParser parser;
     parser.AddTag("/rsp/count", count);
+    parser.AddTag("/rsp/size", size);
 
     mws::WebAPI::Instance()->SetPostData("");
     mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
@@ -1584,8 +1597,9 @@ void midasSynchronizer::CountBitstreams()
     this->Log->Status("");
 
     this->TotalBitstreams = atoi(count.c_str());
-    this->Progress->SetMaxOverall(this->TotalBitstreams);
-    this->Progress->UpdateOverallProgress(0);
+    this->Progress->SetMaxCount(this->TotalBitstreams);
+    this->Progress->SetMaxTotal(midasUtils::StringToDouble(size));
+    this->Progress->UpdateOverallCount(0);
     }
   else if(this->Operation == midasSynchronizer::OPERATION_PUSH)
     {
@@ -1601,7 +1615,7 @@ void midasSynchronizer::CountBitstreams()
         }
       }
     this->TotalBitstreams = count;
-    this->Progress->SetMaxOverall(count);
-    this->Progress->UpdateOverallProgress(0);
+    this->Progress->SetMaxCount(count);
+    this->Progress->UpdateOverallCount(0);
     }
 }

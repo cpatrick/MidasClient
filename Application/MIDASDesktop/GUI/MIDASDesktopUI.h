@@ -108,6 +108,7 @@ public slots:
   //-------------- progress tab -----------
   void currentFileMessage(const QString& message);
   void overallProgressUpdate(int current, int max);
+  void totalProgressUpdate(double current, double max);
   void currentProgressUpdate(double current, double max);
   void progressSpeedUpdate(double bytesPerSec);
   void estimatedTimeUpdate(double seconds);

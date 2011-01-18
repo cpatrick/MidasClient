@@ -305,10 +305,11 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- Progress bar ------------------------
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( ProgressMessage(const QString&) ), this, SLOT( currentFileMessage(const QString&) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgress(int, int) ), this, SLOT( overallProgressUpdate(int, int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgressCount(int, int) ), this, SLOT( overallProgressUpdate(int, int) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( CurrentProgress(double, double) ), this, SLOT( currentProgressUpdate(double, double) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( Speed(double) ), this, SLOT( progressSpeedUpdate(double) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( EstimatedTime(double) ), this, SLOT( estimatedTimeUpdate(double) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgressTotal(double, double) ), this, SLOT( totalProgressUpdate(double, double) ) );
   // ------------- Progress bar ------------------------
 
   // ------------- Handle stored settings -------------
@@ -1735,11 +1736,8 @@ void MIDASDesktopUI::currentFileMessage(const QString& message)
 void MIDASDesktopUI::overallProgressUpdate(int current, int max)
 {
   std::stringstream text;
-  text << "Overall Progress: " << current << " / " << max << " files transferred";
-  this->overallProgressLabel->setText(text.str().c_str());
-
-  progressBar_overall->setMaximum(max);
-  progressBar_overall->setValue(current);
+  text << "File Count: " << current << " / " << max << " files transferred";
+  this->fileCountLabel->setText(text.str().c_str());
 }
 
 void MIDASDesktopUI::currentProgressUpdate(double current, double max)
@@ -1767,6 +1765,33 @@ void MIDASDesktopUI::currentProgressUpdate(double current, double max)
   int percent = static_cast<int>(fraction * 100.0);
   progressBar_current->setMaximum(100);
   progressBar_current->setValue(percent);
+}
+
+void MIDASDesktopUI::totalProgressUpdate(double current, double max)
+{
+  std::string currentText = midasUtils::BytesToString(current);
+  std::string maxText = midasUtils::BytesToString(max);
+  std::stringstream text;
+  if(max == 0)
+    {
+    text << "Overall Progress: Calculating...";
+    }
+  else
+    {
+    text << "Overall Progress: " << currentText << " / " << maxText;
+    }
+  this->overallProgressLabel->setText(text.str().c_str());
+
+  if (max == 0)
+    {
+    progressBar_overall->setMaximum(100);
+    progressBar_overall->setValue(0);
+    return;
+    }
+  double fraction = current / max;
+  int percent = static_cast<int>(fraction * 100.0);
+  progressBar_overall->setMaximum(100);
+  progressBar_overall->setValue(percent);
 }
 
 void MIDASDesktopUI::progressSpeedUpdate(double bytesPerSec)

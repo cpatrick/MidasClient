@@ -24,7 +24,10 @@ public:
   ~GUIProgress();
 
   void UpdateProgress(double current, double max);
-  void UpdateOverallProgress(int value);
+  void UpdateOverallCount(int value);
+  /** Don't call this in a progress callback, only call it if you are skipping
+   *  the progress callback */
+  void UpdateTotalProgress(double current);
   void ResetProgress();
   void SetMessage(std::string message);
   void SetIndeterminate();
@@ -34,7 +37,8 @@ signals:
   void UpdateProgressMax(int val);
   void UpdateProgressValue(int val);
   void ProgressMessage(const QString& message);
-  void OverallProgress(int current, int max);
+  void OverallProgressCount(int current, int max);
+  void OverallProgressTotal(double current, double max);
   void CurrentProgress(double current, double max);
   void Speed(double bytesPerSec);
   void EstimatedTime(double secondsLeft);

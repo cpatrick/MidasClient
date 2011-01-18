@@ -109,12 +109,6 @@ int64 midasUtils::GetFileLength(const char* filename)
 }
 
 //-------------------------------------------------------------------
-std::string midasUtils::BytesToString(int64 bytes)
-{
-  return midasUtils::BytesToString(static_cast<double>(bytes));
-}
-
-//-------------------------------------------------------------------
 std::string midasUtils::BytesToString(double bytes)
 {
   std::stringstream text;
@@ -319,4 +313,15 @@ void midasUtils::Tokenize(const std::string& str,
     // Find next "non-delimiter"
     pos = str.find_first_of(delimiters, lastPos);
     }
+}
+
+double midasUtils::StringToDouble(const std::string& num)
+{
+  std::istringstream i(num);
+  double x;
+  if(!(i>>x))
+    {
+    return 0;
+    }
+  return x;
 }

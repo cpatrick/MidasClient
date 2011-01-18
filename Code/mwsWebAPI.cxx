@@ -68,7 +68,8 @@ void WebAPI::SetPostData(const char* postData)
 
 /** Execute the command */
 bool WebAPI::Execute(const char* url)
-{  
+{
+  m_RestAPI->SetProgressCallback(NULL, NULL);
   std::stringstream fullUrl;
 
   fullUrl << url;

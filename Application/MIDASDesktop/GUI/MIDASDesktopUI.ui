@@ -344,7 +344,7 @@
             <enum>QTabWidget::South</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="searchTab">
             <attribute name="title">
@@ -453,6 +453,13 @@
               <widget class="Line" name="line">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="fileCountLabel">
+               <property name="text">
+                <string>File Count:</string>
                </property>
               </widget>
              </item>
