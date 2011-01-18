@@ -227,6 +227,10 @@ int midasSynchronizer::Perform()
     }
 
   std::string temp = WORKING_DIR();
+  if(this->Progress)
+    {
+    this->Progress->ResetOverall();
+    }
   this->CountBitstreams();
 
   switch(this->Operation)
