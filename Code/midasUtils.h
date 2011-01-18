@@ -36,6 +36,7 @@ public:
   static int64 GetFileLength(const char* filename);
   static std::string BytesToString(int64 bytes);
   static std::string BytesToString(double bytes);
+  static std::string FormatTimeString(double seconds);
   static std::string GetTypeName(int type);
   static bool IsDatabaseValid(std::string path);
   static bool CreateNewDatabase(std::string path);

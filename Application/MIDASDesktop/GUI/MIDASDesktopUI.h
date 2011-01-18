@@ -110,6 +110,7 @@ public slots:
   void overallProgressUpdate(int current, int max);
   void currentProgressUpdate(double current, double max);
   void progressSpeedUpdate(double bytesPerSec);
+  void estimatedTimeUpdate(double seconds);
   //-------------- progress tab -----------
 
   void signInOrOut();

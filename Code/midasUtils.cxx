@@ -26,6 +26,10 @@
 
 #define UUID_LENGTH 45
 
+#define DAY_LEN (60.0*60.0*24.0)
+#define HR_LEN (60.0*60.0)
+#define MIN_LEN (60.0)
+
 //-------------------------------------------------------------------
 std::string midasUtils::GenerateUUID()
 {
@@ -149,6 +153,36 @@ std::string midasUtils::BytesToString(double bytes)
     text << amount;
     }
   text << " " << unit;
+  return text.str();
+}
+
+std::string midasUtils::FormatTimeString(double seconds)
+{
+  int days = (int)(seconds / DAY_LEN);
+  seconds -= days * DAY_LEN;
+  int hours = (int)(seconds / HR_LEN);
+  seconds -= hours * HR_LEN;
+  int minutes = (int)(seconds / MIN_LEN);
+  seconds -= minutes * MIN_LEN;
+  int sec = (int)seconds;
+  
+  std::stringstream text;
+  if(days > 0)
+    {
+    text << days << (days > 1 ? " days " : " day ");
+    }
+  if(hours > 0)
+    {
+    text << hours << (hours > 1 ? " hours " : " hour ");
+    }
+  if(minutes > 0)
+    {
+    text << minutes << (minutes > 1 ? " minutes " : " minute ");
+    }
+  if(sec > 0)
+    {
+    text << sec << (sec > 1 ? " seconds " : " second ");
+    }
   return text.str();
 }
 

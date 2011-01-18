@@ -35,6 +35,7 @@ GUIProgress::~GUIProgress()
 
 void GUIProgress::UpdateProgress(double current, double max)
 {
+  double currentTime = kwsys::SystemTools::GetTime();
   emit CurrentProgress(current, max);
   if (max == 0 || this->Done) return;
   double fraction = current / max;
@@ -45,16 +46,20 @@ void GUIProgress::UpdateProgress(double current, double max)
 
   if(this->LastTime != 0)
     {
-    double elapsedTime = kwsys::SystemTools::GetTime() - this->LastTime;
+    double elapsedTime = currentTime - this->LastTime;
     double bytesDownloaded = current - this->LastAmount;
     double speed = bytesDownloaded / elapsedTime;
     emit Speed(speed); //"instantaneous" speed of upload/download
+
+    double estimatedTimeLeft = (max - current) / speed;
+    emit EstimatedTime(estimatedTimeLeft);
     }
   else
     {
     emit Speed(0);
+    emit EstimatedTime(0);
     }
-  this->LastTime = kwsys::SystemTools::GetTime();
+  this->LastTime = currentTime;
   this->LastAmount = current;
 
   if(current == max)

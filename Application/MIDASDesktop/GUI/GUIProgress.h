@@ -37,6 +37,7 @@ signals:
   void OverallProgress(int current, int max);
   void CurrentProgress(double current, double max);
   void Speed(double bytesPerSec);
+  void EstimatedTime(double secondsLeft);
 protected:
   QProgressBar* m_progressBar;
 

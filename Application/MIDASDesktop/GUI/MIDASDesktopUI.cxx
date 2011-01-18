@@ -308,6 +308,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgress(int, int) ), this, SLOT( overallProgressUpdate(int, int) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( CurrentProgress(double, double) ), this, SLOT( currentProgressUpdate(double, double) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( Speed(double) ), this, SLOT( progressSpeedUpdate(double) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( EstimatedTime(double) ), this, SLOT( estimatedTimeUpdate(double) ) );
   // ------------- Progress bar ------------------------
 
   // ------------- Handle stored settings -------------
@@ -1781,6 +1782,21 @@ void MIDASDesktopUI::progressSpeedUpdate(double bytesPerSec)
          << " / sec";
     }
   this->speedLabel->setText(text.str().c_str());
+}
+
+void MIDASDesktopUI::estimatedTimeUpdate(double seconds)
+{
+  std::stringstream text;
+  if(seconds == 0)
+    {
+    text << "Estimated Time Remaining: Calculating...";
+    }
+  else
+    {
+    text << "Estimated Time Remaining: "
+         << midasUtils::FormatTimeString(seconds);
+    }
+  this->estimatedTimeLabel->setText(text.str().c_str());
 }
 
 void MIDASDesktopUI::showUserAgreementDialog()
