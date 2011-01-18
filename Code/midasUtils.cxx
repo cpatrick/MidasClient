@@ -331,7 +331,9 @@ std::string midasUtils::CreateDefaultAPIKey(const std::string& email,
                                             const std::string& password,
                                             const std::string& appName)
 {
-  std::string digest = email + password + appName;
+  std::string digest = email +
+    midasUtils::ComputeStringMD5(password.c_str()) +
+    appName;
   return midasUtils::ComputeStringMD5(digest.c_str());
 }
 

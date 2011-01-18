@@ -63,7 +63,7 @@ public:
 
   // Login to MIDAS
   bool Login(const char* applicationname,
-             const char* email, 
+             const char* email,
              const char* apikey);
 
   // Return the REST API
