@@ -134,9 +134,10 @@ endif(NOT EXISTS \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
 
 # Create a human-readable file name for the data.
 file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${base_filepath}\")
-file(REMOVE \"${MIDAS_DATA_DIR}/${testName}_${base_filename}\")
-execute_process(COMMAND \"${CMAKE_COMMAND}\" -E ${cmake_symlink} \"MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${testName}_${base_filename}\" WORKING_DIRECTORY \"${MIDAS_DATA_DIR}\")
-file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${base_filename}\" \"${MIDAS_DATA_DIR}/${base_filename}\")
+file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${testName}_${base_filepath}\")
+file(REMOVE \"${MIDAS_DATA_DIR}/${testName}_${base_file}\")
+execute_process(COMMAND \"${CMAKE_COMMAND}\" -E ${cmake_symlink} \"MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" WORKING_DIRECTORY \"${MIDAS_DATA_DIR}\")
+file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" \"${MIDAS_DATA_DIR}/${base_file}\")
 ")
 
       list(APPEND downloadScripts "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/fetch_${checksum}_${base_filename}.cmake")
