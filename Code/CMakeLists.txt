@@ -74,6 +74,7 @@ set(MIDASRest_SRCS
   mdsBitstream.h
   mdsBitstream.cxx
   mdsObject.h
+  mdsResourceUpdateHandler.h
 )
 
 set(MIDASSynch_SRCS

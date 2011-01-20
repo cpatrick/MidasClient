@@ -48,6 +48,8 @@ set(MIDASDesktopUI_SRCS
   GUI/MidasTreeViewServer.h
   GUI/MidasTreeViewClient.cxx
   GUI/MidasTreeViewClient.h
+  GUI/TreeViewUpdateHandler.h
+  GUI/TreeViewUpdateHandler.cxx
   GUI/MidasTreeItem.cxx
   GUI/MidasTreeModel.h
   GUI/MidasTreeModel.cxx
@@ -160,6 +162,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/AddAuthorUI.h
   GUI/AddKeywordUI.h
   GUI/AgreementUI.h
+  GUI/TreeViewUpdateHandler.h
 )
 
 QT4_WRAP_CPP(MIDASDesktopUI_SRCS ${MIDASDesktopUI_MOC_SRCS})
