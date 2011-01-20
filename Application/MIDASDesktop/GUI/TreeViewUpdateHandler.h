@@ -19,6 +19,10 @@ public:
   void AddedResource(mdo::Object* resource);
   void DeletedResource(mdo::Object* resource);
   void UpdatedResource(mdo::Object* resource);
+signals:
+  void ResourceAdded(mdo::Object* resource);
+  void ResourceDeleted(mdo::Object* resource);
+  void ResourceUpdated(mdo::Object* resource);
 protected:
   MidasTreeView* m_View;
 };
