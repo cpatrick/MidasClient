@@ -30,7 +30,7 @@ public:
   void mouseMoveEvent(QMouseEvent* event);
 
 public slots:
-  void selectByUuid(std::string uuid);
+  void selectByUuid(std::string uuid, bool select = false);
   void alertFetchedMore();
 
   void expansionDone();

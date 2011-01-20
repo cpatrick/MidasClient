@@ -357,7 +357,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete m_RefreshThread;
   if(m_SynchronizerThread && m_SynchronizerThread->isRunning())
     {
-    m_SynchronizerThread->terminate();
+    m_SynchronizerThread->Cancel();
     m_SynchronizerThread->wait();
     }
   delete m_SynchronizerThread;
@@ -1498,7 +1498,7 @@ void MIDASDesktopUI::showSearchResults()
 
 void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem * listItem)
 {
-  this->treeViewServer->selectByUuid(listItem->getObject()->GetUuid());
+  this->treeViewServer->selectByUuid(listItem->getObject()->GetUuid(), true);
 }
 
 void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)

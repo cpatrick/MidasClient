@@ -5,10 +5,12 @@
 
 ExpandTreeThread::ExpandTreeThread(MidasTreeViewServer* view,
                                    MidasTreeModelServer* model,
-                                   std::string uuid):
+                                   std::string uuid,
+                                   bool select):
 m_ParentUI(view),
 m_ParentModel(model),
-m_Uuid(uuid)
+m_Uuid(uuid),
+m_Select(select)
 {
 }
 
@@ -31,11 +33,14 @@ void ExpandTreeThread::run()
     emit expand(index);
     }
 
-  /*QModelIndex index = m_ParentModel->getIndexByUuid(m_Uuid);
-  if(index.isValid())
+  if(m_Select)
     {
-    emit select(index);
-    }*/
+    QModelIndex index = m_ParentModel->getIndexByUuid(m_Uuid);
+    if(index.isValid())
+      {
+      emit select(index);
+      }
+    }
 
   emit enableActions(true);
   emit threadComplete();

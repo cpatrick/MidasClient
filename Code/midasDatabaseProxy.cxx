@@ -534,12 +534,14 @@ std::string midasDatabaseProxy::GetSetting(MidasAppSetting setting)
   return value;
 }
 
+//-------------------------------------------------------------------------
 int midasDatabaseProxy::GetSettingInt(MidasAppSetting setting)
 {
   std::string val = this->GetSetting(setting);
   return atoi(val.c_str());
 }
 
+//-------------------------------------------------------------------------
 bool midasDatabaseProxy::GetSettingBool(MidasAppSetting setting)
 {
   std::string val = this->GetSetting(setting);
@@ -923,6 +925,7 @@ std::string midasDatabaseProxy::GetUuidFromPath(std::string path)
   return uuid;
 }
 
+//-------------------------------------------------------------------------
 bool midasDatabaseProxy::CheckModifiedBitstreams()
 {
   std::stringstream query;

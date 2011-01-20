@@ -15,7 +15,8 @@ class ExpandTreeThread : public QThread
 public:
   ExpandTreeThread(MidasTreeViewServer* view,
                    MidasTreeModelServer* model,
-                   std::string uuid);
+                   std::string uuid,
+                   bool select);
   ~ExpandTreeThread();
 
   virtual void run();
@@ -30,6 +31,7 @@ private:
   MidasTreeViewServer*  m_ParentUI;
   MidasTreeModelServer* m_ParentModel;
   std::string           m_Uuid;
+  bool                  m_Select;
 };
 
 #endif

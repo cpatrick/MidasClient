@@ -76,7 +76,7 @@ void MidasTreeViewServer::alertFetchedMore()
   emit fetchedMore();
 }
 
-void MidasTreeViewServer::selectByUuid(std::string uuid)
+void MidasTreeViewServer::selectByUuid(std::string uuid, bool select)
 {
   if(m_ExpandTreeThread)
     {
@@ -85,7 +85,7 @@ void MidasTreeViewServer::selectByUuid(std::string uuid)
   delete m_ExpandTreeThread;
 
   m_ExpandTreeThread = new ExpandTreeThread(this,
-    reinterpret_cast<MidasTreeModelServer*>(m_Model), uuid);
+    reinterpret_cast<MidasTreeModelServer*>(m_Model), uuid, select);
 
   connect(m_ExpandTreeThread, SIGNAL(threadComplete()),
     this, SLOT(expansionDone()));
