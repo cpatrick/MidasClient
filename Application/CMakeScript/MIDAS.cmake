@@ -136,7 +136,7 @@ endif(NOT EXISTS \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
 file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${base_filepath}\")
 file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${testName}_${base_filepath}\")
 file(REMOVE \"${MIDAS_DATA_DIR}/${testName}_${base_file}\")
-execute_process(COMMAND \"${CMAKE_COMMAND}\" -E ${cmake_symlink} \"MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" WORKING_DIRECTORY \"${MIDAS_DATA_DIR}\")
+execute_process(COMMAND \"${CMAKE_COMMAND}\" -E ${cmake_symlink} \"MIDAS_Hashes/${checksum}\" \"${testName}_${base_file}\" WORKING_DIRECTORY \"${MIDAS_DATA_DIR}\")
 file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" \"${MIDAS_DATA_DIR}/${base_file}\")
 ")
 
