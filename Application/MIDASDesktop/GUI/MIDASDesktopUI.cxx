@@ -324,6 +324,13 @@ MIDASDesktopUI::MIDASDesktopUI()
 /** Destructor */
 MIDASDesktopUI::~MIDASDesktopUI()
 {
+  if(m_SynchronizerThread && m_SynchronizerThread->isRunning())
+    {
+    m_SynchronizerThread->Cancel();
+    m_SynchronizerThread->wait();
+    }
+  delete m_SynchronizerThread;
+  delete dlg_pullUI;
   ProcessingStatusUI::finalize();
   delete trayIconMenu;
   delete showAction;
@@ -333,7 +340,6 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_createProfileUI;
   delete dlg_preferencesUI;
   delete dlg_createMidasResourceUI;
-  delete dlg_pullUI;
   delete dlg_addAuthorUI;
   delete dlg_addKeywordUI;
   delete dlg_agreementUI;
@@ -355,12 +361,6 @@ MIDASDesktopUI::~MIDASDesktopUI()
     m_RefreshThread->wait();
     }
   delete m_RefreshThread;
-  if(m_SynchronizerThread && m_SynchronizerThread->isRunning())
-    {
-    m_SynchronizerThread->Cancel();
-    m_SynchronizerThread->wait();
-    }
-  delete m_SynchronizerThread;
   delete m_SearchThread;
   if(m_ReadDatabaseThread && m_ReadDatabaseThread->isRunning())
     {

@@ -23,6 +23,11 @@ PullUI::PullUI(MIDASDesktopUI *parent):
 
 PullUI::~PullUI()
 {
+  if(m_SynchronizerThread && m_SynchronizerThread->isRunning())
+    {
+    m_SynchronizerThread->Cancel();
+    m_SynchronizerThread->wait();
+    }
   delete m_SynchronizerThread;
 }
 
