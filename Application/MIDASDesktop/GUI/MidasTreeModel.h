@@ -52,6 +52,10 @@ public slots:
   virtual void itemCollapsed ( const QModelIndex & index );
   virtual void decorateByUuid( std::string uuid );
 
+  virtual void addResource(mdo::Object*) {}
+  virtual void updateResource(mdo::Object*) {}
+  virtual void deleteResource(mdo::Object*) {}
+
 protected:
   std::map<std::string, QModelIndex> m_IndexMap;
   std::set<std::string>              m_ExpandedList;

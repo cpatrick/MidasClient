@@ -75,9 +75,6 @@ public:
   Collection* GetParentCollection() { return m_ParentCollection; }
   void SetParentCollection(Collection* coll) { m_ParentCollection = coll; }
 
-  bool IsFetched() { return fetched; }
-  void SetFetched(bool val) { fetched = val; }
-
   bool SetValue(std::string key, std::string value, bool append = false);
  
 protected:
@@ -90,9 +87,6 @@ protected:
   std::string  m_Description;
   std::vector<std::string> m_Authors;
   std::vector<std::string> m_Keywords;
-
-  bool fetched;
-
   std::vector<Bitstream*> m_Bitstreams;
 
   Collection* m_ParentCollection;

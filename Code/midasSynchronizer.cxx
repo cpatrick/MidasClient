@@ -691,11 +691,6 @@ bool midasSynchronizer::PullBitstream(int parentId)
     this->Log->Error(text.str());
     return false;
     }
-  if(this->ResourceUpdateHandler)
-    {
-    this->ResourceUpdateHandler->AddedResource(bitstream);
-    }
-  
   return true;
 }
 
@@ -789,11 +784,6 @@ bool midasSynchronizer::PullCollection(int parentId)
     MKDIR(collection->GetName().c_str());
     }
   this->LastDir = WORKING_DIR() + "/" + collection->GetName();
-
-  if(this->ResourceUpdateHandler)
-    {
-    this->ResourceUpdateHandler->AddedResource(collection);
-    }
 
   if(this->Recursive)
     {
@@ -939,11 +929,6 @@ bool midasSynchronizer::PullCommunity(int parentId)
     return false;
     }
 
-  if(this->ResourceUpdateHandler)
-    {
-    this->ResourceUpdateHandler->AddedResource(community);
-    }
-
   if(this->Recursive)
     {
     CHANGE_DIR(community->GetName().c_str());
@@ -1078,11 +1063,6 @@ bool midasSynchronizer::PullItem(int parentId)
       " to the database." << std::endl;
     this->Log->Error(text.str());
     return false;
-    }
-
-  if(this->ResourceUpdateHandler)
-    {
-    this->ResourceUpdateHandler->AddedResource(item);
     }
 
   if(this->Recursive)

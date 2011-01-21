@@ -29,6 +29,10 @@ public:
 
   bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
 
+  void addResource(mdo::Object*);
+  void updateResource(mdo::Object*);
+  void deleteResource(mdo::Object*);
+
 private:
   midasDatabaseProxy*  m_Database;
 };

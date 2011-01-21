@@ -31,6 +31,7 @@ public:
     m_Proxy = new Proxy();
     m_Proxy->SetObject(this);
     m_Dirty = false;
+    m_Fetched = false;
     m_HasAgreement = "";
     }
     
@@ -64,11 +65,15 @@ public:
     {
     return false;
     }
+
+  virtual bool IsFetched() { return m_Fetched; }
+  virtual void SetFetched(bool val) { m_Fetched = val; }
     
 protected:
 
   Proxy* m_Proxy;
   bool m_Dirty;
+  bool m_Fetched;
   std::string m_HasAgreement;
   std::string m_Uuid;
   int m_Id;

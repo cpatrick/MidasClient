@@ -21,7 +21,6 @@ Item::Item()
 {
   m_Id = 0;
   m_ParentCollection = NULL;
-  fetched = false;
 }
   
 /** Destructor */

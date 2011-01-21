@@ -228,7 +228,7 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
 
 void MidasTreeViewClient::addResource(mdo::Object* object)
 {
-  std::cout << "hello";
+  this->m_Model->addResource(object);
 }
 
 void MidasTreeViewClient::updateResource(mdo::Object* object)

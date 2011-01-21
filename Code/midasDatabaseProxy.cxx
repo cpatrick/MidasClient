@@ -101,19 +101,79 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
     this->Database->Open(this->DatabasePath.c_str());
     this->Database->ExecuteQuery("BEGIN");
     int id = -1;
+    mdo::Bitstream* bitstream = NULL;
+    mdo::Item* item = NULL;
+    mdo::Collection* collection = NULL;
+    mdo::Community* community = NULL;
+    mdo::Community* parentComm = NULL;
     switch(type)
       {
       case midasResourceType::BITSTREAM:
         id = this->InsertBitstream(path, name);
+        if(id > 0 && this->ResourceUpdateHandler)
+          {
+          item = new mdo::Item;
+          item->SetUuid(parentUuid.c_str());
+          item->SetId(parent.Id);
+          bitstream = new mdo::Bitstream;
+          bitstream->SetId(id);
+          bitstream->SetUuid(uuid.c_str());
+          bitstream->SetParentItem(item);
+          bitstream->SetName(name.c_str());
+          this->ResourceUpdateHandler->AddedResource(bitstream);
+          }
         break;
       case midasResourceType::COLLECTION:
         id = this->InsertCollection(name);
+        if(id > 0 && this->ResourceUpdateHandler)
+          {
+          community = new mdo::Community;
+          community->SetUuid(parentUuid.c_str());
+          community->SetId(parent.Id);
+          collection = new mdo::Collection;
+          collection->SetId(id);
+          collection->SetUuid(uuid.c_str());
+          collection->SetParentCommunity(community);
+          collection->SetName(name.c_str());
+          this->ResourceUpdateHandler->AddedResource(collection);
+          }
         break;
       case midasResourceType::COMMUNITY:
         id = this->InsertCommunity(name);
+        if(id > 0 && this->ResourceUpdateHandler)
+          {
+          community = new mdo::Community;
+          if(parentUuid != "")
+            {
+            parentComm = new mdo::Community;
+            parentComm->SetUuid(parentUuid.c_str());
+            parentComm->SetId(parent.Id);
+            community->SetParentCommunity(parentComm);
+            }
+          else
+            {
+            community->SetParentCommunity(NULL);
+            }
+          community->SetUuid(uuid.c_str());
+          community->SetId(id);
+          community->SetName(name.c_str());
+          this->ResourceUpdateHandler->AddedResource(community);
+          }
         break;
       case midasResourceType::ITEM:
         id = this->InsertItem(name);
+        if(id > 0 && this->ResourceUpdateHandler)
+          {
+          collection = new mdo::Collection;
+          collection->SetUuid(parentUuid.c_str());
+          collection->SetId(parent.Id);
+          item = new mdo::Item;
+          item->SetId(id);
+          item->SetUuid(uuid.c_str());
+          item->SetParentCollection(collection);
+          item->SetTitle(name.c_str());
+          this->ResourceUpdateHandler->AddedResource(item);
+          }
         break;
       default:
         break;

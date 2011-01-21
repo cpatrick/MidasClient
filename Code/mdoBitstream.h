@@ -53,9 +53,6 @@ public:
   Item* GetParentItem() { return m_ParentItem; }
   void SetParentItem(Item* item) { m_ParentItem = item; }
 
-  bool IsFetched() { return fetched; }
-  void SetFetched(bool val) { fetched = val; }
-
 protected:
 
   std::string  m_Parent;
@@ -64,8 +61,6 @@ protected:
   std::string  m_Path;
   Item*        m_ParentItem;
   long int     m_LastModified;
-
-  bool fetched;
 };
 
 } //end namespace
