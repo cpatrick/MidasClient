@@ -27,6 +27,11 @@ namespace mdo
   class Community;
 }
 
+namespace mds
+{
+  class ResourceUpdateHandler;
+}
+
 //The following define error codes returned by midas functions
 #define MIDAS_OK                    0
 #define MIDAS_INVALID_PATH         -1
@@ -85,6 +90,9 @@ public:
   void DeleteProgressReporter();
 
   void SetAgreementHandler(midasAgreementHandler* handler);
+
+  void SetResourceUpdateHandler(mds::ResourceUpdateHandler* handler);
+  mds::ResourceUpdateHandler* GetResourceUpdateHandler();
 
   void SetClientHandle(std::string handle);
   std::string GetClientHandle();
@@ -160,6 +168,7 @@ protected:
   midasDatabaseProxy* DatabaseProxy;
   midasAuthenticator* Authenticator;
   midasAgreementHandler* AgreementHandler;
+  mds::ResourceUpdateHandler* ResourceUpdateHandler;
 };
 
 #endif

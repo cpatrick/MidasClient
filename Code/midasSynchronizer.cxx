@@ -30,6 +30,7 @@
 #include "midasAuthenticator.h"
 #include "midasStatus.h"
 #include "midasAgreementHandler.h"
+#include "mdsResourceUpdateHandler.h"
 
 #define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
 #define CHANGE_DIR kwsys::SystemTools::ChangeDirectory
@@ -53,6 +54,7 @@ midasSynchronizer::midasSynchronizer()
   this->Database = "";
   this->DatabaseProxy = NULL;
   this->AgreementHandler = NULL;
+  this->ResourceUpdateHandler = NULL;
   this->CurrentBitstreams = 0;
   this->TotalBitstreams = 0;
   this->Authenticator = new midasAuthenticator;
@@ -103,6 +105,10 @@ void midasSynchronizer::SetDatabase(std::string path)
   delete this->DatabaseProxy;
   this->DatabaseProxy = new midasDatabaseProxy(path);
   this->DatabaseProxy->SetLog(this->GetLog());
+  if(this->ResourceUpdateHandler)
+    {
+    this->DatabaseProxy->SetResourceUpdateHandler(this->ResourceUpdateHandler);
+    }
   this->Authenticator->SetDatabase(path);
   this->SetServerURL(this->GetServerURL());
 }
@@ -126,6 +132,21 @@ midasDatabaseProxy* midasSynchronizer::GetDatabase()
 void midasSynchronizer::SetAgreementHandler(midasAgreementHandler* handler)
 {
   this->AgreementHandler = handler;
+}
+
+void midasSynchronizer::SetResourceUpdateHandler(
+  mds::ResourceUpdateHandler* handler)
+{
+  this->ResourceUpdateHandler = handler;
+  if(this->DatabaseProxy)
+    {
+    this->DatabaseProxy->SetResourceUpdateHandler(handler);
+    }
+}
+
+mds::ResourceUpdateHandler* midasSynchronizer::GetResourceUpdateHandler()
+{
+  return this->ResourceUpdateHandler;
 }
 
 void midasSynchronizer::SetProgressReporter(midasProgressReporter* progress)
@@ -646,6 +667,15 @@ bool midasSynchronizer::PullBitstream(int parentId)
   int id = this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
     bitstream->GetUuid(), WORKING_DIR() + "/" + bitstream->GetName(),
     bitstream->GetName(), midasResourceType::ITEM, parentId, 0);
+
+  if(id <= 0)
+    {
+    std::stringstream text;
+    text << "Failed to add resource record for bistream "
+      << bitstream->GetName() << " to the database." << std::endl;
+    this->Log->Error(text.str());
+    return false;
+    }
   bitstream->SetId(id);
   std::string path = WORKING_DIR() + "/" + bitstream->GetName();
   bitstream->SetLastModified(kwsys::SystemTools::ModifiedTime(path.c_str()));
@@ -653,7 +683,18 @@ bool midasSynchronizer::PullBitstream(int parentId)
   mds::Bitstream mdsBitstream;
   mdsBitstream.SetObject(bitstream);
   mdsBitstream.SetDatabase(this->DatabaseProxy);
-  mdsBitstream.Commit();
+  if(!mdsBitstream.Commit())
+    {
+    std::stringstream text;
+    text << "Failed to add bitstream " << bitstream->GetName() <<
+      " to the database." << std::endl;
+    this->Log->Error(text.str());
+    return false;
+    }
+  if(this->ResourceUpdateHandler)
+    {
+    this->ResourceUpdateHandler->AddedResource(bitstream);
+    }
   
   return true;
 }
@@ -720,6 +761,14 @@ bool midasSynchronizer::PullCollection(int parentId)
   int id = this->DatabaseProxy->AddResource(midasResourceType::COLLECTION,
     collection->GetUuid(), WORKING_DIR() + "/" + collection->GetName(),
     collection->GetName(), midasResourceType::COMMUNITY, parentId, 0);
+  if(id <= 0)
+    {
+    std::stringstream text;
+    text << "Failed to add resource record for collection "
+      << collection->GetName() << " to the database." << std::endl;
+    this->Log->Error(text.str());
+    return false;
+    }
   this->LastId = id;
   collection->SetId(id);
 
@@ -728,6 +777,10 @@ bool midasSynchronizer::PullCollection(int parentId)
   mdsColl.SetObject(collection);
   if(!mdsColl.Commit())
     {
+    std::stringstream text;
+    text << "Failed to add collection " << collection->GetName() <<
+      " to the database." << std::endl;
+    this->Log->Error(text.str());
     return false;
     }
 
@@ -736,6 +789,11 @@ bool midasSynchronizer::PullCollection(int parentId)
     MKDIR(collection->GetName().c_str());
     }
   this->LastDir = WORKING_DIR() + "/" + collection->GetName();
+
+  if(this->ResourceUpdateHandler)
+    {
+    this->ResourceUpdateHandler->AddedResource(collection);
+    }
 
   if(this->Recursive)
     {
@@ -858,6 +916,14 @@ bool midasSynchronizer::PullCommunity(int parentId)
   int id = this->DatabaseProxy->AddResource(midasResourceType::COMMUNITY,
     community->GetUuid(), WORKING_DIR() + "/" + community->GetName(),
     community->GetName(), midasResourceType::COMMUNITY, parentId, 0);
+  if(id <= 0)
+    {
+    std::stringstream text;
+    text << "Failed to add resource record for community "
+      << community->GetName() << " to the database." << std::endl;
+    this->Log->Error(text.str());
+    return false;
+    }
   community->SetId(id);
   this->LastId = id;
 
@@ -866,7 +932,16 @@ bool midasSynchronizer::PullCommunity(int parentId)
   mdsComm.SetObject(community);
   if(!mdsComm.Commit())
     {
+    std::stringstream text;
+    text << "Failed to add community " << community->GetName() <<
+      " to the database." << std::endl;
+    this->Log->Error(text.str());
     return false;
+    }
+
+  if(this->ResourceUpdateHandler)
+    {
+    this->ResourceUpdateHandler->AddedResource(community);
     }
 
   if(this->Recursive)
@@ -981,6 +1056,14 @@ bool midasSynchronizer::PullItem(int parentId)
   int id = this->DatabaseProxy->AddResource(midasResourceType::ITEM,
     item->GetUuid(), WORKING_DIR() + "/" + title, item->GetTitle(),
     midasResourceType::COLLECTION, parentId, 0);
+  if(id <= 0)
+    {
+    std::stringstream text;
+    text << "Failed to add resource record for item "
+      << item->GetName() << " to the database." << std::endl;
+    this->Log->Error(text.str());
+    return false;
+    }
 
   this->LastId = id;
   item->SetId(id);
@@ -990,7 +1073,16 @@ bool midasSynchronizer::PullItem(int parentId)
   mdsItem.SetObject(item);
   if(!mdsItem.Commit())
     {
+    std::stringstream text;
+    text << "Failed to add item " << item->GetName() <<
+      " to the database." << std::endl;
+    this->Log->Error(text.str());
     return false;
+    }
+
+  if(this->ResourceUpdateHandler)
+    {
+    this->ResourceUpdateHandler->AddedResource(item);
     }
 
   if(this->Recursive)

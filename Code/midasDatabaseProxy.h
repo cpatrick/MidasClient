@@ -32,6 +32,7 @@ namespace mds
   class Item;
   class Bitstream;
   class Object;
+  class ResourceUpdateHandler;
 }
 
 struct midasResourceRecord
@@ -171,6 +172,9 @@ public:
    * Otherwise false.
    */
   bool CheckModifiedBitstreams();
+
+  void SetResourceUpdateHandler(mds::ResourceUpdateHandler* handler);
+  mds::ResourceUpdateHandler* GetResourceUpdateHandler();
 protected:
   bool InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);
@@ -188,6 +192,7 @@ protected:
   std::string GetKeyName(MidasAppSetting setting);
 
   mds::SQLiteDatabase* Database;
+  mds::ResourceUpdateHandler* ResourceUpdateHandler;
   std::string DatabasePath;
   
   bool Open();

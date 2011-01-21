@@ -23,6 +23,10 @@ public slots:
   void expandAll();
   void collapseAll();
 
+  void addResource(mdo::Object*);
+  void updateResource(mdo::Object*);
+  void deleteResource(mdo::Object*);
+
 signals:
   void bitstreamsDropped(const MidasItemTreeItem* parentItem, const QStringList & files);
   void bitstreamOpenRequest();

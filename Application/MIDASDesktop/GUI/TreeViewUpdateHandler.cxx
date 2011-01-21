@@ -7,11 +7,11 @@ TreeViewUpdateHandler::TreeViewUpdateHandler(MidasTreeView* view)
 : m_View(view)
 {
   connect(this, SIGNAL( ResourceAdded(mdo::Object*) ),
-          m_View, SLOT( AddResource(mdo::Object*) ) );
+          m_View, SLOT( addResource(mdo::Object*) ) );
   connect(this, SIGNAL( ResourceUpdated(mdo::Object*) ),
-          m_View, SLOT( UpdateResource(mdo::Object*) ) );
+          m_View, SLOT( updateResource(mdo::Object*) ) );
   connect(this, SIGNAL( ResourceDeleted(mdo::Object*) ),
-          m_View, SLOT( DeleteResource(mdo::Object*) ) );
+          m_View, SLOT( deleteResource(mdo::Object*) ) );
 }
 
 TreeViewUpdateHandler::~TreeViewUpdateHandler()

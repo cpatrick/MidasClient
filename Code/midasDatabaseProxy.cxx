@@ -19,16 +19,29 @@
 #include "mdsCollection.h"
 #include "mdsItem.h"
 #include "mdsBitstream.h"
+#include "mdsResourceUpdateHandler.h"
 
 midasDatabaseProxy::midasDatabaseProxy(std::string database)
 {
   this->Database = new mds::SQLiteDatabase();
   this->DatabasePath = database;
+  this->ResourceUpdateHandler = NULL;
 }
 
 midasDatabaseProxy::~midasDatabaseProxy()
 {
   delete this->Database;
+}
+
+void midasDatabaseProxy::SetResourceUpdateHandler(
+  mds::ResourceUpdateHandler* handler)
+{
+  this->ResourceUpdateHandler = handler;
+}
+
+mds::ResourceUpdateHandler* midasDatabaseProxy::GetResourceUpdateHandler()
+{
+  return this->ResourceUpdateHandler;
 }
 
 //-------------------------------------------------------------------------
@@ -673,6 +686,10 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       mdsComm.SetDatabase(this);
       mdsComm.SetPath(record.Path);
       ok = mdsComm.Delete(deleteFiles);
+      if(ok && this->ResourceUpdateHandler)
+        {
+        this->ResourceUpdateHandler->DeletedResource(comm);
+        }
       delete comm;
       break;
     case midasResourceType::COLLECTION:
@@ -683,6 +700,10 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       mdsColl.SetDatabase(this);
       mdsColl.SetPath(record.Path);
       ok = mdsColl.Delete(deleteFiles);
+      if(ok && this->ResourceUpdateHandler)
+        {
+        this->ResourceUpdateHandler->DeletedResource(coll);
+        }
       delete coll;
       break;
     case midasResourceType::ITEM:
@@ -693,6 +714,10 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       mdsItem.SetDatabase(this);
       mdsItem.SetPath(record.Path);
       ok = mdsItem.Delete(deleteFiles);
+      if(ok && this->ResourceUpdateHandler)
+        {
+        this->ResourceUpdateHandler->DeletedResource(item);
+        }
       delete item;
       break;
     case midasResourceType::BITSTREAM:
@@ -703,6 +728,10 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       mdsBitstream.SetDatabase(this);
       mdsBitstream.SetPath(record.Path);
       ok = mdsBitstream.Delete(deleteFiles);
+      if(ok && this->ResourceUpdateHandler)
+        {
+        this->ResourceUpdateHandler->DeletedResource(bitstream);
+        }
       delete bitstream;
       break;
     default:

@@ -13,6 +13,10 @@ class MidasBitstreamTreeItem;
 class MidasTreeModel;
 class MIDASDesktopUI;
 
+namespace mdo{
+  class Object;
+}
+
 class MidasTreeView : public QTreeView
 {
   Q_OBJECT
@@ -44,6 +48,9 @@ public slots:
   virtual void updateSelection(const QItemSelection& selected,
     const QItemSelection& deselected);
   virtual void decorateByUuid(std::string uuid);
+  virtual void addResource(mdo::Object*) {}
+  virtual void updateResource(mdo::Object*) {}
+  virtual void deleteResource(mdo::Object*) {}
 
 protected:
   virtual void contextMenuEvent (QContextMenuEvent* e);

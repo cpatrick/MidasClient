@@ -23,6 +23,7 @@
 #include "mdoItem.h"
 #include "mdsBitstream.h"
 #include "mdoBitstream.h"
+#include "mdoObject.h"
 #include "midasDatabaseProxy.h"
 #include "midasLog.h"
 #include <iostream>
@@ -223,4 +224,16 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
 
     emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
     }
+}
+
+void MidasTreeViewClient::addResource(mdo::Object* object)
+{
+}
+
+void MidasTreeViewClient::updateResource(mdo::Object* object)
+{
+}
+
+void MidasTreeViewClient::deleteResource(mdo::Object* object)
+{
 }
