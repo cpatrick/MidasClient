@@ -406,7 +406,7 @@ int midasSynchronizer::Add()
   if(id <= 0)
     {
     std::stringstream text;
-    text << "AddResource failed: " << path << std::endl;
+    text << "Add resource failed: " << path << std::endl;
     this->Log->Error(text.str());
     return MIDAS_FAILURE;
     }

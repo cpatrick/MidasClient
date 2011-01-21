@@ -72,6 +72,7 @@
 #include "Logger.h"
 #include "MidasClientGlobal.h"
 #include "mwsWebAPI.h"
+#include "TreeViewUpdateHandler.h"
 
 // ------------- TreeModel / TreeView -------------
 MIDASDesktopUI::MIDASDesktopUI()
@@ -292,12 +293,14 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- setup client members and logging ----
   this->m_database = NULL;
   this->m_synch = new midasSynchronizer();
+  this->m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
   this->m_auth = new midasAuthenticator();
   this->m_progress = new GUIProgress(this->progressBar);
   this->Log = new GUILogger(this);
   this->m_auth->SetLog(this->Log);
   this->m_synch->SetLog(this->Log);
   this->m_synch->SetProgressReporter(m_progress);
+  this->m_synch->SetResourceUpdateHandler(m_resourceUpdateHandler);
   this->m_signIn = false;
   this->m_editMode = false;
   this->m_cancel = false;
@@ -378,6 +381,11 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete authorsEditor;
   delete keywordsEditor;
   delete mws::WebAPI::Instance()->GetRestAPI();
+}
+
+mds::ResourceUpdateHandler* MIDASDesktopUI::getResourceUpdateHandler()
+{
+  return m_resourceUpdateHandler;
 }
 
 void MIDASDesktopUI::showNormal()

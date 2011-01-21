@@ -119,6 +119,7 @@ void PullUI::accept()
   synchronizer->SetProgressReporter(m_Parent->getProgress());
   synchronizer->SetServerURL(m_Parent->getSynchronizer()->GetServerURL());
   synchronizer->SetAgreementHandler(m_Parent->getAgreementHandler());
+  synchronizer->SetResourceUpdateHandler(m_Parent->getResourceUpdateHandler());
   m_SynchronizerThread->SetSynchronizer(synchronizer);
   m_SynchronizerThread->SetDelete(true);
 

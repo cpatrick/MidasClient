@@ -45,6 +45,10 @@ namespace mdo {
   class Object;
 }
 
+namespace mds {
+  class ResourceUpdateHandler;
+}
+
 extern "C" {
   static int progress_transfer_callback(void* data, double dltotal, double dlnow, double ultotal, double ulnow); 
 }
@@ -206,6 +210,8 @@ public slots:
   // ------------- log ----------------
 
   void newDBFinished();
+
+  mds::ResourceUpdateHandler* getResourceUpdateHandler();
 private:
   
   void infoPanel(MidasCommunityTreeItem* node, bool editable);
@@ -260,6 +266,7 @@ private:
   midasAgreementHandler*      m_agreementHandler;
   std::vector<std::string>    m_dirtyUuids;
   std::vector<mdo::Object*>   m_SearchResults;
+  mds::ResourceUpdateHandler* m_resourceUpdateHandler;
 
   // ----------- threads -----------------
   RefreshServerTreeThread*    m_RefreshThread;
