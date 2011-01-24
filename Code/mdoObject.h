@@ -33,6 +33,7 @@ public:
     m_Dirty = false;
     m_Fetched = false;
     m_HasAgreement = "";
+    m_Size = "";
     }
     
   virtual ~Object()
@@ -66,6 +67,9 @@ public:
     return false;
     }
 
+  virtual void SetSize(std::string size) { m_Size = size; }
+  virtual std::string & GetSize() {return m_Size;}
+
   virtual bool IsFetched() { return m_Fetched; }
   virtual void SetFetched(bool val) { m_Fetched = val; }
     
@@ -76,6 +80,7 @@ protected:
   bool m_Fetched;
   std::string m_HasAgreement;
   std::string m_Uuid;
+  std::string m_Size;
   int m_Id;
 };
 

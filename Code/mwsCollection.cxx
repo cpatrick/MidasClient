@@ -135,6 +135,7 @@ bool Collection::Fetch()
   parser.AddTag("/rsp/uuid",m_Collection->GetUuid());
   parser.AddTag("/rsp/parent",m_Collection->GetParent());
   parser.AddTag("/rsp/hasAgreement",m_Collection->RefAgreement());
+  parser.AddTag("/rsp/size",m_Collection->GetSize());
 
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
 

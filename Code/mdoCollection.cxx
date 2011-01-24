@@ -53,6 +53,7 @@ void Collection::Clear()
   this->m_Uuid = "";
   this->m_Parent = "";
   this->m_HasAgreement = "";
+  this->m_Size = "";
 }
 
 bool Collection::SetValue(std::string key, std::string value, bool append)

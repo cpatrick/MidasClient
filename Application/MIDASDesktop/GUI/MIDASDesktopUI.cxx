@@ -731,6 +731,7 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
   if(community->GetIntroductoryText() != "" || edit) i++;
   if(community->GetCopyright() != "" || edit) i++;
   if(community->GetLinks() != "" || edit) i++;
+  if(community->GetSize() != "") i++;
 
   midasTreeItemInfoTable->setRowCount( i );
   i = 0; 
@@ -780,6 +781,15 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
     i++;
     }
 
+  if(community->GetSize() != "")
+    {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Total Size", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCommunityDescItem(community, midasUtils::BytesToString(midasUtils::StringToDouble(community->GetSize())).c_str(), COMMUNITY_SIZE, QTableWidgetDescriptionItem::Tooltip));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
+
   midasTreeItemInfoTable->resizeColumnsToContents();
 }
 
@@ -801,6 +811,7 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
   if(collection->GetDescription() != "" || edit) i++;
   if(collection->GetCopyright() != "" || edit) i++;
   if(collection->GetIntroductoryText() != "" || edit) i++;
+  if(collection->GetSize() != "") i++;
   
   midasTreeItemInfoTable->setRowCount( i );
   i = 0;
@@ -841,6 +852,15 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
     i++;
     }
 
+  if(collection->GetSize() != "")
+    {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Total Size", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCollectionDescItem(collection, midasUtils::BytesToString(midasUtils::StringToDouble(collection->GetSize())).c_str(), COLLECTION_SIZE, QTableWidgetDescriptionItem::Tooltip));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
+
   midasTreeItemInfoTable->resizeColumnsToContents();
 }
 
@@ -864,6 +884,7 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
   if(item->GetKeywords().size() || edit) i++;
   if(item->GetAbstract() != "" || edit) i++;
   if(item->GetDescription() != "" || edit) i++;
+  if(item->GetSize() != "") i++;
 
   midasTreeItemInfoTable->setRowCount(i);
   i = 0;
@@ -911,6 +932,15 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Description", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, item->GetDescription().c_str(), ITEM_DESCRIPTION, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
+
+  if(item->GetSize() != "")
+    {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Total Size", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, midasUtils::BytesToString(midasUtils::StringToDouble(item->GetSize())).c_str(), ITEM_SIZE, QTableWidgetDescriptionItem::Tooltip));
     midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }

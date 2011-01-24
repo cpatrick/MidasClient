@@ -43,6 +43,7 @@ void Item::Clear()
   this->m_Uuid = "";
   this->m_Parent = "";
   this->m_HasAgreement = "";
+  this->m_Size = "";
   this->m_Keywords.clear();
   this->m_Authors.clear();
   this->m_Bitstreams.clear();

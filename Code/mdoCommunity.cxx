@@ -68,6 +68,7 @@ void Community::Clear()
   this->m_Uuid = "";
   this->m_Parent = "";
   this->m_HasAgreement = "";
+  this->m_Size = "";
 }
 
 /** Load */

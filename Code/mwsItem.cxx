@@ -143,6 +143,7 @@ bool Item::Fetch()
   parser.AddTag("/rsp/parent",m_Item->GetParent());
   parser.AddTag("/rsp/description",m_Item->GetDescription());
   parser.AddTag("/rsp/hasAgreement",m_Item->RefAgreement());
+  parser.AddTag("/rsp/size",m_Item->GetSize());
   
   m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
   

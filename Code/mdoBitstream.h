@@ -37,10 +37,6 @@ public:
   // Set/Get the name of bitstream
   void SetName(const char* name) { m_Name = name; }
   std::string & GetName() {return m_Name;}
-  
-  // Set/Get the size of bitstream
-  void SetSize(std::string size) { m_Size = size; }
-  std::string & GetSize() {return m_Size;}
 
   void SetLastModified(long int time) { m_LastModified = time; }
   long int GetLastModified() { return m_LastModified; }
@@ -57,7 +53,6 @@ protected:
 
   std::string  m_Parent;
   std::string  m_Name;
-  std::string  m_Size;
   std::string  m_Path;
   Item*        m_ParentItem;
   long int     m_LastModified;
