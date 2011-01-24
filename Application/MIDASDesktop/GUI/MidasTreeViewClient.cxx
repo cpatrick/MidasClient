@@ -237,7 +237,5 @@ void MidasTreeViewClient::updateResource(mdo::Object* object)
 
 void MidasTreeViewClient::deleteResource(mdo::Object* object)
 {
-  std::cout << "goodbye";
-  //note: we'll only be alerted for the top level object, so
-  //make sure we delete all the children from the tree
+  this->m_Model->deleteResource(object);
 }

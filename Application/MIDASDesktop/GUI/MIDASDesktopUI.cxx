@@ -217,6 +217,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeViewServer, SIGNAL(midasNoTreeItemSelected()),
     dlg_pullUI, SLOT( resetState() ));
 
+  connect(refreshClientButton, SIGNAL(released()), this, SLOT( updateClientTreeView() ) );
+
   connect(treeViewServer, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
     this, SLOT( displayServerResourceContextMenu(QContextMenuEvent*) ));
   connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
@@ -412,6 +414,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
   if ( activateAction & ACTION_LOCAL_DATABASE )
     {
     this->treeViewClient->setEnabled( value );
+    this->refreshClientButton->setEnabled( value );
     this->clientCollapseAllButton->setEnabled( value );
     this->clientExpandAllButton->setEnabled( value );
     this->actionAdd_community->setEnabled( value );
@@ -1612,6 +1615,8 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
     GetLog()->Message(text.str());
     }
   m_PollFilesystemThread->Resume();
+
+  this->updateClientTreeView();
 }
 
 // Controller for deleting server resources

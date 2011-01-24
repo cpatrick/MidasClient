@@ -69,3 +69,8 @@ void MidasCollectionTreeItem::updateDisplayName()
   QVariant name = this->getCollection()->GetName().c_str();
   this->setData(name,0);
 }
+
+void MidasCollectionTreeItem::removeFromTree()
+{
+
+}

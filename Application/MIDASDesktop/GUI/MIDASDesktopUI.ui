@@ -116,6 +116,26 @@
                 </spacer>
                </item>
                <item>
+                <widget class="QPushButton" name="refreshClientButton">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>22</width>
+                   <height>22</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../MIDASDesktopIcons.qrc">
+                   <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QPushButton" name="clientExpandAllButton">
                  <property name="enabled">
                   <bool>false</bool>
@@ -1034,6 +1054,7 @@
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -1043,8 +1064,8 @@
    <slot>expandAll()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>656</x>
-     <y>49</y>
+     <x>583</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>581</x>
@@ -1059,12 +1080,12 @@
    <slot>collapseAll()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>684</x>
-     <y>49</y>
+     <x>611</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
-     <x>685</x>
-     <y>127</y>
+     <x>612</x>
+     <y>187</y>
     </hint>
    </hints>
   </connection>
@@ -1075,8 +1096,8 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1022</x>
-     <y>749</y>
+     <x>950</x>
+     <y>754</y>
     </hint>
     <hint type="destinationlabel">
      <x>909</x>
@@ -1091,12 +1112,12 @@
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>814</x>
-     <y>402</y>
+     <x>793</x>
+     <y>425</y>
     </hint>
     <hint type="destinationlabel">
-     <x>903</x>
-     <y>402</y>
+     <x>874</x>
+     <y>426</y>
     </hint>
    </hints>
   </connection>

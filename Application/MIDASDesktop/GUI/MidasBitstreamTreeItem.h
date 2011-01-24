@@ -22,6 +22,7 @@ public:
   int getId() const;
   std::string getUuid() const;
   void updateDisplayName();
+  void removeFromTree();
 
   void setBitstream(mdo::Bitstream* bitstream) {m_Bitstream = bitstream;}
   mdo::Bitstream* getBitstream() const {return m_Bitstream;}

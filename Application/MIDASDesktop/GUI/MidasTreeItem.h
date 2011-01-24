@@ -61,6 +61,7 @@ public:
 
   /** Reset the name based on the underlying resource name */
   virtual void updateDisplayName() = 0;
+  virtual void removeFromTree() = 0;
 
   virtual QPixmap getDecoration();
   void setDecorationRole(DecorationRoles role);

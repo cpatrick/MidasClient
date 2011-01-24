@@ -21,6 +21,7 @@ public:
   int getId() const;
   std::string getUuid() const;
   void updateDisplayName();
+  void removeFromTree();
 
   void setCollection(mdo::Collection* collection) {m_Collection = collection;}
   mdo::Collection* getCollection() const {return m_Collection;}

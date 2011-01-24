@@ -1,8 +1,10 @@
 #include "MidasBitstreamTreeItem.h"
+#include "MidasItemTreeItem.h"
 #include "MidasClientGlobal.h"
 #include "MidasTreeModel.h"
 #include "mdoBitstream.h"
 #include "midasStandardIncludes.h"
+#include "mdoItem.h"
 #include <QPixmap>
 #include <QStyle>
 
@@ -43,11 +45,15 @@ QPixmap MidasBitstreamTreeItem::getDecoration()
     role += "_red";
     }
   role += ".png";
-  return QPixmap(role.c_str()); 
+  return QPixmap(role.c_str());
 }
 
 void MidasBitstreamTreeItem::updateDisplayName()
 {
   QVariant name = this->getBitstream()->GetName().c_str();
   this->setData(name,0);
+}
+
+void MidasBitstreamTreeItem::removeFromTree()
+{
 }

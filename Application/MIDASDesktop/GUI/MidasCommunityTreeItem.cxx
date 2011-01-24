@@ -115,3 +115,7 @@ void MidasCommunityTreeItem::updateDisplayName()
   QVariant name = this->getCommunity()->GetName().c_str();
   this->setData(name,0);
 }
+
+void MidasCommunityTreeItem::removeFromTree()
+{
+}

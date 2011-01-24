@@ -18,6 +18,7 @@ public:
   ~MidasTreeModel();
 
   void registerResource(std::string uuid, QModelIndex index);
+  void unregisterResource(std::string uuid);
   QModelIndex getIndexByUuid(std::string uuid);
   void clearExpandedList();
   void expandAllResources();

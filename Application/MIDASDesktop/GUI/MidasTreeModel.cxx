@@ -31,6 +31,11 @@ void MidasTreeModel::registerResource(std::string uuid, QModelIndex index)
   m_IndexMap[uuid] = index;
 }
 
+void MidasTreeModel::unregisterResource(std::string uuid)
+{
+  m_IndexMap.erase(uuid);
+}
+
 //-------------------------------------------------------------------------
 QModelIndex MidasTreeModel::getIndexByUuid(std::string uuid)
 {
