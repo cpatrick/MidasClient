@@ -227,7 +227,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeViewServer, SIGNAL( startedExpandingTree() ), this, SLOT( startedExpandingTree() ) );
   connect(treeViewServer, SIGNAL( finishedExpandingTree() ), this, SLOT( finishedExpandingTree() ) ); 
 
-  connect(dlg_pullUI, SIGNAL(pulledResources()), this, SLOT( updateClientTreeView() ) );
+  //connect(dlg_pullUI, SIGNAL(pulledResources()), this, SLOT( updateClientTreeView() ) );
   // ------------- setup TreeView signals -------------
 
   // ------------- signal/slot connections -------------
@@ -1591,13 +1591,15 @@ void MIDASDesktopUI::finishedExpandingTree()
   this->setProgressEmpty();
   this->displayStatus("");
   this->activateActions(true, MIDASDesktopUI::ACTION_CONNECTED);
+  this->treeViewServer->setFocus();
 }
 
 void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
 {
   m_PollFilesystemThread->Pause();
-  std::string uuid = treeViewClient->getSelectedMidasTreeItem()->getUuid();
-  std::string name = treeViewClient->getSelectedMidasTreeItem()->data(0).toString().toStdString();
+  const MidasTreeItem* treeItem = treeViewClient->getSelectedMidasTreeItem();
+  std::string uuid = treeItem->getUuid();
+  std::string name = treeItem->data(0).toString().toStdString();
   if(!this->m_database->DeleteResource(uuid, deleteFiles))
     {
     this->Log->Error("Error: Delete failed on resource " + name);
@@ -1610,8 +1612,6 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
     GetLog()->Message(text.str());
     }
   m_PollFilesystemThread->Resume();
-
-  this->updateClientTreeView();
 }
 
 // Controller for deleting server resources
