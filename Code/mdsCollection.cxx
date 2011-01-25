@@ -89,6 +89,27 @@ bool Collection::Fetch()
 
 bool Collection::FetchSize()
 {
+  if(!m_Collection)
+    {
+    return false;
+    }
+  double total = 0;
+
+  for(std::vector<mdo::Item*>::const_iterator i = m_Collection->GetItems().begin();
+      i != m_Collection->GetItems().end(); ++i)
+    {
+    if((*i)->GetSize() == "")
+      {
+      mds::Item mdsItem;
+      mdsItem.SetDatabase(m_Database);
+      mdsItem.SetObject(*i);
+      mdsItem.FetchSize();
+      }
+    total += midasUtils::StringToDouble((*i)->GetSize());
+    }
+  std::stringstream sizeStr;
+  sizeStr << total;
+  m_Collection->SetSize(sizeStr.str());
   return true;
 }
 

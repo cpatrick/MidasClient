@@ -230,7 +230,7 @@ bool Item::FetchTree()
   m_Item->SetDirty(m_Database->IsResourceDirty(m_Item->GetUuid()));
 
   std::stringstream query;
-  query << "SELECT bitstream.bitstream_id, bitstream.name, resource_uuid.uuid "
+  query << "SELECT bitstream.bitstream_id, bitstream.name, bitstream.size_bytes, resource_uuid.uuid "
     "FROM bitstream, resource_uuid WHERE resource_uuid.resource_id=bitstream.bitstream_id "
     "AND resource_uuid.resource_type_id='" << midasResourceType::BITSTREAM << "' AND "
     "bitstream.bitstream_id IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
@@ -244,7 +244,11 @@ bool Item::FetchTree()
     mdo::Bitstream* bitstream = new mdo::Bitstream;
     bitstream->SetId(m_Database->GetDatabase()->GetValueAsInt(0));
     bitstream->SetName(m_Database->GetDatabase()->GetValueAsString(1));
-    bitstream->SetUuid(m_Database->GetDatabase()->GetValueAsString(2));
+    std::stringstream val;
+    val << m_Database->GetDatabase()->GetValueAsInt64(2);
+    bitstream->SetSize(val.str());
+    bitstream->SetUuid(m_Database->GetDatabase()->GetValueAsString(3));
+    bitstream->SetFetched(true);
     m_Item->AddBitstream(bitstream);
     bitstreams.push_back(bitstream);
     }
@@ -264,6 +268,16 @@ bool Item::FetchSize()
     {
     return false;
     }
+  double total = 0;
+
+  for(std::vector<mdo::Bitstream*>::const_iterator i = m_Item->GetBitstreams().begin();
+      i != m_Item->GetBitstreams().end(); ++i)
+    {
+    total += midasUtils::StringToDouble((*i)->GetSize());
+    }
+  std::stringstream sizeStr;
+  sizeStr << total;
+  m_Item->SetSize(sizeStr.str());
   return true;
 }
 

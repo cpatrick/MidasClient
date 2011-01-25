@@ -89,6 +89,39 @@ bool Community::Fetch()
 
 bool Community::FetchSize()
 {
+  if(!m_Community)
+    {
+    return false;
+    }
+  double total = 0;
+
+  for(std::vector<mdo::Community*>::const_iterator i = m_Community->GetCommunities().begin();
+      i != m_Community->GetCommunities().end(); ++i)
+    {
+    if((*i)->GetSize() == "")
+      {
+      mds::Community mdsComm;
+      mdsComm.SetDatabase(m_Database);
+      mdsComm.SetObject(*i);
+      mdsComm.FetchSize();
+      }
+    total += midasUtils::StringToDouble((*i)->GetSize());
+    }
+  for(std::vector<mdo::Collection*>::const_iterator i = m_Community->GetCollections().begin();
+      i != m_Community->GetCollections().end(); ++i)
+    {
+    if((*i)->GetSize() == "")
+      {
+      mds::Collection mdsColl;
+      mdsColl.SetDatabase(m_Database);
+      mdsColl.SetObject(*i);
+      mdsColl.FetchSize();
+      }
+    total += midasUtils::StringToDouble((*i)->GetSize());
+    }
+  std::stringstream sizeStr;
+  sizeStr << total;
+  m_Community->SetSize(sizeStr.str());
   return true;
 }
 
