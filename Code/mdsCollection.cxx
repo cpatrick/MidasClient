@@ -87,6 +87,11 @@ bool Collection::Fetch()
   return true;
 }
 
+bool Collection::FetchSize()
+{
+  return true;
+}
+
 /** Commit */
 bool Collection::Commit()
 {

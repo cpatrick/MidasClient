@@ -24,6 +24,9 @@
 #include "mwsNewResources.h"
 #include "mwsSearch.h"
 #include "mwsRestXMLParser.h"
+#include "mdsCommunity.h"
+#include "mdsCollection.h"
+#include "mdsItem.h"
 #include "midasAuthenticator.h"
 #include "midasLog.h"
 #include "midasSynchronizer.h"
@@ -731,7 +734,7 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
   if(community->GetIntroductoryText() != "" || edit) i++;
   if(community->GetCopyright() != "" || edit) i++;
   if(community->GetLinks() != "" || edit) i++;
-  if(community->GetSize() != "") i++;
+  if(community->GetSize() != "" || communityTreeItem->isClientResource()) i++;
 
   midasTreeItemInfoTable->setRowCount( i );
   i = 0; 
@@ -789,6 +792,18 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
     midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
+  else if(communityTreeItem->isClientResource())
+    {
+    mds::Community mdsComm;
+    mdsComm.SetDatabase(m_database);
+    mdsComm.SetObject(community);
+    mdsComm.FetchSize();
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Total Size", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCommunityDescItem(community, midasUtils::BytesToString(midasUtils::StringToDouble(community->GetSize())).c_str(), COMMUNITY_SIZE, QTableWidgetDescriptionItem::Tooltip));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
 
   midasTreeItemInfoTable->resizeColumnsToContents();
 }
@@ -811,7 +826,7 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
   if(collection->GetDescription() != "" || edit) i++;
   if(collection->GetCopyright() != "" || edit) i++;
   if(collection->GetIntroductoryText() != "" || edit) i++;
-  if(collection->GetSize() != "") i++;
+  if(collection->GetSize() != "" || collectionTreeItem->isClientResource()) i++;
   
   midasTreeItemInfoTable->setRowCount( i );
   i = 0;
@@ -860,6 +875,18 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
     midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
+  else if(collectionTreeItem->isClientResource())
+    {
+    mds::Collection mdsColl;
+    mdsColl.SetDatabase(m_database);
+    mdsColl.SetObject(collection);
+    mdsColl.FetchSize();
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Total Size", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCollectionDescItem(collection, midasUtils::BytesToString(midasUtils::StringToDouble(collection->GetSize())).c_str(), COLLECTION_SIZE, QTableWidgetDescriptionItem::Tooltip));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
 
   midasTreeItemInfoTable->resizeColumnsToContents();
 }
@@ -884,7 +911,7 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
   if(item->GetKeywords().size() || edit) i++;
   if(item->GetAbstract() != "" || edit) i++;
   if(item->GetDescription() != "" || edit) i++;
-  if(item->GetSize() != "") i++;
+  if(item->GetSize() != "" || itemTreeItem->isClientResource()) i++;
 
   midasTreeItemInfoTable->setRowCount(i);
   i = 0;
@@ -938,6 +965,18 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
 
   if(item->GetSize() != "")
     {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Total Size", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, midasUtils::BytesToString(midasUtils::StringToDouble(item->GetSize())).c_str(), ITEM_SIZE, QTableWidgetDescriptionItem::Tooltip));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
+  else if(itemTreeItem->isClientResource())
+    {
+    mds::Item mdsItem;
+    mdsItem.SetDatabase(m_database);
+    mdsItem.SetObject(item);
+    mdsItem.FetchSize();
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Total Size", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasItemDescItem(item, midasUtils::BytesToString(midasUtils::StringToDouble(item->GetSize())).c_str(), ITEM_SIZE, QTableWidgetDescriptionItem::Tooltip));

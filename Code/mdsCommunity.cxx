@@ -87,6 +87,11 @@ bool Community::Fetch()
   return true;
 }
 
+bool Community::FetchSize()
+{
+  return true;
+}
+
 /** Commit */
 bool Community::Commit()
 {

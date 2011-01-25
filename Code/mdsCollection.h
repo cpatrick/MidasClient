@@ -30,6 +30,7 @@ public:
   bool Fetch();
   bool Commit();
   bool FetchTree();
+  bool FetchSize();
   bool Delete(bool deleteOnDisk);
 
   void ParentPathChanged(std::string parentPath);

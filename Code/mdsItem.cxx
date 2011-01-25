@@ -258,6 +258,15 @@ bool Item::FetchTree()
   return true;
 }
 
+bool Item::FetchSize()
+{
+  if(!m_Item)
+    {
+    return false;
+    }
+  return true;
+}
+
 bool Item::Delete(bool deleteOnDisk)
 {
   std::vector<int> children;
