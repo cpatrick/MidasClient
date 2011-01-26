@@ -246,8 +246,8 @@ target_link_libraries(MIDASDesktopLib
   MIDASDesktopUtils
   kwsys
   ${QT_QTCORE_LIBRARY}
-  ${QT_QTMAIN_LIBRARY}
   ${QT_QTGUI_LIBRARY}
+  ${QT_QTMAIN_LIBRARY}
 )
 
 target_link_libraries(MIDASDesktop
@@ -256,29 +256,28 @@ target_link_libraries(MIDASDesktop
 
 install(TARGETS MIDASDesktop DESTINATION bin)
 
-# -----Install Qt Shared libraries on windows-------------
-if ( NOT Q_WS_MAC)
-    if (DEFINED QT_QMAKE_EXECUTABLE)
-        set (QTLIBLIST QtCore QtGui)
+# -----Install Qt Shared libraries-------------
+if (DEFINED QT_QMAKE_EXECUTABLE)
+    set (QTLIBLIST QtCore QtGui)
 
-        if(MSVC)
-            set(TYPE "d")
-            foreach(qtlib ${QTLIBLIST})
-              if(WIN32)
-                get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
+    foreach(qtlib ${QTLIBLIST})
+      if(WIN32)
+        get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
 
-                install(FILES ${QT_DLL_PATH_tmp}/${qtlib}${type}d4.dll
-                  #DESTINATION ./
-                  DESTINATION bin
-                  CONFIGURATIONS Debug
-                  COMPONENT Applications)
-                install(FILES ${QT_DLL_PATH_tmp}/${qtlib}4.dll
-                  #DESTINATION ./
-                  DESTINATION bin
-                  CONFIGURATIONS Release
-                  COMPONENT Applications)
-              endif(WIN32)
-            endforeach(qtlib)
-        endif()
-    endif(DEFINED QT_QMAKE_EXECUTABLE)
-endif()
+        install(FILES ${QT_DLL_PATH_tmp}/${qtlib}${type}d4.dll
+          DESTINATION bin
+          CONFIGURATIONS Debug
+          COMPONENT Applications)
+        install(FILES ${QT_DLL_PATH_tmp}/${qtlib}4.dll
+          DESTINATION bin
+          CONFIGURATIONS Release
+          COMPONENT Applications)
+      endif(WIN32)
+      if(UNIX)
+        install(FILES ${QT_LIBRARY_DIR}/lib${qtlib}.so
+          DESTINATION bin
+          CONFIGURATIONS Release
+          COMPONENT Applications)
+      endif(UNIX)
+    endforeach(qtlib)
+endif(DEFINED QT_QMAKE_EXECUTABLE)
