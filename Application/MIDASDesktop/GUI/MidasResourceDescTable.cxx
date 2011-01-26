@@ -1,4 +1,5 @@
 #include "MidasResourceDescTable.h"
+#include "midasUtils.h"
 
 /** Constructory */
 QTableWidgetDescriptionItem::QTableWidgetDescriptionItem(const char* text, 
@@ -19,6 +20,10 @@ QTableWidgetDescriptionItem::QTableWidgetDescriptionItem(const char* text,
   if ( !(options & Editable) )
     {
     this->setFlags(~Qt::ItemFlags(Qt::ItemIsEditable));
+    }
+  if ( options & WordWrap )
+    {
+    this->setFlags(Qt::ItemFlags(this->flags() | Qt::TextWordWrap));
     }
 }
 

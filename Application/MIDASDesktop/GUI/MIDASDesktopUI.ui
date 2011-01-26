@@ -295,8 +295,17 @@
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
              <widget class="MidasResourceDescTable" name="midasTreeItemInfoTable">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="toolTip">
                <string>Community, Collection or Item detailed information.</string>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarAsNeeded</enum>
               </property>
               <property name="tabKeyNavigation">
                <bool>false</bool>
@@ -310,12 +319,36 @@
               <property name="selectionBehavior">
                <enum>QAbstractItemView::SelectRows</enum>
               </property>
+              <property name="textElideMode">
+               <enum>Qt::ElideNone</enum>
+              </property>
+              <property name="verticalScrollMode">
+               <enum>QAbstractItemView::ScrollPerPixel</enum>
+              </property>
+              <property name="horizontalScrollMode">
+               <enum>QAbstractItemView::ScrollPerPixel</enum>
+              </property>
               <property name="gridStyle">
                <enum>Qt::NoPen</enum>
+              </property>
+              <property name="cornerButtonEnabled">
+               <bool>false</bool>
               </property>
               <property name="columnCount">
                <number>2</number>
               </property>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderStretchLastSection">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderStretchLastSection">
+               <bool>false</bool>
+              </attribute>
               <column/>
               <column/>
              </widget>
@@ -1040,7 +1073,22 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>refreshButton</tabstop>
+  <tabstop>treeViewServer</tabstop>
+  <tabstop>pull_Button</tabstop>
+  <tabstop>push_Button</tabstop>
+  <tabstop>treeViewClient</tabstop>
+  <tabstop>refreshClientButton</tabstop>
+  <tabstop>clientExpandAllButton</tabstop>
+  <tabstop>clientCollapseAllButton</tabstop>
+  <tabstop>midasTreeItemInfoTable</tabstop>
+  <tabstop>editInfoButton</tabstop>
+  <tabstop>logAndSearchTabContainer</tabstop>
   <tabstop>searchQueryEdit</tabstop>
+  <tabstop>searchButton</tabstop>
+  <tabstop>searchItemsListWidget</tabstop>
+  <tabstop>clearLogButton</tabstop>
+  <tabstop>log</tabstop>
  </tabstops>
  <resources>
   <include location="../MIDASDesktopIcons.qrc"/>
