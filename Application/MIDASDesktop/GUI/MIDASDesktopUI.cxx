@@ -855,6 +855,10 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Introductory Text", QTableWidgetDescriptionItem::Bold));
     midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasCollectionDescItem(collection, collection->GetIntroductoryText().c_str(), COLLECTION_INTRODUCTORY, options));
+    /*QLabel* textWidget = new QLabel(midasTreeItemInfoTable);
+    textWidget->setText(collection->GetIntroductoryText().c_str());
+    textWidget->setWordWrap(true); //todo create a new widget class that handles displaying as a label and editing as a text area.
+    midasTreeItemInfoTable->setCellWidget(i, 1, textWidget);*/
     midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
@@ -1026,7 +1030,7 @@ void MIDASDesktopUI::infoPanel(MidasBitstreamTreeItem* bitstreamTreeItem, bool e
     {
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
     midasTreeItemInfoTable->setItem(i,0,new QTableWidgetDescriptionItem("Location", QTableWidgetDescriptionItem::Bold));
-    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, bitstream->GetPath().c_str(), BITSTREAM_PATH, QTableWidgetDescriptionItem::Tooltip));
+    midasTreeItemInfoTable->setItem(i,1,new QTableWidgetMidasBitstreamDescItem(bitstream, bitstream->GetPath().c_str(), BITSTREAM_PATH, QTableWidgetDescriptionItem::Tooltip | QTableWidgetDescriptionItem::WordWrap));
     midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }

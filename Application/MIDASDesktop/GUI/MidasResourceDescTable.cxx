@@ -3,7 +3,7 @@
 
 /** Constructory */
 QTableWidgetDescriptionItem::QTableWidgetDescriptionItem(const char* text, 
-                                                         QTableWidgetDescriptionItem::Options options)
+  QTableWidgetDescriptionItem::Options options)
 {
   if ( options & Tooltip )
     {
