@@ -31,6 +31,7 @@
 #include "midasStatus.h"
 #include "midasAgreementHandler.h"
 #include "mdsResourceUpdateHandler.h"
+#include "midasFileOverwriteHandler.h"
 
 #define WORKING_DIR kwsys::SystemTools::GetCurrentWorkingDirectory
 #define CHANGE_DIR kwsys::SystemTools::ChangeDirectory
@@ -54,6 +55,7 @@ midasSynchronizer::midasSynchronizer()
   this->Database = "";
   this->DatabaseProxy = NULL;
   this->AgreementHandler = NULL;
+  this->OverwriteHandler = NULL;
   this->ResourceUpdateHandler = NULL;
   this->CurrentBitstreams = 0;
   this->TotalBitstreams = 0;
@@ -65,6 +67,16 @@ midasSynchronizer::~midasSynchronizer()
 {
   delete this->DatabaseProxy;
   delete this->Authenticator;
+}
+
+midasFileOverwriteHandler* midasSynchronizer::GetOverwriteHandler()
+{
+  return this->OverwriteHandler;
+}
+
+void midasSynchronizer::SetOverwriteHandler(midasFileOverwriteHandler* handler)
+{
+  this->OverwriteHandler = handler;
 }
 
 midasAuthenticator* midasSynchronizer::GetAuthenticator()
@@ -642,29 +654,41 @@ bool midasSynchronizer::PullBitstream(int parentId)
   status << "Downloading bitstream " << bitstream->GetName();
   this->Log->Status(status.str());
 
-  if(!kwsys::SystemTools::FileExists(bitstream->GetName().c_str(), true))
+  bool download = true;
+  if(kwsys::SystemTools::FileExists(bitstream->GetName().c_str(), true))
     {
-    if(!mws::WebAPI::Instance()->DownloadFile(fields.str().c_str(),
-        bitstream->GetName().c_str()))
+    if(this->OverwriteHandler)
       {
-      //delete the partial data and error out.
-      kwsys::SystemTools::RemoveFile(bitstream->GetName().c_str());
-
-      std::stringstream text;
-      if(this->ShouldCancel)
-        {
-        text << "Download canceled by user.";
-        this->Log->Message(text.str());
-        }
-      else
-        {
-        text << "Connection error during download. "
-          << mws::WebAPI::Instance()->GetErrorMessage();
-        this->Log->Error(text.str());
-        }
-      this->Log->Status(text.str());
-      return false;
+      download = this->OverwriteHandler->HandleConflict(
+        WORKING_DIR() + "/" + bitstream->GetName())
+        == midasFileOverwriteHandler::Overwrite;
       }
+    else
+      {
+      download = false; //if no handler was set we use existing file
+      }
+    }
+
+  if(download && !mws::WebAPI::Instance()->DownloadFile(fields.str().c_str(),
+      bitstream->GetName().c_str()))
+    {
+    //delete the partial data and error out.
+    kwsys::SystemTools::RemoveFile(bitstream->GetName().c_str());
+
+    std::stringstream text;
+    if(this->ShouldCancel)
+      {
+      text << "Download canceled by user.";
+      this->Log->Message(text.str());
+      }
+    else
+      {
+      text << "Connection error during download. "
+        << mws::WebAPI::Instance()->GetErrorMessage();
+      this->Log->Error(text.str());
+      }
+    this->Log->Status(text.str());
+    return false;
     }
 
   int id = this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,

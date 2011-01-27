@@ -85,6 +85,7 @@ set(MIDASSynch_SRCS
   midasDatabaseProxy.h
   midasDotProgressReporter.cxx
   midasDotProgressReporter.h
+  midasFileOverwriteHandler.h
   midasLog.h
   midasLogAware.h
   midasProgressReporter.h

@@ -18,6 +18,7 @@
 struct midasResourceRecord;
 class midasStatus;
 class midasProgressReporter;
+class midasFileOverwriteHandler;
 class midasDatabaseProxy;
 class midasAuthenticator;
 class midasAgreementHandler;
@@ -94,6 +95,9 @@ public:
   void SetResourceUpdateHandler(mds::ResourceUpdateHandler* handler);
   mds::ResourceUpdateHandler* GetResourceUpdateHandler();
 
+  void SetOverwriteHandler(midasFileOverwriteHandler* handler);
+  midasFileOverwriteHandler* GetOverwriteHandler();
+
   void SetClientHandle(std::string handle);
   std::string GetClientHandle();
 
@@ -168,6 +172,7 @@ protected:
   midasDatabaseProxy* DatabaseProxy;
   midasAuthenticator* Authenticator;
   midasAgreementHandler* AgreementHandler;
+  midasFileOverwriteHandler* OverwriteHandler;
   mds::ResourceUpdateHandler* ResourceUpdateHandler;
 };
 
