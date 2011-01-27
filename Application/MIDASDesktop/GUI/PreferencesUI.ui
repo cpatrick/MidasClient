@@ -154,14 +154,17 @@ p, li { white-space: pre-wrap; }
              <item>
               <widget class="QCheckBox" name="copyResourcesCheckBox">
                <property name="text">
-                <string>Copy all resources into this tree</string>
+                <string>Place all resources into this tree</string>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="copyNowButton">
+               <property name="toolTip">
+                <string>Move or copy all local data to the new location on disk specified above</string>
+               </property>
                <property name="text">
-                <string>Copy Now</string>
+                <string>Relocate Now</string>
                </property>
               </widget>
              </item>
@@ -279,8 +282,8 @@ p, li { white-space: pre-wrap; }
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>234</width>
-            <height>185</height>
+            <width>287</width>
+            <height>279</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">

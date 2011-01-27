@@ -52,6 +52,7 @@ public:
                                          const std::string& password,
                                          const std::string& appName);
   static std::string ComputeStringMD5(const char* input);
+  static bool RenameFile(const char* oldname, const char* newname);
 };
 
 #endif

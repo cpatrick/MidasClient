@@ -801,25 +801,26 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
 }
 
 //--------------------------------------------------------------------------
-bool midasDatabaseProxy::UnifyTree()
+bool midasDatabaseProxy::UnifyTree(bool copy)
 {
   std::string rootDir = this->GetSetting(midasDatabaseProxy::ROOT_DIR);
   kwsys::SystemTools::ConvertToUnixSlashes(rootDir);
   rootDir = midasUtils::TrimTrailingSlash(rootDir);
-  this->Log->Message("Copying all resources under " + rootDir);
+  this->Log->Message("Relocating all resources under " + rootDir);
   std::vector<mdo::Community*> topLevel = this->GetTopLevelCommunities(true);
 
   bool ok = true;
   for(std::vector<mdo::Community*>::iterator i = topLevel.begin();
       i != topLevel.end(); ++i)
     {
-    ok &= this->Relocate(*i, rootDir);
+    ok &= this->Relocate(*i, rootDir, copy);
     }
   return ok;
 }
 
 //--------------------------------------------------------------------------
-bool midasDatabaseProxy::Relocate(mdo::Community* comm, std::string parentDir)
+bool midasDatabaseProxy::Relocate(mdo::Community* comm, std::string parentDir,
+                                  bool copy)
 {
   std::string copyTo = parentDir + "/" + comm->GetName();
   
@@ -847,18 +848,19 @@ bool midasDatabaseProxy::Relocate(mdo::Community* comm, std::string parentDir)
   for(std::vector<mdo::Community*>::const_iterator i =
       comm->GetCommunities().begin(); i != comm->GetCommunities().end(); ++i)
     {
-    ok &= this->Relocate(*i, copyTo);
+    ok &= this->Relocate(*i, copyTo, copy);
     }
   for(std::vector<mdo::Collection*>::const_iterator i =
       comm->GetCollections().begin(); i != comm->GetCollections().end(); ++i)
     {
-    ok &= this->Relocate(*i, copyTo);
+    ok &= this->Relocate(*i, copyTo, copy);
     }
   return ok;
 }
 
 //--------------------------------------------------------------------------
-bool midasDatabaseProxy::Relocate(mdo::Collection* coll, std::string parentDir)
+bool midasDatabaseProxy::Relocate(mdo::Collection* coll,
+                                  std::string parentDir, bool copy)
 {
   std::string copyTo = parentDir + "/" + coll->GetName();
   
@@ -886,13 +888,14 @@ bool midasDatabaseProxy::Relocate(mdo::Collection* coll, std::string parentDir)
   for(std::vector<mdo::Item*>::const_iterator i = coll->GetItems().begin();
       i != coll->GetItems().end(); ++i)
     {
-    ok &= this->Relocate(*i, copyTo);
+    ok &= this->Relocate(*i, copyTo, copy);
     }
   return ok;
 }
 
 //--------------------------------------------------------------------------
-bool midasDatabaseProxy::Relocate(mdo::Item* item, std::string parentDir)
+bool midasDatabaseProxy::Relocate(mdo::Item* item, std::string parentDir,
+                                  bool copy)
 {
   std::string copyTo = parentDir + "/" + item->GetName();
   
@@ -920,14 +923,14 @@ bool midasDatabaseProxy::Relocate(mdo::Item* item, std::string parentDir)
   for(std::vector<mdo::Bitstream*>::const_iterator i =
       item->GetBitstreams().begin(); i != item->GetBitstreams().end(); ++i)
     {
-    ok &= this->Relocate(*i, copyTo);
+    ok &= this->Relocate(*i, copyTo, copy);
     }
   return ok;
 }
 
 //--------------------------------------------------------------------------
 bool midasDatabaseProxy::Relocate(mdo::Bitstream* bitstream,
-                                  std::string parentDir)
+                                  std::string parentDir, bool copy)
 {
   std::string copyTo = parentDir + "/" + bitstream->GetName();
   std::string path = this->GetRecordByUuid(bitstream->GetUuid()).Path;
@@ -935,18 +938,32 @@ bool midasDatabaseProxy::Relocate(mdo::Bitstream* bitstream,
     {
     return true; //if the new path is the same as old one, don't copy
     }
-  
+
   bitstream->SetFetched(false);
   std::stringstream text;
   text << "Relocating bitstream to " << copyTo << std::endl;
   this->Log->Status(text.str());
-  if(!kwsys::SystemTools::CopyAFile(path.c_str(),
-    copyTo.c_str()))
+  
+  if(copy)
     {
-    std::stringstream error;
-    error << "Error: unable to copy bitstream to " << copyTo << std::endl;
-    this->Log->Error(error.str());
-    return false;
+    if(!kwsys::SystemTools::CopyAFile(path.c_str(),
+      copyTo.c_str()))
+      {
+      std::stringstream error;
+      error << "Error: unable to copy bitstream to " << copyTo << std::endl;
+      this->Log->Error(error.str());
+      return false;
+      }
+    }
+  else //move
+    {
+    if(!midasUtils::RenameFile(path.c_str(), copyTo.c_str()))
+      {
+      std::stringstream error;
+      error << "Error: unable to move bitstream to " << copyTo << std::endl;
+      this->Log->Error(error.str());
+      return false;
+      }
     }
   long lastModified = kwsys::SystemTools::ModifiedTime(copyTo.c_str());
 

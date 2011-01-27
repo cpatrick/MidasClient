@@ -15,11 +15,15 @@ public:
 
   virtual void run();
 
+  bool isCopy();
+  void setCopy(bool val);
+
 signals:
   void threadComplete();
 
 private:
   MIDASDesktopUI* m_Parent;
+  bool            m_Copy;
 };
 
 #endif

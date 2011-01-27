@@ -6,6 +6,7 @@
 #include "UnifyTreeThread.h"
 #include <QString>
 #include <QFileDialog>
+#include <QMessageBox>
 
 PreferencesUI::PreferencesUI(MIDASDesktopUI *parent):
   QDialog(parent), m_parent(parent)
@@ -29,6 +30,21 @@ PreferencesUI::~PreferencesUI()
 
 void PreferencesUI::unifyTree()
 {
+  bool copy = false;
+  switch(QMessageBox::question(this, "Relocate Files",
+    "Do you want to <b>move</b> the files, or <b>copy</b> them?",
+    "Move", "Copy", "Cancel"))
+    {
+    case 0:
+      copy = false;
+      break;
+    case 1:
+      copy = true;
+      break;
+    default:
+      return;
+    }
+
   this->accept();
 
   if(m_UnifyTreeThread)
@@ -43,6 +59,7 @@ void PreferencesUI::unifyTree()
   delete m_UnifyTreeThread;
 
   m_UnifyTreeThread = new UnifyTreeThread(m_parent);
+  m_UnifyTreeThread->setCopy(copy);
     
   connect(m_UnifyTreeThread, SIGNAL(threadComplete()), this, SLOT(unifyTreeDone()));
 

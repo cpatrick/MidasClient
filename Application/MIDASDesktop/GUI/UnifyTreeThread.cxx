@@ -5,10 +5,21 @@
 
 UnifyTreeThread::UnifyTreeThread(MIDASDesktopUI* parent) : m_Parent(parent)
 {
+  m_Copy = false;
 }
 
 UnifyTreeThread::~UnifyTreeThread()
 {
+}
+
+void UnifyTreeThread::setCopy(bool val)
+{
+  m_Copy = val;
+}
+
+bool UnifyTreeThread::isCopy()
+{
+  return m_Copy;
 }
 
 void UnifyTreeThread::run()
@@ -17,7 +28,7 @@ void UnifyTreeThread::run()
   tempDbProxy.SetLog(m_Parent->GetLog());
   m_Parent->getPollFilesystemThread()->Pause();
 
-  if(tempDbProxy.UnifyTree())
+  if(tempDbProxy.UnifyTree(m_Copy))
     {
     m_Parent->GetLog()->Message("Finished relocating resources");
     }
