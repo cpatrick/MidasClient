@@ -274,10 +274,9 @@ if (DEFINED QT_QMAKE_EXECUTABLE)
           COMPONENT Applications)
       endif(WIN32)
       if(UNIX)
-        install(FILES ${QT_LIBRARY_DIR}/lib${qtlib}.so
+        install(FILES "${QT_LIBRARY_DIR}/lib${qtlib}.so"
           DESTINATION bin
-          CONFIGURATIONS Release
-          COMPONENT Applications)
+          )
       endif(UNIX)
     endforeach(qtlib)
 endif(DEFINED QT_QMAKE_EXECUTABLE)
