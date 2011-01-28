@@ -99,6 +99,8 @@ set(MIDASDesktopUI_SRCS
   GUI/AddKeywordUI.cxx
   GUI/AgreementUI.h
   GUI/AgreementUI.cxx
+  GUI/TextEditDelegate.h
+  GUI/TextEditDelegate.cxx
 )
 
 set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MIDASDesktop.rc)
@@ -156,6 +158,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/GUIProgress.h
   GUI/GUILogger.h
   GUI/ResourceEdit.h
+  GUI/TextEditDelegate.h
   GUI/ButtonDelegate.h
   GUI/ButtonLineEdit.h
   GUI/ButtonEditUI.h

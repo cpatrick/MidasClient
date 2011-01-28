@@ -31,6 +31,7 @@ class midasDatabaseProxy;
 class midasProgressReporter;
 class midasAgreementHandler;
 class ButtonDelegate;
+class TextEditDelegate;
 
 class RefreshServerTreeThread;
 class SynchronizerThread;
@@ -240,9 +241,9 @@ private:
   QPushButton *               cancelButton;
   // ------------- status bar -------------
 
-  QPushButton *               saveButton;
   ButtonDelegate *            authorsEditor;
   ButtonDelegate *            keywordsEditor;
+  TextEditDelegate *          textMetadataEditor;
 
   // ------------- tray ----------------
   QAction *                   showAction;

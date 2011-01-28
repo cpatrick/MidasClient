@@ -46,7 +46,7 @@ public:
     Bold = 0x1,
     Tooltip = 0x2, 
     Editable = 0x4,
-    WordWrap = 0x8
+    AlignLeft = 0x8
     };
   Q_DECLARE_FLAGS(Options, Option)
 

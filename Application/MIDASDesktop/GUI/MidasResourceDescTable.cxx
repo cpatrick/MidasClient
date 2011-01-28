@@ -5,10 +5,10 @@
 QTableWidgetDescriptionItem::QTableWidgetDescriptionItem(const char* text, 
   QTableWidgetDescriptionItem::Options options)
 {
-  if ( options & Tooltip )
+  /*if ( options & Tooltip )
     {
     this->setToolTip( text ); 
-    }
+    }*/
   this->setText( text );
   if ( options & Bold )
     {
@@ -16,15 +16,18 @@ QTableWidgetDescriptionItem::QTableWidgetDescriptionItem(const char* text,
     boldfont.setBold(true);
     this->setFont(boldfont); 
     }
-  this->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
   if ( !(options & Editable) )
     {
     this->setFlags(~Qt::ItemFlags(Qt::ItemIsEditable));
     }
-  if ( options & WordWrap )
+  /*if ( options & AlignLeft )
     {
-    this->setFlags(Qt::ItemFlags(this->flags() | Qt::TextWordWrap));
+    this->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     }
+  else
+    {
+    this->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    }*/
 }
 
 void MidasResourceDescTable::contextMenuEvent ( QContextMenuEvent * e )
