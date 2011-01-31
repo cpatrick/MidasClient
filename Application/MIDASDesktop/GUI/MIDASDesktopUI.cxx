@@ -649,6 +649,7 @@ void MIDASDesktopUI::enableActions(bool val)
 {
   this->activateActions(val, MIDASDesktopUI::ACTION_CONNECTED);
   this->cancelButton->setEnabled(!val);
+  this->refreshClientButton->setEnabled(val);
 }
 
 void MIDASDesktopUI::enableClientActions(bool val)
