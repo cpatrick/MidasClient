@@ -24,12 +24,14 @@ class PreferencesUI;
 class AddAuthorUI;
 class AddKeywordUI;
 class AgreementUI;
+class FileOverwriteUI;
 
 class midasSynchronizer;
 class midasAuthenticator;
 class midasDatabaseProxy;
 class midasProgressReporter;
 class midasAgreementHandler;
+class midasFileOverwriteHandler;
 class ButtonDelegate;
 class TextEditDelegate;
 
@@ -94,6 +96,7 @@ public:
   midasProgressReporter* getProgress() { return m_progress; }
   PollFilesystemThread* getPollFilesystemThread() { return m_PollFilesystemThread; }
   midasAgreementHandler* getAgreementHandler() { return m_agreementHandler; }
+  midasFileOverwriteHandler* getFileOverwriteHandler() { return m_overwriteHandler; }
   QTextEdit* getLogTextEdit() { return log; }
 
 protected:
@@ -124,6 +127,7 @@ public slots:
   void signOut();
   void checkingUserAgreement();
   void showUserAgreementDialog();
+  void showFileOverwriteDialog(const QString& path);
   void createProfile(std::string name, std::string email,
                      std::string apiName, std::string apiKey,
                      std::string rootDir);
@@ -232,6 +236,7 @@ private:
   AddAuthorUI*                dlg_addAuthorUI;
   AddKeywordUI*               dlg_addKeywordUI;
   AgreementUI*                dlg_agreementUI;
+  FileOverwriteUI*            dlg_overwriteUI;
   // ------------- UI Dialogs -------------
 
   // ------------- status bar -------------
@@ -265,6 +270,7 @@ private:
   std::string                 m_url;
   midasProgressReporter*      m_progress;
   midasAgreementHandler*      m_agreementHandler;
+  midasFileOverwriteHandler*  m_overwriteHandler;
   std::vector<std::string>    m_dirtyUuids;
   std::vector<mdo::Object*>   m_SearchResults;
   mds::ResourceUpdateHandler* m_resourceUpdateHandler;

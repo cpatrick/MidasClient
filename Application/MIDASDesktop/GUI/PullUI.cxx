@@ -120,6 +120,7 @@ void PullUI::accept()
   synchronizer->SetServerURL(m_Parent->getSynchronizer()->GetServerURL());
   synchronizer->SetAgreementHandler(m_Parent->getAgreementHandler());
   synchronizer->SetResourceUpdateHandler(m_Parent->getResourceUpdateHandler());
+  synchronizer->SetOverwriteHandler(m_Parent->getFileOverwriteHandler());
   m_SynchronizerThread->SetSynchronizer(synchronizer);
   m_SynchronizerThread->SetDelete(true);
 

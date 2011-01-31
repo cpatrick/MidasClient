@@ -29,7 +29,7 @@ public:
     Overwrite = 1
   };
 
-  virtual Action HandleConflict(std::string path);
+  virtual Action HandleConflict(std::string path) = 0;
 };
 
 #endif

@@ -25,12 +25,15 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="bitstreamLabel">
+    <widget class="QLabel" name="pathLabel">
      <property name="text">
       <string>&lt;b&gt;bitstream name here&lt;/b&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

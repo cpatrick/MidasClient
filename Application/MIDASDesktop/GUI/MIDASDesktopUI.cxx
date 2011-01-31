@@ -35,6 +35,7 @@
 #include "midasProgressReporter.h"
 
 #include "GUIAgreement.h"
+#include "GUIFileOverwriteHandler.h"
 #include "GUILogger.h"
 #include "GUIProgress.h"
 #include "Utils.h"
@@ -47,6 +48,7 @@
 #include "AddKeywordUI.h"
 #include "AddAuthorUI.h"
 #include "AgreementUI.h"
+#include "FileOverwriteUI.h"
 #include "CreateMidasResourceUI.h"
 #include "CreateProfileUI.h"
 #include "DeleteResourceUI.h"
@@ -120,6 +122,9 @@ MIDASDesktopUI::MIDASDesktopUI()
   m_agreementHandler =         new GUIAgreement( this );
   dlg_agreementUI =            new AgreementUI( this,
     dynamic_cast<GUIAgreement*>(this->m_agreementHandler) );
+  m_overwriteHandler =         new GUIFileOverwriteHandler( this );
+  dlg_overwriteUI =            new FileOverwriteUI( this,
+    dynamic_cast<GUIFileOverwriteHandler*>(this->m_overwriteHandler));
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
@@ -305,6 +310,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->Log = new GUILogger(this);
   this->m_auth->SetLog(this->Log);
   this->m_synch->SetLog(this->Log);
+  this->m_synch->SetOverwriteHandler(this->m_overwriteHandler);
   this->m_synch->SetProgressReporter(m_progress);
   this->m_synch->SetResourceUpdateHandler(m_resourceUpdateHandler);
   this->m_signIn = false;
@@ -352,6 +358,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_addAuthorUI;
   delete dlg_addKeywordUI;
   delete dlg_agreementUI;
+  delete dlg_overwriteUI;
   delete dlg_deleteClientResourceUI;
   delete dlg_deleteServerResourceUI;
   delete stateLabel;
@@ -363,6 +370,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete m_progress;
   delete m_synch;
   delete m_agreementHandler;
+  delete m_overwriteHandler;
   if(m_RefreshThread && m_RefreshThread->isRunning())
     {
     m_RefreshThread->terminate();
@@ -909,7 +917,7 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
 
   midasTreeItemInfoTable->resizeColumnsToContents();
   int leftoverSpace = midasTreeItemInfoTable->width() - midasTreeItemInfoTable->columnWidth(0) - midasTreeItemInfoTable->columnWidth(1);
-  midasTreeItemInfoTable->horizontalHeader()->setStretchLastSection(false);
+  midasTreeItemInfoTable->horizontalHeader()->setStretchLastSection(leftoverSpace > 0);
   midasTreeItemInfoTable->resizeColumnsToContents();
   midasTreeItemInfoTable->resizeRowsToContents();
 }
@@ -1944,6 +1952,12 @@ void MIDASDesktopUI::estimatedTimeUpdate(double seconds)
 void MIDASDesktopUI::showUserAgreementDialog()
 {
   dlg_agreementUI->exec();
+}
+
+void MIDASDesktopUI::showFileOverwriteDialog(const QString& path)
+{
+  dlg_overwriteUI->setPath(path);
+  dlg_overwriteUI->exec();
 }
 
 void MIDASDesktopUI::checkingUserAgreement()

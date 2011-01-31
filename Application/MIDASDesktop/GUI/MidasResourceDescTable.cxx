@@ -1,7 +1,7 @@
 #include "MidasResourceDescTable.h"
 #include "midasUtils.h"
 
-/** Constructory */
+/** Constructor */
 QTableWidgetDescriptionItem::QTableWidgetDescriptionItem(const char* text, 
   QTableWidgetDescriptionItem::Options options)
 {

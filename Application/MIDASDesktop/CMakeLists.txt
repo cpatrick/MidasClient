@@ -38,6 +38,8 @@ set(MIDASDesktopUI_SRCS
   GUI/PullUI.h
   GUI/GUIAgreement.cxx
   GUI/GUIAgreement.h
+  GUI/GUIFileOverwriteHandler.h
+  GUI/GUIFileOverwriteHandler.cxx
   GUI/GUILogger.cxx
   GUI/GUILogger.h
   GUI/GUIProgress.cxx
@@ -99,6 +101,8 @@ set(MIDASDesktopUI_SRCS
   GUI/AddKeywordUI.cxx
   GUI/AgreementUI.h
   GUI/AgreementUI.cxx
+  GUI/FileOverwriteUI.h
+  GUI/FileOverwriteUI.cxx
   GUI/TextEditDelegate.h
   GUI/TextEditDelegate.cxx
 )
@@ -118,6 +122,7 @@ set(MIDASDesktopUI_UI_SRCS
   GUI/AddAuthorUI.ui
   GUI/AddKeywordUI.ui
   GUI/AgreementUI.ui
+  GUI/FileOverwriteUI.ui
 )
 
 set(MIDASDesktopUI_RCCS MIDASDesktopIcons.qrc)
@@ -155,6 +160,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/SynchronizerThread.h
   GUI/UnifyTreeThread.h
   GUI/GUIAgreement.h
+  GUI/GUIFileOverwriteHandler.h
   GUI/GUIProgress.h
   GUI/GUILogger.h
   GUI/ResourceEdit.h
@@ -165,6 +171,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/AddAuthorUI.h
   GUI/AddKeywordUI.h
   GUI/AgreementUI.h
+  GUI/FileOverwriteUI.h
   GUI/TreeViewUpdateHandler.h
 )
 
