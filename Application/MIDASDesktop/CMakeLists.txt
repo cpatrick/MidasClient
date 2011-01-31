@@ -198,7 +198,6 @@ endif(WIN32)
 
 if(UNIX)
   find_package(X11)
-  find_package(PNG)
   
   find_library(XFT_LIBRARY Xft)
   find_library(GLIB_LIBRARY glib-2.0)
@@ -211,7 +210,7 @@ if(UNIX)
   find_library(CRYPT_LIBRARY crypt)
 
   if(NOT APPLE)
-    target_link_libraries(MIDASDesktopLib ${PNG_LIBRARIES} ${X11_LIBRARIES})
+    target_link_libraries(MIDASDesktopLib ${X11_LIBRARIES})
     
     if(XFT_LIBRARY)
       target_link_libraries(MIDASDesktopLib ${XFT_LIBRARY})
@@ -283,10 +282,5 @@ if (DEFINED QT_QMAKE_EXECUTABLE)
           CONFIGURATIONS Release
           COMPONENT Applications)
       endif(WIN32)
-      if(UNIX)
-        install(FILES "${QT_LIBRARY_DIR}/lib${qtlib}.so"
-          DESTINATION bin
-          )
-      endif(UNIX)
     endforeach(qtlib)
 endif(DEFINED QT_QMAKE_EXECUTABLE)
