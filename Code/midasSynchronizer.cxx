@@ -823,6 +823,7 @@ bool midasSynchronizer::PullCollection(int parentId)
       std::stringstream s;
       s << (*i)->GetId();
       this->SetServerHandle(s.str());
+      this->SetResourceType(midasResourceType::ITEM);
       this->PullItem(id);
       }
     CHANGE_DIR(temp.c_str());
@@ -983,6 +984,7 @@ void midasSynchronizer::RecurseCommunities(int parentId,
     std::stringstream s;
     s << (*i)->GetId();
     this->SetServerHandle(s.str());
+    this->SetResourceType(midasResourceType::COLLECTION);
     this->PullCollection(parentId);
     }
   for(std::vector<mdo::Community*>::const_iterator i =
@@ -992,6 +994,7 @@ void midasSynchronizer::RecurseCommunities(int parentId,
     std::stringstream s;
     s << (*i)->GetId();
     this->SetServerHandle(s.str());
+    this->SetResourceType(midasResourceType::COMMUNITY);
     this->PullCommunity(parentId);
     }
 }
@@ -1103,6 +1106,7 @@ bool midasSynchronizer::PullItem(int parentId)
       std::stringstream s;
       s << (*i)->GetId();
       this->SetServerHandle(s.str());
+      this->SetResourceType(midasResourceType::BITSTREAM);
       this->PullBitstream(id);
       }
     CHANGE_DIR(temp.c_str());
