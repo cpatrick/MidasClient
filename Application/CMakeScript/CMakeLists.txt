@@ -12,6 +12,9 @@ if(BUILD_MIDASCPP_TESTING)
 
   midas_add_test(TestAddMidasTest "${CMAKE_COMMAND}" -E compare_files MIDAS{test1/input/add2.png.md5} "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" MIDAS_FETCH_ONLY{test1/input/add2.png.md5})
   set_tests_properties(TestAddMidasTest_fetchData PROPERTIES PASS_REGULAR_EXPRESSION "Data is here:.*/midas.bitstream.by.hash\\?hash=879071fb20d959235fac207f36773851&algorithm=MD5")
+  
+  midas_add_test(MIDAS_DIRECTORY "${CMAKE_COMMAND}" -E echo MIDAS_DIRECTORY{test1/input})
+  set_tests_properties(MIDAS_DIRECTORY PROPERTIES PASS_REGULAR_EXPRESSION "${MIDASCPP_BINARY_DIR}/MIDAS_Data/test1/input")
 
-  set_tests_properties(TestAddMidasTest TestAddMidasTest_fetchData DeleteDownloadedData DeleteDownloadedSymlink PROPERTIES LABELS "CMakeScript")
+  set_tests_properties(TestAddMidasTest TestAddMidasTest_fetchData DeleteDownloadedData DeleteDownloadedSymlink MIDAS_DIRECTORY MIDAS_DIRECTORY_fetchData PROPERTIES LABELS "CMakeScript")
 endif(BUILD_MIDASCPP_TESTING)

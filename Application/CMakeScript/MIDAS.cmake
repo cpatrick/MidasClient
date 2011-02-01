@@ -85,31 +85,70 @@ function(midas_add_test)
     if(arg MATCHES "MIDAS[a-zA-Z_]*{[^}]*}")
       string(REGEX MATCH "MIDAS[a-zA-Z_]*{([^}]*)}" toReplace "${arg}")
       string(REGEX MATCH "^MIDAS[a-zA-Z_]*" keyword "${toReplace}")
-      string(REGEX REPLACE "MIDAS[a-zA-Z_]*{([^}]*)}" "\\1" keyFile "${toReplace}")
-      # Split up the checksum extension from the real filename
-      string(REGEX MATCH "\\.[^\\.]*$" hash_alg "${keyFile}")
-      string(REGEX REPLACE "\\.[^\\.]*$" "" base_file "${keyFile}")
-      string(REPLACE "." "" hash_alg "${hash_alg}")
-      string(TOUPPER "${hash_alg}" hash_alg)
-      get_filename_component(base_filepath "${base_file}" PATH)
-      get_filename_component(base_filename "${base_file}" NAME)
-      get_filename_component(base_fileext  "${base_file}" EXT)
+      string(REGEX REPLACE "MIDAS[a-zA-Z_]*{([^}]*)}" "\\1" parameter "${toReplace}")
+      if(keyword STREQUAL "MIDAS_DIRECTORY")
+        file(GLOB fileList RELATIVE "${MIDAS_KEY_DIR}" "${MIDAS_KEY_DIR}/${parameter}/*")
+        foreach(keyFile ${fileList})
+          if(NOT IS_DIRECTORY "${MIDAS_KEY_DIR}/${keyFile}")
+            _process_keyfile("${keyFile}" ${testName})
+          endif(NOT IS_DIRECTORY "${MIDAS_KEY_DIR}/${keyFile}")
+        endforeach(keyFile ${fileList})
+      else(keyword STREQUAL "MIDAS_DIRECTORY")
+        _process_keyfile("${parameter}" ${testName})
+      endif(keyword STREQUAL "MIDAS_DIRECTORY")
 
-      # Resolve file location
-      if(NOT EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
-        message(FATAL_ERROR "MIDAS key file ${MIDAS_KEY_DIR}/${keyFile} does not exist.")
-      endif(NOT EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
+      if(keyword STREQUAL "MIDAS_DIRECTORY")
+        string(REGEX REPLACE ${toReplace} "${MIDAS_DATA_DIR}/${parameter}" newArg "${arg}")
+        list(APPEND testArgs ${newArg})
+      elseif(NOT keyword STREQUAL "MIDAS_FETCH_ONLY")
+        string(REGEX REPLACE ${toReplace} "${MIDAS_DATA_DIR}/${base_file}" newArg "${arg}")
+        list(APPEND testArgs ${newArg})
+      endif(keyword STREQUAL "MIDAS_DIRECTORY")
+    else(arg MATCHES "MIDAS[a-zA-Z_]*{[^}]*}")
+      list(APPEND testArgs ${arg})
+    endif(arg MATCHES "MIDAS[a-zA-Z_]*{[^}]*}")
+  endforeach(arg)
 
-      # Obtain the checksum
-      file(READ "${MIDAS_KEY_DIR}/${keyFile}" checksum)
+  file(WRITE "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake"
+       "#This is an auto generated file -- do not edit\n\n")
+  list(REMOVE_DUPLICATES downloadScripts)
+  foreach(downloadScript ${downloadScripts})
+    file(APPEND "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake" "include(\"${downloadScript}\")\n")
+  endforeach(downloadScript)
 
-      # Write the test script file for downloading
-      if(UNIX)
-        set(cmake_symlink create_symlink)
-      else()
-        set(cmake_symlink copy) # Windows has no symlinks; copy instead.
-      endif()
-      file(WRITE "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/fetch_${checksum}_${base_filename}.cmake"
+  add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake")
+  set_tests_properties(${testName}_fetchData PROPERTIES FAIL_REGULAR_EXPRESSION "(Error downloading)|(Error: Computed checksum)")
+  # Finally, create the test
+  add_test(${testArgs})
+  set_tests_properties(${testName} PROPERTIES DEPENDS ${testName}_fetchData)
+endfunction(midas_add_test)
+
+# Helper macro to write the download scripts for MIDAS.*{} arguments
+macro(_process_keyfile keyFile testName)
+  # Split up the checksum extension from the real filename
+  string(REGEX MATCH "\\.[^\\.]*$" hash_alg "${keyFile}")
+  string(REGEX REPLACE "\\.[^\\.]*$" "" base_file "${keyFile}")
+  string(REPLACE "." "" hash_alg "${hash_alg}")
+  string(TOUPPER "${hash_alg}" hash_alg)
+  get_filename_component(base_filepath "${base_file}" PATH)
+  get_filename_component(base_filename "${base_file}" NAME)
+  get_filename_component(base_fileext  "${base_file}" EXT)
+
+  # Resolve file location
+  if(NOT EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
+    message(FATAL_ERROR "MIDAS key file ${MIDAS_KEY_DIR}/${keyFile} does not exist.")
+  endif(NOT EXISTS "${MIDAS_KEY_DIR}/${keyFile}")
+
+  # Obtain the checksum
+  file(READ "${MIDAS_KEY_DIR}/${keyFile}" checksum)
+
+  # Write the test script file for downloading
+  if(UNIX)
+    set(cmake_symlink create_symlink)
+  else()
+    set(cmake_symlink copy) # Windows has no symlinks; copy instead.
+  endif()
+  file(WRITE "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/fetch_${checksum}_${base_filename}.cmake"
   "message(STATUS \"Data is here: ${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg}\")
 if(NOT EXISTS \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
   file(DOWNLOAD \"${MIDAS_REST_URL}/midas.bitstream.by.hash?hash=${checksum}&algorithm=${hash_alg}\" \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${testName}_${checksum}\" ${MIDAS_DOWNLOAD_TIMEOUT_STR} STATUS status)
@@ -139,27 +178,6 @@ file(REMOVE \"${MIDAS_DATA_DIR}/${testName}_${base_file}\")
 execute_process(COMMAND \"${CMAKE_COMMAND}\" -E ${cmake_symlink} \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" WORKING_DIRECTORY \"${MIDAS_DATA_DIR}\")
 file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" \"${MIDAS_DATA_DIR}/${base_file}\")
 ")
-
-      list(APPEND downloadScripts "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/fetch_${checksum}_${base_filename}.cmake")
-      if(NOT keyword STREQUAL "MIDAS_FETCH_ONLY")
-        string(REGEX REPLACE ${toReplace} "${MIDAS_DATA_DIR}/${base_file}" newArg "${arg}")
-        list(APPEND testArgs ${newArg})
-      endif(NOT keyword STREQUAL "MIDAS_FETCH_ONLY")
-    else(arg MATCHES "MIDAS[a-zA-Z_]*{[^}]*}")
-      list(APPEND testArgs ${arg})
-    endif(arg MATCHES "MIDAS[a-zA-Z_]*{[^}]*}")
-  endforeach(arg)
-
-  file(WRITE "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake"
-       "#This is an auto generated file -- do not edit\n\n")
-  list(REMOVE_DUPLICATES downloadScripts)
-  foreach(downloadScript ${downloadScripts})
-    file(APPEND "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake" "include(\"${downloadScript}\")\n")
-  endforeach(downloadScript)
-
-  add_test(${testName}_fetchData "${CMAKE_COMMAND}" -P "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/${testName}_fetchData.cmake")
-  set_tests_properties(${testName}_fetchData PROPERTIES FAIL_REGULAR_EXPRESSION "(Error downloading)|(Error: Computed checksum)")
-  # Finally, create the test
-  add_test(${testArgs})
-  set_tests_properties(${testName} PROPERTIES DEPENDS ${testName}_fetchData)
-endfunction(midas_add_test)
+  
+  list(APPEND downloadScripts "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/fetch_${checksum}_${base_filename}.cmake")
+endmacro(_process_keyfile)

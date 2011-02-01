@@ -198,7 +198,6 @@ endif(WIN32)
 
 if(UNIX)
   find_package(X11)
-  
   find_library(XFT_LIBRARY Xft)
   find_library(GLIB_LIBRARY glib-2.0)
   find_library(GTHREAD_LIBRARY gthread-2.0)
