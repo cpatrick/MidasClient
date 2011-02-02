@@ -135,8 +135,13 @@ RestXMLParser* WebAPI::GetRestXMLParser()
 // Download a file 
 bool WebAPI::DownloadFile(const char* url, const char* filename)
 {
+  std::string fullUrl(url);
+  if(!m_APIToken.empty())
+    {
+    fullUrl += "&token=" + m_APIToken;
+    }
   m_RestAPI->SetXMLParser(NULL);
-  bool success = m_RestAPI->Download(filename,url,RestAPI::FILE);
+  bool success = m_RestAPI->Download(filename,fullUrl,RestAPI::FILE);
   m_RestAPI->SetXMLParser(m_RestXMLParser);
   return success;
 }
