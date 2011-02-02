@@ -266,7 +266,7 @@ install(TARGETS MIDASDesktop DESTINATION bin)
 
 # -----Install Qt Shared libraries-------------
 if (DEFINED QT_QMAKE_EXECUTABLE)
-    set (QTLIBLIST QtCore QtGui)
+    set (QTLIBLIST QTCORE QTGUI)
     set (QT_INSTALL_LIB_DIR bin)
     foreach(qtlib ${QTLIBLIST})
 	  if(APPLE)
