@@ -276,10 +276,14 @@ if (DEFINED QT_QMAKE_EXECUTABLE)
         # Install .so and versioned .so.x.y
         get_filename_component(QT_LIB_DIR_tmp ${QT_${qtlib}_LIBRARY_RELEASE} PATH)
         get_filename_component(QT_LIB_NAME_tmp ${QT_${qtlib}_LIBRARY_RELEASE} NAME)
-        install(DIRECTORY ${QT_LIB_DIR_tmp}/ 
-          DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime
-          FILES_MATCHING PATTERN "${QT_LIB_NAME_tmp}*"
-          PATTERN "${QT_LIB_NAME_tmp}*.debug" EXCLUDE)
+        file(GLOB libFiles_tmp "${QT_LIB_DIR_tmp}/${QT_LIB_NAME_tmp}*")
+        foreach(libFile ${libFiles_tmp})
+          if(NOT libFile MATCHES "\\.debug")
+            install(FILES ${libFile}
+              COMPONENT Runtime
+              DESTINATION ${QT_INSTALL_LIB_DIR})
+          endif()
+        endforeach()
       elseif(WIN32)
         get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
 
