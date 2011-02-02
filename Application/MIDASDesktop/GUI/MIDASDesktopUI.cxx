@@ -196,7 +196,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeViewClient, SIGNAL(resourceDropped(int, int)),
     this, SLOT( pullRecursive(int, int) ) );
 
-  connect(treeViewClient, SIGNAL( bitstreamOpenRequest() ), this, SLOT( viewDirectory() ) );
+  connect(treeViewClient, SIGNAL( bitstreamOpenRequest() ), this, SLOT( openBitstream() ) );
 
   connect(treeViewServer, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
     this, SLOT( updateInfoPanel(const MidasCommunityTreeItem*) ));
@@ -1257,7 +1257,27 @@ void MIDASDesktopUI::viewDirectory()
 {
   MidasTreeItem* resource = const_cast<MidasTreeItem*>(
     treeViewClient->getSelectedMidasTreeItem());
+  midasResourceRecord record = m_database->GetRecordByUuid(resource->getUuid());
 
+  std::string path = record.Type == midasResourceType::BITSTREAM ?
+    kwsys::SystemTools::GetParentDirectory(record.Path.c_str())
+    : record.Path;
+
+  path = "file:" + path;
+  QUrl url(path.c_str());
+  if(!QDesktopServices::openUrl(url))
+    {
+    std::stringstream text;
+    text << "The operating system does not know how to open "
+      << path << std::endl;
+    GetLog()->Error(text.str());
+    }
+}
+
+void MIDASDesktopUI::openBitstream()
+{
+  MidasTreeItem* resource = const_cast<MidasTreeItem*>(
+    treeViewClient->getSelectedMidasTreeItem());
   std::string path = m_database->GetRecordByUuid(resource->getUuid()).Path;
 
   path = "file:" + path;

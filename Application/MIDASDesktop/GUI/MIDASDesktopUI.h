@@ -191,6 +191,7 @@ public slots:
   void pullRecursive(int type, int id);
   void viewInBrowser();
   void viewDirectory();
+  void openBitstream();
   void storeLastPollTime();
   // ------------- resource manipulation -------------
 
