@@ -12,9 +12,27 @@
 #ifndef __GUIProgress_H
 #define __GUIProgress_H
 
+class RingBufferD
+{
+public:
+  RingBufferD(int size);
+  ~RingBufferD();
+
+  void insert(double val);
+  double avg();
+
+protected:
+  int m_Size;
+  int m_Index;
+  double* m_Buffer;
+};
+
+
 #include "midasProgressReporter.h"
 #include <QObject>
 #include <QProgressBar>
+
+#define SPEEDS_RINGBUFFER_SIZE 20
 
 class GUIProgress : public QObject, public midasProgressReporter
 {
@@ -46,6 +64,7 @@ protected:
   QProgressBar* m_progressBar;
 
   bool Done;
+  RingBufferD* Speeds;
   double LastTime;
   double LastAmount;
 };
