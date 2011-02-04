@@ -262,7 +262,7 @@ target_link_libraries(MIDASDesktop
   MIDASDesktopLib
 )
 
-install(TARGETS MIDASDesktop DESTINATION bin)
+install(TARGETS MIDASDesktop DESTINATION bin COMPONENT Runtime)
 
 # -----Install Qt Shared libraries-------------
 if (DEFINED QT_QMAKE_EXECUTABLE)

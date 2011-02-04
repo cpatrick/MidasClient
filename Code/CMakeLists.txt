@@ -146,7 +146,7 @@ add_custom_target (
 )
 
 #-----------------------------------------------------------------------------
-install (FILES ${midas_db} DESTINATION ".")
+install (FILES ${midas_db} DESTINATION "." COMPONENT Runtime)
 
 #-----------------------------------------------------------------------------
 #
