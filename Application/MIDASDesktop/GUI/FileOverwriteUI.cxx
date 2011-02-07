@@ -7,6 +7,8 @@ FileOverwriteUI::FileOverwriteUI(MIDASDesktopUI* parent, GUIFileOverwriteHandler
   setupUi(this);
   connect(overwriteButton, SIGNAL( released() ), this, SLOT( overwrite() ) );
   connect(useExistingButton, SIGNAL( released() ), this, SLOT( useExisting() ) );
+
+  connect(this, SIGNAL( selectionMade(int, bool) ), m_Controller, SLOT( chooseAction(int, bool) ) );
 }
 
 FileOverwriteUI::~FileOverwriteUI()
@@ -20,14 +22,14 @@ void FileOverwriteUI::setPath(const QString& path)
 
 void FileOverwriteUI::overwrite()
 {
-  m_Controller->actionChosen(midasFileOverwriteHandler::Overwrite,
+  emit selectionMade(midasFileOverwriteHandler::Overwrite,
     applyToAllCheckbox->isChecked());
   QDialog::accept();
 }
 
 void FileOverwriteUI::useExisting()
 {
-  m_Controller->actionChosen(midasFileOverwriteHandler::UseExisting,
+  emit selectionMade(midasFileOverwriteHandler::UseExisting,
     applyToAllCheckbox->isChecked());
   QDialog::accept();
 }

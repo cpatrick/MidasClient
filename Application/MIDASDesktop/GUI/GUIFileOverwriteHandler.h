@@ -30,6 +30,7 @@ public:
 
 public slots:
   void actionChosen(Action action, bool applyToAll);
+  void chooseAction(int choice, bool applyToAll);
 signals:
   void displayDialog(const QString& path);
 

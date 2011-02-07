@@ -20,6 +20,9 @@ public slots:
   void useExisting();
   void exec();
 
+signals:
+  void selectionMade(int val, bool applyToAll);
+
 private:
   MIDASDesktopUI* m_Parent;
   GUIFileOverwriteHandler* m_Controller;

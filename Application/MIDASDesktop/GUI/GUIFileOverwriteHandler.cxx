@@ -27,6 +27,11 @@ midasFileOverwriteHandler::Action GUIFileOverwriteHandler::HandleConflict(
   return m_Action;
 }
 
+void GUIFileOverwriteHandler::chooseAction(int choice, bool applyToAll)
+{
+  this->actionChosen((Action)choice, applyToAll);
+}
+
 void GUIFileOverwriteHandler::actionChosen(Action action, bool applyToAll)
 {
   m_ApplyToAll = applyToAll;
