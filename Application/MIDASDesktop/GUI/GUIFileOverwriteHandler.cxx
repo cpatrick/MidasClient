@@ -1,5 +1,10 @@
 #include "GUIFileOverwriteHandler.h"
 #include "MIDASDesktopUI.h"
+#if defined(_WIN32)
+# include <windows.h>
+#else
+# include <unistd.h>
+#endif
 
 GUIFileOverwriteHandler::GUIFileOverwriteHandler(MIDASDesktopUI* parent)
 : m_Parent(parent), m_ApplyToAll(false), m_Done(false)
@@ -21,7 +26,11 @@ midasFileOverwriteHandler::Action GUIFileOverwriteHandler::HandleConflict(
     emit displayDialog(path.c_str());
     while(!m_Done)
       {
-      //busy wait until we get an action choice from the user
+      #if defined(_WIN32)
+        Sleep(25);
+      #else
+        usleep(25000);
+      #endif
       }
     }
   return m_Action;

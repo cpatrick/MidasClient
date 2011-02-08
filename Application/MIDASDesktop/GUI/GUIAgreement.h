@@ -32,6 +32,7 @@ public:
 public slots:
   void finish();
   void cancel();
+
 signals:
   void displayDialog();
   void checkingAgreement();

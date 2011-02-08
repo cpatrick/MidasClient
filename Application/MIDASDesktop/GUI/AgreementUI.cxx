@@ -10,9 +10,9 @@ AgreementUI::AgreementUI(MIDASDesktopUI* parent, GUIAgreement* controller)
 {
   setupUi(this);
   connect(this, SIGNAL(accepted()),
-          m_Controller, SLOT(finish()));
+          controller, SLOT(finish()));
   connect(this, SIGNAL(rejected()),
-          m_Controller, SLOT(cancel()));
+          controller, SLOT(cancel()));
   connect(openBrowserButton, SIGNAL(released()),
           this, SLOT(openBrowser()));
 }
