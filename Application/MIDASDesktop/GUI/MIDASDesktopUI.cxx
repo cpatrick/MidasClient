@@ -384,12 +384,12 @@ MIDASDesktopUI::~MIDASDesktopUI()
     m_ReadDatabaseThread->wait();
     }
 
-  if(m_PollFilesystemThread && m_PollFilesystemThread->isRunning())
+  /*if(m_PollFilesystemThread && m_PollFilesystemThread->isRunning())
     {
-    m_PollFilesystemThread->terminate();
+    m_PollFilesystemThread->Terminate();
     m_PollFilesystemThread->wait();
     }
-  delete m_PollFilesystemThread;
+  delete m_PollFilesystemThread;*/
   delete m_ReadDatabaseThread;
   delete authorsEditor;
   delete keywordsEditor;

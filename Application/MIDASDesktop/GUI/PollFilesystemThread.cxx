@@ -5,6 +5,7 @@ PollFilesystemThread::PollFilesystemThread()
 {
   m_Run = true;
   m_DatabaseLocked = false;
+  m_Terminate = false;
 }
 
 PollFilesystemThread::~PollFilesystemThread()
@@ -23,9 +24,14 @@ void PollFilesystemThread::Resume()
   m_Run = true;
 }
 
+void PollFilesystemThread::Terminate()
+{
+  m_Terminate = true;
+}
+
 void PollFilesystemThread::run()
 {
-  while(true)
+  while(!m_Terminate)
     {
     if(m_Run)
       {

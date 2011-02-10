@@ -26,6 +26,8 @@ public:
   void Pause();
   // Resume filesystem polling
   void Resume();
+  // End this thread permanently
+  void Terminate();
 
 signals:
   void needToRefresh();
@@ -33,6 +35,7 @@ signals:
 private:
   midasDatabaseProxy* m_Database;
   bool m_Run;
+  bool m_Terminate;
   bool m_DatabaseLocked;
 };
 
