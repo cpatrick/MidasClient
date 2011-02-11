@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -279,8 +279,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>357</width>
-            <height>410</height>
+            <width>234</width>
+            <height>184</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">

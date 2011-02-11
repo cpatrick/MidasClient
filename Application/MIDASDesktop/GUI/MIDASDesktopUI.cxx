@@ -81,6 +81,8 @@
 #include "mwsWebAPI.h"
 #include "TreeViewUpdateHandler.h"
 
+#include <QDesktopWidget>
+
 // ------------- TreeModel / TreeView -------------
 MIDASDesktopUI::MIDASDesktopUI()
 {
@@ -89,6 +91,13 @@ MIDASDesktopUI::MIDASDesktopUI()
   srand (time); //init random number generator
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
   
+  // center the main window
+  int scrn = QApplication::desktop()->screenNumber(this);
+  QRect desk(QApplication::desktop()->availableGeometry(scrn));
+  move((desk.width() - frameGeometry().width()) / 2,
+      (desk.height() - frameGeometry().height()) / 2);
+  // center the main window
+
   // ------------- Instantiate and setup tray icon -------------
   showAction = new QAction(tr("&Show MIDASDesktop"), this);
   connect(showAction, SIGNAL(triggered()), this, SLOT(showNormal()));
