@@ -90,7 +90,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
   srand (time); //init random number generator
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
-  
+
   // center the main window
   int scrn = QApplication::desktop()->screenNumber(this);
   QRect desk(QApplication::desktop()->availableGeometry(scrn));

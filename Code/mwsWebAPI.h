@@ -19,6 +19,8 @@
 
 #include "mwsRestAPI.h"
 
+class midasAuthenticator;
+
 namespace mws
 {
 
@@ -57,6 +59,12 @@ public:
   
   // Upload a file
   bool UploadFile(const char* url, const char* filename);
+
+  // Set the authenticator
+  void SetAuthenticator(midasAuthenticator* auth);
+
+  // Get the authenticator
+  midasAuthenticator* GetAuthenticator();
   
   // After calling Login, use this to get the API token
   std::string GetAPIToken();
@@ -74,10 +82,11 @@ public:
  
 protected:
 
-  RestAPI*        m_RestAPI;
-  RestXMLParser*  m_RestXMLParser;
-  std::string     m_APIToken;
-  const char*     m_PostData;
+  RestAPI*            m_RestAPI;
+  RestXMLParser*      m_RestXMLParser;
+  midasAuthenticator* m_Auth;
+  std::string         m_APIToken;
+  const char*         m_PostData;
 
   // constructor
   WebAPI();

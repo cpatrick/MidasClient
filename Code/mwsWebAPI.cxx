@@ -10,6 +10,7 @@
 =========================================================================*/
 #include "mwsWebAPI.h"
 #include "mwsRestXMLParser.h"
+#include "midasAuthenticator.h"
 #include <iostream>
 
 namespace mws {
@@ -25,6 +26,7 @@ WebAPI::WebAPI()
   m_RestAPI->SetXMLParser(m_RestXMLParser);
   m_RestAPI->Initialize();
   m_PostData = NULL;
+  m_Auth = NULL;
 }
 
 /** Destructor */
@@ -79,6 +81,17 @@ bool WebAPI::Execute(const char* url)
     fullUrl << "&token=" << m_APIToken;
     }
   bool success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
+
+  if(!success && !m_APIToken.empty() && m_Auth)
+    {
+    // Refresh API token
+    if(!m_Auth->Login(this))
+      {
+      return false;
+      }
+    // Try again with the new token
+    success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
+    }
 
   if(success && m_RestAPI->GetXMLParser()->GetErrorCode() == 0)
     {
@@ -142,6 +155,18 @@ bool WebAPI::DownloadFile(const char* url, const char* filename)
     }
   m_RestAPI->SetXMLParser(NULL);
   bool success = m_RestAPI->Download(filename,fullUrl,RestAPI::FILE);
+
+  if(!success && !m_APIToken.empty() && m_Auth)
+    {
+    // Refresh API token
+    if(!m_Auth->Login(this))
+      {
+      m_RestAPI->SetXMLParser(m_RestXMLParser);
+      return false;
+      }
+    // Try again with the new token
+    success = m_RestAPI->Download(filename,fullUrl,RestAPI::FILE);
+    }
   m_RestAPI->SetXMLParser(m_RestXMLParser);
   return success;
 }
@@ -154,7 +179,7 @@ bool WebAPI::UploadFile(const char* url, const char* filename)
     std::cerr << "Token should be defined to upload to MIDAS." << std::endl;
     std::cerr << "Please use the Login() function to get a token." << std::endl;
     this->GetRestXMLParser()->SetErrorMessage("Cannot push using anonymous access.");
-    return false;   
+    return false;
     }
   
   std::string completeUrl = url;
@@ -198,6 +223,16 @@ bool WebAPI::Login(const char* appname,
     return false;
     }    
   return true;
+}
+
+midasAuthenticator* WebAPI::GetAuthenticator()
+{
+  return m_Auth;
+}
+
+void WebAPI::SetAuthenticator(midasAuthenticator* auth)
+{
+  m_Auth = auth;
 }
 
 } // end namespace
