@@ -26,7 +26,6 @@ void SignInThread::run()
   if(mws::WebAPI::Instance()->CheckConnection())
     {
     m_Parent->setServerURL(url);
-    m_Parent->getAuthenticator()->SetProfile(m_Profile.toStdString());
     m_Parent->getSynchronizer()->GetAuthenticator()->SetProfile(m_Profile.toStdString());
     
     if(!m_Parent->getSynchronizer()->GetAuthenticator()->Login(mws::WebAPI::Instance()))

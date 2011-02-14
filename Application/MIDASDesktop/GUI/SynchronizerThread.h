@@ -24,6 +24,8 @@ public:
 
     if(m_Delete)
       {
+      // hack-ish: set this back to NULL so we can delete the auth safely
+      m_Synchronizer->SetAuthenticator(NULL, false);
       delete m_Synchronizer;
       }
     emit enableActions(true);

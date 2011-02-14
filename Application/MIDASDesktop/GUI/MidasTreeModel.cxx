@@ -13,6 +13,11 @@ MidasTreeModel::~MidasTreeModel()
 {
 }
 
+void MidasTreeModel::SetParentUI(MIDASDesktopUI* parentUI)
+{
+  m_ParentUI = parentUI;
+}
+
 //-------------------------------------------------------------------------
 void MidasTreeModel::clear()
 {

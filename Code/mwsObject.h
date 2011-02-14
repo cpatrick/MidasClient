@@ -18,6 +18,8 @@
 #include "mwsWebAPI.h"
 #include "mdoProxyInterface.h"
 
+class midasAuthenticator;
+
 namespace mws{
 
 /** This class represent an object on the MIDAS server. */
@@ -28,6 +30,7 @@ public:
   Object()
     {
     m_WebAPI = NULL;
+    m_Auth = NULL;
     }
     
   ~Object(){};
@@ -38,9 +41,15 @@ public:
     m_WebAPI = api;
     }
 
+  void SetAuthenticator(midasAuthenticator* auth)
+    {
+    m_Auth = auth;
+    }
+
 protected:
 
   WebAPI* m_WebAPI;
+  midasAuthenticator* m_Auth;
   
 };
 

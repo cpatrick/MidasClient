@@ -75,7 +75,7 @@ void CreateMidasResourceUI::accept()
     {
     case Community:
       path = this->m_Parent->getDatabaseProxy()->GetAuthProfile(
-        this->m_Parent->getAuthenticator()->GetProfile()).RootDir;
+        this->m_Parent->getSynchronizer()->GetAuthenticator()->GetProfile()).RootDir;
 
       if(path == "")
         {

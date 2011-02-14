@@ -27,7 +27,6 @@ class AgreementUI;
 class FileOverwriteUI;
 
 class midasSynchronizer;
-class midasAuthenticator;
 class midasDatabaseProxy;
 class midasProgressReporter;
 class midasAgreementHandler;
@@ -91,7 +90,6 @@ public:
   MidasTreeViewServer * getTreeViewServer() { return treeViewServer; }
   MidasTreeViewClient * getTreeViewClient() { return treeViewClient; }
   midasDatabaseProxy* getDatabaseProxy() { return m_database; }
-  midasAuthenticator* getAuthenticator() { return m_auth; }
   midasSynchronizer* getSynchronizer() { return m_synch; }
   midasProgressReporter* getProgress() { return m_progress; }
   PollFilesystemThread* getPollFilesystemThread() { return m_PollFilesystemThread; }
@@ -266,7 +264,6 @@ private:
   bool                        m_editMode;
   bool                        m_cancel;
   midasDatabaseProxy*         m_database;
-  midasAuthenticator*         m_auth;
   midasSynchronizer*          m_synch;
   std::string                 m_url;
   midasProgressReporter*      m_progress;

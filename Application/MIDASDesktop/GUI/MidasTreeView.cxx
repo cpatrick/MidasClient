@@ -17,6 +17,7 @@ MidasTreeView::MidasTreeView(QWidget* parent) : QTreeView(parent)
 void MidasTreeView::SetParentUI(MIDASDesktopUI* parent)
 {
   m_Parent = parent;
+  m_Model->SetParentUI(parent);
 }
 
 void MidasTreeView::updateSelection(const QItemSelection &selected,

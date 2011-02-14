@@ -9,6 +9,7 @@
 
 class MidasCommunityTreeItem;
 class MidasTreeItem;
+class MIDASDesktopUI;
 
 class MidasTreeModel : public QAbstractItemModel
 {
@@ -24,6 +25,7 @@ public:
   void expandAllResources();
   
   virtual void Populate() = 0;
+  void SetParentUI(MIDASDesktopUI* parentUI);
 
   virtual QVariant headerData(int section, Qt::Orientation orientation,
                               int role = Qt::DisplayRole) const;
@@ -62,6 +64,7 @@ protected:
   std::set<std::string>              m_ExpandedList;
   QList<MidasCommunityTreeItem*>     m_TopLevelCommunities;
   bool AlterList;
+  MIDASDesktopUI*                    m_ParentUI;
 };
 
 #endif

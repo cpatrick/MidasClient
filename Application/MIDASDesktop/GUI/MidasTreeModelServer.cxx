@@ -17,6 +17,8 @@
 #include "mdoItem.h"
 #include "mwsItem.h"
 #include "mdoBitstream.h"
+#include "MIDASDesktopUI.h"
+#include "midasSynchronizer.h"
 
 #include <iostream>
 #include <mdoCommunity.h>
@@ -43,6 +45,7 @@ void MidasTreeModelServer::Populate()
   mdo::Community* community = new mdo::Community;
   community->SetId(0);
   remote.SetWebAPI(this->m_WebAPI);
+  remote.SetAuthenticator(m_ParentUI->getSynchronizer()->GetAuthenticator());
   remote.SetObject(community);
 
   if(!remote.FetchTree())
@@ -125,6 +128,7 @@ void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
   mws::Collection remote;
   mdo::Collection* collection = parent->getCollection();
   remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetAuthenticator(m_ParentUI->getSynchronizer()->GetAuthenticator());
   remote.SetObject(collection);
 
   if(!remote.Fetch())
@@ -158,6 +162,7 @@ void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
   mws::Item remote;
   mdo::Item* item = parent->getItem();
   remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetAuthenticator(m_ParentUI->getSynchronizer()->GetAuthenticator());
   remote.SetObject(item);
 
   if(!remote.Fetch())

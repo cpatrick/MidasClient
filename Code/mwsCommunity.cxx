@@ -229,7 +229,7 @@ bool Community::Fetch()
   
   std::stringstream url;
   url << "midas.community.get?id=" << m_Community->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str()))
+  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
     {
     std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
@@ -248,7 +248,7 @@ bool Community::FetchTree()
   
   std::stringstream url;
   url << "midas.community.tree?id=" << m_Community->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str()))
+  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
     {
     std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
@@ -298,7 +298,7 @@ bool Community::Delete()
 
   std::stringstream url;
   url << "midas.community.delete?id=" << m_Community->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str()))
+  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
     {
     std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;

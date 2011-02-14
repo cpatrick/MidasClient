@@ -84,6 +84,16 @@ midasAuthenticator* midasSynchronizer::GetAuthenticator()
   return this->Authenticator;
 }
 
+void midasSynchronizer::SetAuthenticator(midasAuthenticator* auth,
+                                         bool deleteOld)
+{
+  if(deleteOld == true)
+    {
+    delete this->Authenticator;
+    }
+  this->Authenticator = auth;
+}
+
 void midasSynchronizer::SetDatabase(std::string path)
 {
   if(path == this->Database)
@@ -470,6 +480,7 @@ int midasSynchronizer::Clone()
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
   remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetAuthenticator(this->Authenticator);
   remote.SetObject(community);
 
   this->Progress->SetIndeterminate();
@@ -564,6 +575,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
   mdo::Bitstream* bitstream = new mdo::Bitstream;
   bitstream->SetId(atoi(this->ServerHandle.c_str()));
   remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetAuthenticator(this->Authenticator);
   remote.SetObject(bitstream);
   
   this->Progress->SetIndeterminate();
@@ -670,7 +682,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
     }
 
   if(download && !mws::WebAPI::Instance()->DownloadFile(fields.str().c_str(),
-      bitstream->GetName().c_str()))
+     bitstream->GetName().c_str(), this->Authenticator))
     {
     //delete the partial data and error out.
     kwsys::SystemTools::RemoveFile(bitstream->GetName().c_str());
@@ -733,6 +745,7 @@ bool midasSynchronizer::PullCollection(int parentId)
   mdo::Collection* collection = new mdo::Collection;
   collection->SetId(atoi(this->GetServerHandle().c_str()));
   remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetAuthenticator(this->Authenticator);
   remote.SetObject(collection);
 
   this->Progress->SetIndeterminate();
@@ -866,6 +879,7 @@ bool midasSynchronizer::PullCommunity(int parentId)
   mdo::Community* community = new mdo::Community;
   community->SetId(atoi(this->ServerHandle.c_str()));
   remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetAuthenticator(this->Authenticator);
   remote.SetObject(community);
 
   this->Progress->SetIndeterminate();
@@ -1011,6 +1025,7 @@ bool midasSynchronizer::PullItem(int parentId)
   mdo::Item* item = new mdo::Item;
   item->SetId(atoi(this->GetServerHandle().c_str()));
   remote.SetWebAPI(mws::WebAPI::Instance());
+  remote.SetAuthenticator(this->Authenticator);
   remote.SetObject(item);
 
   this->Progress->SetIndeterminate();
@@ -1196,7 +1211,8 @@ int midasSynchronizer::GetServerParentId(midasResourceType::ResourceType type,
     mws::RestXMLParser parser;
     parser.AddTag("/rsp/id", server_parentId);
     mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-    mws::WebAPI::Instance()->Execute(fields.str().c_str());
+    mws::WebAPI::Instance()->Execute(fields.str().c_str(),
+      this->Authenticator);
     parentId = atoi(server_parentId.c_str());
     }
   return parentId;
@@ -1268,7 +1284,7 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   bool ok = mws::WebAPI::Instance()->UploadFile(fields.str().c_str(),
-                                     record->Path.c_str());
+    record->Path.c_str(), this->Authenticator);
 
   if(ok)
     {
@@ -1335,7 +1351,8 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->SetPostData("");
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  bool success = mws::WebAPI::Instance()->Execute(fields.str().c_str());
+  bool success = mws::WebAPI::Instance()->Execute(fields.str().c_str(),
+    this->Authenticator);
   if(success)
     {
     // Clear dirty flag on the resource
@@ -1399,7 +1416,8 @@ bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
   mws::WebAPI::Instance()->SetPostData("");
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
-  if(mws::WebAPI::Instance()->Execute(fields.str().c_str()))
+  if(mws::WebAPI::Instance()->Execute(fields.str().c_str(),
+     this->Authenticator))
     {
     // Clear dirty flag on the resource
     this->DatabaseProxy->ClearDirtyResource(record->Uuid);
@@ -1469,7 +1487,8 @@ bool midasSynchronizer::PushItem(midasResourceRecord* record)
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   mws::WebAPI::Instance()->SetPostData("");
 
-  if(mws::WebAPI::Instance()->Execute(fields.str().c_str()))
+  if(mws::WebAPI::Instance()->Execute(fields.str().c_str(),
+     this->Authenticator))
     {
     // Clear dirty flag on the resource
     this->DatabaseProxy->ClearDirtyResource(record->Uuid);
@@ -1590,7 +1609,8 @@ bool midasSynchronizer::ConvertPathToId()
   fields << "midas.convert.path.to.id?path=" <<
     midasUtils::EscapeForURL(this->ServerHandle);
 
-  if(!mws::WebAPI::Instance()->Execute(fields.str().c_str()))
+  if(!mws::WebAPI::Instance()->Execute(fields.str().c_str(),
+     this->Authenticator))
     {
     return false;
     }
@@ -1699,7 +1719,8 @@ void midasSynchronizer::CountBitstreams()
 
     this->Progress->SetIndeterminate();
     this->Log->Status("Counting total bitstreams under the object...");
-    mws::WebAPI::Instance()->Execute(fields.str().c_str());
+    mws::WebAPI::Instance()->Execute(fields.str().c_str(),
+      this->Authenticator);
     this->Progress->ResetProgress();
     this->Log->Status("");
 

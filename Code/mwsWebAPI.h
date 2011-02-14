@@ -39,7 +39,7 @@ public:
   const char* GetServerUrl();
   
   // Execute the command
-  bool Execute(const char* url);
+  bool Execute(const char* url, midasAuthenticator* auth);
   void SetPostData(const char* postData);
   
   // Return the last error code
@@ -55,10 +55,10 @@ public:
   RestXMLParser* GetRestXMLParser();
   
   // Download a file
-  bool DownloadFile(const char* url, const char* filename);
+  bool DownloadFile(const char* url, const char* filename, midasAuthenticator* auth);
   
   // Upload a file
-  bool UploadFile(const char* url, const char* filename);
+  bool UploadFile(const char* url, const char* filename, midasAuthenticator* auth);
 
   // Set the authenticator
   void SetAuthenticator(midasAuthenticator* auth);
@@ -84,7 +84,6 @@ protected:
 
   RestAPI*            m_RestAPI;
   RestXMLParser*      m_RestXMLParser;
-  midasAuthenticator* m_Auth;
   std::string         m_APIToken;
   const char*         m_PostData;
 

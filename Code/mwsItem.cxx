@@ -102,7 +102,6 @@ protected:
   std::string      m_CurrentValue;
 };
 
-
 /** Constructor */
 Item::Item()
 {
@@ -149,7 +148,7 @@ bool Item::Fetch()
   
   std::stringstream url;
   url << "midas.item.get?id=" << m_Item->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str()))
+  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
     {
     std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
@@ -164,19 +163,6 @@ bool Item::Commit()
 {
   return true;
 }
-
-// Create a resource given an item id
-bool Item::CreateResource(unsigned int itemid)
-{
-  std::stringstream url;
-  url << "midas.item.resource.create?id=" << itemid;
-  if(!m_WebAPI->Execute(url.str().c_str()))
-    {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
-    return false;
-    }
-  return true;
-} 
 
 // Add the object
 void Item::SetObject(mdo::Object* object)
@@ -215,7 +201,7 @@ bool Item::Delete()
 
   std::stringstream url;
   url << "midas.item.delete?id=" << m_Item->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str()))
+  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
     {
     std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;

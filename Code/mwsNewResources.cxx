@@ -104,7 +104,7 @@ bool NewResources::Fetch()
     {
     url << "?since=" << midasUtils::EscapeForURL(m_Since);
     }
-  return mws::WebAPI::Instance()->Execute(url.str().c_str());
+  return mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth);
 }
 
 bool NewResources::FetchTree()

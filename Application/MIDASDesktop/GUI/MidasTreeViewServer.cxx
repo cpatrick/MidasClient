@@ -30,6 +30,7 @@
 #include "mdoItem.h"
 #include "mdoBitstream.h"
 #include "midasUtils.h"
+#include "midasSynchronizer.h"
 #include <iostream>
 
 MidasTreeViewServer::MidasTreeViewServer(QWidget * parent):MidasTreeView(parent)
@@ -167,6 +168,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     mws::Community remote;
     remote.SetWebAPI(mws::WebAPI::Instance());
     remote.SetObject(community);
+    remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
     remote.Fetch();
 
     emit midasCommunityTreeItemSelected(communityTreeItem);
@@ -177,6 +179,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     mws::Collection remote;
     remote.SetWebAPI(mws::WebAPI::Instance());
     remote.SetObject(collection);
+    remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
     remote.Fetch();
 
     emit midasCollectionTreeItemSelected(collectionTreeItem);
@@ -187,6 +190,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     mws::Item remote;
     remote.SetWebAPI(mws::WebAPI::Instance());
     remote.SetObject(item);
+    remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
     remote.Fetch();
 
     emit midasItemTreeItemSelected(itemTreeItem);
@@ -197,6 +201,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     mws::Bitstream remote;
     remote.SetWebAPI(mws::WebAPI::Instance());
     remote.SetObject(bitstream);
+    remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
     remote.Fetch();
 
     emit midasBitstreamTreeItemSelected(bitstreamTreeItem);

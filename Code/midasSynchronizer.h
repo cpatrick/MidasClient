@@ -109,6 +109,7 @@ public:
 
   std::vector<midasStatus> GetStatusEntries();
 
+  void SetAuthenticator(midasAuthenticator* authenticator, bool deleteOld);
   midasAuthenticator* GetAuthenticator();
 
   int Perform();

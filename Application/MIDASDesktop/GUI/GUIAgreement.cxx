@@ -26,7 +26,7 @@ GUIAgreement::~GUIAgreement()
 bool GUIAgreement::HandleAgreement(midasSynchronizer *synch)
 {
   //first make sure user isn't anonymous
-  if(m_Parent->getAuthenticator()->IsAnonymous())
+  if(m_Parent->getSynchronizer()->GetAuthenticator()->IsAnonymous())
     {
     std::stringstream text;
     text << "Error: Anonymous users cannot pull this resource "
@@ -95,7 +95,8 @@ bool GUIAgreement::checkUserHasAgreed(midasSynchronizer* synch)
   parser.AddTag("/rsp/hasAgreed", hasAgreed);
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(),
+     m_Parent->getSynchronizer()->GetAuthenticator()))
     {
     std::stringstream error;
     error << "Failed when querying server for user agreement validation: "

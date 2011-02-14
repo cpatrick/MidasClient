@@ -39,9 +39,6 @@ public:
   bool Delete();
   
   void SetObject(mdo::Object* object);
-
-  // Create a resource given an item id
-  bool CreateResource(unsigned int itemid); 
    
 protected:
 

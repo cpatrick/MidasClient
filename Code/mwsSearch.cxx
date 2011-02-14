@@ -211,7 +211,7 @@ std::vector<mdo::Object*> Search::SearchServer(std::vector<std::string> tokens)
       }
     space = true;
     }
-  mws::WebAPI::Instance()->Execute(fields.c_str());
+  mws::WebAPI::Instance()->Execute(fields.c_str(), NULL);
   return results;
 }
 } //end namespace

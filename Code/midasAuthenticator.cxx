@@ -24,7 +24,6 @@ midasAuthenticator::midasAuthenticator()
 
 midasAuthenticator::~midasAuthenticator()
 {
-  delete this->Database;
 }
 
 //-------------------------------------------------------------------

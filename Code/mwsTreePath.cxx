@@ -91,7 +91,7 @@ std::vector<std::string> TreePath::PathInternal(std::string uuid, std::string ur
   std::stringstream fields;
   fields << url << "?uuid=" << uuid;
 
-  mws::WebAPI::Instance()->Execute(fields.str().c_str());
+  mws::WebAPI::Instance()->Execute(fields.str().c_str(), NULL);
   return results;
 }
 

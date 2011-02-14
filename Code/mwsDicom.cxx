@@ -104,7 +104,7 @@ bool Dicom::Fetch()
   std::stringstream url;
   url << "dicom.expose.getItemIdByAETitle?aetitle=" << m_Dicom->GetAETitle();
 
-  if(!m_WebAPI->Execute(url.str().c_str()))
+  if(!m_WebAPI->Execute(url.str().c_str(), NULL))
     {
     std::cerr << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
