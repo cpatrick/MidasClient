@@ -258,9 +258,22 @@ target_link_libraries(MIDASDesktopLib
   ${QT_QTMAIN_LIBRARY}
 )
 
-target_link_libraries(MIDASDesktop
-  MIDASDesktopLib
+
+if ( APPLE ) 
+    # Link with frameworks required for static Qt
+    find_library ( CARBON_LIBRARY Carbon )
+    find_library ( APLICATIONSERVICES_LIBRARY ApplicationServices )
+    find_library ( APPKIT_LIBRARY AppKit )
+    target_link_libraries(MIDASDesktop
+      MIDASDesktopLib
+      ${APPKIT_LIBRARY}
+      ${CARBON_LIBRARY}
+      ${APPLICATIONSERVICES_LIBRARY}
+    )
 )
+else ( APPLE )
+target_link_libraries(MIDASDesktop MIDASDesktopLib)
+endif( APPLE )
 
 install(TARGETS MIDASDesktop DESTINATION bin COMPONENT Runtime)
 
