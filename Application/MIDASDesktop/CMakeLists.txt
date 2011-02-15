@@ -270,7 +270,6 @@ if ( APPLE )
       ${CARBON_LIBRARY}
       ${APPLICATIONSERVICES_LIBRARY}
     )
-)
 else ( APPLE )
 target_link_libraries(MIDASDesktop MIDASDesktopLib)
 endif( APPLE )
