@@ -269,7 +269,7 @@ if ( APPLE )
       ${CARBON_LIBRARY}
       ${APPLICATIONSERVICES_LIBRARY}
     )
-    set(${QT_QTGUI_MENU_NIB}
+    set(QT_QTGUI_MENU_NIB
         "/Library/Frameworks/QtGui.framework/Versions/Current/Resources/qt_menu.nib"
         CACHE PATH "Location of the qt_menu.nib resource to be packaged for install")
     install(DIRECTORY ${QT_QTGUI_MENU_NIB} DESTINATION bin COMPONENT Runtime)
