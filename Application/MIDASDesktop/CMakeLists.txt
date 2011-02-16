@@ -258,7 +258,6 @@ target_link_libraries(MIDASDesktopLib
   ${QT_QTMAIN_LIBRARY}
 )
 
-
 if ( APPLE ) 
     # Link with frameworks required for static Qt
     find_library ( CARBON_LIBRARY Carbon )
@@ -270,8 +269,12 @@ if ( APPLE )
       ${CARBON_LIBRARY}
       ${APPLICATIONSERVICES_LIBRARY}
     )
+    set(${QT_QTGUI_MENU_NIB}
+        "/Library/Frameworks/QtGui.framework/Versions/Current/Resources/qt_menu.nib"
+        CACHE PATH "Location of the qt_menu.nib resource to be packaged for install")
+    install(DIRECTORY ${QT_QTGUI_MENU_NIB} DESTINATION bin COMPONENT Runtime)
 else ( APPLE )
-target_link_libraries(MIDASDesktop MIDASDesktopLib)
+  target_link_libraries(MIDASDesktop MIDASDesktopLib)
 endif( APPLE )
 
 install(TARGETS MIDASDesktop DESTINATION bin COMPONENT Runtime)
@@ -284,9 +287,10 @@ if (DEFINED QT_QMAKE_EXECUTABLE)
     endif()
     set (QT_INSTALL_LIB_DIR bin)
     foreach(qtlib ${QTLIBLIST})
-	  if(APPLE)
-        INSTALL(DIRECTORY "${QT_${qtlib}_LIBRARY_RELEASE}" 
-          DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime)
+      if(APPLE)
+        # We statically link on our mac installer currently.
+        #INSTALL(DIRECTORY "${QT_${qtlib}_LIBRARY_RELEASE}" 
+          #DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime)
       elseif(UNIX)
         # Install .so and versioned .so.x.y
         get_filename_component(QT_LIB_DIR_tmp ${QT_${qtlib}_LIBRARY_RELEASE} PATH)
