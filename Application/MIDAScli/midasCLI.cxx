@@ -43,8 +43,8 @@ midasCLI::midasCLI()
     new midasDotProgressReporter(30)));
   this->SetLog(new midasStdOutLog());
   this->Synchronizer->SetLog(this->GetLog());
-  //int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
-  srand (time(NULL)); //init random number generator 
+  int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
+  srand (time); //init random number generator
 }
 
 midasCLI::~midasCLI()
