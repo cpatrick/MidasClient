@@ -126,7 +126,7 @@ void CreateProfileUI::accept()
     QMessageBox::critical(this, "Error", "You must enter a profile name.");
     return;
     }
-  if(anonymousCheckBox->isChecked() && passwordEdit->text().toStdString() == "")
+  if(!anonymousCheckBox->isChecked() && passwordEdit->text().toStdString() == "")
     {
     QMessageBox::critical(this, "Error", "You must enter a password or choose anonymous access.");
     return;
