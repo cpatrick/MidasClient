@@ -12,9 +12,41 @@ if(BUILD_MIDASCPP_TESTING)
 
   midas_add_test(TestAddMidasTest "${CMAKE_COMMAND}" -E compare_files MIDAS{test1/input/add2.png.md5} "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" MIDAS_FETCH_ONLY{test1/input/add2.png.md5})
   set_tests_properties(TestAddMidasTest_fetchData PROPERTIES PASS_REGULAR_EXPRESSION "Data is here:.*/midas.bitstream.by.hash\\?hash=879071fb20d959235fac207f36773851&algorithm=MD5")
-  
+
   midas_add_test(MIDAS_DIRECTORY "${CMAKE_COMMAND}" -E echo MIDAS_DIRECTORY{test1/input})
   set_tests_properties(MIDAS_DIRECTORY PROPERTIES PASS_REGULAR_EXPRESSION "${MIDASCPP_BINARY_DIR}/MIDAS_Data/test1/input")
 
-  set_tests_properties(TestAddMidasTest TestAddMidasTest_fetchData DeleteDownloadedData DeleteDownloadedSymlink MIDAS_DIRECTORY MIDAS_DIRECTORY_fetchData PROPERTIES LABELS "CMakeScript")
+  # ----------------------- Test MIDAS_TGZ capabilities ----------------------------------------
+  if(NOT EXISTS "${MIDASCPP_BINARY_DIR}/Testing/testArchive.tar.gz")
+    execute_process(COMMAND "${CMAKE_COMMAND}" -E tar czf testArchive.tar.gz Code
+      WORKING_DIRECTORY "${MIDASCPP_SOURCE_DIR}")
+    file(RENAME "${MIDASCPP_SOURCE_DIR}/testArchive.tar.gz" "${MIDASCPP_BINARY_DIR}/Testing/testArchive.tar.gz")
+  endif(NOT EXISTS "${MIDASCPP_BINARY_DIR}/Testing/testArchive.tar.gz")
+
+  execute_process(COMMAND "${CMAKE_COMMAND}" -E md5sum "${MIDASCPP_BINARY_DIR}/Testing/testArchive.tar.gz" OUTPUT_VARIABLE md5output)
+  string(SUBSTRING ${md5output} 0 32 computedChecksum)
+  set(MIDAS_KEY_DIR "${MIDASCPP_BINARY_DIR}/Testing/keys")
+  file(MAKE_DIRECTORY "${MIDAS_KEY_DIR}/testTgz")
+  file(WRITE "${MIDAS_KEY_DIR}/testTgz/testArchive.tar.gz.md5" ${computedChecksum})
+
+  add_test(TestUploadTGZ "${MIDASCPP_BINARY_DIR}/bin/MIDAScli"
+    --profile test
+    --database "${MIDASCPP_BINARY_DIR}/midas.db"
+    upload "${MIDASCPP_BINARY_DIR}/Testing/testArchive.tar.gz"
+    "${dashboard_top_level_community_name}_changed/Subcomm/Collection_changed/Item_changed")
+
+  midas_add_test(MIDAS_TGZ "${CMAKE_COMMAND}" -E echo MIDAS_TGZ{testTgz/testArchive.tar.gz.md5})
+  add_test(VerifyArchivePresent "${CMAKE_COMMAND}" -E md5sum "${MIDASCPP_BINARY_DIR}/MIDAS_Data/testTgz/testArchive/Code/sql/MIDAS_SQLite.sql")
+
+  set_tests_properties(
+    TestAddMidasTest
+    TestAddMidasTest_fetchData
+    DeleteDownloadedData
+    DeleteDownloadedSymlink
+    MIDAS_DIRECTORY
+    MIDAS_DIRECTORY_fetchData
+    TestUploadTGZ
+    MIDAS_TGZ
+    MIDAS_TGZ_fetchData
+    PROPERTIES LABELS "CMakeScript")
 endif(BUILD_MIDASCPP_TESTING)

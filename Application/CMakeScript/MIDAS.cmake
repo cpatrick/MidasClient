@@ -15,7 +15,7 @@
 #                          - Defaults to PROJECT_SOURCE_DIR/MIDAS_Keys
 #   MIDAS_DOWNLOAD_TIMEOUT - Timeout for download stage (default 0)
 #
-# Then call the following macro: 
+# Then call the following macro:
 #  midas_add_test(<testName> <program> [args...])
 #   testName: Name of the test
 #   program: The executable to be run after the download is complete
@@ -77,7 +77,7 @@ function(midas_add_test)
   else(NOT DEFINED MIDAS_DOWNLOAD_TIMEOUT)
     set(MIDAS_DOWNLOAD_TIMEOUT_STR "TIMEOUT ${MIDAS_DOWNLOAD_TIMEOUT}")
   endif(NOT DEFINED MIDAS_DOWNLOAD_TIMEOUT)
-  
+
   set(downloadScripts "")
 
   # Substitute the downloaded file argument(s)
@@ -90,15 +90,22 @@ function(midas_add_test)
         file(GLOB fileList RELATIVE "${MIDAS_KEY_DIR}" "${MIDAS_KEY_DIR}/${parameter}/*")
         foreach(keyFile ${fileList})
           if(NOT IS_DIRECTORY "${MIDAS_KEY_DIR}/${keyFile}")
-            _process_keyfile("${keyFile}" ${testName})
+            _process_keyfile("${keyFile}" ${testName} 0)
           endif(NOT IS_DIRECTORY "${MIDAS_KEY_DIR}/${keyFile}")
         endforeach(keyFile ${fileList})
-      else(keyword STREQUAL "MIDAS_DIRECTORY")
-        _process_keyfile("${parameter}" ${testName})
+      elseif(keyword STREQUAL "MIDAS_TGZ")
+        _process_keyfile("${parameter}" ${testName} 1)
+      else()
+        _process_keyfile("${parameter}" ${testName} 0)
       endif(keyword STREQUAL "MIDAS_DIRECTORY")
 
       if(keyword STREQUAL "MIDAS_DIRECTORY")
         string(REGEX REPLACE ${toReplace} "${MIDAS_DATA_DIR}/${parameter}" newArg "${arg}")
+        list(APPEND testArgs ${newArg})
+      elseif(keyword STREQUAL "MIDAS_TGZ")
+        get_filename_component(extractedPath "${parameter}" PATH)
+        get_filename_component(dirName "${parameter}" NAME_WE)
+        string(REGEX REPLACE ${toReplace} "${MIDAS_DATA_DIR}/${extractedPath}/${dirName}" newArg "${arg}")
         list(APPEND testArgs ${newArg})
       elseif(NOT keyword STREQUAL "MIDAS_FETCH_ONLY")
         string(REGEX REPLACE ${toReplace} "${MIDAS_DATA_DIR}/${base_file}" newArg "${arg}")
@@ -124,7 +131,7 @@ function(midas_add_test)
 endfunction(midas_add_test)
 
 # Helper macro to write the download scripts for MIDAS.*{} arguments
-macro(_process_keyfile keyFile testName)
+macro(_process_keyfile keyFile testName extractTgz)
   # Split up the checksum extension from the real filename
   string(REGEX MATCH "\\.[^\\.]*$" hash_alg "${keyFile}")
   string(REGEX REPLACE "\\.[^\\.]*$" "" base_file "${keyFile}")
@@ -171,13 +178,28 @@ if(NOT EXISTS \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
   endif(NOT computedChecksum STREQUAL ${checksum})
 endif(NOT EXISTS \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\")
 
-# Create a human-readable file name for the data.
 file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${base_filepath}\")
 file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${testName}_${base_filepath}\")
+")
+
+  if(${extractTgz})
+    file(APPEND "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/fetch_${checksum}_${base_filename}.cmake"
+         "# Extract the contents of the tgz
+get_filename_component(dirName \"${base_filename}\" NAME_WE)
+file(MAKE_DIRECTORY \"${MIDAS_DATA_DIR}/${testName}_${base_filepath}/\${dirName}\")
+execute_process(COMMAND \"${CMAKE_COMMAND}\" -E tar xzf \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\"
+                WORKING_DIRECTORY \"${MIDAS_DATA_DIR}/${testName}_${base_filepath}/\${dirName}\")
+file(REMOVE_RECURSE \"${MIDAS_DATA_DIR}/${base_filepath}/\${dirName}\")
+file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${base_filepath}/\${dirName}\" \"${MIDAS_DATA_DIR}/${base_filepath}/\${dirName}\")
+")
+  else()
+    file(APPEND "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/fetch_${checksum}_${base_filename}.cmake"
+         "# Create a human-readable file name for the data.
 file(REMOVE \"${MIDAS_DATA_DIR}/${testName}_${base_file}\")
 execute_process(COMMAND \"${CMAKE_COMMAND}\" -E ${cmake_symlink} \"${MIDAS_DATA_DIR}/MIDAS_Hashes/${checksum}\" \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" WORKING_DIRECTORY \"${MIDAS_DATA_DIR}\")
 file(RENAME \"${MIDAS_DATA_DIR}/${testName}_${base_file}\" \"${MIDAS_DATA_DIR}/${base_file}\")
 ")
-  
+  endif(${extractTgz})
+
   list(APPEND downloadScripts "${MIDAS_DATA_DIR}/MIDAS_FetchScripts/fetch_${checksum}_${base_filename}.cmake")
 endmacro(_process_keyfile)
