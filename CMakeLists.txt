@@ -36,6 +36,10 @@ ENDIF(WIN32)
 
 enable_testing()
 
+# Requires Qt4
+find_package(Qt4 REQUIRED)
+include_directories(${QT_INCLUDES})
+
 # If CMake is the version we're expecting, don't show the
 # CMAKE_BACKWARDS_COMPATIBILITY option. If the version is higher than the
 # minimal version required, then show the backward compatibility option.

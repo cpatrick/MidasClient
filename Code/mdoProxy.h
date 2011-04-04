@@ -43,9 +43,6 @@ public:
   /** Return the number of attached interfaces */
   unsigned int GetNumberOfInterfaces();
   
-  /** Download a bitstream */
-  std::string DownloadBitstream(const char* uuid,const char* filename);
-  
 protected:
     
   std::vector<ProxyInterface*> m_Interfaces;

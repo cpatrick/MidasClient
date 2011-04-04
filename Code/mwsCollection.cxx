@@ -141,7 +141,7 @@ bool Collection::Fetch()
 
   std::stringstream url;
   url << "midas.collection.get?id=" << m_Collection->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
     {
     std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
@@ -186,12 +186,31 @@ bool Collection::Delete()
 
   std::stringstream url;
   url << "midas.collection.delete?id=" << m_Collection->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
     {
     std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
+}
+
+bool Collection::Create()
+{
+  std::stringstream postData;
+  postData << "uuid=" << m_Collection->GetUuid()
+    << "&parentid=" << m_Collection->GetParentId()
+    << "&name=" << midasUtils::EscapeForURL(m_Collection->GetName())
+    << "&description=" <<
+    midasUtils::EscapeForURL(m_Collection->GetDescription())
+    << "&introductorytext=" <<
+    midasUtils::EscapeForURL(m_Collection->GetIntroductoryText())
+    << "&copyright=" <<
+    midasUtils::EscapeForURL(m_Collection->GetCopyright());
+
+  mws::RestXMLParser parser;
+  mws::WebAPI::Instance()->SetPostData(postData.str().c_str());
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  return mws::WebAPI::Instance()->Execute("midas.collection.create");
 }
 
 } // end namespace

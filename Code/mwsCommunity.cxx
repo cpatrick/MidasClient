@@ -229,7 +229,7 @@ bool Community::Fetch()
   
   std::stringstream url;
   url << "midas.community.get?id=" << m_Community->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
     {
     std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
@@ -248,7 +248,7 @@ bool Community::FetchTree()
   
   std::stringstream url;
   url << "midas.community.tree?id=" << m_Community->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
     {
     std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
@@ -297,12 +297,31 @@ bool Community::Delete()
 
   std::stringstream url;
   url << "midas.community.delete?id=" << m_Community->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
     {
     std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
+}
+
+bool Community::Create()
+{
+  std::stringstream postData;
+  postData << "uuid=" << m_Community->GetUuid() 
+    << "&parentid=" << m_Community->GetParentId()
+    << "&name=" << midasUtils::EscapeForURL(m_Community->GetName())
+    << "&copyright=" << midasUtils::EscapeForURL(m_Community->GetCopyright())
+    << "&introductorytext=" <<
+    midasUtils::EscapeForURL(m_Community->GetIntroductoryText())
+    << "&description=" <<
+    midasUtils::EscapeForURL(m_Community->GetDescription())
+    << "&links=" << midasUtils::EscapeForURL(m_Community->GetLinks());
+
+  mws::RestXMLParser parser;
+  mws::WebAPI::Instance()->SetPostData(postData.str().c_str());
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  return mws::WebAPI::Instance()->Execute("midas.community.create");
 }
 
 } // end namespace

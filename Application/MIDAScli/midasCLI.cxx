@@ -43,6 +43,8 @@ midasCLI::midasCLI()
   this->SetLog(new midasStdOutLog());
   this->Synchronizer->SetLog(this->GetLog());
   mds::DatabaseAPI::Instance()->SetLog(this->GetLog());
+  mws::WebAPI::Instance()->SetLog(this->GetLog());
+  mws::WebAPI::Instance()->SetAuthenticator(this->Synchronizer->GetAuthenticator());
   int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
   srand (time); //init random number generator
 }

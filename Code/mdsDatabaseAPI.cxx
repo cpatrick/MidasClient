@@ -82,6 +82,7 @@ bool DatabaseAPI::SetDatabasePath(std::string path)
       }
     }
   this->DatabasePath = path;
+  return true;
 }
 
 void DatabaseAPI::SetResourceUpdateHandler(

@@ -105,7 +105,7 @@ bool Bitstream::Fetch()
   
   std::stringstream url;
   url << "midas.bitstream.get?id=" << m_Bitstream->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
     {
     std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
@@ -156,7 +156,7 @@ bool Bitstream::Delete()
 
   std::stringstream url;
   url << "midas.bitstream.delete?id=" << m_Bitstream->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
     {
     std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;

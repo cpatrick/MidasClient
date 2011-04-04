@@ -317,6 +317,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->Log = new GUILogger(this);
   this->m_synch->SetLog(this->Log);
   mds::DatabaseAPI::Instance()->SetLog(this->Log);
+  mws::WebAPI::Instance()->SetLog(this->Log);
+  mws::WebAPI::Instance()->SetAuthenticator(m_synch->GetAuthenticator());
   this->m_synch->SetOverwriteHandler(this->m_overwriteHandler);
   this->m_synch->SetProgressReporter(m_progress);
   this->m_synch->SetResourceUpdateHandler(m_resourceUpdateHandler);
@@ -1482,7 +1484,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     //start the filesystem monitoring thread
     m_PollFilesystemThread = new PollFilesystemThread;
     connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()));
-    m_PollFilesystemThread->start();
+    //m_PollFilesystemThread->start();
     m_PollFilesystemThread->setPriority(QThread::LowestPriority);
     }
   else
@@ -1749,13 +1751,8 @@ void MIDASDesktopUI::deleteServerResource(bool val)
   int id = resource->getId();
   std::string typeName = kwsys::SystemTools::LowerCase(midasUtils::GetTypeName(resource->getType()));
 
-  std::stringstream url;
-  url << "midas." << typeName << ".delete?id=" << id;
-
-  mws::RestXMLParser parser;
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   std::stringstream text;
-  if(mws::WebAPI::Instance()->Execute(url.str().c_str(), m_synch->GetAuthenticator()))
+  if(mws::WebAPI::Instance()->DeleteResource(typeName, id))
     {
     text << "Successfully deleted " << typeName
          << " with id=" << id << " from the server.";

@@ -148,7 +148,7 @@ bool Item::Fetch()
   
   std::stringstream url;
   url << "midas.item.get?id=" << m_Item->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
     {
     std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
@@ -200,12 +200,29 @@ bool Item::Delete()
 
   std::stringstream url;
   url << "midas.item.delete?id=" << m_Item->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
     {
     std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
+}
+
+bool Item::Create()
+{
+  std::stringstream postData;
+  postData << "uuid=" << m_Item->GetUuid()
+    << "&parentid=" << m_Item->GetParentId()
+    << "&name=" << midasUtils::EscapeForURL(m_Item->GetName())
+    << "&abstract=" << midasUtils::EscapeForURL(m_Item->GetAbstract())
+    << "&description=" << midasUtils::EscapeForURL(m_Item->GetDescription())
+    << "&authors=" << midasUtils::EscapeForURL(m_Item->GetAuthorsString())
+    << "&keywords=" << midasUtils::EscapeForURL(m_Item->GetKeywordsString());
+
+  mws::RestXMLParser parser;
+  mws::WebAPI::Instance()->SetPostData(postData.str().c_str());
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  return mws::WebAPI::Instance()->Execute("midas.item.create");
 }
 
 } // end namespace

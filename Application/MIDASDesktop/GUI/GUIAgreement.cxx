@@ -86,17 +86,11 @@ void GUIAgreement::cancel()
 bool GUIAgreement::checkUserHasAgreed(midasSynchronizer* synch)
 {
   emit checkingAgreement();
-
-  std::stringstream url;
-  url << "midas.check.user.agreement?id=" << synch->GetServerHandle()
-    << "&type=" << synch->GetResourceType();
-  mws::RestXMLParser parser;
   std::string hasAgreed;
-  parser.AddTag("/rsp/hasAgreed", hasAgreed);
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(),
-     m_Parent->getSynchronizer()->GetAuthenticator()))
+  
+  if(!mws::WebAPI::Instance()->CheckUserAgreement(
+     synch->GetResourceType(), atoi(synch->GetServerHandle().c_str()),
+     hasAgreed))
     {
     std::stringstream error;
     error << "Failed when querying server for user agreement validation: "

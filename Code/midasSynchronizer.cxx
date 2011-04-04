@@ -553,8 +553,6 @@ bool midasSynchronizer::PullBitstream(int parentId)
   // and wrappers for methods like "downloadBitstream" that will automatically handle mirroring.
 
   // Would be nice if progress was handled automatically in the web API class so we don't have to do it in the synchronizer.
-  std::stringstream fields;
-  fields << "midas.bitstream.download?id=" << this->GetServerHandle();
 
   if(this->Progress)
     {
@@ -601,8 +599,9 @@ bool midasSynchronizer::PullBitstream(int parentId)
       }
     }
 
-  if(download && !mws::WebAPI::Instance()->DownloadFile(fields.str().c_str(),
-     bitstream->GetName().c_str(), this->Authenticator))
+  if(download && !mws::WebAPI::Instance()->DownloadBitstream(
+     atoi(this->GetServerHandle().c_str()),
+     bitstream->GetName()))
     {
     //delete the partial data and error out.
     kwsys::SystemTools::RemoveFile(bitstream->GetName().c_str());
@@ -1121,12 +1120,7 @@ int midasSynchronizer::GetServerParentId(midasResourceType::ResourceType type,
       mds::DatabaseAPI::Instance()->GetUuid(type, parentId);
 
     // Get server-side id of parent from the uuid
-    fields << "midas.resource.get?uuid=" << parentUuid;
-    mws::RestXMLParser parser;
-    parser.AddTag("/rsp/id", server_parentId);
-    mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-    mws::WebAPI::Instance()->Execute(fields.str().c_str(),
-      this->Authenticator);
+    mws::WebAPI::Instance()->GetIdByUuid(parentUuid, server_parentId);
     parentId = atoi(server_parentId.c_str());
     }
   return parentId;
@@ -1180,11 +1174,6 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
   std::stringstream status;
   status << "Uploading bitstream " << name << "...";
   this->Log->Status(status.str());
-  std::stringstream fields;
-  fields << "midas.upload.bitstream?uuid=" << record->Uuid << "&itemid="
-    << record->Parent << "&mode=stream&filename="
-    << midasUtils::EscapeForURL(name) << "&path="
-    << midasUtils::EscapeForURL(name) << "&size=" << size;
 
   if(this->Progress)
     {
@@ -1196,8 +1185,9 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
     }
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  bool ok = mws::WebAPI::Instance()->UploadFile(fields.str().c_str(),
-    record->Path.c_str(), this->Authenticator);
+  bool ok = mws::WebAPI::Instance()->UploadBitstream(record->Uuid,
+    record->Parent, midasUtils::EscapeForURL(name),
+    record->Path, size);
 
   if(ok)
     {
@@ -1251,27 +1241,16 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
   status << "Uploading collection " << coll.GetName() << "...";
   this->Log->Status(status.str());
 
-  std::stringstream fields;
-  fields << "midas.collection.create?uuid=" << record->Uuid
-    << "&parentid=" << record->Parent
-    << "&name=" << midasUtils::EscapeForURL(coll.GetName())
-    << "&description=" << midasUtils::EscapeForURL(coll.GetDescription())
-    << "&introductorytext=" <<
-    midasUtils::EscapeForURL(coll.GetIntroductoryText())
-    << "&copyright=" << midasUtils::EscapeForURL(coll.GetCopyright());
-
-  mws::RestXMLParser parser;
-  mws::WebAPI::Instance()->SetPostData("");
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  bool success = mws::WebAPI::Instance()->Execute(fields.str().c_str(),
-    this->Authenticator);
-  if(success)
+  mws::Collection mwsColl;
+  mwsColl.SetObject(&coll);
+  if(mwsColl.Create())
     {
     // Clear dirty flag on the resource
     mds::DatabaseAPI::Instance()->ClearDirtyResource(record->Uuid);
     std::stringstream text;
     text << "Pushed collection " << coll.GetName() << std::endl;
     Log->Message(text.str());
+    return true;
     }
   else
     {
@@ -1279,8 +1258,8 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
     text << "Failed to push collection " << coll.GetName() << ": " <<
     mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     Log->Error(text.str());
+    return false;
     }
-  return success;
 }
 
 //-------------------------------------------------------------------
@@ -1313,22 +1292,9 @@ bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
   this->Log->Status(status.str());
 
   // Create new community on server
-  std::stringstream fields;
-  fields << "midas.community.create?uuid=" << record->Uuid 
-    << "&parentid=" << record->Parent
-    << "&name=" << midasUtils::EscapeForURL(comm.GetName())
-    << "&copyright=" << midasUtils::EscapeForURL(comm.GetCopyright())
-    << "&introductorytext=" <<
-    midasUtils::EscapeForURL(comm.GetIntroductoryText())
-    << "&description=" << midasUtils::EscapeForURL(comm.GetDescription())
-    << "&links=" << midasUtils::EscapeForURL(comm.GetLinks());
-
-  mws::RestXMLParser parser;
-  mws::WebAPI::Instance()->SetPostData("");
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-
-  if(mws::WebAPI::Instance()->Execute(fields.str().c_str(),
-     this->Authenticator))
+  mws::Community mwsComm;
+  mwsComm.SetObject(&comm);
+  if(mwsComm.Create())
     {
     // Clear dirty flag on the resource
     mds::DatabaseAPI::Instance()->ClearDirtyResource(record->Uuid);
@@ -1378,27 +1344,19 @@ bool midasSynchronizer::PushItem(midasResourceRecord* record)
     Log->Error(text.str());
     return false;
     }
+  std::stringstream parentId;
+  parentId << record->Parent; //int to string
+  item.SetParent(parentId.str());
 
   this->Progress->SetIndeterminate();
   std::stringstream status;
   status << "Uploading item " << item.GetTitle() << "...";
   this->Log->Status(status.str());
   
-  std::stringstream fields;
-  fields << "midas.item.create?uuid=" << record->Uuid
-    << "&parentid=" << record->Parent
-    << "&name=" << midasUtils::EscapeForURL(item.GetName())
-    << "&abstract=" << midasUtils::EscapeForURL(item.GetAbstract())
-    << "&description=" << midasUtils::EscapeForURL(item.GetDescription())
-    << "&authors=" << midasUtils::EscapeForURL(item.GetAuthorsString())
-    << "&keywords=" << midasUtils::EscapeForURL(item.GetKeywordsString());
+  mws::Item mwsItem;
+  mwsItem.SetObject(&item);
 
-  mws::RestXMLParser parser;
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  mws::WebAPI::Instance()->SetPostData("");
-
-  if(mws::WebAPI::Instance()->Execute(fields.str().c_str(),
-     this->Authenticator))
+  if(mwsItem.Create())
     {
     // Clear dirty flag on the resource
     mds::DatabaseAPI::Instance()->ClearDirtyResource(record->Uuid);
@@ -1507,24 +1465,11 @@ int midasSynchronizer::Upload()
 bool midasSynchronizer::ConvertPathToId()
 {
   std::string type, id, uuid;
-  mws::RestXMLParser parser;
-  parser.AddTag("/rsp/type", type);
-  parser.AddTag("/rsp/id", id);
-  parser.AddTag("/rsp/uuid", uuid);
-
-  mws::WebAPI::Instance()->SetPostData("");
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-
-  std::stringstream fields;
-  fields << "midas.convert.path.to.id?path=" <<
-    midasUtils::EscapeForURL(this->ServerHandle);
-
-  if(!mws::WebAPI::Instance()->Execute(fields.str().c_str(),
-     this->Authenticator))
+  if(!mws::WebAPI::Instance()->GetIdFromPath(
+      this->ServerHandle, type, id, uuid))
     {
     return false;
     }
-
   if(type == "" || id == "" || uuid == "")
     {
     return false;
@@ -1617,21 +1562,11 @@ void midasSynchronizer::CountBitstreams()
       }
     std::string count;
     std::string size;
-    mws::RestXMLParser parser;
-    parser.AddTag("/rsp/count", count);
-    parser.AddTag("/rsp/size", size);
-
-    mws::WebAPI::Instance()->SetPostData("");
-    mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-
-    std::stringstream fields;
-    fields << "midas.bitstream.count?id=" << this->ServerHandle
-      << "&type=" << this->ResourceType;
 
     this->Progress->SetIndeterminate();
     this->Log->Status("Counting total bitstreams under the object...");
-    mws::WebAPI::Instance()->Execute(fields.str().c_str(),
-      this->Authenticator);
+    mws::WebAPI::Instance()->CountBitstreams(this->ResourceType,
+      atoi(this->ServerHandle.c_str()), count, size);
     this->Progress->ResetProgress();
     this->Log->Status("");
 

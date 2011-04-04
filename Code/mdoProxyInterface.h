@@ -38,12 +38,6 @@ public:
 
   /** Delete the object */
   virtual bool Delete();
-  
-  /** Download a bitstream */
-  virtual std::string DownloadBitstream(const char* uuid,const char* filename);
-
-  /** Upload a bitstream. UUID is returned if not defined. */
-  virtual const char* UploadBitstream(const char* filename,const char* uuid=NULL);
 
   /** Add an mdoObject */
   virtual void SetObject(Object* object) = 0;

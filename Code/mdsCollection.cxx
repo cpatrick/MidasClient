@@ -239,6 +239,7 @@ bool Collection::FetchTree()
     m_Collection->AddItem(item);
     items.push_back(item);
     }
+  mds::DatabaseAPI::Instance()->Close();
 
   if(m_Recurse)
     {

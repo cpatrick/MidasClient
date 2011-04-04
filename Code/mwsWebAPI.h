@@ -18,6 +18,7 @@
 #include <sstream>
 
 #include "mwsRestAPI.h"
+#include "midasLogAware.h"
 
 class midasAuthenticator;
 
@@ -26,21 +27,38 @@ namespace mws
 
 class RestXMLParser;
 
-// This class provide the functionalities needed to search, download and upload files from/to a
-// MIDAS server.
-class WebAPI
+#define MWS_CONTROLLER_CLASS friend class
+
+class WebAPI : public midasLogAware
 {
+  // All of the web service controllers should be able to call Execute/Upload/Download
+  MWS_CONTROLLER_CLASS Community;
+  MWS_CONTROLLER_CLASS Collection;
+  MWS_CONTROLLER_CLASS Item;
+  MWS_CONTROLLER_CLASS Bitstream;
+  MWS_CONTROLLER_CLASS Search;
+  MWS_CONTROLLER_CLASS TreePath;
+  MWS_CONTROLLER_CLASS NewResources;
 public:
   // Singleton to be used in an application
   static WebAPI* Instance();
-  
-  // Set the base url
+
+  bool DownloadBitstream(int id, const std::string& name);
+  bool UploadBitstream(
+    const std::string& uuid, int parentId,
+    const std::string& name, const std::string& path,
+    const std::string& size);
+  bool GetIdByUuid(const std::string& uuid, std::string& id);
+  bool CountBitstreams(int type, int id,
+                       std::string& count, std::string& size);
+  bool GetIdFromPath(const std::string& path, std::string& type,
+                     std::string& id, std::string& uuid);
+  bool DeleteResource(const std::string& typeName, int id);
+  bool CheckUserAgreement(int type, int id, std::string& hasAgreed);
+
+  // Set the REST API URL
   void SetServerUrl(const char* baseurl);
   const char* GetServerUrl();
-  
-  // Execute the command
-  bool Execute(const char* url, midasAuthenticator* auth);
-  void SetPostData(const char* postData);
   
   // Return the last error code
   int GetErrorCode();
@@ -53,18 +71,9 @@ public:
   
   // Get the default rest XML parser
   RestXMLParser* GetRestXMLParser();
-  
-  // Download a file
-  bool DownloadFile(const char* url, const char* filename, midasAuthenticator* auth);
-  
-  // Upload a file
-  bool UploadFile(const char* url, const char* filename, midasAuthenticator* auth);
 
   // Set the authenticator
   void SetAuthenticator(midasAuthenticator* auth);
-
-  // Get the authenticator
-  midasAuthenticator* GetAuthenticator();
   
   // After calling Login, use this to get the API token
   std::string GetAPIToken();
@@ -79,13 +88,25 @@ public:
  
   // Check the connection to the MIDAS server
   bool CheckConnection();
- 
+
 protected:
+  // Set the post data (only if you want to POST)
+  void SetPostData(const char* postData);
+
+  // Execute a web API command
+  bool Execute(const char* url, bool retry = true);
+
+  // Download a file
+  bool DownloadFile(const char* url, const char* filename);
+  
+  // Upload a file
+  bool UploadFile(const char* url, const char* filename);
 
   RestAPI*            m_RestAPI;
   RestXMLParser*      m_RestXMLParser;
   std::string         m_APIToken;
   const char*         m_PostData;
+  midasAuthenticator* m_Authenticator;
 
   // constructor
   WebAPI();

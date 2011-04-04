@@ -26,6 +26,7 @@ WebAPI::WebAPI()
   m_RestAPI->SetXMLParser(m_RestXMLParser);
   m_RestAPI->Initialize();
   m_PostData = NULL;
+  m_Authenticator = NULL;
 }
 
 /** Destructor */
@@ -48,6 +49,11 @@ const char* WebAPI::GetServerUrl()
   return m_RestAPI->GetServerUrl();
 }
 
+void WebAPI::SetAuthenticator(midasAuthenticator* auth)
+{
+  m_Authenticator = auth;
+}
+
 /** Return the instance as a singleton */
 WebAPI* WebAPI::Instance()
 {
@@ -68,7 +74,7 @@ void WebAPI::SetPostData(const char* postData)
 }
 
 /** Execute the command */
-bool WebAPI::Execute(const char* url, midasAuthenticator* auth)
+bool WebAPI::Execute(const char* url, bool retry)
 {
   m_RestAPI->SetProgressCallback(NULL, NULL);
   std::stringstream fullUrl;
@@ -81,13 +87,14 @@ bool WebAPI::Execute(const char* url, midasAuthenticator* auth)
     }
   bool success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
 
-  if((!success || m_RestAPI->GetXMLParser()->GetErrorCode() != 0) && !m_APIToken.empty() && auth && !m_RestAPI->ShouldCancel())
+  if(retry && (!success || m_RestAPI->GetXMLParser()->GetErrorCode() != 0)
+     && !m_APIToken.empty() && m_Authenticator && !m_RestAPI->ShouldCancel())
     {
     mws::RestXMLParser parser = *m_RestAPI->GetXMLParser(); //copy the parser or expat will crash...
-    auth->GetLog()->Message("Operation failed. Refreshing login token and retrying...");
-    if(!auth->Login())
+    this->Log->Message("Operation failed. Refreshing login token and retrying...");
+    if(!m_Authenticator->Login())
       {
-      auth->GetLog()->Error("Attempt to get new tokens failed.");
+      this->Log->Error("Attempt to get new tokens failed.");
       return false;
       }
     fullUrl.str(std::string());
@@ -96,6 +103,7 @@ bool WebAPI::Execute(const char* url, midasAuthenticator* auth)
     success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
     }
 
+  m_PostData = ""; //reset the post data
   if(success && m_RestAPI->GetXMLParser()->GetErrorCode() == 0)
     {
     return true;
@@ -111,9 +119,9 @@ bool WebAPI::CheckConnection()
   parser.AddTag("/rsp/version", version);
   this->GetRestAPI()->SetXMLParser(&parser);
   std::string url = "midas.info";
-  if(!this->Execute(url.c_str(), NULL))
+  if(!this->Execute(url.c_str(), false))
     {
-    std::cout << this->GetErrorMessage() << std::endl;
+    this->Log->Error(this->GetErrorMessage());
     return false;
     }
   if(version == "")
@@ -149,8 +157,7 @@ RestXMLParser* WebAPI::GetRestXMLParser()
 }
  
 // Download a file 
-bool WebAPI::DownloadFile(const char* url, const char* filename,
-                          midasAuthenticator* auth)
+bool WebAPI::DownloadFile(const char* url, const char* filename)
 {
   std::string fullUrl(url);
   if(!m_APIToken.empty())
@@ -160,12 +167,12 @@ bool WebAPI::DownloadFile(const char* url, const char* filename,
   m_RestAPI->SetXMLParser(NULL);
   bool success = m_RestAPI->Download(filename,fullUrl,RestAPI::FILE);
 
-  if(!success && !m_APIToken.empty() && auth && !m_RestAPI->ShouldCancel())
+  if(!success && !m_APIToken.empty() && m_Authenticator && !m_RestAPI->ShouldCancel())
     {
-    auth->GetLog()->Message("Operation failed. Refreshing login token and retrying...");
-    if(!auth->Login())
+    this->Log->Message("Operation failed. Refreshing login token and retrying...");
+    if(!m_Authenticator->Login())
       {
-      auth->GetLog()->Error("Attempt to get new tokens failed.");
+      this->Log->Error("Attempt to get new tokens failed.");
       m_RestAPI->SetXMLParser(m_RestXMLParser);
       return false;
       }
@@ -179,13 +186,12 @@ bool WebAPI::DownloadFile(const char* url, const char* filename,
 }
  
 // Upload a file 
-bool WebAPI::UploadFile(const char* url, const char* filename,
-                        midasAuthenticator* auth)
+bool WebAPI::UploadFile(const char* url, const char* filename)
 {
   if(m_APIToken == "")
     {
-    std::cerr << "Token should be defined to upload to MIDAS." << std::endl;
-    std::cerr << "Please use the Login() function to get a token." << std::endl;
+    this->Log->Error("Token should be defined to upload to MIDAS.");
+    this->Log->Error("Please use the Login() function to get a token.");
     this->GetRestXMLParser()->SetErrorMessage("Cannot push using anonymous access.");
     return false;
     }
@@ -194,7 +200,7 @@ bool WebAPI::UploadFile(const char* url, const char* filename,
   completeUrl += "&token=";
   completeUrl += m_APIToken;
   m_RestAPI->SetInputMode(mws::RestAPI::FILE);
-  bool ok = m_RestAPI->Upload(filename,completeUrl);
+  bool ok = m_RestAPI->Upload(filename, completeUrl);
   ok &= std::string(this->GetRestXMLParser()->GetErrorMessage()) == "";
   ok &= this->GetRestXMLParser()->GetErrorCode() == 0;
 
@@ -222,7 +228,7 @@ bool WebAPI::Login(const char* appname,
   url << "&appname=" << appname;
   if(!this->Execute(url.str().c_str(), NULL))
     {
-    std::cout << this->GetErrorMessage() << std::endl;
+    this->Log->Error(this->GetErrorMessage());
     return false;
     }
   
@@ -231,6 +237,94 @@ bool WebAPI::Login(const char* appname,
     return false;
     }    
   return true;
+}
+
+//-------------------------------------------------------------------
+bool WebAPI::DownloadBitstream(int id, const std::string& name)
+{
+  std::stringstream fields;
+  fields << "midas.bitstream.download?id=" << id;
+  return this->DownloadFile(fields.str().c_str(), name.c_str());
+}
+
+//-------------------------------------------------------------------
+bool WebAPI::UploadBitstream(const std::string& uuid, int parentId,
+                             const std::string& name, const std::string& path,
+                             const std::string& size)
+{
+  std::stringstream fields;
+  fields << "midas.upload.bitstream?uuid=" << uuid << "&itemid="
+    << parentId << "&mode=stream&filename=" << name << "&path="
+    << name << "&size=" << size;
+  return this->UploadFile(fields.str().c_str(), path.c_str());
+}
+
+//-------------------------------------------------------------------
+bool WebAPI::GetIdByUuid(const std::string& uuid, std::string& id)
+{
+  mws::RestXMLParser parser;
+  parser.AddTag("/rsp/id", id);
+  this->GetRestAPI()->SetXMLParser(&parser);
+
+  std::stringstream fields;
+  fields << "midas.resource.get?uuid=" << uuid;
+
+  return this->Execute(fields.str().c_str());
+}
+
+//-------------------------------------------------------------------
+bool WebAPI::CountBitstreams(int type, int id, std::string& count,
+                             std::string& size)
+{
+  mws::RestXMLParser parser;
+  parser.AddTag("/rsp/count", count);
+  parser.AddTag("/rsp/size", size);
+  this->GetRestAPI()->SetXMLParser(&parser);
+
+  std::stringstream fields;
+  fields << "midas.bitstream.count?id=" << id << "&type=" << type;
+
+  return this->Execute(fields.str().c_str());
+}
+
+//-------------------------------------------------------------------
+bool WebAPI::GetIdFromPath(const std::string& path, std::string& type,
+                           std::string& id, std::string& uuid)
+{
+  mws::RestXMLParser parser;
+  parser.AddTag("/rsp/type", type);
+  parser.AddTag("/rsp/id", id);
+  parser.AddTag("/rsp/uuid", uuid);
+  this->GetRestAPI()->SetXMLParser(&parser);
+
+  std::stringstream fields;
+  fields << "midas.convert.path.to.id?path=" << midasUtils::EscapeForURL(path);
+
+  return this->Execute(fields.str().c_str());
+}
+
+bool WebAPI::DeleteResource(const std::string& typeName, int id)
+{
+  mws::RestXMLParser parser;
+  this->GetRestAPI()->SetXMLParser(&parser);
+
+  std::stringstream fields;
+  fields << "midas." << typeName << ".delete?id=" << id;
+
+  return this->Execute(fields.str().c_str());
+}
+
+bool WebAPI::CheckUserAgreement(int type, int id, std::string& hasAgreed)
+{
+  mws::RestXMLParser parser;
+  parser.AddTag("/rsp/hasAgreed", hasAgreed);
+
+  std::stringstream fields;
+  fields << "midas.check.user.agreement?id=" << id
+    << "&type=" << type;
+
+  this->GetRestAPI()->SetXMLParser(&parser);
+  return this->Execute(fields.str().c_str());
 }
 
 } // end namespace

@@ -47,22 +47,6 @@ bool ProxyInterface::Delete()
   return false;
 }
  
-/** Download a bitstream */
-std::string ProxyInterface::DownloadBitstream(const char* uuid,const char* filename)
-{
-  std::cerr << m_Name.c_str() 
-            << " ProxyInterface::DownloadBitstream: Not implemented" << std::endl;
-  return "";
-} 
-
-/** Upload a bitstream. UUID is returned if not defined */
-const char* ProxyInterface::UploadBitstream(const char* filename,const char* uuid)
-{
-  std::cerr << m_Name.c_str() 
-            << " ProxyInterface::UploadBitstream: Not implemented" << std::endl;
-  return NULL;
-} 
- 
 /** Set if this interface is acting as a cache */
 void ProxyInterface::SetIsCache(bool iscache)
 {

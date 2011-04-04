@@ -26,17 +26,19 @@ SQLiteDatabase::SQLiteDatabase()
   m_InitialFetch = false;
   m_Active = false;
   m_InitialFetchResult=SQLITE_DONE;
+  m_Mutex = new QMutex();
 }
   
 /** Destructor */
 SQLiteDatabase::~SQLiteDatabase()
 {
-  
+  delete m_Mutex;
 }
 
 /** Open a database connection */
 bool SQLiteDatabase::Open(const char* dbname)
 {
+  this->m_Mutex->lock();
   int result = sqlite3_open(dbname, &m_Database);
   if(result)
     {
@@ -44,7 +46,7 @@ bool SQLiteDatabase::Open(const char* dbname)
     sqlite3_close(m_Database);
     return false;
     }
-  return true;  
+  return true;
 }
 
 /** Close the current database */
@@ -58,8 +60,10 @@ bool SQLiteDatabase::Close()
   if(result)
     {
     m_ErrorMessage = sqlite3_errmsg(m_Database);
+    this->m_Mutex->unlock();
     return false;
     }
+  this->m_Mutex->unlock();
   return true; 
 }
   

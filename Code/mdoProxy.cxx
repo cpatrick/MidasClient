@@ -95,41 +95,4 @@ bool Proxy::LoadTree()
   return false;
 }
 
-/** Download a bitstream. */
-std::string Proxy::DownloadBitstream(const char* uuid,const char* filename)
-{
-  if(m_Interfaces.size() == 0)
-    {
-    std::cerr << "Proxy::Load Interface not set" << std::endl;
-    return "";
-    }
-    
-  std::vector<ProxyInterface*>::iterator it = m_Interfaces.begin();
-  while(it != m_Interfaces.end())
-    {
-    std::string newname = (*it)->DownloadBitstream(uuid,filename);
-    if(newname != "")
-      {
-      // We got a match, we check if we should cache it somewhere
-      // Ideally we want to cache to lower priority only so let's do that
-      // for now
-      std::vector<ProxyInterface*>::iterator itCache = it;
-      while(itCache != m_Interfaces.begin())
-        {
-        itCache--;
-        if((*itCache)->GetIsCache())
-          {
-          std::cout << "Caching " << uuid << " : " << newname 
-                  << " to interface " << (*itCache)->GetName() << std::endl;             
-          (*itCache)->UploadBitstream(newname.c_str(),uuid);
-          }
-        }
-      
-      return newname;
-      }
-    it++;
-    } 
-  return NULL;
-}
-
 } // end namespace
