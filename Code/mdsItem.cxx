@@ -31,13 +31,13 @@ bool Item::Fetch()
 {
   if(!m_Item)
     {
-    m_Database->GetLog()->Error("Item::Fetch : Item not set\n");
+    mds::DatabaseAPI::Instance()->GetLog()->Error("Item::Fetch : Item not set\n");
     return false;
     }
     
   if(m_Item->GetId() == 0)
     {
-    m_Database->GetLog()->Error("Item::Fetch : ItemId not set\n");
+    mds::DatabaseAPI::Instance()->GetLog()->Error("Item::Fetch : ItemId not set\n");
     return false;
     }
 
@@ -48,7 +48,7 @@ bool Item::Fetch()
 
   if(m_Item->GetUuid() == "")
     {
-    m_Item->SetUuid(m_Database->GetUuid(
+    m_Item->SetUuid(mds::DatabaseAPI::Instance()->GetUuid(
       midasResourceType::ITEM, m_Item->GetId()).c_str());
     }
 
@@ -56,55 +56,55 @@ bool Item::Fetch()
   query << "SELECT text_value FROM metadatavalue WHERE item_id='"
     << m_Item->GetId() << "' AND metadata_field_id='27'";
   
-  m_Database->Open();
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  mds::DatabaseAPI::Instance()->Open();
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(mds::DatabaseAPI::Instance()->Database->GetNextRow())
     {
-    m_Item->SetAbstract(m_Database->GetDatabase()->GetValueAsString(0));
+    m_Item->SetAbstract(mds::DatabaseAPI::Instance()->Database->GetValueAsString(0));
     }
 
   query.str(std::string());
   query << "SELECT text_value FROM metadatavalue WHERE item_id='"
     << m_Item->GetId() << "' AND metadata_field_id='3'";
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(mds::DatabaseAPI::Instance()->Database->GetNextRow())
     {
-    m_Item->AddAuthor(m_Database->GetDatabase()->GetValueAsString(0));
+    m_Item->AddAuthor(mds::DatabaseAPI::Instance()->Database->GetValueAsString(0));
     }
   
   query.str(std::string());
   query << "SELECT text_value FROM metadatavalue WHERE item_id='"
     << m_Item->GetId() << "' AND metadata_field_id='57'";
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(mds::DatabaseAPI::Instance()->Database->GetNextRow())
     {
-    m_Item->AddKeyword(m_Database->GetDatabase()->GetValueAsString(0));
+    m_Item->AddKeyword(mds::DatabaseAPI::Instance()->Database->GetValueAsString(0));
     }
 
   query.str(std::string());
   query << "SELECT text_value FROM metadatavalue WHERE item_id='"
     << m_Item->GetId() << "' AND metadata_field_id='26'";
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(mds::DatabaseAPI::Instance()->Database->GetNextRow())
     {
-    m_Item->SetDescription(m_Database->GetDatabase()->GetValueAsString(0));
+    m_Item->SetDescription(mds::DatabaseAPI::Instance()->Database->GetValueAsString(0));
     }
 
   query.str(std::string());
   query << "SELECT title FROM item WHERE item_id='"
     << m_Item->GetId() << "'";
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(mds::DatabaseAPI::Instance()->Database->GetNextRow())
     {
-    m_Item->SetTitle(m_Database->GetDatabase()->GetValueAsString(0));
+    m_Item->SetTitle(mds::DatabaseAPI::Instance()->Database->GetValueAsString(0));
     }
 
-  m_Database->Close();
+  mds::DatabaseAPI::Instance()->Close();
   m_Item->SetFetched(true);
   return true;
 }
@@ -114,7 +114,7 @@ bool Item::Commit()
 {
   bool ok = true;
 
-  std::string path = m_Database->GetRecordByUuid(m_Item->GetUuid()).Path;
+  std::string path = mds::DatabaseAPI::Instance()->GetRecordByUuid(m_Item->GetUuid()).Path;
   std::string parentDir = kwsys::SystemTools::GetParentDirectory(path.c_str());
   std::string oldName = kwsys::SystemTools::GetFilenameName(path);
 
@@ -127,9 +127,9 @@ bool Item::Commit()
       pathQuery << "UPDATE resource_uuid SET path='" << newPath <<
         "' WHERE uuid='" << m_Item->GetUuid() << "'";
 
-      m_Database->Open();
-      m_Database->GetDatabase()->ExecuteQuery(pathQuery.str().c_str());
-      m_Database->Close();
+      mds::DatabaseAPI::Instance()->Open();
+      mds::DatabaseAPI::Instance()->Database->ExecuteQuery(pathQuery.str().c_str());
+      mds::DatabaseAPI::Instance()->Close();
 
       this->FetchTree();
 
@@ -138,41 +138,40 @@ bool Item::Commit()
           i != m_Item->GetBitstreams().end(); ++i)
         {
         mds::Bitstream mdsBitstream;
-        mdsBitstream.SetDatabase(m_Database);
         mdsBitstream.SetObject(*i);
         mdsBitstream.ParentPathChanged(newPath);
         }
       }
     else
       {
-      m_Database->GetLog()->Error("Item::Commit : could not rename directory "
+      mds::DatabaseAPI::Instance()->GetLog()->Error("Item::Commit : could not rename directory "
         "on disk. It may be locked.\n");
       return false;
       }
     }
 
-  m_Database->Open();
+  mds::DatabaseAPI::Instance()->Open();
   std::stringstream query;
   query << "DELETE FROM metadatavalue WHERE item_id='" << m_Item->GetId() << "'";
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
   
   query.str(std::string());
   query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
     << "VALUES ('" << m_Item->GetId() << "','27','" <<
     midasUtils::EscapeForSQL(m_Item->GetAbstract()) << "')";
-  ok &= m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  ok &= mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
  
   query.str(std::string());
   query << "UPDATE item SET title='" <<
     midasUtils::EscapeForSQL(m_Item->GetTitle()) << "' WHERE item_id='" <<
     m_Item->GetId() << "'";
-  ok &= m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  ok &= mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
 
   query.str(std::string());
   query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value) "
     << "VALUES ('" << m_Item->GetId() << "','26','" <<
     midasUtils::EscapeForSQL(m_Item->GetDescription()) << "')";
-  ok &= m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  ok &= mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
 
   for(std::vector<std::string>::iterator i = m_Item->GetAuthors().begin();
       i != m_Item->GetAuthors().end(); ++i)
@@ -181,7 +180,7 @@ bool Item::Commit()
     query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value)"
       << " VALUES ('" << m_Item->GetId() << "','3','"
       << midasUtils::EscapeForSQL(*i) << "')";
-    ok &= m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+    ok &= mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
     }
 
   for(std::vector<std::string>::iterator i = m_Item->GetKeywords().begin();
@@ -191,19 +190,19 @@ bool Item::Commit()
     query << "INSERT INTO metadatavalue (item_id,metadata_field_id,text_value)"
       << " VALUES ('" << m_Item->GetId() << "','57','"
       << midasUtils::EscapeForSQL(*i) << "')";
-    ok &= m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+    ok &= mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
     }
-  m_Database->Close();
+  mds::DatabaseAPI::Instance()->Close();
 
   if(ok)
     {
     if(m_MarkDirty)
       {
-      m_Database->MarkDirtyResource(m_Item->GetUuid(), midasDirtyAction::MODIFIED);
+      mds::DatabaseAPI::Instance()->MarkDirtyResource(m_Item->GetUuid(), midasDirtyAction::MODIFIED);
       }
     return true;
     }
-  m_Database->GetLog()->Error("Item::Commit : database update failed");
+  mds::DatabaseAPI::Instance()->GetLog()->Error("Item::Commit : database update failed");
   return false;
 }
 
@@ -211,23 +210,23 @@ bool Item::FetchTree()
 {
   if(!m_Item)
     {
-    m_Database->GetLog()->Error("Item::FetchTree : Item not set\n");
+    mds::DatabaseAPI::Instance()->GetLog()->Error("Item::FetchTree : Item not set\n");
     return false;
     }
     
   if(m_Item->GetId() == 0)
     {
-    m_Database->GetLog()->Error("Item::FetchTree : ItemId not set\n");
+    mds::DatabaseAPI::Instance()->GetLog()->Error("Item::FetchTree : ItemId not set\n");
     return false;
     }
 
   if(m_Item->GetUuid() == "")
     {
-    m_Item->SetUuid(m_Database->GetUuid(
+    m_Item->SetUuid(mds::DatabaseAPI::Instance()->GetUuid(
       midasResourceType::ITEM, m_Item->GetId()).c_str());
     }
 
-  m_Item->SetDirty(m_Database->IsResourceDirty(m_Item->GetUuid()));
+  m_Item->SetDirty(mds::DatabaseAPI::Instance()->IsResourceDirty(m_Item->GetUuid()));
 
   std::stringstream query;
   query << "SELECT bitstream.bitstream_id, bitstream.name, bitstream.size_bytes, resource_uuid.uuid "
@@ -235,29 +234,29 @@ bool Item::FetchTree()
     "AND resource_uuid.resource_type_id='" << midasResourceType::BITSTREAM << "' AND "
     "bitstream.bitstream_id IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
     << m_Item->GetId() << ") ORDER BY bitstream.name COLLATE NOCASE ASC";
-  m_Database->Open();
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  mds::DatabaseAPI::Instance()->Open();
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
 
   std::vector<mdo::Bitstream*> bitstreams;
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(mds::DatabaseAPI::Instance()->Database->GetNextRow())
     {
     mdo::Bitstream* bitstream = new mdo::Bitstream;
-    bitstream->SetId(m_Database->GetDatabase()->GetValueAsInt(0));
-    bitstream->SetName(m_Database->GetDatabase()->GetValueAsString(1));
+    bitstream->SetId(mds::DatabaseAPI::Instance()->Database->GetValueAsInt(0));
+    bitstream->SetName(mds::DatabaseAPI::Instance()->Database->GetValueAsString(1));
     std::stringstream val;
-    val << m_Database->GetDatabase()->GetValueAsInt64(2);
+    val << mds::DatabaseAPI::Instance()->Database->GetValueAsInt64(2);
     bitstream->SetSize(val.str());
-    bitstream->SetUuid(m_Database->GetDatabase()->GetValueAsString(3));
+    bitstream->SetUuid(mds::DatabaseAPI::Instance()->Database->GetValueAsString(3));
     bitstream->SetFetched(true);
     m_Item->AddBitstream(bitstream);
     bitstreams.push_back(bitstream);
     }
-  m_Database->Close();
+  mds::DatabaseAPI::Instance()->Close();
 
   for(std::vector<mdo::Bitstream*>::iterator i = bitstreams.begin();
       i != bitstreams.end(); ++i)
     {
-    (*i)->SetDirty(m_Database->IsResourceDirty((*i)->GetUuid()));
+    (*i)->SetDirty(mds::DatabaseAPI::Instance()->IsResourceDirty((*i)->GetUuid()));
     }
   return true;
 }
@@ -287,18 +286,18 @@ bool Item::Delete(bool deleteOnDisk)
   std::stringstream query;
   query << "SELECT bitstream_id FROM item2bitstream WHERE "
     "item_id='" << m_Item->GetId() << "'";
-  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  mds::DatabaseAPI::Instance()->Database->Open(mds::DatabaseAPI::Instance()->GetDatabasePath().c_str());
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(mds::DatabaseAPI::Instance()->Database->GetNextRow())
     {
-    children.push_back(m_Database->GetDatabase()->GetValueAsInt(0));
+    children.push_back(mds::DatabaseAPI::Instance()->Database->GetValueAsInt(0));
     }
-  m_Database->GetDatabase()->Close();
+  mds::DatabaseAPI::Instance()->Database->Close();
   bool ok = true;
   for(std::vector<int>::iterator i = children.begin();
       i != children.end(); ++i)
@@ -306,10 +305,9 @@ bool Item::Delete(bool deleteOnDisk)
     mds::Bitstream mdsBitstream;
     mdo::Bitstream* bitstream = new mdo::Bitstream;
     bitstream->SetId(*i);
-    bitstream->SetUuid(m_Database->GetUuid(midasResourceType::BITSTREAM, *i).c_str());
+    bitstream->SetUuid(mds::DatabaseAPI::Instance()->GetUuid(midasResourceType::BITSTREAM, *i).c_str());
     mdsBitstream.SetObject(bitstream);
-    mdsBitstream.SetDatabase(m_Database);
-    mdsBitstream.SetPath(m_Database->GetRecordByUuid(bitstream->GetUuid()).Path);
+    mdsBitstream.SetPath(mds::DatabaseAPI::Instance()->GetRecordByUuid(bitstream->GetUuid()).Path);
     ok &= mdsBitstream.Delete(deleteOnDisk);
     delete bitstream;
 
@@ -319,69 +317,69 @@ bool Item::Delete(bool deleteOnDisk)
       }
     }
 
-  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
-  m_Database->GetDatabase()->ExecuteQuery("BEGIN");
+  mds::DatabaseAPI::Instance()->Database->Open(mds::DatabaseAPI::Instance()->GetDatabasePath().c_str());
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery("BEGIN");
   query.str(std::string());
   query << "DELETE FROM item2bitstream WHERE item_id='" <<
     m_Item->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM metadatavalue WHERE item_id='" <<
     m_Item->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM item WHERE item_id='" <<
     m_Item->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM collection2item WHERE item_id='" <<
     m_Item->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM dirty_resource WHERE uuid='" <<
     m_Item->GetUuid() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM resource_uuid WHERE uuid='" <<
     m_Item->GetUuid() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
-  m_Database->GetDatabase()->ExecuteQuery("COMMIT");
-  m_Database->GetDatabase()->Close();
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery("COMMIT");
+  mds::DatabaseAPI::Instance()->Database->Close();
 
   if(deleteOnDisk)
     {
@@ -407,9 +405,9 @@ void Item::ParentPathChanged(std::string parentPath)
   query << "UPDATE resource_uuid SET path='" << newPath << "' WHERE "
     "uuid='" << m_Item->GetUuid() << "'";
 
-  m_Database->Open();
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
-  m_Database->Close();
+  mds::DatabaseAPI::Instance()->Open();
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
+  mds::DatabaseAPI::Instance()->Close();
 
   for(std::vector<mdo::Bitstream*>::const_iterator i =
       m_Item->GetBitstreams().begin();
@@ -417,7 +415,6 @@ void Item::ParentPathChanged(std::string parentPath)
     {
     mds::Bitstream mdsBitstream;
     mdsBitstream.SetObject(*i);
-    mdsBitstream.SetDatabase(m_Database);
     mdsBitstream.ParentPathChanged(newPath);
     }
 }

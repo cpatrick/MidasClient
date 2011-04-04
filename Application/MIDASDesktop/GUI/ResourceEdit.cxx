@@ -1,7 +1,7 @@
 #include "ResourceEdit.h"
 #include "MidasResourceDescTable.h"
 #include "midasUtils.h"
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 #include "mdoCommunity.h"
 #include "mdsCommunity.h"
 #include "mdoCollection.h"
@@ -13,9 +13,8 @@
 
 #include "Utils.h"
 
-ResourceEdit::ResourceEdit(midasDatabaseProxy* database)
+ResourceEdit::ResourceEdit()
 {
-  this->m_database = database;
 }
 
 ResourceEdit::~ResourceEdit()
@@ -98,7 +97,6 @@ void ResourceEdit::SaveCommunity(mdo::Community* comm, MIDASFields field,
   if(changed)
     {
     mds::Community mdsComm;
-    mdsComm.SetDatabase(m_database);
     mdsComm.SetObject(comm);
     mdsComm.MarkAsDirty();
     mdsComm.Commit();
@@ -150,7 +148,6 @@ void ResourceEdit::SaveCollection(mdo::Collection* coll, MIDASFields field,
     {
     mds::Collection mdsColl;
     mdsColl.SetObject(coll);
-    mdsColl.SetDatabase(m_database);
     mdsColl.MarkAsDirty();
     mdsColl.Commit();
 
@@ -206,7 +203,6 @@ void ResourceEdit::SaveItem(mdo::Item* item, MIDASFields field,
     {
     mds::Item mdsItem;
     mdsItem.SetObject(item);
-    mdsItem.SetDatabase(m_database);
     mdsItem.MarkAsDirty();
     mdsItem.Commit();
 

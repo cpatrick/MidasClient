@@ -1,7 +1,7 @@
 #include "SignInThread.h"
 
 #include "MIDASDesktopUI.h"
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 #include "midasAuthenticator.h"
 #include "midasSynchronizer.h"
 #include "mwsWebAPI.h"
@@ -21,20 +21,18 @@ void SignInThread::SetProfile(QString profile)
 
 void SignInThread::run()
 {
-  std::string url = m_Parent->getDatabaseProxy()->GetAuthProfile(m_Profile.toStdString()).Url;
+  std::string url = mds::DatabaseAPI::Instance()->GetAuthProfile(m_Profile.toStdString()).Url;
 
   if(mws::WebAPI::Instance()->CheckConnection())
     {
-    m_Parent->setServerURL(url);
     m_Parent->getSynchronizer()->GetAuthenticator()->SetProfile(m_Profile.toStdString());
     
-    if(!m_Parent->getSynchronizer()->GetAuthenticator()->Login(mws::WebAPI::Instance()))
+    if(!m_Parent->getSynchronizer()->GetAuthenticator()->Login())
       {
       emit initialized(false);
       return;
       }
 
-    m_Parent->getTreeViewServer()->SetWebAPI(mws::WebAPI::Instance());
     m_Parent->getTreeViewServer()->Initialize();
 
     emit initialized(true);

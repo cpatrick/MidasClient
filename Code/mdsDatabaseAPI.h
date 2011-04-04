@@ -35,6 +35,10 @@ namespace mds
   class ResourceUpdateHandler;
 }
 
+/**
+ * Identifier for any resource type (community,collection,item,bitstream)
+ * Includes Type#, Id, Parent Id, Path on disk, and uuid
+ */
 struct midasResourceRecord
 {
   midasResourceRecord() :
@@ -66,15 +70,18 @@ struct midasBitstreamStamp
   int Id;
 };
 
-class midasDatabaseProxy : public midasLogAware
+namespace mds {
+
+class DatabaseAPI : public midasLogAware
 {
-  friend class mds::Community;
-  friend class mds::Collection;
-  friend class mds::Item;
-  friend class mds::Bitstream;
+  friend class Community;
+  friend class Collection;
+  friend class Item;
+  friend class Bitstream;
 public:
-  midasDatabaseProxy(std::string database);
-  ~midasDatabaseProxy();
+  static DatabaseAPI* Instance();
+
+  ~DatabaseAPI();
 
   enum MidasAppSetting
     {
@@ -86,8 +93,8 @@ public:
     UNIFIED_TREE
     };
 
-  mds::SQLiteDatabase* GetDatabase();
   std::string GetDatabasePath() { return this->DatabasePath; }
+  bool SetDatabasePath(std::string path);
 
   /**
    * Clean entries in the database
@@ -190,13 +197,18 @@ protected:
   bool Relocate(mdo::Bitstream* bitstream, std::string parentDir, bool copy);
 
   std::string GetKeyName(MidasAppSetting setting);
-
-  mds::SQLiteDatabase* Database;
-  mds::ResourceUpdateHandler* ResourceUpdateHandler;
-  std::string DatabasePath;
   
   bool Open();
   bool Close();
+
+private:
+  DatabaseAPI(); //singleton only
+  static DatabaseAPI* m_Instance;
+
+  SQLiteDatabase* Database;
+  std::string DatabasePath;
+  ResourceUpdateHandler* ResourceUpdateHandler;
 };
 
+} //end namespace
 #endif

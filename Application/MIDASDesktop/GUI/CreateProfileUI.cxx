@@ -4,7 +4,7 @@
 #include "MIDASDesktopUI.h"
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 #include <QString>
 #include <QCheckBox>
 #include <QMessageBox>
@@ -41,9 +41,9 @@ void CreateProfileUI::init()
   profileComboBox->addItem("New Profile");
 
   serverURLEdit->setText(
-    parent->getDatabaseProxy()->GetSetting(midasDatabaseProxy::LAST_URL).c_str());
+    mds::DatabaseAPI::Instance()->GetSetting(mds::DatabaseAPI::LAST_URL).c_str());
 
-  std::vector<std::string> profiles = parent->getDatabaseProxy()->GetAuthProfiles();
+  std::vector<std::string> profiles = mds::DatabaseAPI::Instance()->GetAuthProfiles();
 
   for(std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i)
     {
@@ -63,7 +63,7 @@ void CreateProfileUI::fillData(const QString& name)
     }
   else
     {
-    midasAuthProfile profile = parent->getDatabaseProxy()->GetAuthProfile(
+    midasAuthProfile profile = mds::DatabaseAPI::Instance()->GetAuthProfile(
       name.toStdString());
 
     profileNameEdit->setText(profile.Name.c_str());
@@ -107,7 +107,7 @@ void CreateProfileUI::rootDirChecked(int state)
 
 int CreateProfileUI::exec()
 {
-  if(this->parent->getDatabaseProxy())
+  if(mds::DatabaseAPI::Instance()->GetDatabasePath() != "")
     {
     this->init();
     return QDialog::exec();
@@ -151,7 +151,7 @@ void CreateProfileUI::deleteProfile()
   std::string profileName = profileComboBox->currentText().toStdString();
   profileComboBox->removeItem(profileComboBox->currentIndex());
 
-  parent->getDatabaseProxy()->DeleteProfile(profileName);
+  mds::DatabaseAPI::Instance()->DeleteProfile(profileName);
 
   std::stringstream text;
   text << "Deleted profile " << profileName;

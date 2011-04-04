@@ -1,6 +1,5 @@
 #include "DeleteResourceUI.h"
 #include "MIDASDesktopUI.h"
-#include "midasDatabaseProxy.h"
 #include "midasSynchronizer.h"
 
 /** Constructor */

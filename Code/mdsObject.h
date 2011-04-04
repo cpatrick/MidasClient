@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "mdoProxyInterface.h"
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 
 namespace mds{
 
@@ -27,17 +27,10 @@ public:
 
   Object()
     {
-    m_Database = NULL;
     m_MarkDirty = false;
     }
     
   ~Object(){};
-
-  /** Set the Database */
-  void SetDatabase(midasDatabaseProxy* database)
-    {
-    m_Database = database;
-    }
 
   void MarkAsDirty()
     {
@@ -45,9 +38,7 @@ public:
     }
 
 protected:
-  
-  midasDatabaseProxy* m_Database;
-  bool                m_MarkDirty;
+  bool m_MarkDirty;
   
 };
 

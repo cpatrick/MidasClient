@@ -38,8 +38,6 @@ MidasTreeViewServer::MidasTreeViewServer(QWidget * parent):MidasTreeView(parent)
   m_Model = new MidasTreeModelServer;
   this->setModel(m_Model);
 
-  m_WebAPI = NULL;
-
   this->setSelectionMode( QTreeView::SingleSelection );
 
   connect (this, SIGNAL( collapsed(const QModelIndex&)),
@@ -64,12 +62,6 @@ MidasTreeViewServer::~MidasTreeViewServer()
 {
   delete m_Model;
   delete m_ExpandTreeThread;
-}
-
-void MidasTreeViewServer::SetWebAPI(mws::WebAPI* api)
-{
-  reinterpret_cast<MidasTreeModelServer*>(m_Model)->SetWebAPI(api);
-  m_WebAPI = api;
 }
 
 void MidasTreeViewServer::alertFetchedMore()
@@ -166,7 +158,6 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     {
     mdo::Community* community = communityTreeItem->getCommunity();
     mws::Community remote;
-    remote.SetWebAPI(mws::WebAPI::Instance());
     remote.SetObject(community);
     remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
     remote.Fetch();
@@ -177,7 +168,6 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     {
     mdo::Collection* collection = collectionTreeItem->getCollection();
     mws::Collection remote;
-    remote.SetWebAPI(mws::WebAPI::Instance());
     remote.SetObject(collection);
     remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
     remote.Fetch();
@@ -188,7 +178,6 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     {
     mdo::Item* item = itemTreeItem->getItem();
     mws::Item remote;
-    remote.SetWebAPI(mws::WebAPI::Instance());
     remote.SetObject(item);
     remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
     remote.Fetch();
@@ -199,7 +188,6 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     {
     mdo::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
     mws::Bitstream remote;
-    remote.SetWebAPI(mws::WebAPI::Instance());
     remote.SetObject(bitstream);
     remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
     remote.Fetch();

@@ -80,12 +80,6 @@ public:
   void SetResourceType(int type);
   int GetResourceType();
 
-  void SetDatabase(std::string path);
-  midasDatabaseProxy* GetDatabase();
-
-  void SetServerURL(std::string url);
-  std::string GetServerURL();
-
   void SetProgressReporter(midasProgressReporter* progress);
   midasProgressReporter* GetProgressReporter();
   void DeleteProgressReporter();
@@ -106,8 +100,6 @@ public:
 
   void SetRecursive(bool recursive);
   bool GetRecursive();
-
-  std::vector<midasStatus> GetStatusEntries();
 
   void SetAuthenticator(midasAuthenticator* authenticator, bool deleteOld);
   midasAuthenticator* GetAuthenticator();
@@ -152,7 +144,6 @@ protected:
   SynchOperation Operation;
   int ResourceType;
   int LastId;
-  std::string ServerURL;
   std::string ClientHandle;
   std::string ServerHandle;
   std::string LastDir;
@@ -168,9 +159,6 @@ protected:
 
   bool ShouldCancel;
   midasProgressReporter* Progress;
-
-  std::string Database;
-  midasDatabaseProxy* DatabaseProxy;
   midasAuthenticator* Authenticator;
   midasAgreementHandler* AgreementHandler;
   midasFileOverwriteHandler* OverwriteHandler;

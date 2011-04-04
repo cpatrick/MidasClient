@@ -23,8 +23,8 @@
 #include "mdoItem.h"
 #include "mdsItem.h"
 #include "mwsItem.h"
+#include "mdsDatabaseAPI.h"
 #include "midasProgressReporter.h"
-#include "midasDatabaseProxy.h"
 #include "midasStdOutLog.h"
 #include "mwsRestXMLParser.h"
 #include "midasAuthenticator.h"
@@ -46,14 +46,11 @@ midasSynchronizer::midasSynchronizer()
   this->PathMode = false;
   this->Operation = OPERATION_NONE;
   this->ResourceType = midasResourceType::NONE;
-  this->ServerURL = "";
   this->ServerHandle = "";
   this->ClientHandle = "";
   this->Uuid = "";
   this->Progress = NULL;
   this->Log = new midasStdOutLog();
-  this->Database = "";
-  this->DatabaseProxy = NULL;
   this->AgreementHandler = NULL;
   this->OverwriteHandler = NULL;
   this->ResourceUpdateHandler = NULL;
@@ -65,7 +62,6 @@ midasSynchronizer::midasSynchronizer()
 
 midasSynchronizer::~midasSynchronizer()
 {
-  delete this->DatabaseProxy;
   delete this->Authenticator;
 }
 
@@ -94,61 +90,11 @@ void midasSynchronizer::SetAuthenticator(midasAuthenticator* auth,
   this->Authenticator = auth;
 }
 
-void midasSynchronizer::SetDatabase(std::string path)
-{
-  if(path == this->Database)
-    {
-    return;
-    }
-
-  if(!midasUtils::IsDatabaseValid(path))
-    {
-    std::stringstream text;
-    text << "No valid database found at " << path <<
-        ". Creating new database..." << std::endl;
-    this->GetLog()->Message(text.str());
-
-    if(!midasUtils::CreateNewDatabase(path))
-      {
-      std::stringstream text;
-      text << "Fatal: failed to create database at " << path << std::endl;
-      this->GetLog()->Error(text.str());
-      kwsys::SystemTools::RemoveFile(path.c_str());
-      exit(-1);
-      }
-    else
-      {
-      std::stringstream text;
-      text << "Database created successfully at " << path << std::endl;
-      this->GetLog()->Message(text.str());
-      }
-    }
-  this->Database = path;
-  delete this->DatabaseProxy;
-  this->DatabaseProxy = new midasDatabaseProxy(path);
-  this->DatabaseProxy->SetLog(this->GetLog());
-  if(this->ResourceUpdateHandler)
-    {
-    this->DatabaseProxy->SetResourceUpdateHandler(this->ResourceUpdateHandler);
-    }
-  this->Authenticator->SetDatabase(path);
-  this->SetServerURL(this->GetServerURL());
-}
-
 void midasSynchronizer::SetLog(midasLog* log)
 {
   delete this->Log;
   this->Log = log;
   this->Authenticator->SetLog(log);
-  if(this->DatabaseProxy)
-    {
-    this->DatabaseProxy->SetLog(log);
-    }
-}
-
-midasDatabaseProxy* midasSynchronizer::GetDatabase()
-{
-  return this->DatabaseProxy;
 }
 
 void midasSynchronizer::SetAgreementHandler(midasAgreementHandler* handler)
@@ -160,10 +106,7 @@ void midasSynchronizer::SetResourceUpdateHandler(
   mds::ResourceUpdateHandler* handler)
 {
   this->ResourceUpdateHandler = handler;
-  if(this->DatabaseProxy)
-    {
-    this->DatabaseProxy->SetResourceUpdateHandler(handler);
-    }
+  mds::DatabaseAPI::Instance()->SetResourceUpdateHandler(handler);
 }
 
 mds::ResourceUpdateHandler* midasSynchronizer::GetResourceUpdateHandler()
@@ -231,36 +174,12 @@ std::string midasSynchronizer::GetServerHandle()
   return this->ServerHandle;
 }
 
-std::string midasSynchronizer::GetServerURL()
-{
-  if(this->ServerURL == "")
-    {
-    this->ServerURL =
-      this->DatabaseProxy->GetSetting(midasDatabaseProxy::LAST_URL);
-    }
-  return this->ServerURL;
-}
-
-void midasSynchronizer::SetServerURL(std::string url)
-{
-  mws::WebAPI::Instance()->SetServerUrl(url.c_str());
-  this->Authenticator->SetServerURL(url.c_str());
-  this->DatabaseProxy->SetSetting(midasDatabaseProxy::LAST_URL, url);
-  this->ServerURL = url;
-}
-
-//-------------------------------------------------------------------
-std::vector<midasStatus> midasSynchronizer::GetStatusEntries()
-{
-  return this->DatabaseProxy->GetStatusEntries();
-}
-
 //-------------------------------------------------------------------
 int midasSynchronizer::Perform()
 {
   int rc = 0;
   this->ShouldCancel = false;
-  if(!this->Authenticator->Login(mws::WebAPI::Instance()))
+  if(!this->Authenticator->Login())
     {
     std::stringstream text;
     text << "Login failed." << std::endl;
@@ -372,10 +291,10 @@ int midasSynchronizer::Add()
     kwsys::SystemTools::GetParentDirectory(path.c_str());
 
   std::string parentUuid = this->ServerHandle == "" ?
-    this->DatabaseProxy->GetUuidFromPath(parentDir) :
+    mds::DatabaseAPI::Instance()->GetUuidFromPath(parentDir) :
     this->Uuid;
 
-  parentDir = this->DatabaseProxy->GetRecordByUuid(parentUuid).Path;
+  parentDir = mds::DatabaseAPI::Instance()->GetRecordByUuid(parentUuid).Path;
   if(this->ServerHandle != "")
     {
     path = parentDir + "/" + name;
@@ -405,7 +324,7 @@ int midasSynchronizer::Add()
       }
     }
 
-  if(this->DatabaseProxy->GetUuidFromPath(path) != "")
+  if(mds::DatabaseAPI::Instance()->GetUuidFromPath(path) != "")
     {
     std::stringstream text;
     text << "Error: \"" << path << "\" is already in the "
@@ -422,7 +341,7 @@ int midasSynchronizer::Add()
     return MIDAS_INVALID_PARENT;
     }
 
-  int id = this->DatabaseProxy->AddResource(this->ResourceType, uuid, 
+  int id = mds::DatabaseAPI::Instance()->AddResource(this->ResourceType, uuid, 
     path, name, parentUuid, atoi(this->ServerHandle.c_str()));
 
   if(id <= 0)
@@ -446,10 +365,9 @@ int midasSynchronizer::Add()
 
     mds::Bitstream mdsBitstream;
     mdsBitstream.SetObject(&bitstream);
-    mdsBitstream.SetDatabase(this->DatabaseProxy);
     mdsBitstream.Commit();
     }
-  this->DatabaseProxy->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
+  mds::DatabaseAPI::Instance()->MarkDirtyResource(uuid, midasDirtyAction::ADDED);
 
   return MIDAS_OK;
 }
@@ -457,7 +375,7 @@ int midasSynchronizer::Add()
 //-------------------------------------------------------------------
 int midasSynchronizer::Clean()
 {
-  this->DatabaseProxy->Clean();
+  mds::DatabaseAPI::Instance()->Clean();
   return MIDAS_OK;
 }
 
@@ -466,7 +384,7 @@ int midasSynchronizer::Clone()
 {
   this->ChangeToRootDir();
 
-  if(this->GetServerURL() == "")
+  if(mws::WebAPI::Instance()->GetServerUrl() == "")
     {
     std::stringstream text;
     text << "You must specify a server url. No last used URL "
@@ -479,7 +397,6 @@ int midasSynchronizer::Clone()
 
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
-  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetAuthenticator(this->Authenticator);
   remote.SetObject(community);
 
@@ -528,7 +445,7 @@ int midasSynchronizer::Pull()
     Log->Error(text.str());
     return MIDAS_NO_RTYPE;
     }
-  if(this->GetServerURL() == "")
+  if(mws::WebAPI::Instance()->GetServerUrl() == "")
     {
     std::stringstream text;
     text << "You must specify a server url. No last used URL "
@@ -574,7 +491,6 @@ bool midasSynchronizer::PullBitstream(int parentId)
   mws::Bitstream remote;
   mdo::Bitstream* bitstream = new mdo::Bitstream;
   bitstream->SetId(atoi(this->ServerHandle.c_str()));
-  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetAuthenticator(this->Authenticator);
   remote.SetObject(bitstream);
   
@@ -628,10 +544,15 @@ bool midasSynchronizer::PullBitstream(int parentId)
     }
 
   midasResourceRecord record =
-    this->DatabaseProxy->GetRecordByUuid(bitstream->GetUuid());
+    mds::DatabaseAPI::Instance()->GetRecordByUuid(bitstream->GetUuid());
 
   this->CurrentBitstreams++;
 
+  // TODO abstract this out: make DownloadFile, Execute, UploadFile private methods of mws::webAPI (or methods of a superclass)
+  // The API for mws::webAPI should be wrappers of all the functions that we'd call.
+  // and wrappers for methods like "downloadBitstream" that will automatically handle mirroring.
+
+  // Would be nice if progress was handled automatically in the web API class so we don't have to do it in the synchronizer.
   std::stringstream fields;
   fields << "midas.bitstream.download?id=" << this->GetServerHandle();
 
@@ -655,7 +576,6 @@ bool midasSynchronizer::PullBitstream(int parentId)
       mdo::Bitstream bitstream;
       bitstream.SetId(record.Id);
       mdsBitstream.SetObject(&bitstream);
-      mdsBitstream.SetDatabase(this->DatabaseProxy);
       mdsBitstream.Fetch();
       this->Progress->UpdateTotalProgress(
         midasUtils::StringToDouble(bitstream.GetSize()));
@@ -703,7 +623,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
     return false;
     }
 
-  int id = this->DatabaseProxy->AddResource(midasResourceType::BITSTREAM,
+  int id = mds::DatabaseAPI::Instance()->AddResource(midasResourceType::BITSTREAM,
     bitstream->GetUuid(), WORKING_DIR() + "/" + bitstream->GetName(),
     bitstream->GetName(), midasResourceType::ITEM, parentId, 0);
 
@@ -721,7 +641,6 @@ bool midasSynchronizer::PullBitstream(int parentId)
   
   mds::Bitstream mdsBitstream;
   mdsBitstream.SetObject(bitstream);
-  mdsBitstream.SetDatabase(this->DatabaseProxy);
   if(!mdsBitstream.Commit())
     {
     std::stringstream text;
@@ -744,7 +663,6 @@ bool midasSynchronizer::PullCollection(int parentId)
   mws::Collection remote;
   mdo::Collection* collection = new mdo::Collection;
   collection->SetId(atoi(this->GetServerHandle().c_str()));
-  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetAuthenticator(this->Authenticator);
   remote.SetObject(collection);
 
@@ -793,7 +711,7 @@ bool midasSynchronizer::PullCollection(int parentId)
     parentId = this->LastId;
     }
 
-  int id = this->DatabaseProxy->AddResource(midasResourceType::COLLECTION,
+  int id = mds::DatabaseAPI::Instance()->AddResource(midasResourceType::COLLECTION,
     collection->GetUuid(), WORKING_DIR() + "/" + collection->GetName(),
     collection->GetName(), midasResourceType::COMMUNITY, parentId, 0);
   if(id <= 0)
@@ -808,7 +726,6 @@ bool midasSynchronizer::PullCollection(int parentId)
   collection->SetId(id);
 
   mds::Collection mdsColl;
-  mdsColl.SetDatabase(this->DatabaseProxy);
   mdsColl.SetObject(collection);
   if(!mdsColl.Commit())
     {
@@ -878,7 +795,6 @@ bool midasSynchronizer::PullCommunity(int parentId)
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
   community->SetId(atoi(this->ServerHandle.c_str()));
-  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetAuthenticator(this->Authenticator);
   remote.SetObject(community);
 
@@ -945,7 +861,7 @@ bool midasSynchronizer::PullCommunity(int parentId)
     }
   this->LastDir = WORKING_DIR() + "/" + community->GetName();
 
-  int id = this->DatabaseProxy->AddResource(midasResourceType::COMMUNITY,
+  int id = mds::DatabaseAPI::Instance()->AddResource(midasResourceType::COMMUNITY,
     community->GetUuid(), WORKING_DIR() + "/" + community->GetName(),
     community->GetName(), midasResourceType::COMMUNITY, parentId, 0);
   if(id <= 0)
@@ -960,7 +876,6 @@ bool midasSynchronizer::PullCommunity(int parentId)
   this->LastId = id;
 
   mds::Community mdsComm;
-  mdsComm.SetDatabase(this->DatabaseProxy);
   mdsComm.SetObject(community);
   if(!mdsComm.Commit())
     {
@@ -1024,7 +939,6 @@ bool midasSynchronizer::PullItem(int parentId)
   mws::Item remote;
   mdo::Item* item = new mdo::Item;
   item->SetId(atoi(this->GetServerHandle().c_str()));
-  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetAuthenticator(this->Authenticator);
   remote.SetObject(item);
 
@@ -1083,7 +997,7 @@ bool midasSynchronizer::PullItem(int parentId)
     }
   this->LastDir = WORKING_DIR() + "/" + title;
 
-  int id = this->DatabaseProxy->AddResource(midasResourceType::ITEM,
+  int id = mds::DatabaseAPI::Instance()->AddResource(midasResourceType::ITEM,
     item->GetUuid(), WORKING_DIR() + "/" + title, item->GetTitle(),
     midasResourceType::COLLECTION, parentId, 0);
   if(id <= 0)
@@ -1099,7 +1013,6 @@ bool midasSynchronizer::PullItem(int parentId)
   item->SetId(id);
   
   mds::Item mdsItem;
-  mdsItem.SetDatabase(this->DatabaseProxy);
   mdsItem.SetObject(item);
   if(!mdsItem.Commit())
     {
@@ -1134,7 +1047,7 @@ bool midasSynchronizer::PullItem(int parentId)
 //-------------------------------------------------------------------
 int midasSynchronizer::Push()
 {
-  if(this->GetServerURL() == "")
+  if(mws::WebAPI::Instance()->GetServerUrl() == "")
     {
     std::stringstream text;
     text << "You must specify a server url. No last used URL "
@@ -1143,7 +1056,7 @@ int midasSynchronizer::Push()
     return MIDAS_NO_URL;
     }
 
-  std::vector<midasStatus> dirties = this->GetStatusEntries();
+  std::vector<midasStatus> dirties = mds::DatabaseAPI::Instance()->GetStatusEntries();
 
   if(!dirties.size())
     {
@@ -1162,7 +1075,7 @@ int midasSynchronizer::Push()
       continue;
       }
     midasResourceRecord record =
-      this->DatabaseProxy->GetRecordByUuid(i->GetUUID());
+      mds::DatabaseAPI::Instance()->GetRecordByUuid(i->GetUUID());
 
     switch(record.Type)
       {
@@ -1204,7 +1117,8 @@ int midasSynchronizer::GetServerParentId(midasResourceType::ResourceType type,
     std::stringstream fields;
     std::string server_parentId;
     // Get uuid from parent id/type
-    std::string parentUuid = this->DatabaseProxy->GetUuid(type, parentId);
+    std::string parentUuid = 
+      mds::DatabaseAPI::Instance()->GetUuid(type, parentId);
 
     // Get server-side id of parent from the uuid
     fields << "midas.resource.get?uuid=" << parentUuid;
@@ -1230,7 +1144,6 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
   mdo::Bitstream* bitstream = new mdo::Bitstream;
   bitstream->SetId(record->Id);
   mdsBitstream.SetObject(bitstream);
-  mdsBitstream.SetDatabase(this->DatabaseProxy);
   mdsBitstream.Fetch();
 
   std::string name = bitstream->GetName();
@@ -1252,7 +1165,7 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
   if(record->Parent == 0)
     {
     record->Parent = this->GetServerParentId(midasResourceType::ITEM,
-      this->DatabaseProxy->GetParentId(midasResourceType::BITSTREAM,
+      mds::DatabaseAPI::Instance()->GetParentId(midasResourceType::BITSTREAM,
       record->Id));
     }
   if(record->Parent == 0)
@@ -1289,7 +1202,7 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
   if(ok)
     {
     // Clear dirty flag on the resource
-    this->DatabaseProxy->ClearDirtyResource(record->Uuid);
+    mds::DatabaseAPI::Instance()->ClearDirtyResource(record->Uuid);
     std::stringstream text;
     text << "Pushed bitstream " << name << std::endl;
     Log->Message(text.str());
@@ -1316,13 +1229,12 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
 
   mds::Collection mdsColl;
   mdsColl.SetObject(&coll);
-  mdsColl.SetDatabase(this->DatabaseProxy);
   mdsColl.Fetch();
 
   if(record->Parent == 0)
     {
     record->Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
-      this->DatabaseProxy->GetParentId(midasResourceType::COLLECTION,
+      mds::DatabaseAPI::Instance()->GetParentId(midasResourceType::COLLECTION,
       record->Id));
     }
   if(record->Parent == 0)
@@ -1356,7 +1268,7 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
   if(success)
     {
     // Clear dirty flag on the resource
-    this->DatabaseProxy->ClearDirtyResource(record->Uuid);
+    mds::DatabaseAPI::Instance()->ClearDirtyResource(record->Uuid);
     std::stringstream text;
     text << "Pushed collection " << coll.GetName() << std::endl;
     Log->Message(text.str());
@@ -1382,14 +1294,13 @@ bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
   if(record->Parent == 0)
     {
     record->Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
-      this->DatabaseProxy->GetParentId(midasResourceType::COMMUNITY,
+      mds::DatabaseAPI::Instance()->GetParentId(midasResourceType::COMMUNITY,
       record->Id));
     }
 
   mdo::Community comm;
   comm.SetId(record->Id);
   mds::Community mdsComm;
-  mdsComm.SetDatabase(this->DatabaseProxy);
   mdsComm.SetObject(&comm);
   if(!mdsComm.Fetch())
     {
@@ -1420,7 +1331,7 @@ bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
      this->Authenticator))
     {
     // Clear dirty flag on the resource
-    this->DatabaseProxy->ClearDirtyResource(record->Uuid);
+    mds::DatabaseAPI::Instance()->ClearDirtyResource(record->Uuid);
     std::stringstream text;
     text << "Pushed community " << comm.GetName() << std::endl;
     Log->Message(text.str());
@@ -1451,13 +1362,12 @@ bool midasSynchronizer::PushItem(midasResourceRecord* record)
 
   mds::Item mdsItem;
   mdsItem.SetObject(&item);
-  mdsItem.SetDatabase(this->DatabaseProxy);
   mdsItem.Fetch();
 
   if(record->Parent == 0)
     {
     record->Parent = this->GetServerParentId(midasResourceType::COLLECTION,
-      this->DatabaseProxy->GetParentId(midasResourceType::ITEM,
+      mds::DatabaseAPI::Instance()->GetParentId(midasResourceType::ITEM,
       record->Id));
     }
   if(record->Parent == 0)
@@ -1491,7 +1401,7 @@ bool midasSynchronizer::PushItem(midasResourceRecord* record)
      this->Authenticator))
     {
     // Clear dirty flag on the resource
-    this->DatabaseProxy->ClearDirtyResource(record->Uuid);
+    mds::DatabaseAPI::Instance()->ClearDirtyResource(record->Uuid);
     std::stringstream text;
     text << "Pushed item " << item.GetTitle() << std::endl;
     Log->Message(text.str());
@@ -1533,7 +1443,7 @@ int midasSynchronizer::Upload()
       }
     }
 
-  if(this->ServerURL == "")
+  if(mws::WebAPI::Instance()->GetServerUrl() == "")
     {
     std::stringstream text;
     text << "Error: server URL not set." << std::endl;
@@ -1569,7 +1479,7 @@ int midasSynchronizer::Upload()
     return MIDAS_LOGIN_FAILED;
     }
 
-  if(!this->GetAuthenticator()->Login(mws::WebAPI::Instance()))
+  if(!this->GetAuthenticator()->Login())
     {
     std::stringstream text;
     text << "Error: Bad login credentials." << std::endl;
@@ -1656,14 +1566,15 @@ void midasSynchronizer::ChangeToRootDir()
   
   if(this->GetAuthenticator()->GetProfile() != "")
     {
-    wdir = this->DatabaseProxy->GetAuthProfile(
+    wdir = mds::DatabaseAPI::Instance()->GetAuthProfile(
       this->GetAuthenticator()->GetProfile()).RootDir;
     }
 
   // If no profile-specific setting exists, fall back to global root dir
   if(wdir == "")
     {
-    wdir = this->DatabaseProxy->GetSetting(midasDatabaseProxy::ROOT_DIR);
+    wdir = mds::DatabaseAPI::Instance()->GetSetting(
+      mds::DatabaseAPI::ROOT_DIR);
     }
 
   if(wdir != "" && kwsys::SystemTools::FileIsDirectory(wdir.c_str()))
@@ -1732,7 +1643,8 @@ void midasSynchronizer::CountBitstreams()
   else if(this->Operation == midasSynchronizer::OPERATION_PUSH)
     {
     int count = 0;
-    std::vector<midasStatus> status = this->DatabaseProxy->GetStatusEntries();
+    std::vector<midasStatus> status =
+      mds::DatabaseAPI::Instance()->GetStatusEntries();
 
     for(std::vector<midasStatus>::iterator i = status.begin();
         i != status.end(); ++i)

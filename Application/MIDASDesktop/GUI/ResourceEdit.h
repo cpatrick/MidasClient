@@ -5,7 +5,6 @@
 #include "MidasResourceDescTable.h"
 #include <QObject>
 
-class midasDatabaseProxy;
 class QTableWidgetItem;
 
 namespace mdo {
@@ -20,7 +19,7 @@ class ResourceEdit : public QObject, public midasLogAware
   Q_OBJECT
 public:
 
-  ResourceEdit(midasDatabaseProxy* database);
+  ResourceEdit();
   ~ResourceEdit();
 
   void Save(QTableWidgetItem* row);
@@ -34,8 +33,6 @@ protected:
   void SaveCollection(mdo::Collection*, MIDASFields, std::string data);
   void SaveItem(mdo::Item*, MIDASFields, std::string data);
   void SaveBitstream(mdo::Bitstream*, MIDASFields, std::string data);
-
-  midasDatabaseProxy* m_database;
 };
 
 #endif

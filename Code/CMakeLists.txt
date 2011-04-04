@@ -27,8 +27,6 @@ set(MIDASRest_SRCS
   mdoCollection.cxx
   mdoCommunity.h
   mdoCommunity.cxx
-  mdoDicom.h
-  mdoDicom.cxx
   mdoItem.h
   mdoItem.cxx
   mdoObject.h
@@ -48,8 +46,6 @@ set(MIDASRest_SRCS
   mwsNewResources.cxx
   mwsTreePath.h
   mwsTreePath.cxx
-  mwsDicom.h
-  mwsDicom.cxx
   mwsItem.h
   mwsItem.cxx
   mwsSearch.h
@@ -62,9 +58,11 @@ set(MIDASRest_SRCS
   mwsWebAPI.cxx
   mwsSettings.h
   mwsSettings.cxx
- 
+
   mdsSQLiteDatabase.h
   mdsSQLiteDatabase.cxx
+  mdsDatabaseAPI.cxx
+  mdsDatabaseAPI.h
   mdsCommunity.h
   mdsCommunity.cxx
   mdsCollection.h
@@ -81,8 +79,6 @@ set(MIDASSynch_SRCS
   midasAgreementHandler.h
   midasAuthenticator.cxx
   midasAuthenticator.h
-  midasDatabaseProxy.cxx
-  midasDatabaseProxy.h
   midasDotProgressReporter.cxx
   midasDotProgressReporter.h
   midasFileOverwriteHandler.h

@@ -7,7 +7,7 @@
 #include "MIDASDesktopUI.h"
 #include "mwsSettings.h"
 #include "midasSynchronizer.h"
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 #include "midasAuthenticator.h"
 
 #include "MidasTreeItem.h"
@@ -74,13 +74,13 @@ void CreateMidasResourceUI::accept()
   switch(this->m_Type)
     {
     case Community:
-      path = this->m_Parent->getDatabaseProxy()->GetAuthProfile(
+      path = mds::DatabaseAPI::Instance()->GetAuthProfile(
         this->m_Parent->getSynchronizer()->GetAuthenticator()->GetProfile()).RootDir;
 
       if(path == "")
         {
-        path = this->m_Parent->getDatabaseProxy()->GetSetting(
-          midasDatabaseProxy::ROOT_DIR);
+        path = mds::DatabaseAPI::Instance()->GetSetting(
+          mds::DatabaseAPI::ROOT_DIR);
         }
 
       if(path == "")
@@ -169,11 +169,11 @@ void CreateMidasResourceUI::AddSubCommunity()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  std::string path = m_Parent->getDatabaseProxy()->GetRecordByUuid(
-    m_Parent->getDatabaseProxy()->GetUuid(
+  std::string path = mds::DatabaseAPI::Instance()->GetRecordByUuid(
+    mds::DatabaseAPI::Instance()->GetUuid(
     midasResourceType::COMMUNITY,
     parentComm->getCommunity()->GetId())).Path;
-  
+
   this->AddCommunity(path);
 }
 
@@ -186,8 +186,8 @@ void CreateMidasResourceUI::AddCollection()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  std::string path = m_Parent->getDatabaseProxy()->GetRecordByUuid(
-    m_Parent->getDatabaseProxy()->GetUuid(
+  std::string path = mds::DatabaseAPI::Instance()->GetRecordByUuid(
+    mds::DatabaseAPI::Instance()->GetUuid(
     midasResourceType::COMMUNITY,
     parentComm->getCommunity()->GetId())).Path;
 
@@ -207,8 +207,8 @@ void CreateMidasResourceUI::AddItem()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  std::string path = m_Parent->getDatabaseProxy()->GetRecordByUuid(
-    m_Parent->getDatabaseProxy()->GetUuid(
+  std::string path = mds::DatabaseAPI::Instance()->GetRecordByUuid(
+    mds::DatabaseAPI::Instance()->GetUuid(
     midasResourceType::COLLECTION,
     parentColl->getCollection()->GetId())).Path;
 

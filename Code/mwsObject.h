@@ -29,17 +29,10 @@ public:
 
   Object()
     {
-    m_WebAPI = NULL;
     m_Auth = NULL;
     }
     
   ~Object(){};
-
-  /** Set the WebAPI */
-  void SetWebAPI(WebAPI* api)
-    {
-    m_WebAPI = api;
-    }
 
   void SetAuthenticator(midasAuthenticator* auth)
     {
@@ -47,8 +40,6 @@ public:
     }
 
 protected:
-
-  WebAPI* m_WebAPI;
   midasAuthenticator* m_Auth;
   
 };

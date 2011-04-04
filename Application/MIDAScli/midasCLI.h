@@ -46,7 +46,6 @@ protected:
 
   std::string RootDir;
   std::string Database;
-  std::string ServerURL;
   bool UseTempProfile;
   midasAuthProfile* TempProfile;
   midasSynchronizer* Synchronizer;

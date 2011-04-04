@@ -101,13 +101,13 @@ bool Bitstream::Fetch()
   parser.AddTag("/rsp/parent",m_Bitstream->GetParent());
   parser.AddTag("/rsp/hasAgreement",m_Bitstream->RefAgreement());
   
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   
   std::stringstream url;
   url << "midas.bitstream.get?id=" << m_Bitstream->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   m_Bitstream->SetFetched(true);
@@ -133,7 +133,6 @@ bool Bitstream::FetchParent()
   parent->SetId(m_Bitstream->GetParentId());
 
   mws::Item remote;
-  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(parent);
   return remote.Fetch(); 
 }
@@ -153,13 +152,13 @@ bool Bitstream::Delete()
     }
 
   RestXMLParser parser;
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.bitstream.delete?id=" << m_Bitstream->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   return true;

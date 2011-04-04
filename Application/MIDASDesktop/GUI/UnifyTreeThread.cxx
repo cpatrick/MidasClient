@@ -1,7 +1,7 @@
 #include "UnifyTreeThread.h"
 #include "MIDASDesktopUI.h"
-#include "midasDatabaseProxy.h"
 #include "PollFilesystemThread.h"
+#include "mdsDatabaseAPI.h"
 
 UnifyTreeThread::UnifyTreeThread(MIDASDesktopUI* parent) : m_Parent(parent)
 {
@@ -24,11 +24,9 @@ bool UnifyTreeThread::isCopy()
 
 void UnifyTreeThread::run()
 {
-  midasDatabaseProxy tempDbProxy(m_Parent->getDatabaseProxy()->GetDatabasePath());
-  tempDbProxy.SetLog(m_Parent->GetLog());
   m_Parent->getPollFilesystemThread()->Pause();
 
-  if(tempDbProxy.UnifyTree(m_Copy))
+  if(mds::DatabaseAPI::Instance()->UnifyTree(m_Copy))
     {
     m_Parent->GetLog()->Message("Finished relocating resources");
     }

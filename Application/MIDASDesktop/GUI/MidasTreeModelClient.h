@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-class midasDatabaseProxy;
-
 class MidasTreeItem;
 class MidasCommunityTreeItem;
 
@@ -23,8 +21,6 @@ public:
   MidasTreeModelClient(QObject *parent = 0);
   ~MidasTreeModelClient();
 
-  void SetDatabase(midasDatabaseProxy* database) { this->m_Database = database; }
-
   void Populate();
 
   bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
@@ -33,8 +29,6 @@ public:
   void updateResource(mdo::Object*);
   void deleteResource(mdo::Object*);
 
-private:
-  midasDatabaseProxy*  m_Database;
 };
 
 #endif //__MidasTreeModelClient_H

@@ -11,7 +11,7 @@
 
 #include "Utils.h"
 #include <iostream>
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 #include "mdoCommunity.h"
 #include "mdoCollection.h"
 #include "mdoItem.h"
@@ -31,7 +31,7 @@ MidasTreeModelClient::~MidasTreeModelClient()
 void MidasTreeModelClient::Populate()
 {
   std::vector<mdo::Community*> topLevelCommunities =
-    this->m_Database->GetTopLevelCommunities(true);
+    mds::DatabaseAPI::Instance()->GetTopLevelCommunities(true);
 
   this->beginInsertRows(QModelIndex(), 0, topLevelCommunities.size());
   int row = 0;

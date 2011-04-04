@@ -137,13 +137,13 @@ bool Collection::Fetch()
   parser.AddTag("/rsp/hasAgreement",m_Collection->RefAgreement());
   parser.AddTag("/rsp/size",m_Collection->GetSize());
 
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.collection.get?id=" << m_Collection->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   m_Collection->SetFetched(true);
@@ -163,7 +163,6 @@ bool Collection::FetchParent()
   parent->SetId(m_Collection->GetParentId());
 
   mws::Community remote;
-  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(parent);
   return remote.Fetch();
 }
@@ -183,13 +182,13 @@ bool Collection::Delete()
     }
        
   RestXMLParser parser;
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.collection.delete?id=" << m_Collection->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   return true;

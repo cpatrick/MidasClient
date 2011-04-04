@@ -6,7 +6,7 @@
 #include "mwsSettings.h"
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 #include "midasSynchronizer.h"
 
 #include <QMessageBox>
@@ -29,7 +29,7 @@ SignInUI::~SignInUI()
 void SignInUI::init()
 {
   profileComboBox->clear();
-  std::vector<std::string> profiles = parent->getDatabaseProxy()->GetAuthProfiles();
+  std::vector<std::string> profiles = mds::DatabaseAPI::Instance()->GetAuthProfiles();
   
   for(std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i)
     {
@@ -40,7 +40,7 @@ void SignInUI::init()
 /** */
 int SignInUI::exec()
 {
-  if(this->parent->getDatabaseProxy())
+  if(mds::DatabaseAPI::Instance()->GetDatabasePath() != "")
     {
     this->init();
     return QDialog::exec();

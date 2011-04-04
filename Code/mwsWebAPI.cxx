@@ -85,7 +85,7 @@ bool WebAPI::Execute(const char* url, midasAuthenticator* auth)
     {
     mws::RestXMLParser parser = *m_RestAPI->GetXMLParser(); //copy the parser or expat will crash...
     auth->GetLog()->Message("Operation failed. Refreshing login token and retrying...");
-    if(!auth->Login(this))
+    if(!auth->Login())
       {
       auth->GetLog()->Error("Attempt to get new tokens failed.");
       return false;
@@ -163,7 +163,7 @@ bool WebAPI::DownloadFile(const char* url, const char* filename,
   if(!success && !m_APIToken.empty() && auth && !m_RestAPI->ShouldCancel())
     {
     auth->GetLog()->Message("Operation failed. Refreshing login token and retrying...");
-    if(!auth->Login(this))
+    if(!auth->Login())
       {
       auth->GetLog()->Error("Attempt to get new tokens failed.");
       m_RestAPI->SetXMLParser(m_RestXMLParser);

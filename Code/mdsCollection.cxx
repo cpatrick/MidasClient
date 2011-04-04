@@ -36,13 +36,13 @@ bool Collection::Fetch()
 {
   if(!m_Collection)
     {
-    m_Database->GetLog()->Error("Collection::Fetch : Collection not set\n");
+    mds::DatabaseAPI::Instance()->GetLog()->Error("Collection::Fetch : Collection not set\n");
     return false;
     }
 
   if(m_Collection->GetId() == 0)
     {
-    m_Database->GetLog()->Error("Collection::Fetch : CollectionId not set\n");
+    mds::DatabaseAPI::Instance()->GetLog()->Error("Collection::Fetch : CollectionId not set\n");
     return false;
     }
 
@@ -53,7 +53,7 @@ bool Collection::Fetch()
 
   if(m_Collection->GetUuid() == "")
     {
-    m_Collection->SetUuid(m_Database->GetUuid(
+    m_Collection->SetUuid(mds::DatabaseAPI::Instance()->GetUuid(
       midasResourceType::COLLECTION, m_Collection->GetId()).c_str());
     }
 
@@ -61,29 +61,29 @@ bool Collection::Fetch()
   query << "SELECT short_description, introductory_text, copyright_text, name "
     "FROM collection WHERE collection_id='" << m_Collection->GetId() << "'";
 
-  m_Database->Open();
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  mds::DatabaseAPI::Instance()->Open();
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
     std::stringstream text;
     text << "Collection::Fetch : Query failed: " << query.str() << std::endl;
-    m_Database->GetLog()->Error(text.str());
-    m_Database->Close();
+    mds::DatabaseAPI::Instance()->GetLog()->Error(text.str());
+    mds::DatabaseAPI::Instance()->Close();
     return false;
     }
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(mds::DatabaseAPI::Instance()->Database->GetNextRow())
     {
     m_Collection->SetDescription(
-      m_Database->GetDatabase()->GetValueAsString(0));
+      mds::DatabaseAPI::Instance()->Database->GetValueAsString(0));
     m_Collection->SetIntroductoryText(
-      m_Database->GetDatabase()->GetValueAsString(1));
+      mds::DatabaseAPI::Instance()->Database->GetValueAsString(1));
     m_Collection->SetCopyright(
-      m_Database->GetDatabase()->GetValueAsString(2));
+      mds::DatabaseAPI::Instance()->Database->GetValueAsString(2));
     m_Collection->SetName(
-      m_Database->GetDatabase()->GetValueAsString(3));
+      mds::DatabaseAPI::Instance()->Database->GetValueAsString(3));
     }
   m_Collection->SetFetched(true);
-  m_Database->Close();
+  mds::DatabaseAPI::Instance()->Close();
   return true;
 }
 
@@ -101,7 +101,6 @@ bool Collection::FetchSize()
     if((*i)->GetSize() == "")
       {
       mds::Item mdsItem;
-      mdsItem.SetDatabase(m_Database);
       mdsItem.SetObject(*i);
       mdsItem.FetchSize();
       }
@@ -118,23 +117,23 @@ bool Collection::Commit()
 {
   if(!m_Collection)
     {
-    m_Database->GetLog()->Error("Collection::Commit : Collection not set\n");
+    mds::DatabaseAPI::Instance()->GetLog()->Error("Collection::Commit : Collection not set\n");
     return false;
     }
 
   if(m_Collection->GetId() == 0)
     {
-    m_Database->GetLog()->Error("Collection::Commit : Collection not set\n");
+    mds::DatabaseAPI::Instance()->GetLog()->Error("Collection::Commit : Collection not set\n");
     return false;
     }
 
   if(m_Collection->GetUuid() == "")
     {
-    m_Collection->SetUuid(m_Database->GetUuid(
+    m_Collection->SetUuid(mds::DatabaseAPI::Instance()->GetUuid(
       midasResourceType::COLLECTION, m_Collection->GetId()).c_str());
     }
 
-  std::string path = m_Database->GetRecordByUuid(m_Collection->GetUuid()).Path;
+  std::string path = mds::DatabaseAPI::Instance()->GetRecordByUuid(m_Collection->GetUuid()).Path;
   std::string parentDir = kwsys::SystemTools::GetParentDirectory(path.c_str());
   std::string oldName = kwsys::SystemTools::GetFilenameName(path);
 
@@ -147,9 +146,9 @@ bool Collection::Commit()
       pathQuery << "UPDATE resource_uuid SET path='" << newPath <<
         "' WHERE uuid='" << m_Collection->GetUuid() << "'";
 
-      m_Database->Open();
-      m_Database->GetDatabase()->ExecuteQuery(pathQuery.str().c_str());
-      m_Database->Close();
+      mds::DatabaseAPI::Instance()->Open();
+      mds::DatabaseAPI::Instance()->Database->ExecuteQuery(pathQuery.str().c_str());
+      mds::DatabaseAPI::Instance()->Close();
 
       this->FetchTree();
 
@@ -158,14 +157,13 @@ bool Collection::Commit()
           i != m_Collection->GetItems().end(); ++i)
         {
         mds::Item mdsItem;
-        mdsItem.SetDatabase(m_Database);
         mdsItem.SetObject(*i);
         mdsItem.ParentPathChanged(newPath);
         }
       }
     else
       {
-      m_Database->GetLog()->Error("Collection::Commit : could not rename "
+      mds::DatabaseAPI::Instance()->GetLog()->Error("Collection::Commit : could not rename "
         "directory on disk. It may be locked.\n");
       return false;
       }
@@ -183,20 +181,20 @@ bool Collection::Commit()
     midasUtils::EscapeForSQL(m_Collection->GetCopyright()) << "'" <<
     " WHERE collection_id='" << m_Collection->GetId() << "'";
 
-  m_Database->Open();
-  if(m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  mds::DatabaseAPI::Instance()->Open();
+  if(mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->Close();
+    mds::DatabaseAPI::Instance()->Close();
     if(m_MarkDirty)
       {
-      m_Database->MarkDirtyResource(m_Collection->GetUuid(), midasDirtyAction::MODIFIED);
+      mds::DatabaseAPI::Instance()->MarkDirtyResource(m_Collection->GetUuid(), midasDirtyAction::MODIFIED);
       }
     return true;
     }
   std::stringstream text;
   text << "Collection::Commit : Query failed: " << query.str() << std::endl;
-  m_Database->GetLog()->Error(text.str());
-  m_Database->Close();
+  mds::DatabaseAPI::Instance()->GetLog()->Error(text.str());
+  mds::DatabaseAPI::Instance()->Close();
   return false;
 }
 
@@ -204,23 +202,23 @@ bool Collection::FetchTree()
 {
   if(!m_Collection)
     {
-    m_Database->GetLog()->Error("Collection::FetchTree : Collection not set\n");
+    mds::DatabaseAPI::Instance()->GetLog()->Error("Collection::FetchTree : Collection not set\n");
     return false;
     }
 
   if(m_Collection->GetId() == 0)
     {
-    m_Database->GetLog()->Error("Collection::FetchTree : Collection not set\n");
+    mds::DatabaseAPI::Instance()->GetLog()->Error("Collection::FetchTree : Collection not set\n");
     return false;
     }
 
   if(m_Collection->GetUuid() == "")
     {
-    m_Collection->SetUuid(m_Database->GetUuid(
+    m_Collection->SetUuid(mds::DatabaseAPI::Instance()->GetUuid(
       midasResourceType::COLLECTION, m_Collection->GetId()).c_str());
     }
   
-  m_Collection->SetDirty(m_Database->IsResourceDirty(m_Collection->GetUuid()));
+  m_Collection->SetDirty(mds::DatabaseAPI::Instance()->IsResourceDirty(m_Collection->GetUuid()));
 
   std::stringstream query;
   query << "SELECT item.item_id, item.title, resource_uuid.uuid FROM item, resource_uuid "
@@ -228,16 +226,16 @@ bool Collection::FetchTree()
     "resource_uuid.resource_id=item.item_id AND item.item_id IN (SELECT item_id FROM "
     "collection2item WHERE collection_id=" << m_Collection->GetId() << ") "
     "ORDER BY item.title COLLATE NOCASE ASC";
-  m_Database->Open();
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  mds::DatabaseAPI::Instance()->Open();
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
 
   std::vector<mdo::Item*> items;
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(mds::DatabaseAPI::Instance()->Database->GetNextRow())
     {
     mdo::Item* item = new mdo::Item;
-    item->SetId(m_Database->GetDatabase()->GetValueAsInt(0));
-    item->SetTitle(m_Database->GetDatabase()->GetValueAsString(1));
-    item->SetUuid(m_Database->GetDatabase()->GetValueAsString(2));
+    item->SetId(mds::DatabaseAPI::Instance()->Database->GetValueAsInt(0));
+    item->SetTitle(mds::DatabaseAPI::Instance()->Database->GetValueAsString(1));
+    item->SetUuid(mds::DatabaseAPI::Instance()->Database->GetValueAsString(2));
     m_Collection->AddItem(item);
     items.push_back(item);
     }
@@ -249,7 +247,6 @@ bool Collection::FetchTree()
       {
       mds::Item mdsItem;
       mdsItem.SetObject(*i);
-      mdsItem.SetDatabase(m_Database);
       if(!mdsItem.FetchTree())
         {
         return false;
@@ -265,18 +262,18 @@ bool Collection::Delete(bool deleteOnDisk)
   std::stringstream query;
   query << "SELECT item_id FROM collection2item WHERE "
     "collection_id='" << m_Collection->GetId() << "'";
-  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  mds::DatabaseAPI::Instance()->Database->Open(mds::DatabaseAPI::Instance()->GetDatabasePath().c_str());
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(mds::DatabaseAPI::Instance()->Database->GetNextRow())
     {
-    children.push_back(m_Database->GetDatabase()->GetValueAsInt(0));
+    children.push_back(mds::DatabaseAPI::Instance()->Database->GetValueAsInt(0));
     }
-  m_Database->GetDatabase()->Close();
+  mds::DatabaseAPI::Instance()->Database->Close();
   bool ok = true;
   for(std::vector<int>::iterator i = children.begin();
       i != children.end(); ++i)
@@ -284,10 +281,9 @@ bool Collection::Delete(bool deleteOnDisk)
     mds::Item mdsItem;
     mdo::Item* item = new mdo::Item;
     item->SetId(*i);
-    item->SetUuid(m_Database->GetUuid(midasResourceType::ITEM, *i).c_str());
+    item->SetUuid(mds::DatabaseAPI::Instance()->GetUuid(midasResourceType::ITEM, *i).c_str());
     mdsItem.SetObject(item);
-    mdsItem.SetDatabase(m_Database);
-    mdsItem.SetPath(m_Database->GetRecordByUuid(item->GetUuid()).Path);
+    mdsItem.SetPath(mds::DatabaseAPI::Instance()->GetRecordByUuid(item->GetUuid()).Path);
     ok &= mdsItem.Delete(deleteOnDisk);
     delete item;
 
@@ -297,59 +293,59 @@ bool Collection::Delete(bool deleteOnDisk)
       }
     }
 
-  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
-  m_Database->GetDatabase()->ExecuteQuery("BEGIN");
+  mds::DatabaseAPI::Instance()->Database->Open(mds::DatabaseAPI::Instance()->GetDatabasePath().c_str());
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery("BEGIN");
   query.str(std::string());
   query << "DELETE FROM collection2item WHERE collection_id='" <<
     m_Collection->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM collection WHERE collection_id='" <<
     m_Collection->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM community2collection WHERE collection_id='" <<
     m_Collection->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM dirty_resource WHERE uuid='" <<
     m_Collection->GetUuid() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM resource_uuid WHERE uuid='" <<
     m_Collection->GetUuid() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    mds::DatabaseAPI::Instance()->Database->ExecuteQuery("ROLLBACK");
+    mds::DatabaseAPI::Instance()->Database->Close();
     return false;
     }
-  m_Database->GetDatabase()->ExecuteQuery("COMMIT");
-  m_Database->GetDatabase()->Close();
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery("COMMIT");
+  mds::DatabaseAPI::Instance()->Database->Close();
   if(deleteOnDisk)
     {
     kwsys::SystemTools::RemoveADirectory(this->m_Path.c_str());
@@ -374,9 +370,9 @@ void Collection::ParentPathChanged(std::string parentPath)
   query << "UPDATE resource_uuid SET path='" << newPath << "' WHERE "
     "uuid='" << m_Collection->GetUuid() << "'";
 
-  m_Database->Open();
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
-  m_Database->Close();
+  mds::DatabaseAPI::Instance()->Open();
+  mds::DatabaseAPI::Instance()->Database->ExecuteQuery(query.str().c_str());
+  mds::DatabaseAPI::Instance()->Close();
 
   for(std::vector<mdo::Item*>::const_iterator i =
       m_Collection->GetItems().begin();
@@ -384,7 +380,6 @@ void Collection::ParentPathChanged(std::string parentPath)
     {
     mds::Item mdsItem;
     mdsItem.SetObject(*i);
-    mdsItem.SetDatabase(m_Database);
     mdsItem.ParentPathChanged(newPath);
     }
 }

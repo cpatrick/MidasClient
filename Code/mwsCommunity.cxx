@@ -225,13 +225,13 @@ bool Community::Fetch()
   parser.AddTag("/rsp/hasAgreement",m_Community->RefAgreement());
   parser.AddTag("/rsp/size",m_Community->GetSize());
   
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   
   std::stringstream url;
   url << "midas.community.get?id=" << m_Community->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   m_Community->SetFetched(true);
@@ -244,13 +244,13 @@ bool Community::FetchTree()
   CommunityXMLParser parser;
   parser.SetCommunity(m_Community);
    
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   
   std::stringstream url;
   url << "midas.community.tree?id=" << m_Community->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
@@ -272,7 +272,6 @@ bool Community::FetchParent()
     parent->SetId(m_Community->GetParentId());
 
     mws::Community remote;
-    remote.SetWebAPI(mws::WebAPI::Instance());
     remote.SetObject(parent);
     return remote.Fetch();
     }
@@ -294,13 +293,13 @@ bool Community::Delete()
     }
        
   RestXMLParser parser;
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
+  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.community.delete?id=" << m_Community->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), m_Auth))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
+    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   return true;

@@ -24,14 +24,12 @@
 #include "mdsBitstream.h"
 #include "mdoBitstream.h"
 #include "mdoObject.h"
-#include "midasDatabaseProxy.h"
 #include "midasLog.h"
 #include <iostream>
 
 MidasTreeViewClient::MidasTreeViewClient(QWidget * parent):MidasTreeView(parent)
 {
   m_Model = new MidasTreeModelClient;
-  m_Database = NULL;
 
   this->setModel(m_Model);
   this->setAcceptDrops(true); 
@@ -54,17 +52,6 @@ MidasTreeViewClient::MidasTreeViewClient(QWidget * parent):MidasTreeView(parent)
 MidasTreeViewClient::~MidasTreeViewClient()
 {
   delete m_Model;
-}
-
-void MidasTreeViewClient::SetDatabaseProxy(midasDatabaseProxy* proxy)
-{
-  reinterpret_cast<MidasTreeModelClient*>(m_Model)->SetDatabase(proxy);
-  this->m_Database = proxy;
-}
-
-midasDatabaseProxy* MidasTreeViewClient::GetDatabaseProxy()
-{
-  return this->m_Database;
 }
 
 void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent *event)
@@ -192,7 +179,6 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
     {
     mds::Community mdsComm;
     mdsComm.SetObject(communityTreeItem->getCommunity());
-    mdsComm.SetDatabase(m_Database);
     mdsComm.Fetch();
 
     emit midasCommunityTreeItemSelected(communityTreeItem);
@@ -201,7 +187,6 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
     {
     mds::Collection mdsColl;
     mdsColl.SetObject(collectionTreeItem->getCollection());
-    mdsColl.SetDatabase(m_Database);
     mdsColl.Fetch();
 
     emit midasCollectionTreeItemSelected(collectionTreeItem);
@@ -210,7 +195,6 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
     {
     mds::Item mdsItem;
     mdsItem.SetObject(itemTreeItem->getItem());
-    mdsItem.SetDatabase(m_Database);
     mdsItem.Fetch();
 
     emit midasItemTreeItemSelected(itemTreeItem);
@@ -219,7 +203,6 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
     {
     mds::Bitstream mdsBitstream;
     mdsBitstream.SetObject(bitstreamTreeItem->getBitstream());
-    mdsBitstream.SetDatabase(m_Database);
     mdsBitstream.Fetch();
 
     emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
