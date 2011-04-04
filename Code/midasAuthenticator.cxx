@@ -30,11 +30,6 @@ bool midasAuthenticator::Login()
 {
   midasAuthProfile profile =
     mds::DatabaseAPI::Instance()->GetAuthProfile(this->Profile);
-  
-  if(profile.IsAnonymous())
-    {
-    return true;
-    }
 
   if(profile.Name == "")
     {
@@ -44,6 +39,12 @@ bool midasAuthenticator::Login()
     Log->Error(text.str());
     return false;
     }
+
+  if(profile.IsAnonymous())
+    {
+    return true;
+    }
+
   mws::RestXMLParser parser;
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   return mws::WebAPI::Instance()->Login(profile.AppName.c_str(), 
@@ -71,9 +72,6 @@ bool midasAuthenticator::AddAuthProfile(std::string user,
     Log->Error(text.str());
     return false;
     }
-
-  mws::RestXMLParser parser;
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
   if(user == "")
     {

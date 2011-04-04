@@ -142,8 +142,7 @@ void CreateProfileUI::accept()
 
   std::string apiKey = midasUtils::CreateDefaultAPIKey(email, password, "Default");
 
-  emit serverURLSet(serverURL);
-  emit createdProfile(profileName, email, "Default", apiKey, rootDir);
+  emit createdProfile(profileName, email, "Default", apiKey, rootDir, serverURL);
 }
 
 void CreateProfileUI::deleteProfile()

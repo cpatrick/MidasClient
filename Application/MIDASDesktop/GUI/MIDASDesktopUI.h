@@ -126,7 +126,7 @@ public slots:
   void showFileOverwriteDialog(const QString& path);
   void createProfile(std::string name, std::string email,
                      std::string apiName, std::string apiKey,
-                     std::string rootDir);
+                     std::string rootDir, std::string url);
   void chooseLocalDatabase();
   void createLocalDatabase();
   void setLocalDatabase(std::string file);
@@ -202,8 +202,6 @@ public slots:
   void searchItemClicked(QListWidgetItemMidasItem * item);
   void searchItemContextMenu(QContextMenuEvent * e);
   // ------------- search -------------
-
-  void setServerURL(std::string);
 
   // ------------- log ----------------
   void showLogTab();

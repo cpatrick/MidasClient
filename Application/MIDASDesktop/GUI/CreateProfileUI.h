@@ -19,9 +19,9 @@ public:
 signals:
   void createdProfile(std::string name, std::string email,
                       std::string apiName, std::string apiKey,
-                      std::string rootDir);
+                      std::string rootDir,
+                      std::string serverURL);
   void deletedProfile(std::string name);
-  void serverURLSet(std::string url);
 
 public slots:
 

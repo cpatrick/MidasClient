@@ -257,11 +257,10 @@ MIDASDesktopUI::MIDASDesktopUI()
   //connect( actionSwap_with_MD5_reference, SIGNAL( triggered() ), this, SLOT( 
 
   connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
-  connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string, std::string)),
-    this, SLOT( createProfile(std::string, std::string, std::string, std::string, std::string)));
+  connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string, std::string, std::string)),
+    this, SLOT( createProfile(std::string, std::string, std::string, std::string, std::string, std::string)));
   connect( dlg_createProfileUI, SIGNAL( deletedProfile(std::string)),
     dlg_signInUI, SLOT( removeProfile(std::string)));
-  connect( dlg_createProfileUI, SIGNAL( serverURLSet(std::string)), this, SLOT( setServerURL(std::string)));
   connect( dlg_signInUI, SIGNAL( createProfileRequest() ), dlg_createProfileUI, SLOT( exec() ) );
   connect( dlg_deleteClientResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteLocalResource(bool) ) );
   connect( dlg_deleteServerResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteServerResource(bool) ) );
@@ -1496,14 +1495,9 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     }
 }
 
-void MIDASDesktopUI::setServerURL(std::string url)
-{
-  mws::WebAPI::Instance()->SetServerUrl(url.c_str());
-}
-
 void MIDASDesktopUI::createProfile(std::string name, std::string email,
                                std::string apiName, std::string apiKey,
-                               std::string rootDir)
+                               std::string rootDir, std::string url)
 {
   if(mds::DatabaseAPI::Instance()->GetDatabasePath() == "")
     {
@@ -1511,6 +1505,8 @@ void MIDASDesktopUI::createProfile(std::string name, std::string email,
     return;
     }
 
+  std::string oldUrl = mws::WebAPI::Instance()->GetServerUrl();
+  mws::WebAPI::Instance()->SetServerUrl(url.c_str());
   std::string msg;
   if(m_synch->GetAuthenticator()->AddAuthProfile(email, apiName, apiKey, rootDir, name))
     {
@@ -1521,6 +1517,7 @@ void MIDASDesktopUI::createProfile(std::string name, std::string email,
     {
     msg = "Failed to create authentication profile.";
     }
+  mws::WebAPI::Instance()->SetServerUrl(oldUrl.c_str());
   this->displayStatus(tr(msg.c_str()));
 }
 
