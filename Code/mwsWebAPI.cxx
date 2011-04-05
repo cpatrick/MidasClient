@@ -12,6 +12,7 @@
 #include "mwsRestXMLParser.h"
 #include "midasAuthenticator.h"
 #include <iostream>
+#include <QMutexLocker>
 
 namespace mws {
 
@@ -114,6 +115,7 @@ bool WebAPI::Execute(const char* url, bool retry)
 /** Check the connection to the MIDAS server */
 bool WebAPI::CheckConnection()
 {
+  QMutexLocker locker(&m_Mutex);
   std::string version;
   mws::RestXMLParser parser;
   parser.AddTag("/rsp/version", version);
@@ -218,6 +220,7 @@ bool WebAPI::Login(const char* appname,
                    const char* email, 
                    const char* apikey)
 {
+  QMutexLocker locker(&m_Mutex);
   m_APIToken = "";
   mws::RestXMLParser parser;
   parser.AddTag("/rsp/token",m_APIToken);
@@ -242,6 +245,7 @@ bool WebAPI::Login(const char* appname,
 //-------------------------------------------------------------------
 bool WebAPI::DownloadBitstream(int id, const std::string& name)
 {
+  QMutexLocker locker(&m_Mutex);
   std::stringstream fields;
   fields << "midas.bitstream.download?id=" << id;
   return this->DownloadFile(fields.str().c_str(), name.c_str());
@@ -252,6 +256,7 @@ bool WebAPI::UploadBitstream(const std::string& uuid, int parentId,
                              const std::string& name, const std::string& path,
                              const std::string& size)
 {
+  QMutexLocker locker(&m_Mutex);
   std::stringstream fields;
   fields << "midas.upload.bitstream?uuid=" << uuid << "&itemid="
     << parentId << "&mode=stream&filename=" << name << "&path="
@@ -262,6 +267,7 @@ bool WebAPI::UploadBitstream(const std::string& uuid, int parentId,
 //-------------------------------------------------------------------
 bool WebAPI::GetIdByUuid(const std::string& uuid, std::string& id)
 {
+  QMutexLocker locker(&m_Mutex);
   mws::RestXMLParser parser;
   parser.AddTag("/rsp/id", id);
   this->GetRestAPI()->SetXMLParser(&parser);
@@ -276,6 +282,7 @@ bool WebAPI::GetIdByUuid(const std::string& uuid, std::string& id)
 bool WebAPI::CountBitstreams(int type, int id, std::string& count,
                              std::string& size)
 {
+  QMutexLocker locker(&m_Mutex);
   mws::RestXMLParser parser;
   parser.AddTag("/rsp/count", count);
   parser.AddTag("/rsp/size", size);
@@ -291,6 +298,7 @@ bool WebAPI::CountBitstreams(int type, int id, std::string& count,
 bool WebAPI::GetIdFromPath(const std::string& path, std::string& type,
                            std::string& id, std::string& uuid)
 {
+  QMutexLocker locker(&m_Mutex);
   mws::RestXMLParser parser;
   parser.AddTag("/rsp/type", type);
   parser.AddTag("/rsp/id", id);
@@ -305,6 +313,7 @@ bool WebAPI::GetIdFromPath(const std::string& path, std::string& type,
 
 bool WebAPI::DeleteResource(const std::string& typeName, int id)
 {
+  QMutexLocker locker(&m_Mutex);
   mws::RestXMLParser parser;
   this->GetRestAPI()->SetXMLParser(&parser);
 
@@ -316,6 +325,7 @@ bool WebAPI::DeleteResource(const std::string& typeName, int id)
 
 bool WebAPI::CheckUserAgreement(int type, int id, std::string& hasAgreed)
 {
+  QMutexLocker locker(&m_Mutex);
   mws::RestXMLParser parser;
   parser.AddTag("/rsp/hasAgreed", hasAgreed);
 

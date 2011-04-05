@@ -16,6 +16,7 @@
 #include <string>
 #include <exception>
 #include <sstream>
+#include <QMutex>
 
 #include "mwsRestAPI.h"
 #include "midasLogAware.h"
@@ -107,6 +108,7 @@ protected:
   std::string         m_APIToken;
   const char*         m_PostData;
   midasAuthenticator* m_Authenticator;
+  QMutex              m_Mutex;
 
   // constructor
   WebAPI();
