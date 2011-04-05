@@ -40,10 +40,10 @@ void CreateProfileUI::init()
   profileComboBox->clear();
   profileComboBox->addItem("New Profile");
 
-  serverURLEdit->setText(
-    mds::DatabaseAPI::Instance()->GetSetting(mds::DatabaseAPI::LAST_URL).c_str());
+  mds::DatabaseAPI db;
+  serverURLEdit->setText(db.GetSetting(mds::DatabaseAPI::LAST_URL).c_str());
 
-  std::vector<std::string> profiles = mds::DatabaseAPI::Instance()->GetAuthProfiles();
+  std::vector<std::string> profiles = db.GetAuthProfiles();
 
   for(std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i)
     {
@@ -63,7 +63,8 @@ void CreateProfileUI::fillData(const QString& name)
     }
   else
     {
-    midasAuthProfile profile = mds::DatabaseAPI::Instance()->GetAuthProfile(
+    mds::DatabaseAPI db;
+    midasAuthProfile profile = db.GetAuthProfile(
       name.toStdString());
 
     profileNameEdit->setText(profile.Name.c_str());
@@ -107,7 +108,7 @@ void CreateProfileUI::rootDirChecked(int state)
 
 int CreateProfileUI::exec()
 {
-  if(mds::DatabaseAPI::Instance()->GetDatabasePath() != "")
+  if(mds::DatabaseInfo::Instance()->GetPath() != "")
     {
     this->init();
     return QDialog::exec();
@@ -150,7 +151,8 @@ void CreateProfileUI::deleteProfile()
   std::string profileName = profileComboBox->currentText().toStdString();
   profileComboBox->removeItem(profileComboBox->currentIndex());
 
-  mds::DatabaseAPI::Instance()->DeleteProfile(profileName);
+  mds::DatabaseAPI db;
+  db.DeleteProfile(profileName);
 
   std::stringstream text;
   text << "Deleted profile " << profileName;

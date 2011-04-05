@@ -29,7 +29,9 @@ SignInUI::~SignInUI()
 void SignInUI::init()
 {
   profileComboBox->clear();
-  std::vector<std::string> profiles = mds::DatabaseAPI::Instance()->GetAuthProfiles();
+
+  mds::DatabaseAPI db;
+  std::vector<std::string> profiles = db.GetAuthProfiles();
   
   for(std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i)
     {
@@ -40,7 +42,7 @@ void SignInUI::init()
 /** */
 int SignInUI::exec()
 {
-  if(mds::DatabaseAPI::Instance()->GetDatabasePath() != "")
+  if(mds::DatabaseInfo::Instance()->GetPath() != "")
     {
     this->init();
     return QDialog::exec();

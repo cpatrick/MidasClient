@@ -71,13 +71,14 @@ void PreferencesUI::unifyTree()
 
 void PreferencesUI::reset()
 {
-  std::string interval = mds::DatabaseAPI::Instance()->GetSetting(
+  mds::DatabaseAPI db;
+  std::string interval = db.GetSetting(
     mds::DatabaseAPI::AUTO_REFRESH_INTERVAL);
-  std::string index = mds::DatabaseAPI::Instance()->GetSetting(
+  std::string index = db.GetSetting(
     mds::DatabaseAPI::AUTO_REFRESH_SETTING);
-  std::string path = mds::DatabaseAPI::Instance()->GetSetting(
+  std::string path = db.GetSetting(
     mds::DatabaseAPI::ROOT_DIR);
-  m_UnifiedTree = mds::DatabaseAPI::Instance()->GetSettingBool(
+  m_UnifiedTree = db.GetSettingBool(
     mds::DatabaseAPI::UNIFIED_TREE);
 
   if(index != "")
@@ -109,7 +110,8 @@ void PreferencesUI::enableActions(int index)
 
 void PreferencesUI::selectWorkingDir()
 {
-  std::string path = mds::DatabaseAPI::Instance()->GetSetting(mds::DatabaseAPI::ROOT_DIR);
+  mds::DatabaseAPI db;
+  std::string path = db.GetSetting(mds::DatabaseAPI::ROOT_DIR);
 
   if(path == "")
     {
@@ -135,15 +137,16 @@ int PreferencesUI::exec()
 void PreferencesUI::accept()
 {
   //Save the preferences
-  mds::DatabaseAPI::Instance()->SetSetting(mds::DatabaseAPI::AUTO_REFRESH_INTERVAL, timeSpinBox->value());
-  mds::DatabaseAPI::Instance()->SetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING, settingComboBox->currentIndex());
-  mds::DatabaseAPI::Instance()->SetSetting(mds::DatabaseAPI::UNIFIED_TREE, copyResourcesCheckBox->isChecked());
+  mds::DatabaseAPI db;
+  db.SetSetting(mds::DatabaseAPI::AUTO_REFRESH_INTERVAL, timeSpinBox->value());
+  db.SetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING, settingComboBox->currentIndex());
+  db.SetSetting(mds::DatabaseAPI::UNIFIED_TREE, copyResourcesCheckBox->isChecked());
 
   std::string dir = workingDirEdit->text().toStdString();
   kwsys::SystemTools::ConvertToUnixSlashes(dir);
   if(kwsys::SystemTools::FileIsDirectory(dir.c_str()))
     {
-    mds::DatabaseAPI::Instance()->SetSetting(mds::DatabaseAPI::ROOT_DIR, dir);
+    db.SetSetting(mds::DatabaseAPI::ROOT_DIR, dir);
     }
 
   emit intervalChanged();

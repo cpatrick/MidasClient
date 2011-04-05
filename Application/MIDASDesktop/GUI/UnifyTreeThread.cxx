@@ -26,7 +26,8 @@ void UnifyTreeThread::run()
 {
   m_Parent->getPollFilesystemThread()->Pause();
 
-  if(mds::DatabaseAPI::Instance()->UnifyTree(m_Copy))
+  mds::DatabaseAPI db;
+  if(db.UnifyTree(m_Copy))
     {
     m_Parent->GetLog()->Message("Finished relocating resources");
     }

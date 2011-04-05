@@ -71,16 +71,16 @@ void CreateMidasResourceUI::accept()
   m_Parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_ADD);
 
   std::string type_str, path;
+  mds::DatabaseAPI db;
   switch(this->m_Type)
     {
     case Community:
-      path = mds::DatabaseAPI::Instance()->GetAuthProfile(
-        this->m_Parent->getSynchronizer()->GetAuthenticator()->GetProfile()).RootDir;
+      path = db.GetAuthProfile(
+        m_Parent->getSynchronizer()->GetAuthenticator()->GetProfile()).RootDir;
 
       if(path == "")
         {
-        path = mds::DatabaseAPI::Instance()->GetSetting(
-          mds::DatabaseAPI::ROOT_DIR);
+        path = db.GetSetting(mds::DatabaseAPI::ROOT_DIR);
         }
 
       if(path == "")
@@ -169,8 +169,9 @@ void CreateMidasResourceUI::AddSubCommunity()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  std::string path = mds::DatabaseAPI::Instance()->GetRecordByUuid(
-    mds::DatabaseAPI::Instance()->GetUuid(
+  mds::DatabaseAPI db;
+  std::string path = db.GetRecordByUuid(
+    db.GetUuid(
     midasResourceType::COMMUNITY,
     parentComm->getCommunity()->GetId())).Path;
 
@@ -186,8 +187,9 @@ void CreateMidasResourceUI::AddCollection()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  std::string path = mds::DatabaseAPI::Instance()->GetRecordByUuid(
-    mds::DatabaseAPI::Instance()->GetUuid(
+  mds::DatabaseAPI db;
+  std::string path = db.GetRecordByUuid(
+    db.GetUuid(
     midasResourceType::COMMUNITY,
     parentComm->getCommunity()->GetId())).Path;
 
@@ -207,8 +209,9 @@ void CreateMidasResourceUI::AddItem()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  std::string path = mds::DatabaseAPI::Instance()->GetRecordByUuid(
-    mds::DatabaseAPI::Instance()->GetUuid(
+  mds::DatabaseAPI db;
+  std::string path = db.GetRecordByUuid(
+    db.GetUuid(
     midasResourceType::COLLECTION,
     parentColl->getCollection()->GetId())).Path;
 

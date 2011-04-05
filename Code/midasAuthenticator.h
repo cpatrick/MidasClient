@@ -13,7 +13,6 @@
 #define MIDASAUTHENTICATOR_H
 
 #include "midasStandardIncludes.h"
-#include "mdsDatabaseAPI.h"
 #include "midasLogAware.h"
 #include "mwsWebAPI.h"
 

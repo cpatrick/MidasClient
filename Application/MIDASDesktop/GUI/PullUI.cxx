@@ -116,7 +116,6 @@ void PullUI::accept()
   synchronizer->SetLog(m_Parent->getSynchronizer()->GetLog());
   synchronizer->SetProgressReporter(m_Parent->getProgress());
   synchronizer->SetAgreementHandler(m_Parent->getAgreementHandler());
-  synchronizer->SetResourceUpdateHandler(m_Parent->getResourceUpdateHandler());
   synchronizer->SetOverwriteHandler(m_Parent->getFileOverwriteHandler());
   //hack-ish: make sure to set the authenticator back to null so it doesn't delete the top level auth when it goes out of scope
   synchronizer->SetAuthenticator(m_Parent->getSynchronizer()->GetAuthenticator(), true);

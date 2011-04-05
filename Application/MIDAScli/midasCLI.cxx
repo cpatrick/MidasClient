@@ -42,7 +42,7 @@ midasCLI::midasCLI()
     new midasDotProgressReporter(30)));
   this->SetLog(new midasStdOutLog());
   this->Synchronizer->SetLog(this->GetLog());
-  mds::DatabaseAPI::Instance()->SetLog(this->GetLog());
+  mds::DatabaseInfo::Instance()->SetLog(this->GetLog());
   mws::WebAPI::Instance()->SetLog(this->GetLog());
   mws::WebAPI::Instance()->SetAuthenticator(this->Synchronizer->GetAuthenticator());
   int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
@@ -72,73 +72,73 @@ int midasCLI::Perform(std::vector<std::string> args)
     {
     if(args[i] == "add")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseAdd(postOpArgs);
       break;
       }
     else if(args[i] == "clean")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseClean(postOpArgs);
       break;
       }
     else if(args[i] == "clone")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseClone(postOpArgs);
       break;
       }
     else if(args[i] == "create_profile")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       return this->PerformCreateProfile(postOpArgs);
       }
     else if(args[i] == "delete")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       return this->PerformDelete(postOpArgs);
       }
     else if(args[i] == "pull")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParsePull(postOpArgs);
       break;
       }
     else if(args[i] == "push")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParsePush(postOpArgs);
       break;
       }
     else if(args[i] == "set_metadata")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       return this->PerformSetMetadata(postOpArgs);
       }
     else if(args[i] == "set_root_dir")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       return this->SetRootDir(postOpArgs);
       }
     else if(args[i] == "status")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseStatus(postOpArgs);
       break;
       }
     else if(args[i] == "upload")
       {
-      mds::DatabaseAPI::Instance()->SetDatabasePath(this->Database);
+      mds::DatabaseInfo::Instance()->SetPath(this->Database);
       std::vector<std::string> postOpArgs(args.begin() + i + 1, args.end());
       ok = this->ParseUpload(postOpArgs);
       break;
@@ -204,10 +204,9 @@ int midasCLI::Perform(std::vector<std::string> args)
 
     if(this->UseTempProfile)
       {
-      mds::DatabaseAPI::Instance()->DeleteProfile(
-        this->Synchronizer->GetAuthenticator()->GetProfile());
+      mds::DatabaseAPI db;
+      db.DeleteProfile(this->Synchronizer->GetAuthenticator()->GetProfile());
       }
-
     return rc;
     }
   this->PrintUsage();
@@ -233,6 +232,7 @@ int midasCLI::RunSynchronizer()
     this->Synchronizer->GetAuthenticator()->SetProfile(tempName);
     }
 
+  mds::DatabaseAPI db;
   std::string oldRoot = "";
   if(this->RootDir != "")
     {
@@ -243,18 +243,15 @@ int midasCLI::RunSynchronizer()
       return -1;
       }
 
-    oldRoot = mds::DatabaseAPI::Instance()->GetSetting(
-      mds::DatabaseAPI::ROOT_DIR);
-    mds::DatabaseAPI::Instance()->SetSetting(
-      mds::DatabaseAPI::ROOT_DIR, this->RootDir);
+    oldRoot = db.GetSetting(mds::DatabaseAPI::ROOT_DIR);
+    db.SetSetting(mds::DatabaseAPI::ROOT_DIR, this->RootDir);
     }
 
   int retVal = this->Synchronizer->Perform();
 
   if(oldRoot != "")
     {
-    mds::DatabaseAPI::Instance()->SetSetting(
-      mds::DatabaseAPI::ROOT_DIR, oldRoot);
+    db.SetSetting(mds::DatabaseAPI::ROOT_DIR, oldRoot);
     }
   return retVal;
 }
@@ -306,8 +303,8 @@ int midasCLI::PerformCreateProfile(std::vector<std::string> args)
   //Print the available authentication auth profiles if no args given
   if(name == "" && user == "" && apiKey == "" && appName == "")
     {
-    std::vector<std::string> profiles =
-      mds::DatabaseAPI::Instance()->GetAuthProfiles();
+    mds::DatabaseAPI db;
+    std::vector<std::string> profiles = db.GetAuthProfiles();
 
     std::cout << "Available authentication profiles:" << std::endl;
     for(std::vector<std::string>::iterator i = profiles.begin();
@@ -517,7 +514,8 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
     }
   else if(args.size())
     {
-    mds::DatabaseAPI::Instance()->CheckModifiedBitstreams();
+    mds::DatabaseAPI db;
+    db.CheckModifiedBitstreams();
     mws::WebAPI::Instance()->SetServerUrl(args[0].c_str());
     }
   return true;
@@ -540,8 +538,8 @@ int midasCLI::SetRootDir(std::vector<std::string> args)
     return -1;
     }
   kwsys::SystemTools::ConvertToUnixSlashes(root_dir);
-  mds::DatabaseAPI::Instance()->SetSetting(
-    mds::DatabaseAPI::ROOT_DIR, root_dir);
+  mds::DatabaseAPI db;
+  db.SetSetting(mds::DatabaseAPI::ROOT_DIR, root_dir);
 
   std::cout << "Changed root directory to " << root_dir << "." << std::endl;
   return 0;
@@ -550,8 +548,9 @@ int midasCLI::SetRootDir(std::vector<std::string> args)
 //-------------------------------------------------------------------
 bool midasCLI::ParseStatus(std::vector<std::string> args)
 {
-  mds::DatabaseAPI::Instance()->CheckModifiedBitstreams();
-  std::vector<midasStatus> stats = mds::DatabaseAPI::Instance()->GetStatusEntries();
+  mds::DatabaseAPI db;
+  db.CheckModifiedBitstreams();
+  std::vector<midasStatus> stats = db.GetStatusEntries();
   for(std::vector<midasStatus>::iterator i = stats.begin(); i != stats.end();
       ++i)
     {
@@ -628,7 +627,8 @@ int midasCLI::PerformDelete(std::vector<std::string> args)
     return -1;
     }
   std::string path = args[i];
-  std::string uuid = mds::DatabaseAPI::Instance()->GetUuidFromPath(path);
+  mds::DatabaseAPI db;
+  std::string uuid = db.GetUuidFromPath(path);
 
   if(uuid == "")
     {
@@ -639,8 +639,7 @@ int midasCLI::PerformDelete(std::vector<std::string> args)
     return -2;
     }
 
-  if(mds::DatabaseAPI::Instance()->
-     DeleteResource(uuid, deleteOnDisk))
+  if(db.DeleteResource(uuid, deleteOnDisk))
     {
     std::stringstream text;
     text << "Deleted resource at " << path << std::endl;
@@ -681,7 +680,8 @@ int midasCLI::PerformSetMetadata(std::vector<std::string> args)
   std::string key = args[i+1];
   std::string value = args[i+2];
 
-  std::string uuid = mds::DatabaseAPI::Instance()->GetUuidFromPath(path);
+  mds::DatabaseAPI db;
+  std::string uuid = db.GetUuidFromPath(path);
 
   if(uuid == "")
     {
@@ -692,8 +692,7 @@ int midasCLI::PerformSetMetadata(std::vector<std::string> args)
     return -2;
     }
 
-  midasResourceRecord resource =
-    mds::DatabaseAPI::Instance()->GetRecordByUuid(uuid);
+  midasResourceRecord resource = db.GetRecordByUuid(uuid);
 
   mdo::Object* obj;
   mds::Object* mdsObj;

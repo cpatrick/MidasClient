@@ -30,8 +30,9 @@ MidasTreeModelClient::~MidasTreeModelClient()
 /** Populate the tree */
 void MidasTreeModelClient::Populate()
 {
+  mds::DatabaseAPI db;
   std::vector<mdo::Community*> topLevelCommunities =
-    mds::DatabaseAPI::Instance()->GetTopLevelCommunities(true);
+    db.GetTopLevelCommunities(true);
 
   this->beginInsertRows(QModelIndex(), 0, topLevelCommunities.size());
   int row = 0;

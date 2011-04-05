@@ -35,7 +35,8 @@ void PollFilesystemThread::run()
     if(m_Run)
       {
       m_DatabaseLocked = true;
-      if(m_Run && mds::DatabaseAPI::Instance()->CheckModifiedBitstreams())
+      mds::DatabaseAPI db;
+      if(m_Run && db.CheckModifiedBitstreams())
         {
         emit needToRefresh();
         }

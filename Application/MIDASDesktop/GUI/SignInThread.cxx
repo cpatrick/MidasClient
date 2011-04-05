@@ -21,7 +21,8 @@ void SignInThread::SetProfile(QString profile)
 
 void SignInThread::run()
 {
-  std::string url = mds::DatabaseAPI::Instance()->GetAuthProfile(m_Profile.toStdString()).Url;
+  mds::DatabaseAPI db;
+  std::string url = db.GetAuthProfile(m_Profile.toStdString()).Url;
   mws::WebAPI::Instance()->SetServerUrl(url.c_str());
 
   if(mws::WebAPI::Instance()->CheckConnection())

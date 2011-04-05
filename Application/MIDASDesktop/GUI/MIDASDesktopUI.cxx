@@ -315,12 +315,12 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_progress = new GUIProgress(this->progressBar);
   this->Log = new GUILogger(this);
   this->m_synch->SetLog(this->Log);
-  mds::DatabaseAPI::Instance()->SetLog(this->Log);
+  mds::DatabaseInfo::Instance()->SetLog(this->Log);
+  mds::DatabaseInfo::Instance()->SetResourceUpdateHandler(m_resourceUpdateHandler);
   mws::WebAPI::Instance()->SetLog(this->Log);
   mws::WebAPI::Instance()->SetAuthenticator(m_synch->GetAuthenticator());
   this->m_synch->SetOverwriteHandler(this->m_overwriteHandler);
   this->m_synch->SetProgressReporter(m_progress);
-  this->m_synch->SetResourceUpdateHandler(m_resourceUpdateHandler);
   this->m_signIn = false;
   this->m_editMode = false;
   this->m_cancel = false;
@@ -413,9 +413,10 @@ void MIDASDesktopUI::showNormal()
 {
   trayIcon->setIcon(QPixmap(":icons/MIDAS_Desktop_Icon.png"));
 
-  if(mds::DatabaseAPI::Instance()->GetDatabasePath() != "")
+  if(mds::DatabaseInfo::Instance()->GetPath() != "")
     {
-    if(atoi(mds::DatabaseAPI::Instance()->GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str()) == 0)
+    mds::DatabaseAPI db;
+    if(atoi(db.GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str()) == 0)
       {
       refreshTimer->stop();
       }
@@ -524,7 +525,8 @@ void MIDASDesktopUI::closeEvent(QCloseEvent *event)
 
     if(m_signIn)
       {
-      if(atoi(mds::DatabaseAPI::Instance()->GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str()) == 0)
+      mds::DatabaseAPI db;
+      if(atoi(db.GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str()) == 0)
         {
         refreshTimer->start();
         }
@@ -1217,17 +1219,18 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
     std::string name = kwsys::SystemTools::GetFilenameName(path.c_str());
     std::string uuid = midasUtils::GenerateUUID();
     
-    if(mds::DatabaseAPI::Instance()->GetSettingBool(mds::DatabaseAPI::UNIFIED_TREE))
+    mds::DatabaseAPI db;
+    if(db.GetSettingBool(mds::DatabaseAPI::UNIFIED_TREE))
       {
-      std::string copyTo = mds::DatabaseAPI::Instance()->GetRecordByUuid(parentItem->getUuid()).Path;
+      std::string copyTo = db.GetRecordByUuid(parentItem->getUuid()).Path;
       copyTo += "/" + name;
       kwsys::SystemTools::CopyAFile(path.c_str(), copyTo.c_str());
       path = copyTo;
       }
 
-    std::string parentUuid = mds::DatabaseAPI::Instance()->GetUuid(
+    std::string parentUuid = db.GetUuid(
       midasResourceType::ITEM, parentItem->getItem()->GetId());
-    int id = mds::DatabaseAPI::Instance()->AddResource(
+    int id = db.AddResource(
       midasResourceType::BITSTREAM, uuid, path, name, parentUuid, 0);
 
     // Get and save file size
@@ -1260,7 +1263,8 @@ void MIDASDesktopUI::viewDirectory()
 {
   MidasTreeItem* resource = const_cast<MidasTreeItem*>(
     treeViewClient->getSelectedMidasTreeItem());
-  midasResourceRecord record = mds::DatabaseAPI::Instance()->GetRecordByUuid(resource->getUuid());
+  mds::DatabaseAPI db;
+  midasResourceRecord record = db.GetRecordByUuid(resource->getUuid());
 
   std::string path = record.Type == midasResourceType::BITSTREAM ?
     kwsys::SystemTools::GetParentDirectory(record.Path.c_str())
@@ -1281,7 +1285,8 @@ void MIDASDesktopUI::openBitstream()
 {
   MidasTreeItem* resource = const_cast<MidasTreeItem*>(
     treeViewClient->getSelectedMidasTreeItem());
-  std::string path = mds::DatabaseAPI::Instance()->GetRecordByUuid(resource->getUuid()).Path;
+  mds::DatabaseAPI db;
+  std::string path = db.GetRecordByUuid(resource->getUuid()).Path;
 
   path = "file:" + path;
   QUrl url(path.c_str());
@@ -1349,13 +1354,15 @@ void MIDASDesktopUI::signInOrOut()
 
 void MIDASDesktopUI::setTimerInterval()
 {
-  int minutes = atoi(mds::DatabaseAPI::Instance()->GetSetting(mds::DatabaseAPI::AUTO_REFRESH_INTERVAL).c_str());
+  mds::DatabaseAPI db;
+  int minutes = atoi(db.GetSetting(mds::DatabaseAPI::AUTO_REFRESH_INTERVAL).c_str());
   refreshTimer->setInterval(minutes * 60 * 1000);
 }
 
 void MIDASDesktopUI::adjustTimerSettings()
 {
-  int setting = atoi(mds::DatabaseAPI::Instance()->GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str());
+  mds::DatabaseAPI db;
+  int setting = atoi(db.GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str());
 
   refreshTimer->stop();
 
@@ -1386,7 +1393,8 @@ void MIDASDesktopUI::signIn(bool ok)
     activateActions( true, MIDASDesktopUI::ACTION_CONNECTED );
 
     // start the refresh timer here if our setting = 1
-    if(atoi(mds::DatabaseAPI::Instance()->GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str()) == 1)
+    mds::DatabaseAPI db;
+    if(atoi(db.GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str()) == 1)
       {
       refreshTimer->start();
       }
@@ -1468,7 +1476,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
 
   if(midasUtils::IsDatabaseValid(file))
     {
-    mds::DatabaseAPI::Instance()->SetDatabasePath(file);
+    mds::DatabaseInfo::Instance()->SetPath(file);
     QSettings settings("Kitware", "MIDASDesktop");
     settings.setValue("lastDatabase", file.c_str());
     settings.sync();
@@ -1496,15 +1504,17 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
 }
 
 void MIDASDesktopUI::createProfile(std::string name, std::string email,
-                               std::string apiName, std::string apiKey,
-                               std::string rootDir, std::string url)
+                                   std::string apiName, std::string apiKey,
+                                   std::string rootDir, std::string url)
 {
-  if(mds::DatabaseAPI::Instance()->GetDatabasePath() == "")
+  if(mds::DatabaseInfo::Instance()->GetPath() == "")
     {
     this->displayStatus(tr("Please choose a local database first."));
     return;
     }
 
+  mds::DatabaseAPI db;
+  db.SetSetting(mds::DatabaseAPI::LAST_URL, url);
   std::string oldUrl = mws::WebAPI::Instance()->GetServerUrl();
   mws::WebAPI::Instance()->SetServerUrl(url.c_str());
   std::string msg;
@@ -1648,10 +1658,11 @@ void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)
 
 void MIDASDesktopUI::storeLastPollTime()
 {
+  mds::DatabaseAPI db;
   enableActions(false);
   mws::NewResources newResources;
   newResources.SetAuthenticator(m_synch->GetAuthenticator());
-  newResources.SetSince(mds::DatabaseAPI::Instance()->GetSetting(mds::DatabaseAPI::LAST_FETCH_TIME));
+  newResources.SetSince(db.GetSetting(mds::DatabaseAPI::LAST_FETCH_TIME));
   newResources.Fetch();
   enableActions(true);
 
@@ -1663,7 +1674,7 @@ void MIDASDesktopUI::storeLastPollTime()
     alertNewResources();
     }
 
-  mds::DatabaseAPI::Instance()->SetSetting(mds::DatabaseAPI::LAST_FETCH_TIME, newResources.GetTimestamp());
+  db.SetSetting(mds::DatabaseAPI::LAST_FETCH_TIME, newResources.GetTimestamp());
 
   this->decorateServerTree();
 }
@@ -1725,7 +1736,9 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
   const MidasTreeItem* treeItem = treeViewClient->getSelectedMidasTreeItem();
   std::string uuid = treeItem->getUuid();
   std::string name = treeItem->data(0).toString().toStdString();
-  if(!mds::DatabaseAPI::Instance()->DeleteResource(uuid, deleteFiles))
+  
+  mds::DatabaseAPI db;
+  if(!db.DeleteResource(uuid, deleteFiles))
     {
     this->Log->Error("Error: Delete failed on resource " + name);
     }

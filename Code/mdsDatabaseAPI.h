@@ -9,13 +9,14 @@
 
 =========================================================================*/
 
-#ifndef MIDASSQLITEPROXY_H
-#define MIDASSQLITEPROXY_H
+#ifndef _MDSDATABASEAPI_H
+#define _MDSDATABASEAPI_H
 
 #include "midasStandardIncludes.h"
 #include "midasStatus.h"
 #include "mdsSQLiteDatabase.h"
 #include "midasLogAware.h"
+#include "mdsDatabaseInfo.h"
 
 namespace mdo
 {
@@ -79,8 +80,7 @@ class DatabaseAPI : public midasLogAware
   friend class Item;
   friend class Bitstream;
 public:
-  static DatabaseAPI* Instance();
-
+  DatabaseAPI(const std::string& path = "");
   ~DatabaseAPI();
 
   enum MidasAppSetting
@@ -92,9 +92,6 @@ public:
     ROOT_DIR,
     UNIFIED_TREE
     };
-
-  std::string GetDatabasePath() { return this->DatabasePath; }
-  bool SetDatabasePath(std::string path);
 
   /**
    * Clean entries in the database
@@ -180,8 +177,6 @@ public:
    */
   bool CheckModifiedBitstreams();
 
-  void SetResourceUpdateHandler(mds::ResourceUpdateHandler* handler);
-  mds::ResourceUpdateHandler* GetResourceUpdateHandler();
 protected:
   bool InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);
@@ -200,10 +195,6 @@ protected:
   
   bool Open();
   bool Close();
-
-private:
-  DatabaseAPI(); //singleton only
-  static DatabaseAPI* m_Instance;
 
   SQLiteDatabase* Database;
   std::string DatabasePath;

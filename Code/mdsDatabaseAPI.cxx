@@ -23,77 +23,25 @@
 
 namespace mds {
 
-/** Singleton */
-DatabaseAPI* DatabaseAPI::m_Instance = NULL; 
-
-/** Return the instance as a singleton */
-DatabaseAPI* DatabaseAPI::Instance()
+/* By default new instantiations of this class will inherit
+ * the properties set on the singleton mds::DatabaseInfo::Instance.
+ * If you wish to override these, do so after construction.
+ */
+DatabaseAPI::DatabaseAPI(const std::string& path)
 {
-  if(m_Instance != NULL)
-    {
-    return m_Instance; 
-    }
-  else 
-    {
-    m_Instance = new DatabaseAPI();
-    }
-  return m_Instance;
-}
+  this->DatabasePath = path == "" ?
+    mds::DatabaseInfo::Instance()->GetPath() :
+    path;
+  this->Log = mds::DatabaseInfo::Instance()->GetLog();
+  this->ResourceUpdateHandler =
+    mds::DatabaseInfo::Instance()->GetResourceUpdateHandler();
 
-DatabaseAPI::DatabaseAPI()
-{
-  this->DatabasePath = "";
   this->Database = new mds::SQLiteDatabase();
-  this->ResourceUpdateHandler = NULL;
 }
 
 DatabaseAPI::~DatabaseAPI()
 {
   delete this->Database;
-}
-
-bool DatabaseAPI::SetDatabasePath(std::string path)
-{
-  if(path == this->DatabasePath && path != "")
-    {
-    return true;
-    }
-
-  if(!midasUtils::IsDatabaseValid(path))
-    {
-    std::stringstream text;
-    text << "No valid database found at " << path <<
-        ". Creating new database..." << std::endl;
-    this->GetLog()->Message(text.str());
-
-    if(!midasUtils::CreateNewDatabase(path))
-      {
-      std::stringstream text;
-      text << "Fatal: failed to create database at " << path << std::endl;
-      this->GetLog()->Error(text.str());
-      kwsys::SystemTools::RemoveFile(path.c_str());
-      return false;
-      }
-    else
-      {
-      std::stringstream text;
-      text << "Database created successfully at " << path << std::endl;
-      this->GetLog()->Message(text.str());
-      }
-    }
-  this->DatabasePath = path;
-  return true;
-}
-
-void DatabaseAPI::SetResourceUpdateHandler(
-  mds::ResourceUpdateHandler* handler)
-{
-  this->ResourceUpdateHandler = handler;
-}
-
-mds::ResourceUpdateHandler* DatabaseAPI::GetResourceUpdateHandler()
-{
-  return this->ResourceUpdateHandler;
 }
 
 //-------------------------------------------------------------------------

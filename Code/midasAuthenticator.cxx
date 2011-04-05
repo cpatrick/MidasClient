@@ -12,6 +12,7 @@
 #include "midasAuthenticator.h"
 #include "mwsWebAPI.h"
 #include "mwsRestXMLParser.h"
+#include "mdsDatabaseAPI.h"
 #include "midasStdOutLog.h"
 
 midasAuthenticator::midasAuthenticator()
@@ -28,8 +29,8 @@ midasAuthenticator::~midasAuthenticator()
 //-------------------------------------------------------------------
 bool midasAuthenticator::Login()
 {
-  midasAuthProfile profile =
-    mds::DatabaseAPI::Instance()->GetAuthProfile(this->Profile);
+  mds::DatabaseAPI db;
+  midasAuthProfile profile = db.GetAuthProfile(this->Profile);
 
   if(profile.Name == "")
     {
@@ -54,7 +55,8 @@ bool midasAuthenticator::Login()
 //-------------------------------------------------------------------
 bool midasAuthenticator::IsAnonymous()
 {
-  midasAuthProfile profile = mds::DatabaseAPI::Instance()->GetAuthProfile(this->Profile);
+  mds::DatabaseAPI db;
+  midasAuthProfile profile = db.GetAuthProfile(this->Profile);
   return profile.IsAnonymous();
 }
 
@@ -91,9 +93,9 @@ bool midasAuthenticator::AddAuthProfile(std::string user,
     Log->Error(text.str());
     return false;
     }
-  bool success = mds::DatabaseAPI::Instance()->AddAuthProfile(
-    user, appName, apiKey, profileName, rootDir,
-    mws::WebAPI::Instance()->GetServerUrl());
+  mds::DatabaseAPI db;
+  bool success = db.AddAuthProfile(user, appName, apiKey, profileName, rootDir,
+                                   mws::WebAPI::Instance()->GetServerUrl());
 
   if(!success)
     {

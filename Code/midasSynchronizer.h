@@ -86,9 +86,6 @@ public:
 
   void SetAgreementHandler(midasAgreementHandler* handler);
 
-  void SetResourceUpdateHandler(mds::ResourceUpdateHandler* handler);
-  mds::ResourceUpdateHandler* GetResourceUpdateHandler();
-
   void SetOverwriteHandler(midasFileOverwriteHandler* handler);
   midasFileOverwriteHandler* GetOverwriteHandler();
 
@@ -162,7 +159,6 @@ protected:
   midasAuthenticator* Authenticator;
   midasAgreementHandler* AgreementHandler;
   midasFileOverwriteHandler* OverwriteHandler;
-  mds::ResourceUpdateHandler* ResourceUpdateHandler;
 };
 
 #endif

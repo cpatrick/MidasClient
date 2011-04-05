@@ -63,6 +63,8 @@ set(MIDASRest_SRCS
   mdsSQLiteDatabase.cxx
   mdsDatabaseAPI.cxx
   mdsDatabaseAPI.h
+  mdsDatabaseInfo.cxx
+  mdsDatabaseInfo.h
   mdsCommunity.h
   mdsCommunity.cxx
   mdsCollection.h
