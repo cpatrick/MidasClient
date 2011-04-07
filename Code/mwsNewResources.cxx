@@ -37,7 +37,7 @@ public:
   virtual void StartElement(const char * name,const char **atts)
     {
     RestXMLParser::StartElement(name,atts);
-    m_CurrentValue = "";  
+    m_CurrentValue = "";
     }
 
   // Callback function -- called from XML parser when ending tag
@@ -95,7 +95,8 @@ bool NewResources::Fetch()
   this->m_Uuids.clear();
   parser.AddTag("/rsp/timestamp",this->GetTimestamp());
   
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  QMutexLocker lock(WebAPI::Instance()->GetMutex());
+  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   
   std::stringstream url;
   url << "midas.newresources.get";
@@ -104,7 +105,7 @@ bool NewResources::Fetch()
     {
     url << "?since=" << midasUtils::EscapeForURL(m_Since);
     }
-  return mws::WebAPI::Instance()->Execute(url.str().c_str());
+  return WebAPI::Instance()->Execute(url.str().c_str());
 }
 
 bool NewResources::FetchTree()

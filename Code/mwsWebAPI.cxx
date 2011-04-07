@@ -10,6 +10,8 @@
 =========================================================================*/
 #include "mwsWebAPI.h"
 #include "mwsRestXMLParser.h"
+#include "mwsBitstream.h"
+#include "mdoBitstream.h"
 #include "midasAuthenticator.h"
 #include <iostream>
 #include <QMutexLocker>
@@ -73,66 +75,6 @@ void WebAPI::SetPostData(const char* postData)
 {
   m_PostData = postData;
 }
-
-/** Execute the command */
-bool WebAPI::Execute(const char* url, bool retry)
-{
-  m_RestAPI->SetProgressCallback(NULL, NULL);
-  std::stringstream fullUrl;
-
-  fullUrl << url;
-
-  if(!m_APIToken.empty())
-    {
-    fullUrl << "&token=" << m_APIToken;
-    }
-  bool success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
-
-  if(retry && (!success || m_RestAPI->GetXMLParser()->GetErrorCode() != 0)
-     && !m_APIToken.empty() && m_Authenticator && !m_RestAPI->ShouldCancel())
-    {
-    mws::RestXMLParser parser = *m_RestAPI->GetXMLParser(); //copy the parser or expat will crash...
-    this->Log->Message("Operation failed. Refreshing login token and retrying...");
-    if(!m_Authenticator->Login())
-      {
-      this->Log->Error("Attempt to get new tokens failed.");
-      return false;
-      }
-    fullUrl.str(std::string());
-    fullUrl << url << "&token=" << m_APIToken;
-    m_RestAPI->SetXMLParser(&parser);
-    success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
-    }
-
-  m_PostData = ""; //reset the post data
-  if(success && m_RestAPI->GetXMLParser()->GetErrorCode() == 0)
-    {
-    return true;
-    }
-  return false;
-}
-
-/** Check the connection to the MIDAS server */
-bool WebAPI::CheckConnection()
-{
-  QMutexLocker locker(&m_Mutex);
-  std::string version;
-  mws::RestXMLParser parser;
-  parser.AddTag("/rsp/version", version);
-  this->GetRestAPI()->SetXMLParser(&parser);
-  std::string url = "midas.info";
-  if(!this->Execute(url.c_str(), false))
-    {
-    this->Log->Error(this->GetErrorMessage());
-    return false;
-    }
-  if(version == "")
-    {
-    return false;
-    }
-
-  return true;
-}
     
 // Return the last error code
 int WebAPI::GetErrorCode()
@@ -157,7 +99,59 @@ RestXMLParser* WebAPI::GetRestXMLParser()
 {
   return this->GetRestAPI()->GetXMLParser();
 }
- 
+
+std::string WebAPI::GetAPIToken()
+{
+  return this->m_APIToken;
+}
+
+QMutex* WebAPI::GetMutex()
+{
+  return &this->m_Mutex;
+}
+
+/** Execute the command */
+bool WebAPI::Execute(const char* url, bool retry)
+{
+  m_RestAPI->SetProgressCallback(NULL, NULL);
+  std::stringstream fullUrl;
+
+  fullUrl << url;
+
+  if(!m_APIToken.empty())
+    {
+    fullUrl << "&token=" << m_APIToken;
+    }
+  bool success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
+
+  if(retry && (!success || m_RestAPI->GetXMLParser()->GetErrorCode() != 0)
+     && !m_APIToken.empty() && m_Authenticator && !m_RestAPI->ShouldCancel())
+    {
+    RestXMLParser parser = *m_RestAPI->GetXMLParser(); //copy the parser or expat will crash...
+    this->Log->Message("Operation failed. Refreshing login token and retrying...");
+    if(!m_Authenticator->Login())
+      {
+      this->Log->Error("Attempt to get new tokens failed.");
+      return false;
+      }
+    fullUrl.str(std::string());
+    fullUrl << url << "&token=" << m_APIToken;
+    m_RestAPI->SetXMLParser(&parser);
+    success = m_RestAPI->Execute(fullUrl.str().c_str(), m_PostData);
+    }
+
+  m_PostData = ""; //reset the post data
+  if(success && m_RestAPI->GetXMLParser()->GetErrorCode() == 0)
+    {
+    return true;
+    }
+  std::stringstream text;
+  text << "Web API call to \"" << url << "\" failed. Response: " <<
+    this->GetErrorMessage();
+  this->Log->Error(text.str());
+  return false;
+}
+
 // Download a file 
 bool WebAPI::DownloadFile(const char* url, const char* filename)
 {
@@ -209,10 +203,26 @@ bool WebAPI::UploadFile(const char* url, const char* filename)
   return ok;
 }
 
-
-std::string WebAPI::GetAPIToken()
+/** Check the connection to the MIDAS server */
+bool WebAPI::CheckConnection()
 {
-  return this->m_APIToken;
+  QMutexLocker locker(&m_Mutex);
+  std::string version;
+  mws::RestXMLParser parser;
+  parser.AddTag("/rsp/version", version);
+  this->GetRestAPI()->SetXMLParser(&parser);
+  std::string url = "midas.info";
+  if(!this->Execute(url.c_str(), false))
+    {
+    this->Log->Error(this->GetErrorMessage());
+    return false;
+    }
+  if(version == "")
+    {
+    return false;
+    }
+
+  return true;
 }
 
 // Login to MIDAS
@@ -245,6 +255,18 @@ bool WebAPI::Login(const char* appname,
 //-------------------------------------------------------------------
 bool WebAPI::DownloadBitstream(int id, const std::string& name)
 {
+  mdo::Bitstream bitstream;
+  bitstream.SetId(id);
+
+  mws::Bitstream mwsBitstream;
+  mwsBitstream.SetObject(&bitstream);
+  mwsBitstream.FetchLocations();
+
+  if(bitstream.GetLocations().size() > 1)
+    {
+
+    }
+
   QMutexLocker locker(&m_Mutex);
   std::stringstream fields;
   fields << "midas.bitstream.download?id=" << id;

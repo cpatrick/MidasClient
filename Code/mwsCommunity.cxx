@@ -225,13 +225,13 @@ bool Community::Fetch()
   parser.AddTag("/rsp/hasAgreement",m_Community->RefAgreement());
   parser.AddTag("/rsp/size",m_Community->GetSize());
   
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  QMutexLocker lock(WebAPI::Instance()->GetMutex());
+  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   
   std::stringstream url;
   url << "midas.community.get?id=" << m_Community->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
+  if(!WebAPI::Instance()->Execute(url.str().c_str()))
     {
-    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   m_Community->SetFetched(true);
@@ -243,14 +243,14 @@ bool Community::FetchTree()
 {
   CommunityXMLParser parser;
   parser.SetCommunity(m_Community);
-   
+
+  QMutexLocker lock(WebAPI::Instance()->GetMutex());
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   
   std::stringstream url;
   url << "midas.community.tree?id=" << m_Community->GetId();
   if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
     {
-    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
@@ -293,13 +293,13 @@ bool Community::Delete()
     }
        
   RestXMLParser parser;
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  QMutexLocker lock(WebAPI::Instance()->GetMutex());
+  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.community.delete?id=" << m_Community->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
+  if(!WebAPI::Instance()->Execute(url.str().c_str()))
     {
-    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
@@ -318,10 +318,11 @@ bool Community::Create()
     midasUtils::EscapeForURL(m_Community->GetDescription())
     << "&links=" << midasUtils::EscapeForURL(m_Community->GetLinks());
 
-  mws::RestXMLParser parser;
-  mws::WebAPI::Instance()->SetPostData(postData.str().c_str());
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  return mws::WebAPI::Instance()->Execute("midas.community.create");
+  RestXMLParser parser;
+  QMutexLocker lock(WebAPI::Instance()->GetMutex());
+  WebAPI::Instance()->SetPostData(postData.str().c_str());
+  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  return WebAPI::Instance()->Execute("midas.community.create");
 }
 
 } // end namespace

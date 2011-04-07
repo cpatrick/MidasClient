@@ -20,7 +20,7 @@ configure_file(
 # --------------------------------------------------------------------------
 # Sources
 set(MIDASRest_SRCS
-
+  mdoAssetstore.h
   mdoBitstream.h
   mdoBitstream.cxx
   mdoCollection.h
@@ -56,8 +56,8 @@ set(MIDASRest_SRCS
   mwsRestXMLParser.cxx
   mwsWebAPI.h
   mwsWebAPI.cxx
-  mwsSettings.h
-  mwsSettings.cxx
+  mwsMirrorHandler.h
+  mwsMirrorHandler.cxx
 
   mdsSQLiteDatabase.h
   mdsSQLiteDatabase.cxx

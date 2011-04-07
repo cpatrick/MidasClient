@@ -103,6 +103,9 @@ protected:
   // Upload a file
   bool UploadFile(const char* url, const char* filename);
 
+  // Get the mutex for locking by friend classes
+  QMutex* GetMutex();
+
   RestAPI*            m_RestAPI;
   RestXMLParser*      m_RestXMLParser;
   std::string         m_APIToken;

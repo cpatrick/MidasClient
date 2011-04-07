@@ -10,6 +10,7 @@
 =========================================================================*/
 #include "mdoBitstream.h"
 #include "mdoItem.h"
+#include "mdoAssetstore.h"
 #include <sstream>
 #include <iostream>
 
@@ -28,6 +29,11 @@ Bitstream::Bitstream()
 Bitstream::~Bitstream()
 {
   delete m_ParentItem;
+  for(std::vector<Assetstore*>::iterator i = m_Locations.begin();
+      i != m_Locations.end(); ++i)
+    {
+    delete *i;
+    }
 }
 
 void Bitstream::Clear()

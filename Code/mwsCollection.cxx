@@ -137,13 +137,13 @@ bool Collection::Fetch()
   parser.AddTag("/rsp/hasAgreement",m_Collection->RefAgreement());
   parser.AddTag("/rsp/size",m_Collection->GetSize());
 
+  QMutexLocker lock(WebAPI::Instance()->GetMutex());
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.collection.get?id=" << m_Collection->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
+  if(!WebAPI::Instance()->Execute(url.str().c_str()))
     {
-    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   m_Collection->SetFetched(true);
@@ -162,7 +162,7 @@ bool Collection::FetchParent()
   m_Collection->SetParentCommunity(parent);
   parent->SetId(m_Collection->GetParentId());
 
-  mws::Community remote;
+  Community remote;
   remote.SetObject(parent);
   return remote.Fetch();
 }
@@ -182,13 +182,13 @@ bool Collection::Delete()
     }
        
   RestXMLParser parser;
+  QMutexLocker lock(WebAPI::Instance()->GetMutex());
   mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.collection.delete?id=" << m_Collection->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
+  if(!WebAPI::Instance()->Execute(url.str().c_str()))
     {
-    std::cout << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
@@ -207,10 +207,11 @@ bool Collection::Create()
     << "&copyright=" <<
     midasUtils::EscapeForURL(m_Collection->GetCopyright());
 
-  mws::RestXMLParser parser;
-  mws::WebAPI::Instance()->SetPostData(postData.str().c_str());
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  return mws::WebAPI::Instance()->Execute("midas.collection.create");
+  RestXMLParser parser;
+  QMutexLocker lock(WebAPI::Instance()->GetMutex());
+  WebAPI::Instance()->SetPostData(postData.str().c_str());
+  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
+  return WebAPI::Instance()->Execute("midas.collection.create");
 }
 
 } // end namespace

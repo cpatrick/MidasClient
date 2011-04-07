@@ -32,6 +32,8 @@ public:
   // Fill the item given the id
   bool Fetch();
   bool FetchParent();
+  // Get all of the assetstore locations of the bitstream
+  bool FetchLocations();
   bool Commit();
   bool Delete();
 
