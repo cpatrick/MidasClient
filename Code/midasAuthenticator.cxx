@@ -46,8 +46,6 @@ bool midasAuthenticator::Login()
     return true;
     }
 
-  mws::RestXMLParser parser;
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   return mws::WebAPI::Instance()->Login(profile.AppName.c_str(), 
     profile.User.c_str(), profile.ApiKey.c_str());
 }

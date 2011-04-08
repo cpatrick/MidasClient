@@ -1,6 +1,5 @@
 #include "CreateProfileUI.h"
 #include "MidasClientGlobal.h"
-#include "mwsSettings.h"
 #include "MIDASDesktopUI.h"
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"

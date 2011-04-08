@@ -16,7 +16,6 @@
 #include "mwsItem.h"
 #include <sstream>
 #include <iostream>
-#include <QMutexLocker>
 #include "mwsRestXMLParser.h"
 #include "mwsWebAPI.h"
 
@@ -137,13 +136,10 @@ bool Bitstream::Fetch()
   parser.AddTag("/rsp/uuid",m_Bitstream->GetUuid());
   parser.AddTag("/rsp/parent",m_Bitstream->GetParent());
   parser.AddTag("/rsp/hasAgreement",m_Bitstream->RefAgreement());
-
-  QMutexLocker lock(WebAPI::Instance()->GetMutex());
-  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   
   std::stringstream url;
   url << "midas.bitstream.get?id=" << m_Bitstream->GetId();
-  if(!WebAPI::Instance()->Execute(url.str().c_str()))
+  if(!WebAPI::Instance()->Execute(url.str().c_str(), &parser))
     {
     return false;
     }
@@ -179,12 +175,9 @@ bool Bitstream::FetchLocations()
   BitstreamLocationXMLParser parser;
   parser.SetBitstream(m_Bitstream);
 
-  QMutexLocker lock(WebAPI::Instance()->GetMutex());
-  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-
   std::stringstream url;
   url << "midas.bitstream.locations?id=" << m_Bitstream->GetId();
-  if(!WebAPI::Instance()->Execute(url.str().c_str()))
+  if(!WebAPI::Instance()->Execute(url.str().c_str(), &parser))
     {
     return false;
     }
@@ -205,10 +198,6 @@ bool Bitstream::Delete()
     return false;
     }
 
-  RestXMLParser parser;
-  QMutexLocker lock(WebAPI::Instance()->GetMutex());
-  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-
   std::stringstream url;
   url << "midas.bitstream.delete?id=" << m_Bitstream->GetId();
   if(!WebAPI::Instance()->Execute(url.str().c_str()))
@@ -216,6 +205,35 @@ bool Bitstream::Delete()
     return false;
     }
   return true;
+}
+
+//-------------------------------------------------------------------
+bool Bitstream::Download()
+{
+  this->FetchLocations();
+
+  if(m_Bitstream->GetLocations().size() > 1)
+    {
+    //TODO handle multiple locations
+    }
+
+  std::stringstream fields;
+  fields << "midas.bitstream.download?id=" << m_Bitstream->GetId();
+  return WebAPI::Instance()->DownloadFile(fields.str().c_str(),
+    m_Bitstream->GetName().c_str());
+}
+
+//-------------------------------------------------------------------
+bool Bitstream::Upload()
+{
+  std::stringstream fields;
+  fields << "midas.upload.bitstream?uuid=" << m_Bitstream->GetUuid() <<
+    "&itemid=" << m_Bitstream->GetParentId() << "&mode=stream&filename=" <<
+    midasUtils::EscapeForURL(m_Bitstream->GetName()) << "&path=" <<
+    midasUtils::EscapeForURL(m_Bitstream->GetName()) << "&size=" <<
+    m_Bitstream->GetSize();
+  return WebAPI::Instance()->UploadFile(fields.str().c_str(),
+    m_Bitstream->GetPath().c_str());
 }
 
 } // end namespace

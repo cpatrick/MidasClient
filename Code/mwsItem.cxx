@@ -144,12 +144,9 @@ bool Item::Fetch()
   parser.AddTag("/rsp/hasAgreement",m_Item->RefAgreement());
   parser.AddTag("/rsp/size",m_Item->GetSize());
   
-  QMutexLocker lock(WebAPI::Instance()->GetMutex());
-  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  
   std::stringstream url;
   url << "midas.item.get?id=" << m_Item->GetId();
-  if(!WebAPI::Instance()->Execute(url.str().c_str()))
+  if(!WebAPI::Instance()->Execute(url.str().c_str(), &parser))
     {
     return false;
     }
@@ -194,10 +191,6 @@ bool Item::Delete()
     std::cerr << "Item::Delete() : Item id not set" << std::endl;
     return false;
     }
-       
-  RestXMLParser parser;
-  QMutexLocker lock(WebAPI::Instance()->GetMutex());
-  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.item.delete?id=" << m_Item->GetId();
@@ -219,11 +212,8 @@ bool Item::Create()
     << "&authors=" << midasUtils::EscapeForURL(m_Item->GetAuthorsString())
     << "&keywords=" << midasUtils::EscapeForURL(m_Item->GetKeywordsString());
 
-  RestXMLParser parser;
-  QMutexLocker lock(WebAPI::Instance()->GetMutex());
-  WebAPI::Instance()->SetPostData(postData.str().c_str());
-  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  return WebAPI::Instance()->Execute("midas.item.create");
+  return WebAPI::Instance()->Execute("midas.item.create", NULL,
+                                     postData.str().c_str());
 }
 
 } // end namespace

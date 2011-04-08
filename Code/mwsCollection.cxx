@@ -137,12 +137,9 @@ bool Collection::Fetch()
   parser.AddTag("/rsp/hasAgreement",m_Collection->RefAgreement());
   parser.AddTag("/rsp/size",m_Collection->GetSize());
 
-  QMutexLocker lock(WebAPI::Instance()->GetMutex());
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-
   std::stringstream url;
   url << "midas.collection.get?id=" << m_Collection->GetId();
-  if(!WebAPI::Instance()->Execute(url.str().c_str()))
+  if(!WebAPI::Instance()->Execute(url.str().c_str(), &parser))
     {
     return false;
     }
@@ -180,10 +177,6 @@ bool Collection::Delete()
     std::cerr << "Collection::Delete() : Collection id not set" << std::endl;
     return false;
     }
-       
-  RestXMLParser parser;
-  QMutexLocker lock(WebAPI::Instance()->GetMutex());
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.collection.delete?id=" << m_Collection->GetId();
@@ -207,11 +200,7 @@ bool Collection::Create()
     << "&copyright=" <<
     midasUtils::EscapeForURL(m_Collection->GetCopyright());
 
-  RestXMLParser parser;
-  QMutexLocker lock(WebAPI::Instance()->GetMutex());
-  WebAPI::Instance()->SetPostData(postData.str().c_str());
-  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  return WebAPI::Instance()->Execute("midas.collection.create");
+  return WebAPI::Instance()->Execute("midas.collection.create", NULL, postData.str().c_str());
 }
 
 } // end namespace

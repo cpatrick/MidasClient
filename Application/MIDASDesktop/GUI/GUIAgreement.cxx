@@ -92,10 +92,7 @@ bool GUIAgreement::checkUserHasAgreed(midasSynchronizer* synch)
      synch->GetResourceType(), atoi(synch->GetServerHandle().c_str()),
      hasAgreed))
     {
-    std::stringstream error;
-    error << "Failed when querying server for user agreement validation: "
-      << mws::WebAPI::Instance()->GetErrorMessage() << std::endl;
-    m_Parent->GetLog()->Error(error.str());
+    m_Parent->GetLog()->Error("Failed when querying server for user agreement validation");
     return true;
     }
   return hasAgreed == "1";

@@ -16,7 +16,6 @@
 
 #include "midasStandardIncludes.h"
 
-#include "mwsSettings.h"
 #include "mdoCommunity.h"
 #include "mwsCommunity.h"
 #include "mwsItem.h"
@@ -401,7 +400,6 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete authorsEditor;
   delete keywordsEditor;
   delete textMetadataEditor;
-  delete mws::WebAPI::Instance()->GetRestAPI();
 }
 
 mds::ResourceUpdateHandler* MIDASDesktopUI::getResourceUpdateHandler()
@@ -1772,7 +1770,7 @@ void MIDASDesktopUI::deleteServerResource(bool val)
   else
     {
     text << "Failed to delete " << typeName << " with id=" << id
-      << " from the server: " << mws::WebAPI::Instance()->GetErrorMessage();
+      << " from the server";
     this->Log->Error(text.str());
     }
 }

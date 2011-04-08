@@ -95,9 +95,6 @@ bool NewResources::Fetch()
   this->m_Uuids.clear();
   parser.AddTag("/rsp/timestamp",this->GetTimestamp());
   
-  QMutexLocker lock(WebAPI::Instance()->GetMutex());
-  WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
-  
   std::stringstream url;
   url << "midas.newresources.get";
 
@@ -105,7 +102,7 @@ bool NewResources::Fetch()
     {
     url << "?since=" << midasUtils::EscapeForURL(m_Since);
     }
-  return WebAPI::Instance()->Execute(url.str().c_str());
+  return WebAPI::Instance()->Execute(url.str().c_str(), &parser);
 }
 
 bool NewResources::FetchTree()

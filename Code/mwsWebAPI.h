@@ -44,12 +44,8 @@ public:
   // Singleton to be used in an application
   static WebAPI* Instance();
 
-  bool DownloadBitstream(int id, const std::string& name);
-  bool UploadBitstream(
-    const std::string& uuid, int parentId,
-    const std::string& name, const std::string& path,
-    const std::string& size);
   bool GetIdByUuid(const std::string& uuid, std::string& id);
+  // TODO This should be a method of mws::Object
   bool CountBitstreams(int type, int id,
                        std::string& count, std::string& size);
   bool GetIdFromPath(const std::string& path, std::string& type,
@@ -61,20 +57,15 @@ public:
   void SetServerUrl(const char* baseurl);
   const char* GetServerUrl();
   
-  // Return the last error code
-  int GetErrorCode();
-  
-  // Return the last error message
-  const char* GetErrorMessage();
-  
   // Set verbose mode
   void SetVerbose(bool verbose);
-  
-  // Get the default rest XML parser
-  RestXMLParser* GetRestXMLParser();
 
   // Set the authenticator
   void SetAuthenticator(midasAuthenticator* auth);
+
+  // Set the default progress handler
+  void SetProgressCallback(curl_progress_callback fprogress,
+                           void* progressData);
   
   // After calling Login, use this to get the API token
   std::string GetAPIToken();
@@ -83,35 +74,35 @@ public:
   bool Login(const char* applicationname,
              const char* email,
              const char* apikey);
-
-  // Return the REST API
-  RestAPI* GetRestAPI() {return m_RestAPI;}
  
   // Check the connection to the MIDAS server
   bool CheckConnection();
 
-protected:
-  // Set the post data (only if you want to POST)
-  void SetPostData(const char* postData);
+  // Cancel the upload or download
+  void Cancel();
 
+protected:
   // Execute a web API command
-  bool Execute(const char* url, bool retry = true);
+  bool Execute(const char* url, RestXMLParser* parser = NULL,
+               const char* postData = NULL,
+               bool retry = true, bool lock = true);
 
   // Download a file
-  bool DownloadFile(const char* url, const char* filename);
+  bool DownloadFile(const char* url, const char* filename,
+                    curl_progress_callback fprogress = NULL,
+                    void* progressData = NULL);
   
   // Upload a file
-  bool UploadFile(const char* url, const char* filename);
+  bool UploadFile(const char* url, const char* filename,
+                  curl_progress_callback fprogress = NULL,
+                  void* progressData = NULL);
 
-  // Get the mutex for locking by friend classes
-  QMutex* GetMutex();
-
-  RestAPI*            m_RestAPI;
-  RestXMLParser*      m_RestXMLParser;
-  std::string         m_APIToken;
-  const char*         m_PostData;
-  midasAuthenticator* m_Authenticator;
-  QMutex              m_Mutex;
+  RestAPI*               m_RestAPI;
+  std::string            m_APIToken;
+  midasAuthenticator*    m_Authenticator;
+  QMutex*                m_Mutex;
+  curl_progress_callback m_Fprogress;
+  void*                  m_ProgressData;
 
   // constructor
   WebAPI();

@@ -459,11 +459,11 @@ void RestAPI::ResetOutputBuffer()
   }
 
 //--------------------------------------------------------------------------------------------------
-void RestAPI::SetProgressCallback(curl_progress_callback fprogress, void * fprogress_data)
-  {
+void RestAPI::SetProgressCallback(curl_progress_callback fprogress, void* fprogress_data)
+{
   this->fprogress = fprogress; 
   this->fprogress_data = fprogress_data; 
-  }
+}
 
 bool RestAPI::Parse(const char* buffer,unsigned long length)
 {

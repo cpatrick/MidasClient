@@ -3,7 +3,6 @@
 #include "MidasClientGlobal.h"
 #include "SignInThread.h"
 
-#include "mwsSettings.h"
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"
 #include "mdsDatabaseAPI.h"

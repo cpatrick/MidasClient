@@ -37,11 +37,16 @@ public:
   bool Commit();
   bool Delete();
 
+  // Download this bitstream
+  bool Download();
+  // Upload this bitstream to the server
+  bool Upload();
+
   void SetObject(mdo::Object* object);
 
 protected:
 
-  mdo::Bitstream*   m_Bitstream;
+  mdo::Bitstream* m_Bitstream;
 };
 
 } //end namespace

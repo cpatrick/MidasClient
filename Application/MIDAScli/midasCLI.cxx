@@ -54,7 +54,6 @@ midasCLI::~midasCLI()
   delete this->TempProfile;
   delete this->Log;
   delete this->Synchronizer;
-  delete mws::WebAPI::Instance()->GetRestAPI();
 }
 
 //-------------------------------------------------------------------

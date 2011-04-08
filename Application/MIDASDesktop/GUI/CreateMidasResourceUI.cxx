@@ -5,7 +5,6 @@
 #include <QMessageBox>
 
 #include "MIDASDesktopUI.h"
-#include "mwsSettings.h"
 #include "midasSynchronizer.h"
 #include "mdsDatabaseAPI.h"
 #include "midasAuthenticator.h"
