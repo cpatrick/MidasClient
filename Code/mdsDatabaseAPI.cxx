@@ -33,7 +33,7 @@ DatabaseAPI::DatabaseAPI(const std::string& path)
     mds::DatabaseInfo::Instance()->GetPath() :
     path;
   this->Log = mds::DatabaseInfo::Instance()->GetLog();
-  this->ResourceUpdateHandler =
+  this->UpdateHandler =
     mds::DatabaseInfo::Instance()->GetResourceUpdateHandler();
 
   this->Database = new mds::SQLiteDatabase();
@@ -104,7 +104,7 @@ int DatabaseAPI::AddResource(int type, std::string uuid,
       {
       case midasResourceType::BITSTREAM:
         id = this->InsertBitstream(path, name);
-        if(id > 0 && this->ResourceUpdateHandler)
+        if(id > 0 && this->UpdateHandler)
           {
           item = new mdo::Item;
           item->SetUuid(parentUuid.c_str());
@@ -114,12 +114,12 @@ int DatabaseAPI::AddResource(int type, std::string uuid,
           bitstream->SetUuid(uuid.c_str());
           bitstream->SetParentItem(item);
           bitstream->SetName(name.c_str());
-          this->ResourceUpdateHandler->AddedResource(bitstream);
+          this->UpdateHandler->AddedResource(bitstream);
           }
         break;
       case midasResourceType::COLLECTION:
         id = this->InsertCollection(name);
-        if(id > 0 && this->ResourceUpdateHandler)
+        if(id > 0 && this->UpdateHandler)
           {
           community = new mdo::Community;
           community->SetUuid(parentUuid.c_str());
@@ -129,12 +129,12 @@ int DatabaseAPI::AddResource(int type, std::string uuid,
           collection->SetUuid(uuid.c_str());
           collection->SetParentCommunity(community);
           collection->SetName(name.c_str());
-          this->ResourceUpdateHandler->AddedResource(collection);
+          this->UpdateHandler->AddedResource(collection);
           }
         break;
       case midasResourceType::COMMUNITY:
         id = this->InsertCommunity(name);
-        if(id > 0 && this->ResourceUpdateHandler)
+        if(id > 0 && this->UpdateHandler)
           {
           community = new mdo::Community;
           if(parentUuid != "")
@@ -151,12 +151,12 @@ int DatabaseAPI::AddResource(int type, std::string uuid,
           community->SetUuid(uuid.c_str());
           community->SetId(id);
           community->SetName(name.c_str());
-          this->ResourceUpdateHandler->AddedResource(community);
+          this->UpdateHandler->AddedResource(community);
           }
         break;
       case midasResourceType::ITEM:
         id = this->InsertItem(name);
-        if(id > 0 && this->ResourceUpdateHandler)
+        if(id > 0 && this->UpdateHandler)
           {
           collection = new mdo::Collection;
           collection->SetUuid(parentUuid.c_str());
@@ -166,7 +166,7 @@ int DatabaseAPI::AddResource(int type, std::string uuid,
           item->SetUuid(uuid.c_str());
           item->SetParentCollection(collection);
           item->SetTitle(name.c_str());
-          this->ResourceUpdateHandler->AddedResource(item);
+          this->UpdateHandler->AddedResource(item);
           }
         break;
       default:
@@ -738,9 +738,9 @@ bool DatabaseAPI::DeleteResource(std::string uuid, bool deleteFiles)
       mdsComm.SetObject(comm);
       mdsComm.SetPath(record.Path);
       ok = mdsComm.Delete(deleteFiles);
-      if(ok && this->ResourceUpdateHandler)
+      if(ok && this->UpdateHandler)
         {
-        this->ResourceUpdateHandler->DeletedResource(comm);
+        this->UpdateHandler->DeletedResource(comm);
         }
       delete comm;
       break;
@@ -751,9 +751,9 @@ bool DatabaseAPI::DeleteResource(std::string uuid, bool deleteFiles)
       mdsColl.SetObject(coll);
       mdsColl.SetPath(record.Path);
       ok = mdsColl.Delete(deleteFiles);
-      if(ok && this->ResourceUpdateHandler)
+      if(ok && this->UpdateHandler)
         {
-        this->ResourceUpdateHandler->DeletedResource(coll);
+        this->UpdateHandler->DeletedResource(coll);
         }
       delete coll;
       break;
@@ -764,9 +764,9 @@ bool DatabaseAPI::DeleteResource(std::string uuid, bool deleteFiles)
       mdsItem.SetObject(item);
       mdsItem.SetPath(record.Path);
       ok = mdsItem.Delete(deleteFiles);
-      if(ok && this->ResourceUpdateHandler)
+      if(ok && this->UpdateHandler)
         {
-        this->ResourceUpdateHandler->DeletedResource(item);
+        this->UpdateHandler->DeletedResource(item);
         }
       delete item;
       break;
@@ -777,9 +777,9 @@ bool DatabaseAPI::DeleteResource(std::string uuid, bool deleteFiles)
       mdsBitstream.SetObject(bitstream);
       mdsBitstream.SetPath(record.Path);
       ok = mdsBitstream.Delete(deleteFiles);
-      if(ok && this->ResourceUpdateHandler)
+      if(ok && this->UpdateHandler)
         {
-        this->ResourceUpdateHandler->DeletedResource(bitstream);
+        this->UpdateHandler->DeletedResource(bitstream);
         }
       delete bitstream;
       break;

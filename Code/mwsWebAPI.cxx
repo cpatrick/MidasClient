@@ -10,6 +10,7 @@
 =========================================================================*/
 #include "mwsWebAPI.h"
 #include "mwsRestXMLParser.h"
+#include "mwsMirrorHandler.h"
 #include "mwsBitstream.h"
 #include "mdoBitstream.h"
 #include "midasAuthenticator.h"
@@ -28,6 +29,7 @@ WebAPI::WebAPI()
   m_RestAPI->Initialize();
   m_Mutex = new QMutex(QMutex::Recursive);
   m_Authenticator = NULL;
+  m_MirrorHandler = NULL;
 }
 
 /** Destructor */
@@ -47,6 +49,16 @@ void WebAPI::SetServerUrl(const char* baseurl)
 const char* WebAPI::GetServerUrl()
 {
   return m_RestAPI->GetServerUrl();
+}
+
+MirrorHandler* WebAPI::GetMirrorHandler()
+{
+  return m_MirrorHandler;
+}
+
+void WebAPI::SetMirrorHandler(MirrorHandler* handler)
+{
+  m_MirrorHandler = handler;
 }
 
 void WebAPI::SetAuthenticator(midasAuthenticator* auth)
@@ -93,7 +105,7 @@ void WebAPI::Cancel()
 
 /** Execute the command */
 bool WebAPI::Execute(const char* url, RestXMLParser* parser,
-                     const char* postData, bool retry, bool lock)
+                     const char* postData, bool retry)
 {
   QMutexLocker locker(m_Mutex);
   bool defaultParser = parser == NULL;

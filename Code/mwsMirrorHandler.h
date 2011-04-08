@@ -14,20 +14,31 @@
 
 #include "midasStandardIncludes.h"
 
+namespace mdo {
+  class Bitstream;
+  class Assetstore;
+}
+
+namespace mws {
 /**
  * Abstract class which will receive a callback anytime a
  * bitstream about to be pulled is mirrored in multiple locations
  */
-class ResourceUpdateHandler
+class MirrorHandler
 {
 public:
-  ResourceUpdateHandler() {}
-  virtual ~ResourceUpdateHandler() {}
+  MirrorHandler() {}
+  virtual ~MirrorHandler() {}
 
-  virtual void AddedResource(mdo::Object* resource) = 0;
-  virtual void DeletedResource(mdo::Object* resource) = 0;
-  virtual void UpdatedResource(mdo::Object* resource) = 0;
-
+  /**
+   * This function takes a bitstream with multiple locations as an argument.
+   * It should do one of two things:
+   * 1) Present the user with a list of the locations and let them choose one.
+   * 2) Automatically choose one for them, either randomly or intelligently.
+   * It should return a pointer to the chosen location object.
+   */
+  virtual mdo::Assetstore* HandleMirroredBitstream(
+    mdo::Bitstream* resource) = 0;
 };
 
 } //end namespace

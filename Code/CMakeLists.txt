@@ -57,7 +57,6 @@ set(MIDASRest_SRCS
   mwsWebAPI.h
   mwsWebAPI.cxx
   mwsMirrorHandler.h
-  mwsMirrorHandler.cxx
 
   mdsSQLiteDatabase.h
   mdsSQLiteDatabase.cxx

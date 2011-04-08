@@ -198,7 +198,7 @@ protected:
 
   SQLiteDatabase* Database;
   std::string DatabasePath;
-  ResourceUpdateHandler* ResourceUpdateHandler;
+  ResourceUpdateHandler* UpdateHandler;
 };
 
 } //end namespace

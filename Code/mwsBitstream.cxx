@@ -18,6 +18,7 @@
 #include <iostream>
 #include "mwsRestXMLParser.h"
 #include "mwsWebAPI.h"
+#include "mwsMirrorHandler.h"
 
 namespace mws{
 
@@ -212,13 +213,17 @@ bool Bitstream::Download()
 {
   this->FetchLocations();
 
-  if(m_Bitstream->GetLocations().size() > 1)
-    {
-    //TODO handle multiple locations
-    }
-
   std::stringstream fields;
   fields << "midas.bitstream.download?id=" << m_Bitstream->GetId();
+
+  if(m_Bitstream->GetLocations().size() > 1 &&
+    WebAPI::Instance()->GetMirrorHandler())
+    {
+    mdo::Assetstore* location =
+      WebAPI::Instance()->GetMirrorHandler()->HandleMirroredBitstream(
+      m_Bitstream);
+    fields << "&location=" << location->GetId();
+    }
   return WebAPI::Instance()->DownloadFile(fields.str().c_str(),
     m_Bitstream->GetName().c_str());
 }

@@ -26,13 +26,14 @@ class midasAuthenticator;
 namespace mws
 {
 
+class MirrorHandler;
 class RestXMLParser;
 
 #define MWS_CONTROLLER_CLASS friend class
 
 class WebAPI : public midasLogAware
 {
-  // All of the web service controllers should be able to call Execute/Upload/Download
+  // All of the web api controllers need to call Execute/Upload/Download
   MWS_CONTROLLER_CLASS Community;
   MWS_CONTROLLER_CLASS Collection;
   MWS_CONTROLLER_CLASS Item;
@@ -45,7 +46,7 @@ public:
   static WebAPI* Instance();
 
   bool GetIdByUuid(const std::string& uuid, std::string& id);
-  // TODO This should be a method of mws::Object
+  // TODO This should probably be a method of mws::Object
   bool CountBitstreams(int type, int id,
                        std::string& count, std::string& size);
   bool GetIdFromPath(const std::string& path, std::string& type,
@@ -56,6 +57,10 @@ public:
   // Set the REST API URL
   void SetServerUrl(const char* baseurl);
   const char* GetServerUrl();
+
+  // Set the mirror handler
+  void SetMirrorHandler(MirrorHandler* handler);
+  MirrorHandler* GetMirrorHandler();
   
   // Set verbose mode
   void SetVerbose(bool verbose);
@@ -85,7 +90,7 @@ protected:
   // Execute a web API command
   bool Execute(const char* url, RestXMLParser* parser = NULL,
                const char* postData = NULL,
-               bool retry = true, bool lock = true);
+               bool retry = true);
 
   // Download a file
   bool DownloadFile(const char* url, const char* filename,
@@ -97,6 +102,7 @@ protected:
                   curl_progress_callback fprogress = NULL,
                   void* progressData = NULL);
 
+  MirrorHandler*         m_MirrorHandler;
   RestAPI*               m_RestAPI;
   std::string            m_APIToken;
   midasAuthenticator*    m_Authenticator;
