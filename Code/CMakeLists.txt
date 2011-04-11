@@ -20,81 +20,40 @@ configure_file(
 # --------------------------------------------------------------------------
 # Sources
 set(MIDASRest_SRCS
-  mdoAssetstore.h
-  mdoBitstream.h
   mdoBitstream.cxx
-  mdoCollection.h
   mdoCollection.cxx
-  mdoCommunity.h
   mdoCommunity.cxx
-  mdoItem.h
   mdoItem.cxx
-  mdoObject.h
-  mdoProxy.h
   mdoProxy.cxx
-  mdoProxyInterface.h
   mdoProxyInterface.cxx
 
-  mwsObject.h
-  mwsBitstream.h
   mwsBitstream.cxx
-  mwsCollection.h
   mwsCollection.cxx
-  mwsCommunity.h
   mwsCommunity.cxx
-  mwsNewResources.h
   mwsNewResources.cxx
-  mwsTreePath.h
   mwsTreePath.cxx
-  mwsItem.h
   mwsItem.cxx
-  mwsSearch.h
   mwsSearch.cxx
-  mwsRestAPI.h
   mwsRestAPI.cxx
-  mwsRestXMLParser.h
   mwsRestXMLParser.cxx
-  mwsWebAPI.h
   mwsWebAPI.cxx
-  mwsMirrorHandler.h
 
-  mdsSQLiteDatabase.h
   mdsSQLiteDatabase.cxx
   mdsDatabaseAPI.cxx
-  mdsDatabaseAPI.h
   mdsDatabaseInfo.cxx
-  mdsDatabaseInfo.h
-  mdsCommunity.h
   mdsCommunity.cxx
-  mdsCollection.h
   mdsCollection.cxx
-  mdsItem.h
   mdsItem.cxx
-  mdsBitstream.h
   mdsBitstream.cxx
-  mdsObject.h
-  mdsResourceUpdateHandler.h
 )
 
 set(MIDASSynch_SRCS
-  midasAgreementHandler.h
   midasAuthenticator.cxx
-  midasAuthenticator.h
   midasDotProgressReporter.cxx
-  midasDotProgressReporter.h
-  midasFileOverwriteHandler.h
-  midasLog.h
-  midasLogAware.h
-  midasProgressReporter.h
-  midasStandardIncludes.h
   midasStatus.cxx
-  midasStatus.h
   midasStdOutLog.cxx
-  midasStdOutLog.h
   midasSynchronizer.cxx
-  midasSynchronizer.h
   midasUtils.cxx
-  midasUtils.h
 )
 
 set(midas_db "${MIDASCPP_BINARY_DIR}/midas.db")

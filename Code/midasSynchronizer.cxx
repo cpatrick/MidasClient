@@ -510,7 +510,7 @@ bool midasSynchronizer::PullBitstream(int parentId)
     bool recurse = this->Recursive;
     this->Recursive = false;
     std::string handle = this->ServerHandle;
-    this->ServerHandle = bitstream.GetParent();
+    this->ServerHandle = bitstream.GetParentStr();
     this->ResourceType = midasResourceType::ITEM;
 
     this->PullItem(NO_PARENT);
@@ -677,7 +677,7 @@ bool midasSynchronizer::PullCollection(int parentId)
     bool recurse = this->Recursive;
     this->Recursive = false;
     std::string handle = this->ServerHandle;
-    this->ServerHandle = collection->GetParent();
+    this->ServerHandle = collection->GetParentStr();
     this->ResourceType = midasResourceType::COMMUNITY;
 
     this->PullCommunity(NO_PARENT);
@@ -823,7 +823,7 @@ bool midasSynchronizer::PullCommunity(int parentId)
     bool recurse = this->Recursive;
     this->Recursive = false;
     std::string handle = this->ServerHandle;
-    this->ServerHandle = community->GetParent();
+    this->ServerHandle = community->GetParentStr();
 
     this->PullCommunity(NO_PARENT);
     CHANGE_DIR(this->LastDir.c_str());
@@ -957,7 +957,7 @@ bool midasSynchronizer::PullItem(int parentId)
     bool recurse = this->Recursive;
     this->Recursive = false;
     std::string handle = this->ServerHandle;
-    this->ServerHandle = item->GetParent();
+    this->ServerHandle = item->GetParentStr();
     this->ResourceType = midasResourceType::COLLECTION;
     this->PullCollection(NO_PARENT);
     CHANGE_DIR(this->LastDir.c_str());
@@ -1165,15 +1165,11 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
     this->Progress->SetMessage(name);
     this->Progress->ResetProgress();
     }
-
-  std::stringstream parentStr;
-  parentStr << record->Parent;
-  bitstream.SetParent(parentStr.str());
+  bitstream.SetParentId(record->Parent);
   bitstream.SetUuid(record->Uuid.c_str());
 
   mws::Bitstream mwsBitstream;
   mwsBitstream.SetObject(&bitstream);
-  bool ok = mwsBitstream.Upload();
 
   if(mwsBitstream.Upload())
     {
@@ -1182,14 +1178,15 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
     std::stringstream text;
     text << "Pushed bitstream " << name << std::endl;
     Log->Message(text.str());
+    return true;
     }
   else
     {
     std::stringstream text;
     text << "Failed to push bitstream " << name << std::endl;
     Log->Error(text.str());
+    return false;
     }
-  return ok;
 }
 
 //-------------------------------------------------------------------
@@ -1221,6 +1218,8 @@ bool midasSynchronizer::PushCollection(midasResourceRecord* record)
     Log->Error(text.str());
     return false;
     }
+  coll.SetUuid(record->Uuid.c_str());
+  coll.SetParentId(record->Parent);
 
   this->Progress->SetIndeterminate();
   std::stringstream status;
@@ -1271,6 +1270,8 @@ bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
     {
     return false;
     }
+  comm.SetUuid(record->Uuid.c_str());
+  comm.SetParentId(record->Parent);
 
   this->Progress->SetIndeterminate();
   std::stringstream status;
@@ -1330,9 +1331,8 @@ bool midasSynchronizer::PushItem(midasResourceRecord* record)
     Log->Error(text.str());
     return false;
     }
-  std::stringstream parentId;
-  parentId << record->Parent; //int to string
-  item.SetParent(parentId.str());
+  item.SetParentId(record->Parent);
+  item.SetUuid(record->Uuid.c_str());
 
   this->Progress->SetIndeterminate();
   std::stringstream status;

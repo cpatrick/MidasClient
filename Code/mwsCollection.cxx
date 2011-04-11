@@ -133,7 +133,7 @@ bool Collection::Fetch()
   parser.AddTag("/rsp/copyright",m_Collection->GetCopyright());
   parser.AddTag("/rsp/introductory",m_Collection->GetIntroductoryText());
   parser.AddTag("/rsp/uuid",m_Collection->GetUuid());
-  parser.AddTag("/rsp/parent",m_Collection->GetParent());
+  parser.AddTag("/rsp/parent",m_Collection->GetParentStr());
   parser.AddTag("/rsp/hasAgreement",m_Collection->RefAgreement());
   parser.AddTag("/rsp/size",m_Collection->GetSize());
 

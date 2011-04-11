@@ -37,6 +37,7 @@
 #include "GUIFileOverwriteHandler.h"
 #include "GUILogger.h"
 #include "GUIProgress.h"
+#include "GUIMirrorHandler.h"
 #include "Utils.h"
 #include "ResourceEdit.h"
 #include "ButtonDelegate.h"
@@ -311,6 +312,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- setup client members and logging ----
   this->m_synch = new midasSynchronizer();
   this->m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
+  this->m_mirrorHandler = new GUIMirrorHandler(this);
   this->m_progress = new GUIProgress(this->progressBar);
   this->Log = new GUILogger(this);
   this->m_synch->SetLog(this->Log);
@@ -318,6 +320,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   mds::DatabaseInfo::Instance()->SetResourceUpdateHandler(m_resourceUpdateHandler);
   mws::WebAPI::Instance()->SetLog(this->Log);
   mws::WebAPI::Instance()->SetAuthenticator(m_synch->GetAuthenticator());
+  mws::WebAPI::Instance()->SetMirrorHandler(m_mirrorHandler);
   this->m_synch->SetOverwriteHandler(this->m_overwriteHandler);
   this->m_synch->SetProgressReporter(m_progress);
   this->m_signIn = false;
@@ -1554,14 +1557,9 @@ void MIDASDesktopUI::pushResources()
     }
   delete m_SynchronizerThread;
 
-  midasSynchronizer* synchronizer = new midasSynchronizer;
-  synchronizer->SetLog(this->m_synch->GetLog());
-  synchronizer->SetProgressReporter(this->m_progress);
-  synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
-
+  m_synch->SetOperation(midasSynchronizer::OPERATION_PUSH);
   m_SynchronizerThread = new SynchronizerThread;
-  m_SynchronizerThread->SetSynchronizer(synchronizer);
-  m_SynchronizerThread->SetDelete(true); //delete this synchronizer object when done
+  m_SynchronizerThread->SetSynchronizer(m_synch);
 
   connect(m_SynchronizerThread, SIGNAL(enableActions(bool) ),
     this, SLOT(enableActions(bool) ) );

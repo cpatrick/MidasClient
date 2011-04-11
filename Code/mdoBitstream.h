@@ -30,11 +30,6 @@ public:
 
   void Clear();
 
-  // Set/Get the ID of the parent
-  void SetParent(std::string id) { m_Parent = id; }
-  std::string & GetParent() {return m_Parent;}
-  const int GetParentId() {return atoi(m_Parent.c_str());}
-
   // Set/Get the name of bitstream
   void SetName(const char* name) { m_Name = name; }
   std::string & GetName() {return m_Name;}
@@ -56,7 +51,6 @@ public:
 
 protected:
 
-  std::string              m_Parent;
   std::string              m_Name;
   std::string              m_Path;
   std::vector<Assetstore*> m_Locations;

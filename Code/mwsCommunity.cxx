@@ -115,7 +115,7 @@ public:
         }
       if(!strcmp(name,"parentid"))
         {
-        m_Collection->SetParent(m_CurrentValue.c_str());
+        m_Collection->SetParentId(m_CurrentValue.c_str());
         }
       if(!strcmp(name,"uuid"))
         {
@@ -139,7 +139,7 @@ public:
         }
       if(!strcmp(name,"parentid"))
         {
-        m_Community->SetParent(m_CurrentValue.c_str());
+        m_Community->SetParentId(m_CurrentValue.c_str());
         }
       if(!strcmp(name,"uuid"))
         {
@@ -221,7 +221,7 @@ bool Community::Fetch()
   parser.AddTag("/rsp/copyright",m_Community->GetCopyright());
   parser.AddTag("/rsp/introductory",m_Community->GetIntroductoryText());
   parser.AddTag("/rsp/uuid",m_Community->GetUuid());
-  parser.AddTag("/rsp/parent",m_Community->GetParent());
+  parser.AddTag("/rsp/parent",m_Community->GetParentStr());
   parser.AddTag("/rsp/hasAgreement",m_Community->RefAgreement());
   parser.AddTag("/rsp/size",m_Community->GetSize());
   

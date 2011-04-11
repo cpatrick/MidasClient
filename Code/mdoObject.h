@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include "mdoProxy.h"
+#include "midasStandardIncludes.h"
 
 namespace mdo{
 
@@ -44,6 +45,16 @@ public:
   // Set/Get ID
   void SetId(int id) { m_Id = id; }
   const int GetId() {return m_Id; }
+
+  // Set/Get the ID of the parent
+  void SetParentId(std::string id) { m_Parent = id; }
+  void SetParentId(int id) {
+    std::stringstream str;
+    str << id;
+    m_Parent = str.str();
+    }
+  std::string & GetParentStr() {return m_Parent;}
+  const int GetParentId() {return atoi(m_Parent.c_str());}
 
     // Set/Get the uuid
   void SetUuid(const char* uuid) { m_Uuid = uuid; }
@@ -81,6 +92,7 @@ protected:
   std::string m_HasAgreement;
   std::string m_Uuid;
   std::string m_Size;
+  std::string m_Parent;
   int m_Id;
 };
 

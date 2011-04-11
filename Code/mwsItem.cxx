@@ -139,7 +139,7 @@ bool Item::Fetch()
   parser.AddTag("/rsp/title",m_Item->GetTitle());
   parser.AddTag("/rsp/abstract",m_Item->GetAbstract());
   parser.AddTag("/rsp/uuid",m_Item->GetUuid());
-  parser.AddTag("/rsp/parent",m_Item->GetParent());
+  parser.AddTag("/rsp/parent",m_Item->GetParentStr());
   parser.AddTag("/rsp/description",m_Item->GetDescription());
   parser.AddTag("/rsp/hasAgreement",m_Item->RefAgreement());
   parser.AddTag("/rsp/size",m_Item->GetSize());

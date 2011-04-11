@@ -32,6 +32,11 @@ bool midasAuthenticator::Login()
   mds::DatabaseAPI db;
   midasAuthProfile profile = db.GetAuthProfile(this->Profile);
 
+  if(profile.IsAnonymous())
+    {
+    return true;
+    }
+
   if(profile.Name == "")
     {
     std::stringstream text;
@@ -39,11 +44,6 @@ bool midasAuthenticator::Login()
       "\"create_profile\" command to add a profile." << std::endl;
     Log->Error(text.str());
     return false;
-    }
-
-  if(profile.IsAnonymous())
-    {
-    return true;
     }
 
   return mws::WebAPI::Instance()->Login(profile.AppName.c_str(), 

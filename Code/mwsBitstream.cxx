@@ -135,7 +135,7 @@ bool Bitstream::Fetch()
   parser.AddTag("/rsp/name",m_Bitstream->GetName());
   parser.AddTag("/rsp/size",m_Bitstream->GetSize());
   parser.AddTag("/rsp/uuid",m_Bitstream->GetUuid());
-  parser.AddTag("/rsp/parent",m_Bitstream->GetParent());
+  parser.AddTag("/rsp/parent",m_Bitstream->GetParentStr());
   parser.AddTag("/rsp/hasAgreement",m_Bitstream->RefAgreement());
   
   std::stringstream url;
@@ -222,7 +222,10 @@ bool Bitstream::Download()
     mdo::Assetstore* location =
       WebAPI::Instance()->GetMirrorHandler()->HandleMirroredBitstream(
       m_Bitstream);
-    fields << "&location=" << location->GetId();
+    if(location != NULL)
+      {
+      fields << "&location=" << location->GetId();
+      }
     }
   return WebAPI::Instance()->DownloadFile(fields.str().c_str(),
     m_Bitstream->GetName().c_str());

@@ -50,6 +50,10 @@ namespace mds {
   class ResourceUpdateHandler;
 }
 
+namespace mws {
+  class MirrorHandler;
+}
+
 extern "C" {
   static int progress_transfer_callback(void* data, double dltotal, double dlnow, double ultotal, double ulnow); 
 }
@@ -265,6 +269,7 @@ private:
   std::vector<std::string>    m_dirtyUuids;
   std::vector<mdo::Object*>   m_SearchResults;
   mds::ResourceUpdateHandler* m_resourceUpdateHandler;
+  mws::MirrorHandler*         m_mirrorHandler;
 
   // ----------- threads -----------------
   RefreshServerTreeThread*    m_RefreshThread;
