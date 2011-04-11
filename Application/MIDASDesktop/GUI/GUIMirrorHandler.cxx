@@ -1,5 +1,7 @@
 #include "GUIMirrorHandler.h"
 #include "MirrorPickerUI.h"
+#include "mdoAssetstore.h"
+#include "mdoBitstream.h"
 
 #if defined(_WIN32)
 # include <windows.h>
@@ -20,6 +22,22 @@ mdo::Assetstore* GUIMirrorHandler::HandleMirroredBitstream(
   mdo::Bitstream* bitstream)
 {
   m_Done = false;
+
+  // If the user has already selected to always use certain assetstores,
+  // we will skip the dialog and use it if possible
+  for(std::set<int>::iterator i = m_PreferredLocations.begin();
+      i != m_PreferredLocations.end(); ++i)
+    {
+    for(std::vector<mdo::Assetstore*>::iterator loc =
+        bitstream->GetLocations().begin();
+        loc != bitstream->GetLocations().end(); ++loc)
+      {
+      if((*loc)->GetId() == *i)
+        {
+        return *loc;
+        }
+      }
+    }
   emit prompt(bitstream);
 
   while(!m_Done)
@@ -30,8 +48,12 @@ mdo::Assetstore* GUIMirrorHandler::HandleMirroredBitstream(
       usleep(25000);
     #endif
     }
-  //TODO handle apply to all functionality
-  return m_MirrorDialog->GetSelectedLocation();
+  mdo::Assetstore* selectedLocation = m_MirrorDialog->GetSelectedLocation();
+  if(m_MirrorDialog->ApplyToAll())
+    {
+    m_PreferredLocations.insert(selectedLocation->GetId());
+    }
+  return selectedLocation;
 }
 
 void GUIMirrorHandler::dialogAccepted()
