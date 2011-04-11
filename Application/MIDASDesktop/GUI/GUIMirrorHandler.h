@@ -22,13 +22,19 @@ class GUIMirrorHandler : public QObject, public mws::MirrorHandler
 {
   Q_OBJECT
 public:
-  GUIMirrorHandler(QWidget* m_ParentWidget);
+  GUIMirrorHandler(MirrorPickerUI* dialog);
   ~GUIMirrorHandler();
 
+public slots:
+  void dialogAccepted();
   mdo::Assetstore* HandleMirroredBitstream(mdo::Bitstream* bitstream);
+
+signals:
+  void prompt(mdo::Bitstream* bitstream);
+
 protected:
-  QWidget*        m_ParentWidget;
   MirrorPickerUI* m_MirrorDialog;
+  bool            m_Done;
 };
 
 #endif

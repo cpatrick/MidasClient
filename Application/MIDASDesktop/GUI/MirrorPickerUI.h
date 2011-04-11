@@ -3,11 +3,14 @@
  
 #include "ui_MirrorPickerUI.h"
 #include "midasStandardIncludes.h"
+#include <QRadioButton>
 
 namespace mdo {
   class Assetstore;
   class Bitstream;
 }
+
+typedef std::map<mdo::Assetstore*, QRadioButton*> MirrorMap;
 
 /**
  * Modal dialog that presents the user with a list of available mirrors
@@ -27,6 +30,9 @@ public slots:
 
   int exec(mdo::Bitstream* bitstream);
 protected:
+  void ClearMirrorList();
+
+  MirrorMap m_Mirrors;
   
 };
 

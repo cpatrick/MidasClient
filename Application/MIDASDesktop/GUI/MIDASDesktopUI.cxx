@@ -56,6 +56,7 @@
 #include "ProcessingStatusUI.h"
 #include "PullUI.h"
 #include "SignInUI.h"
+#include "MirrorPickerUI.h"
 // ------------- Dialogs -------------
 
 // ------------- Threads -------------
@@ -134,6 +135,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   m_overwriteHandler =         new GUIFileOverwriteHandler( this );
   dlg_overwriteUI =            new FileOverwriteUI( this,
     dynamic_cast<GUIFileOverwriteHandler*>(this->m_overwriteHandler));
+  dlg_mirrorPickerUI =         new MirrorPickerUI( this );
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
@@ -312,7 +314,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- setup client members and logging ----
   this->m_synch = new midasSynchronizer();
   this->m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
-  this->m_mirrorHandler = new GUIMirrorHandler(this);
+  this->m_mirrorHandler = new GUIMirrorHandler(dlg_mirrorPickerUI);
   this->m_progress = new GUIProgress(this->progressBar);
   this->Log = new GUILogger(this);
   this->m_synch->SetLog(this->Log);
@@ -337,12 +339,18 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgressTotal(double, double) ), this, SLOT( totalProgressUpdate(double, double) ) );
   // ------------- Progress bar ------------------------
 
+  // ------------- Mirror handler ----------------------
+  connect(dynamic_cast<GUIMirrorHandler*>(m_mirrorHandler), SIGNAL( prompt(mdo::Bitstream*) ),
+    dlg_mirrorPickerUI, SLOT( exec(mdo::Bitstream*) ) );
+  connect(dlg_mirrorPickerUI, SIGNAL( accepted() ),
+    dynamic_cast<GUIMirrorHandler*>(m_mirrorHandler), SLOT( dialogAccepted() ) );
+  // ------------- Mirror handler ----------------------
+
   // ------------- Handle stored settings -------------
   QSettings settings("Kitware", "MIDASDesktop");
   std::string lastDatabase =
     settings.value("lastDatabase", "").toString().toStdString();
   this->setLocalDatabase(lastDatabase);
-
   // ------------- Handle stored settings -------------
 }
 
@@ -371,6 +379,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_overwriteUI;
   delete dlg_deleteClientResourceUI;
   delete dlg_deleteServerResourceUI;
+  delete dlg_mirrorPickerUI;
   delete stateLabel;
   delete connectLabel;
   delete cancelButton;
@@ -380,6 +389,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete m_synch;
   delete m_agreementHandler;
   delete m_overwriteHandler;
+  delete m_mirrorHandler;
   if(m_RefreshThread && m_RefreshThread->isRunning())
     {
     m_RefreshThread->terminate();

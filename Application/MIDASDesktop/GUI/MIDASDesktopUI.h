@@ -25,6 +25,7 @@ class AddAuthorUI;
 class AddKeywordUI;
 class AgreementUI;
 class FileOverwriteUI;
+class MirrorPickerUI;
 
 class midasSynchronizer;
 class midasProgressReporter;
@@ -236,6 +237,7 @@ private:
   AddKeywordUI*               dlg_addKeywordUI;
   AgreementUI*                dlg_agreementUI;
   FileOverwriteUI*            dlg_overwriteUI;
+  MirrorPickerUI*             dlg_mirrorPickerUI;
   // ------------- UI Dialogs -------------
 
   // ------------- status bar -------------

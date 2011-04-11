@@ -79,7 +79,6 @@ public:
       {
       m_Location->SetEnabled(bool(atoi(m_CurrentValue.c_str())));
       }
-    m_Bitstream->AddLocation(m_Location);
     RestXMLParser::EndElement(name);
     }
 
