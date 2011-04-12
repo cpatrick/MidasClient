@@ -34,6 +34,7 @@ class midasFileOverwriteHandler;
 class ButtonDelegate;
 class TextEditDelegate;
 
+class AddBitstreamsThread;
 class RefreshServerTreeThread;
 class SynchronizerThread;
 class SearchThread;
@@ -189,6 +190,7 @@ public slots:
   void addBitstream();
   void addBitstreams(const MidasItemTreeItem* parentItem,
                      const QStringList & files);
+  void addBitstreamsProgress(int current, int total, const QString& message);
   void pullRecursive(int type, int id);
   void viewInBrowser();
   void viewDirectory();
@@ -279,6 +281,7 @@ private:
   SearchThread*               m_SearchThread;
   ReadDatabaseThread*         m_ReadDatabaseThread;
   PollFilesystemThread*       m_PollFilesystemThread;
+  AddBitstreamsThread*        m_AddBitstreamsThread;
   QFutureWatcher<bool>        m_CreateDBWatcher;
   // ----------- threads -----------------
 };

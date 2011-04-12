@@ -774,8 +774,8 @@ bool DatabaseAPI::DeleteResource(std::string uuid, bool deleteFiles)
       bitstream = new mdo::Bitstream;
       bitstream->SetId(record.Id);
       bitstream->SetUuid(uuid.c_str());
+      bitstream->SetPath(record.Path);
       mdsBitstream.SetObject(bitstream);
-      mdsBitstream.SetPath(record.Path);
       ok = mdsBitstream.Delete(deleteFiles);
       if(ok && this->UpdateHandler)
         {

@@ -310,8 +310,8 @@ bool Item::Delete(bool deleteOnDisk)
     mdo::Bitstream* bitstream = new mdo::Bitstream;
     bitstream->SetId(*i);
     bitstream->SetUuid(db.GetUuid(midasResourceType::BITSTREAM, *i).c_str());
+    bitstream->SetPath(db.GetRecordByUuid(bitstream->GetUuid()).Path);
     mdsBitstream.SetObject(bitstream);
-    mdsBitstream.SetPath(db.GetRecordByUuid(bitstream->GetUuid()).Path);
     ok &= mdsBitstream.Delete(deleteOnDisk);
     delete bitstream;
 

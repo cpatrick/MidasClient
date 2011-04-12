@@ -65,6 +65,7 @@
 #include "SearchThread.h"
 #include "ReadDatabaseThread.h"
 #include "PollFilesystemThread.h"
+#include "AddBitstreamsThread.h"
 // ------------- Threads -------------
 
 // ------------- TreeModel / TreeView -------------
@@ -88,8 +89,8 @@
 MIDASDesktopUI::MIDASDesktopUI()
 {
   setupUi(this); // this sets up GUI
-  int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
-  srand (time); //init random number generator
+  unsigned int currTime = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
+  srand (currTime); //init random number generator
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
 
   // center the main window
@@ -308,6 +309,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   m_SearchThread = NULL;
   m_ReadDatabaseThread = NULL;
   m_PollFilesystemThread = NULL;
+  m_AddBitstreamsThread = NULL;
   connect(&m_CreateDBWatcher, SIGNAL(finished()), this, SLOT(newDBFinished()));
   // ------------- thread init -----------------
 
@@ -1222,52 +1224,34 @@ void MIDASDesktopUI::addBitstream()
 void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
                                    const QStringList & files)
 {
-  m_PollFilesystemThread->Pause();
-  for(QStringList::const_iterator i = files.begin(); i != files.end(); ++i)
+  if(m_AddBitstreamsThread && m_AddBitstreamsThread->isRunning())
     {
-    std::string path = i->toStdString();
-    kwsys::SystemTools::ConvertToUnixSlashes(path);
-    std::string name = kwsys::SystemTools::GetFilenameName(path.c_str());
-    std::string uuid = midasUtils::GenerateUUID();
-    
-    mds::DatabaseAPI db;
-    if(db.GetSettingBool(mds::DatabaseAPI::UNIFIED_TREE))
-      {
-      std::string copyTo = db.GetRecordByUuid(parentItem->getUuid()).Path;
-      copyTo += "/" + name;
-      kwsys::SystemTools::CopyAFile(path.c_str(), copyTo.c_str());
-      path = copyTo;
-      }
-
-    std::string parentUuid = db.GetUuid(
-      midasResourceType::ITEM, parentItem->getItem()->GetId());
-    int id = db.AddResource(
-      midasResourceType::BITSTREAM, uuid, path, name, parentUuid, 0);
-
-    // Get and save file size
-    std::stringstream size;
-    size << midasUtils::GetFileLength(path.c_str());
-    mdo::Bitstream bitstream;
-    bitstream.SetId(id);
-    bitstream.SetName(name.c_str());
-    bitstream.SetSize(size.str());
-    bitstream.SetUuid(uuid.c_str());
-    bitstream.SetLastModified(kwsys::SystemTools::ModifiedTime(path.c_str()));
-    mds::Bitstream mdsBitstream;
-    mdsBitstream.SetObject(&bitstream);
-    mdsBitstream.MarkAsDirty();
-    mdsBitstream.Commit();
-
-    if(id)
-      {
-      std::stringstream text;
-      text << "Added bitstream " << name << " under item " << 
-        parentItem->getItem()->GetTitle() << ".";
-      this->GetLog()->Message(text.str());
-      }
+    return; //already busy adding bitstreams
     }
-  m_PollFilesystemThread->Resume();
-  this->updateClientTreeView();
+  m_PollFilesystemThread->Pause();
+  delete m_AddBitstreamsThread;
+  m_AddBitstreamsThread = new AddBitstreamsThread;
+  m_AddBitstreamsThread->SetFiles(files);
+  m_AddBitstreamsThread->SetParentItem(
+    const_cast<MidasItemTreeItem*>(parentItem));
+  
+  connect(m_AddBitstreamsThread, SIGNAL(threadComplete()),
+          m_PollFilesystemThread, SLOT(Resume()) );
+  connect(m_AddBitstreamsThread, SIGNAL(progress(int, int, const QString&)),
+          this, SLOT(addBitstreamsProgress(int, int, const QString&)) );
+  m_progress->ResetProgress();
+  m_progress->ResetOverall();
+  m_AddBitstreamsThread->start();
+}
+
+void MIDASDesktopUI::addBitstreamsProgress(int current, int total,
+                                           const QString& message)
+{
+  m_progress->SetMessage(message.toStdString());
+  m_progress->SetMaxCount(total);
+  m_progress->SetMaxTotal(total);
+  m_progress->UpdateOverallCount(current);
+  m_progress->UpdateTotalProgress(1);
 }
 
 void MIDASDesktopUI::viewDirectory()
@@ -1502,7 +1486,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     //start the filesystem monitoring thread
     m_PollFilesystemThread = new PollFilesystemThread;
     connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()));
-    //m_PollFilesystemThread->start();
+    m_PollFilesystemThread->start();
     m_PollFilesystemThread->setPriority(QThread::LowestPriority);
     }
   else
