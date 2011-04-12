@@ -22,6 +22,7 @@ public:
 
 signals:
   void threadComplete();
+  void enableActions(bool);
   void progress(int, int, const QString&);
 
 private:

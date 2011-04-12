@@ -1237,10 +1237,15 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
   
   connect(m_AddBitstreamsThread, SIGNAL(threadComplete()),
           m_PollFilesystemThread, SLOT(Resume()) );
+  connect(m_AddBitstreamsThread, SIGNAL(threadComplete()),
+          this, SLOT( resetStatus() ) );
+  connect(m_AddBitstreamsThread, SIGNAL(enableActions(bool)),
+          this, SLOT( enableActions(bool) ) );
   connect(m_AddBitstreamsThread, SIGNAL(progress(int, int, const QString&)),
           this, SLOT(addBitstreamsProgress(int, int, const QString&)) );
   m_progress->ResetProgress();
   m_progress->ResetOverall();
+  m_progress->SetUnit(" files");
   m_AddBitstreamsThread->start();
 }
 
@@ -1250,8 +1255,9 @@ void MIDASDesktopUI::addBitstreamsProgress(int current, int total,
   m_progress->SetMessage(message.toStdString());
   m_progress->SetMaxCount(total);
   m_progress->SetMaxTotal(total);
+  m_progress->UpdateProgress(current, total);
   m_progress->UpdateOverallCount(current);
-  m_progress->UpdateTotalProgress(1);
+  this->Log->Status("Adding bitstream " + message.toStdString());
 }
 
 void MIDASDesktopUI::viewDirectory()
@@ -1869,14 +1875,14 @@ void MIDASDesktopUI::currentFileMessage(const QString& message)
 void MIDASDesktopUI::overallProgressUpdate(int current, int max)
 {
   std::stringstream text;
-  text << "File Count: " << current << " / " << max << " files transferred";
+  text << "File Count: " << current << " / " << max << " files";
   this->fileCountLabel->setText(text.str().c_str());
 }
 
 void MIDASDesktopUI::currentProgressUpdate(double current, double max)
 {
-  std::string currentText = midasUtils::BytesToString(current);
-  std::string maxText = midasUtils::BytesToString(max);
+  std::string currentText = midasUtils::BytesToString(current, m_progress->GetUnit());
+  std::string maxText = midasUtils::BytesToString(max, m_progress->GetUnit());
   std::stringstream text;
   if(max == 0)
     {
@@ -1902,8 +1908,8 @@ void MIDASDesktopUI::currentProgressUpdate(double current, double max)
 
 void MIDASDesktopUI::totalProgressUpdate(double current, double max)
 {
-  std::string currentText = midasUtils::BytesToString(current);
-  std::string maxText = midasUtils::BytesToString(max);
+  std::string currentText = midasUtils::BytesToString(current, m_progress->GetUnit());
+  std::string maxText = midasUtils::BytesToString(max, m_progress->GetUnit());
   std::stringstream text;
   if(max == 0)
     {
@@ -1936,7 +1942,7 @@ void MIDASDesktopUI::progressSpeedUpdate(double bytesPerSec)
     }
   else
     {
-    text << "Speed: " << midasUtils::BytesToString(bytesPerSec)
+    text << "Speed: " << midasUtils::BytesToString(bytesPerSec, m_progress->GetUnit())
          << " / sec";
     }
   this->speedLabel->setText(text.str().c_str());

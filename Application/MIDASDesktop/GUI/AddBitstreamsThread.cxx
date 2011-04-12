@@ -26,6 +26,7 @@ void AddBitstreamsThread::SetParentItem(MidasItemTreeItem* parentItem)
 
 void AddBitstreamsThread::run()
 {
+  emit enableActions(false);
   unsigned int currTime = static_cast<unsigned int>(
     kwsys::SystemTools::GetTime() * 1000);
   srand (currTime); //seed RNG (must be done in each thread)
@@ -66,5 +67,6 @@ void AddBitstreamsThread::run()
     current++;
     emit progress(current, total, name.c_str());
     }
+  emit enableActions(true);
   emit threadComplete();
 }

@@ -179,6 +179,7 @@ int midasSynchronizer::Perform()
   if(this->Progress)
     {
     this->Progress->ResetOverall();
+    this->Progress->SetUnit("B");
     }
   this->CountBitstreams();
 
