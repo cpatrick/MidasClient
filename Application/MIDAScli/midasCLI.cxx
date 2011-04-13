@@ -526,7 +526,6 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
     mds::DatabaseAPI db;
     db.CheckModifiedBitstreams();
     mws::WebAPI::Instance()->SetServerUrl(args[0].c_str());
-    mds::DatabaseAPI db;
     db.SetSetting(mds::DatabaseAPI::LAST_URL, args[0]);
     }
   return true;
