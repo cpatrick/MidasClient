@@ -44,6 +44,8 @@ protected:
 
   int RunSynchronizer();
 
+  std::string GetServerUrl();
+
   std::string RootDir;
   std::string Database;
   bool UseTempProfile;

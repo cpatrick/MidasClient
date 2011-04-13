@@ -45,7 +45,7 @@ midasCLI::midasCLI()
   mds::DatabaseInfo::Instance()->SetLog(this->GetLog());
   mws::WebAPI::Instance()->SetLog(this->GetLog());
   mws::WebAPI::Instance()->SetAuthenticator(this->Synchronizer->GetAuthenticator());
-  int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
+  unsigned int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
   srand (time); //init random number generator
 }
 
@@ -158,6 +158,8 @@ int midasCLI::Perform(std::vector<std::string> args)
       this->UseTempProfile = true;
       this->TempProfile->Url = args[i];
       mws::WebAPI::Instance()->SetServerUrl(args[i].c_str());
+      mds::DatabaseAPI db;
+      db.SetSetting(mds::DatabaseAPI::LAST_URL, args[i]);
       }
     else if(args[i] == "--email" && i + 1 < args.size())
       {
@@ -296,6 +298,8 @@ int midasCLI::PerformCreateProfile(std::vector<std::string> args)
     else
       {
       mws::WebAPI::Instance()->SetServerUrl(args[i].c_str());
+      mds::DatabaseAPI db;
+      db.SetSetting(mds::DatabaseAPI::LAST_URL, args[i]);
       }
     }
 
@@ -390,6 +394,8 @@ bool midasCLI::ParseAdd(std::vector<std::string> args)
   if(i < args.size())
     {
     mws::WebAPI::Instance()->SetServerUrl(args[i].c_str());
+    mds::DatabaseAPI db;
+    db.SetSetting(mds::DatabaseAPI::LAST_URL, args[i]);
     }
   return true;
 }
@@ -424,8 +430,10 @@ bool midasCLI::ParseClone(std::vector<std::string> args)
   if(i < args.size())
     {
     mws::WebAPI::Instance()->SetServerUrl(args[i].c_str());
+    mds::DatabaseAPI db;
+    db.SetSetting(mds::DatabaseAPI::LAST_URL, args[i]);
     }
-  else if(mws::WebAPI::Instance()->GetServerUrl() == "")
+  else if(this->GetServerUrl() == "")
     {
     this->PrintCommandHelp("clone");
     return false;
@@ -497,6 +505,8 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
   if(i < args.size())
     {
     mws::WebAPI::Instance()->SetServerUrl(args[i].c_str());
+    mds::DatabaseAPI db;
+    db.SetSetting(mds::DatabaseAPI::LAST_URL, args[i]);
     }
   return true;
 }
@@ -506,7 +516,7 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
 {
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
 
-  if(!args.size() && mws::WebAPI::Instance()->GetServerUrl() == "")
+  if(!args.size() && this->GetServerUrl() == "")
     {
     this->PrintCommandHelp("push");
     return false;
@@ -516,6 +526,8 @@ bool midasCLI::ParsePush(std::vector<std::string> args)
     mds::DatabaseAPI db;
     db.CheckModifiedBitstreams();
     mws::WebAPI::Instance()->SetServerUrl(args[0].c_str());
+    mds::DatabaseAPI db;
+    db.SetSetting(mds::DatabaseAPI::LAST_URL, args[0]);
     }
   return true;
 }
@@ -892,4 +904,16 @@ void midasCLI::PrintCommandHelp(std::string command)
     std::cerr << "Error: \"" << command << "\" is not a valid MIDAScli "
       "command." << std::endl;
     }
+}
+
+std::string midasCLI::GetServerUrl()
+{
+  std::string serverUrl = mws::WebAPI::Instance()->GetServerUrl();
+
+  if(serverUrl == "")
+    {
+    mds::DatabaseAPI db;
+    serverUrl = db.GetSetting(mds::DatabaseAPI::LAST_URL);
+    }
+  return serverUrl;
 }
