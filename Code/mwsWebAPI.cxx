@@ -222,30 +222,47 @@ bool WebAPI::UploadFile(const char* url, const char* filename,
     return false;
     }
 
-  if(fprogress = NULL)
+  if(fprogress == NULL)
     {
     fprogress = m_Fprogress;
     progressData = m_ProgressData;
     }
+  m_RestAPI->SetProgressCallback(fprogress, progressData);
   RestXMLParser parser;
   m_RestAPI->SetXMLParser(&parser);
 
-  std::string completeUrl = url;
-  completeUrl += "&token=";
-  completeUrl += m_APIToken;
+  std::string fullUrl = url;
+  fullUrl += "&token=";
+  fullUrl += m_APIToken;
   m_RestAPI->SetInputMode(RestAPI::FILE);
-  bool ok = m_RestAPI->Upload(filename, completeUrl);
-  ok &= std::string(parser.GetErrorMessage()) == "";
-  ok &= parser.GetErrorCode() == 0;
-  
-  if(!ok)
+  bool success = m_RestAPI->Upload(filename, fullUrl);
+  success &= std::string(parser.GetErrorMessage()) == "";
+  success &= parser.GetErrorCode() == 0;
+
+  if(!success && !m_APIToken.empty() && m_Authenticator
+     && !m_RestAPI->ShouldCancel())
+    {
+    this->Log->Message("Operation failed. Refreshing login token and retrying...");
+    if(!m_Authenticator->Login())
+      {
+      this->Log->Error("Attempt to get new tokens failed.");
+      return false;
+      }
+    fullUrl = url;
+    fullUrl += "&token=" + m_APIToken;
+    // Try again with the new token
+    m_RestAPI->SetXMLParser(&parser);
+    success = m_RestAPI->Upload(filename, fullUrl);
+    }
+
+  if(!success)
     {
     std::stringstream text;
     text << "Web API file upload to \"" << url << "\" failed. Response: " <<
       parser.GetErrorMessage();
     this->Log->Error(text.str());
     }
-  return ok;
+  return success;
 }
 
 /** Check the connection to the MIDAS server */
