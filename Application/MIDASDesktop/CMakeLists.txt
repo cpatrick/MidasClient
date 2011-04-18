@@ -1,12 +1,8 @@
 project(MIDASDesktop)
 cmake_minimum_required(VERSION 2.6)
 
-# Find Qt
-find_package(Qt4 REQUIRED)
-
 include_directories(
   "${MIDASCPP_BINARY_DIR}/Code"
-  ${QT_INCLUDES}
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   GUI
@@ -19,91 +15,49 @@ subdirs(utils)
 
 set(MIDASDesktopUI_SRCS
   GUI/MIDASDesktopUI.cxx
-  GUI/MIDASDesktopUI.h
   GUI/SignInUI.cxx
-  GUI/SignInUI.h
   GUI/SignInThread.cxx
-  GUI/SignInThread.h
   GUI/CreateMidasResourceUI.cxx
-  GUI/CreateMidasResourceUI.h
   GUI/CreateProfileUI.cxx
-  GUI/CreateProfileUI.h
-  GUI/DeleteResourceUI.h
   GUI/DeleteResourceUI.cxx
   GUI/AboutUI.cxx
-  GUI/AboutUI.h
-  GUI/PreferencesUI.h
   GUI/PreferencesUI.cxx
   GUI/PullUI.cxx
-  GUI/PullUI.h
   GUI/GUIAgreement.cxx
-  GUI/GUIAgreement.h
-  GUI/GUIFileOverwriteHandler.h
   GUI/GUIFileOverwriteHandler.cxx
+  GUI/GUIMirrorHandler.cxx
   GUI/GUILogger.cxx
-  GUI/GUILogger.h
   GUI/GUIProgress.cxx
-  GUI/GUIProgress.h
   GUI/MidasTreeView.cxx
-  GUI/MidasTreeView.h
   GUI/MidasTreeViewServer.cxx
-  GUI/MidasTreeViewServer.h
   GUI/MidasTreeViewClient.cxx
-  GUI/MidasTreeViewClient.h
-  GUI/TreeViewUpdateHandler.h
   GUI/TreeViewUpdateHandler.cxx
   GUI/MidasTreeItem.cxx
-  GUI/MidasTreeModel.h
   GUI/MidasTreeModel.cxx
   GUI/MidasTreeModelServer.cxx
-  GUI/MidasTreeModelServer.h
   GUI/MidasTreeModelClient.cxx
-  GUI/MidasTreeModelClient.h
-  GUI/MidasTreeItem.h
   GUI/MidasCommunityTreeItem.cxx
-  GUI/MidasCommunityTreeItem.h
-  GUI/MidasCollectionTreeItem.h
   GUI/MidasCollectionTreeItem.cxx
-  GUI/MidasItemTreeItem.h
   GUI/MidasItemTreeItem.cxx
-  GUI/MidasBitstreamTreeItem.h
   GUI/MidasBitstreamTreeItem.cxx
-  GUI/MidasApplication.h
   GUI/MidasApplication.cxx
-  GUI/MidasResourceDescTable.h
   GUI/MidasResourceDescTable.cxx
-  GUI/MidasSearchResultList.h
   GUI/MidasSearchResultList.cxx
-  GUI/ProcessingStatusUI.h
+  GUI/MirrorPickerUI.cxx
   GUI/ProcessingStatusUI.cxx
-  GUI/RefreshServerTreeThread.h
-  GUI/SynchronizerThread.h
-  GUI/ExpandTreeThread.h
   GUI/ExpandTreeThread.cxx
-  GUI/ReadDatabaseThread.h
   GUI/ReadDatabaseThread.cxx
-  GUI/PollFilesystemThread.h
   GUI/PollFilesystemThread.cxx
-  GUI/SearchThread.h
+  GUI/AddBitstreamsThread.cxx
   GUI/SearchThread.cxx
-  GUI/UnifyTreeThread.h
   GUI/UnifyTreeThread.cxx
-  GUI/ResourceEdit.h
   GUI/ResourceEdit.cxx
-  GUI/ButtonDelegate.h
   GUI/ButtonDelegate.cxx
-  GUI/ButtonLineEdit.h
   GUI/ButtonLineEdit.cxx
-  GUI/ButtonEditUI.h
-  GUI/AddAuthorUI.h
   GUI/AddAuthorUI.cxx
-  GUI/AddKeywordUI.h
   GUI/AddKeywordUI.cxx
-  GUI/AgreementUI.h
   GUI/AgreementUI.cxx
-  GUI/FileOverwriteUI.h
   GUI/FileOverwriteUI.cxx
-  GUI/TextEditDelegate.h
   GUI/TextEditDelegate.cxx
 )
 
@@ -123,6 +77,7 @@ set(MIDASDesktopUI_UI_SRCS
   GUI/AddKeywordUI.ui
   GUI/AgreementUI.ui
   GUI/FileOverwriteUI.ui
+  GUI/MirrorPickerUI.ui
 )
 
 set(MIDASDesktopUI_RCCS MIDASDesktopIcons.qrc)
@@ -138,6 +93,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/SearchThread.h
   GUI/ReadDatabaseThread.h
   GUI/PollFilesystemThread.h
+  GUI/AddBitstreamsThread.h
   GUI/AboutUI.h
   GUI/PreferencesUI.h
   GUI/MidasTreeView.h
@@ -161,6 +117,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/UnifyTreeThread.h
   GUI/GUIAgreement.h
   GUI/GUIFileOverwriteHandler.h
+  GUI/GUIMirrorHandler.h
   GUI/GUIProgress.h
   GUI/GUILogger.h
   GUI/ResourceEdit.h
@@ -173,6 +130,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/AgreementUI.h
   GUI/FileOverwriteUI.h
   GUI/TreeViewUpdateHandler.h
+  GUI/MirrorPickerUI.h
 )
 
 QT4_WRAP_CPP(MIDASDesktopUI_SRCS ${MIDASDesktopUI_MOC_SRCS})

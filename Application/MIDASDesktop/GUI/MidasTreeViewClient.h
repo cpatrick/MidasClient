@@ -5,7 +5,6 @@
 #include <string>
 
 class MidasTreeModelClient;
-class midasDatabaseProxy;
 
 class MidasTreeViewClient : public MidasTreeView
 {
@@ -15,9 +14,6 @@ public:
   
   MidasTreeViewClient(QWidget * parent = 0);
   ~MidasTreeViewClient();
-
-  void SetDatabaseProxy(midasDatabaseProxy* proxy);
-  midasDatabaseProxy* GetDatabaseProxy();
 
 public slots:
   void expandAll();
@@ -41,7 +37,6 @@ protected:
   virtual void dropEvent( QDropEvent * event );
   virtual void mouseDoubleClickEvent( QMouseEvent * event);
 
-  midasDatabaseProxy* m_Database;
- };
+};
 
 #endif //__MidasTreeViewClient_H

@@ -11,6 +11,7 @@
 #include "mdsBitstream.h"
 #include "mdoBitstream.h"
 #include "midasStandardIncludes.h"
+#include "mdsResourceUpdateHandler.h"
 
 namespace mds{
 
@@ -28,15 +29,16 @@ Bitstream::~Bitstream()
 /** Fetch the object */
 bool Bitstream::Fetch()
 {
+  mds::DatabaseAPI db;
   if(!m_Bitstream)
     {
-    m_Database->GetLog()->Error("Bitstream::Fetch : Bitstream not set\n");
+    db.GetLog()->Error("Bitstream::Fetch : Bitstream not set\n");
     return false;
     }
     
   if(m_Bitstream->GetId() == 0)
     {
-    m_Database->GetLog()->Error("Bitstream::Fetch : BitstreamId not set\n");
+    db.GetLog()->Error("Bitstream::Fetch : BitstreamId not set\n");
     return false;
     }
 
@@ -48,19 +50,19 @@ bool Bitstream::Fetch()
   std::stringstream query;
   query << "SELECT size_bytes, name, internal_id FROM bitstream WHERE bitstream_id='"
     << m_Bitstream->GetId() << "'";
-  m_Database->Open();
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  db.Open();
+  db.Database->ExecuteQuery(query.str().c_str());
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(db.Database->GetNextRow())
     {
     std::stringstream val;
-    val << m_Database->GetDatabase()->GetValueAsInt64(0);
+    val << db.Database->GetValueAsInt64(0);
     m_Bitstream->SetSize(val.str());
-    m_Bitstream->SetName(m_Database->GetDatabase()->GetValueAsString(1));
-    m_Bitstream->SetPath(m_Database->GetDatabase()->GetValueAsString(2));
+    m_Bitstream->SetName(db.Database->GetValueAsString(1));
+    m_Bitstream->SetPath(db.Database->GetValueAsString(2));
     }
   m_Bitstream->SetFetched(true);
-  m_Database->Close();
+  db.Close();
   return true;
 }
 
@@ -68,23 +70,114 @@ bool Bitstream::Fetch()
 bool Bitstream::Commit()
 {
   std::stringstream query;
-  query << "UPDATE bitstream SET "
-    << "size_bytes='" << m_Bitstream->GetSize() << "', "
-    << "name='" << midasUtils::EscapeForSQL(m_Bitstream->GetName()) << "', "
-    << "last_modified='" << m_Bitstream->GetLastModified()
-    << "' WHERE bitstream_id='" << m_Bitstream->GetId() << "'";
+  mds::DatabaseAPI db;
+  db.Open();
+  db.Database->ExecuteQuery("BEGIN"); //begin a transaction
 
-  m_Database->Open();
-  if(m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  int action;
+  if(m_Bitstream->GetId()) //update existing record
     {
-    m_Database->Close();
-    if(m_MarkDirty)
+    action = midasDirtyAction::MODIFIED;
+    query << "UPDATE bitstream SET "
+      << "size_bytes='" << m_Bitstream->GetSize() << "', "
+      << "name='" << midasUtils::EscapeForSQL(m_Bitstream->GetName()) << "', "
+      << "last_modified='" << m_Bitstream->GetLastModified()
+      << "' WHERE bitstream_id='" << m_Bitstream->GetId() << "'";
+    if(!db.Database->ExecuteQuery(query.str().c_str()))
       {
-      m_Database->MarkDirtyResource(m_Bitstream->GetUuid(), midasDirtyAction::MODIFIED);
+      db.GetLog()->Error("Failed to update bitstream table");
+      db.Database->ExecuteQuery("ROLLBACK");
+      db.Close();
+      return false;
       }
-    return true;
     }
-  return false;
+  else //insert new record
+    {
+    //TODO validation
+    // 1. Uuid must be set (generated)
+    // 2. Parent (item) id must be set
+    action = midasDirtyAction::ADDED;
+
+    // Add bitstream record
+    query.str(std::string());
+    query << "INSERT INTO bitstream (location, internal_id, name, "
+      "size_bytes, last_modified) VALUES ('1','"
+      << m_Bitstream->GetPath() << "', '"
+      << midasUtils::EscapeForSQL(m_Bitstream->GetName()) << "', '"
+      << m_Bitstream->GetSize() << "', '"
+      << m_Bitstream->GetLastModified() << "')";
+    if(!db.Database->ExecuteQuery(query.str().c_str()))
+      {
+      db.GetLog()->Error("Failed to insert new record into bitstream table");
+      db.Database->ExecuteQuery("ROLLBACK");
+      db.Close();
+      return false;
+      }
+    m_Bitstream->SetId(db.Database->GetLastInsertId());
+    
+    // Add resource_uuid record
+    query.str(std::string());
+    query << "INSERT INTO resource_uuid (resource_type_id, resource_id, path,"
+      " uuid, server_parent) VALUES ('" << midasResourceType::BITSTREAM <<
+      "', '" << m_Bitstream->GetId() << "', '" << m_Bitstream->GetPath() <<
+      "', '" << m_Bitstream->GetUuid() << "', '0')";
+    if(!db.Database->ExecuteQuery(query.str().c_str()))
+      {
+      db.GetLog()->Error("Failed to insert uuid record for "
+        + m_Bitstream->GetName());
+      db.Database->ExecuteQuery("ROLLBACK");
+      db.Close();
+      return false;
+      }
+
+    // Add parent relationship
+    query.str(std::string());
+    query << "INSERT INTO item2bitstream (item_id, bitstream_id) VALUES ('" <<
+      m_Bitstream->GetParentId() << "', '" << m_Bitstream->GetId() << "')";
+    if(!db.Database->ExecuteQuery(query.str().c_str()))
+      {
+      db.GetLog()->Error("Failed to create parent relationship for bitstream");
+      db.Database->ExecuteQuery("ROLLBACK");
+      db.Close();
+      return false;
+      }
+    }
+
+  // Bitstreams added/changed on the client side should be marked as dirty
+  if(m_MarkDirty)
+    {
+    query.str(std::string());
+    query << "DELETE FROM dirty_resource WHERE uuid='" <<
+      m_Bitstream->GetUuid() << "'";
+    if(!db.Database->ExecuteQuery(query.str().c_str()))
+      {
+      db.GetLog()->Error("Failed to delete duplicate dirty records");
+      db.Database->ExecuteQuery("ROLLBACK");
+      db.Close();
+      return false;
+      }
+    query.str(std::string());
+    query << "INSERT INTO dirty_resource (uuid, action) VALUES ('" <<
+      m_Bitstream->GetUuid() << "', '" << action << "')";
+    if(!db.Database->ExecuteQuery(query.str().c_str()))
+      {
+      db.GetLog()->Error("Failed to mark bitstream as dirty");
+      db.Database->ExecuteQuery("ROLLBACK");
+      db.Close();
+      return false;
+      }
+    }
+  db.Database->ExecuteQuery("COMMIT");
+  db.Close();
+  if(db.UpdateHandler && action == midasDirtyAction::ADDED)
+    {
+    db.UpdateHandler->AddedResource(m_Bitstream);
+    }
+  else if(db.UpdateHandler && action == midasDirtyAction::MODIFIED)
+    {
+    db.UpdateHandler->UpdatedResource(m_Bitstream);
+    }
+  return true;
 }
 
 bool Bitstream::FetchTree()
@@ -94,51 +187,52 @@ bool Bitstream::FetchTree()
 
 bool Bitstream::Delete(bool deleteOnDisk)
 {
-  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
-  m_Database->GetDatabase()->ExecuteQuery("BEGIN");
+  mds::DatabaseAPI db;
+  db.Open();
+  db.Database->ExecuteQuery("BEGIN");
   std::stringstream query;
   query << "DELETE FROM bitstream WHERE bitstream_id='" << m_Bitstream->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    db.Database->ExecuteQuery("ROLLBACK");
+    db.Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM item2bitstream WHERE bitstream_id='" <<
     m_Bitstream->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    db.Database->ExecuteQuery("ROLLBACK");
+    db.Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM dirty_resource WHERE uuid='" <<
     m_Bitstream->GetUuid() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    db.Database->ExecuteQuery("ROLLBACK");
+    db.Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM resource_uuid WHERE uuid='" <<
     m_Bitstream->GetUuid() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    db.Database->ExecuteQuery("ROLLBACK");
+    db.Database->Close();
     return false;
     }
-  m_Database->GetDatabase()->ExecuteQuery("COMMIT");
-  m_Database->GetDatabase()->Close();
+  db.Database->ExecuteQuery("COMMIT");
+  db.Database->Close();
   if(deleteOnDisk)
     {
-    kwsys::SystemTools::RemoveFile(this->m_Path.c_str());
+    kwsys::SystemTools::RemoveFile(m_Bitstream->GetPath().c_str());
     }
   return true;
 }
@@ -149,11 +243,6 @@ void Bitstream::SetObject(mdo::Object* object)
   m_Bitstream = reinterpret_cast<mdo::Bitstream*>(object);
 }
 
-void Bitstream::SetPath(std::string path)
-{
-  m_Path = path;
-}
-
 void Bitstream::ParentPathChanged(std::string parentPath)
 {
   std::string newPath = parentPath + "/" + m_Bitstream->GetName();
@@ -161,9 +250,10 @@ void Bitstream::ParentPathChanged(std::string parentPath)
   query << "UPDATE resource_uuid SET path='" << newPath << "' WHERE "
     "uuid='" << m_Bitstream->GetUuid() << "'";
 
-  m_Database->Open();
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
-  m_Database->Close();
+  mds::DatabaseAPI db;
+  db.Open();
+  db.Database->ExecuteQuery(query.str().c_str());
+  db.Close();
 }
 
 } // end namespace

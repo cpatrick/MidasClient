@@ -5,9 +5,8 @@
 #include <QMessageBox>
 
 #include "MIDASDesktopUI.h"
-#include "mwsSettings.h"
 #include "midasSynchronizer.h"
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 #include "midasAuthenticator.h"
 
 #include "MidasTreeItem.h"
@@ -71,16 +70,16 @@ void CreateMidasResourceUI::accept()
   m_Parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_ADD);
 
   std::string type_str, path;
+  mds::DatabaseAPI db;
   switch(this->m_Type)
     {
     case Community:
-      path = this->m_Parent->getDatabaseProxy()->GetAuthProfile(
-        this->m_Parent->getSynchronizer()->GetAuthenticator()->GetProfile()).RootDir;
+      path = db.GetAuthProfile(
+        m_Parent->getSynchronizer()->GetAuthenticator()->GetProfile()).RootDir;
 
       if(path == "")
         {
-        path = this->m_Parent->getDatabaseProxy()->GetSetting(
-          midasDatabaseProxy::ROOT_DIR);
+        path = db.GetSetting(mds::DatabaseAPI::ROOT_DIR);
         }
 
       if(path == "")
@@ -169,11 +168,12 @@ void CreateMidasResourceUI::AddSubCommunity()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  std::string path = m_Parent->getDatabaseProxy()->GetRecordByUuid(
-    m_Parent->getDatabaseProxy()->GetUuid(
+  mds::DatabaseAPI db;
+  std::string path = db.GetRecordByUuid(
+    db.GetUuid(
     midasResourceType::COMMUNITY,
     parentComm->getCommunity()->GetId())).Path;
-  
+
   this->AddCommunity(path);
 }
 
@@ -186,8 +186,9 @@ void CreateMidasResourceUI::AddCollection()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  std::string path = m_Parent->getDatabaseProxy()->GetRecordByUuid(
-    m_Parent->getDatabaseProxy()->GetUuid(
+  mds::DatabaseAPI db;
+  std::string path = db.GetRecordByUuid(
+    db.GetUuid(
     midasResourceType::COMMUNITY,
     parentComm->getCommunity()->GetId())).Path;
 
@@ -207,8 +208,9 @@ void CreateMidasResourceUI::AddItem()
     reinterpret_cast<MidasTreeModelClient*>(
     this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
 
-  std::string path = m_Parent->getDatabaseProxy()->GetRecordByUuid(
-    m_Parent->getDatabaseProxy()->GetUuid(
+  mds::DatabaseAPI db;
+  std::string path = db.GetRecordByUuid(
+    db.GetUuid(
     midasResourceType::COLLECTION,
     parentColl->getCollection()->GetId())).Path;
 

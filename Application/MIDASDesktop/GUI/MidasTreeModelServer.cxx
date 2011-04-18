@@ -44,7 +44,6 @@ void MidasTreeModelServer::Populate()
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
   community->SetId(0);
-  remote.SetWebAPI(this->m_WebAPI);
   remote.SetAuthenticator(m_ParentUI->getSynchronizer()->GetAuthenticator());
   remote.SetObject(community);
 
@@ -127,7 +126,6 @@ void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
 {
   mws::Collection remote;
   mdo::Collection* collection = parent->getCollection();
-  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetAuthenticator(m_ParentUI->getSynchronizer()->GetAuthenticator());
   remote.SetObject(collection);
 
@@ -161,7 +159,6 @@ void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
 {
   mws::Item remote;
   mdo::Item* item = parent->getItem();
-  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetAuthenticator(m_ParentUI->getSynchronizer()->GetAuthenticator());
   remote.SetObject(item);
 

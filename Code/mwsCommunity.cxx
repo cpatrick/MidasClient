@@ -115,7 +115,7 @@ public:
         }
       if(!strcmp(name,"parentid"))
         {
-        m_Collection->SetParent(m_CurrentValue.c_str());
+        m_Collection->SetParentId(m_CurrentValue.c_str());
         }
       if(!strcmp(name,"uuid"))
         {
@@ -139,7 +139,7 @@ public:
         }
       if(!strcmp(name,"parentid"))
         {
-        m_Community->SetParent(m_CurrentValue.c_str());
+        m_Community->SetParentId(m_CurrentValue.c_str());
         }
       if(!strcmp(name,"uuid"))
         {
@@ -221,17 +221,14 @@ bool Community::Fetch()
   parser.AddTag("/rsp/copyright",m_Community->GetCopyright());
   parser.AddTag("/rsp/introductory",m_Community->GetIntroductoryText());
   parser.AddTag("/rsp/uuid",m_Community->GetUuid());
-  parser.AddTag("/rsp/parent",m_Community->GetParent());
+  parser.AddTag("/rsp/parent",m_Community->GetParentStr());
   parser.AddTag("/rsp/hasAgreement",m_Community->RefAgreement());
   parser.AddTag("/rsp/size",m_Community->GetSize());
   
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
-  
   std::stringstream url;
   url << "midas.community.get?id=" << m_Community->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!WebAPI::Instance()->Execute(url.str().c_str(), &parser))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
   m_Community->SetFetched(true);
@@ -243,14 +240,11 @@ bool Community::FetchTree()
 {
   CommunityXMLParser parser;
   parser.SetCommunity(m_Community);
-   
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
   
   std::stringstream url;
   url << "midas.community.tree?id=" << m_Community->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
@@ -272,7 +266,6 @@ bool Community::FetchParent()
     parent->SetId(m_Community->GetParentId());
 
     mws::Community remote;
-    remote.SetWebAPI(mws::WebAPI::Instance());
     remote.SetObject(parent);
     return remote.Fetch();
     }
@@ -292,18 +285,31 @@ bool Community::Delete()
     std::cerr << "Community::Delete() : Community id not set" << std::endl;
     return false;
     }
-       
-  RestXMLParser parser;
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.community.delete?id=" << m_Community->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!WebAPI::Instance()->Execute(url.str().c_str()))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
+}
+
+bool Community::Create()
+{
+  std::stringstream postData;
+  postData << "uuid=" << m_Community->GetUuid() 
+    << "&parentid=" << m_Community->GetParentId()
+    << "&name=" << midasUtils::EscapeForURL(m_Community->GetName())
+    << "&copyright=" << midasUtils::EscapeForURL(m_Community->GetCopyright())
+    << "&introductorytext=" <<
+    midasUtils::EscapeForURL(m_Community->GetIntroductoryText())
+    << "&description=" <<
+    midasUtils::EscapeForURL(m_Community->GetDescription())
+    << "&links=" << midasUtils::EscapeForURL(m_Community->GetLinks());
+
+  return WebAPI::Instance()->Execute("midas.community.create", NULL,
+    postData.str().c_str());
 }
 
 } // end namespace

@@ -18,8 +18,6 @@ public:
   PollFilesystemThread();
   ~PollFilesystemThread();
 
-  void SetDatabase(midasDatabaseProxy* db) { m_Database = db; }
-
   virtual void run();
 
   // Stop filesystem polling and wait for current poll to finish
@@ -33,7 +31,6 @@ signals:
   void needToRefresh();
 
 private:
-  midasDatabaseProxy* m_Database;
   bool m_Run;
   bool m_Terminate;
   bool m_DatabaseLocked;

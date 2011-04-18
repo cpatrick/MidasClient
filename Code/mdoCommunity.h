@@ -37,11 +37,6 @@ public:
   void SetId(int id) { this->m_Id = id; }
   const int GetId() {return this->m_Id; }
 
-  // Set/Get the ID of the parent
-  void SetParent(std::string id) { m_Parent = id; }
-  std::string & GetParent() {return m_Parent;}
-  const int GetParentId() {return atoi(m_Parent.c_str());}
-
   // Set/Get the uuid
   void SetUuid(const char* uuid) { m_Uuid = uuid; }
   std::string & GetUuid() {return m_Uuid;}
@@ -92,7 +87,6 @@ protected:
 
   friend class CommunityXMLParser;
   
-  std::string  m_Parent;
   std::string  m_Name;
   std::string  m_Description;
   std::string  m_Copyright;

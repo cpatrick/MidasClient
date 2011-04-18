@@ -34,7 +34,8 @@ public:
   static std::string EscapeForSQL(std::string s);
   static std::string EscapeName(std::string name);
   static int64 GetFileLength(const char* filename);
-  static std::string BytesToString(double bytes);
+  static std::string BytesToString(double bytes,
+                                   const std::string& units = "B");
   static std::string FormatTimeString(double seconds);
   static double StringToDouble(const std::string& num);
   static std::string GetTypeName(int type);

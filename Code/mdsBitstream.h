@@ -28,6 +28,10 @@ public:
   ~Bitstream();
 
   bool Fetch();
+  /**
+   * Commits this bitstream object.
+   * If the bitstream id is set to 0, it will commit a new record
+   */
   bool Commit();
   bool FetchTree();
   bool Delete(bool deleteOnDisk);
@@ -35,12 +39,10 @@ public:
   void ParentPathChanged(std::string parentPath);
 
   void SetObject(mdo::Object* object);
-  void SetPath(std::string path);
 
 protected:
-
   mdo::Bitstream* m_Bitstream;
-  std::string     m_Path;
+
 };
 
 } //end namespace

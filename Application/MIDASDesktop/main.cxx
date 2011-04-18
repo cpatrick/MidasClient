@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <QDir>
-#include "mwsSettings.h"
 #include "MIDASDesktopUI.h"
 #include "Utils.h"
 #include "mwsRestAPI.h"

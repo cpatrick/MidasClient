@@ -196,7 +196,6 @@ std::vector<mdo::Object*> Search::SearchServer(std::vector<std::string> tokens)
   std::vector<mdo::Object*> results;
   SearchXMLParser parser;
   parser.SetObject(&results);
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   
   std::string fields = "midas.resources.search?search=";
 
@@ -211,7 +210,7 @@ std::vector<mdo::Object*> Search::SearchServer(std::vector<std::string> tokens)
       }
     space = true;
     }
-  mws::WebAPI::Instance()->Execute(fields.c_str(), NULL);
+  mws::WebAPI::Instance()->Execute(fields.c_str(), &parser);
   return results;
 }
 } //end namespace

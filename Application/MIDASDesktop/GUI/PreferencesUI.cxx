@@ -2,7 +2,7 @@
 
 #include "MIDASDesktopUI.h"
 #include "MidasClientGlobal.h"
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 #include "UnifyTreeThread.h"
 #include <QString>
 #include <QFileDialog>
@@ -71,14 +71,15 @@ void PreferencesUI::unifyTree()
 
 void PreferencesUI::reset()
 {
-  std::string interval = this->m_parent->getDatabaseProxy()->GetSetting(
-    midasDatabaseProxy::AUTO_REFRESH_INTERVAL);
-  std::string index = this->m_parent->getDatabaseProxy()->GetSetting(
-    midasDatabaseProxy::AUTO_REFRESH_SETTING);
-  std::string path = m_parent->getDatabaseProxy()->GetSetting(
-    midasDatabaseProxy::ROOT_DIR);
-  m_UnifiedTree = m_parent->getDatabaseProxy()->GetSettingBool(
-    midasDatabaseProxy::UNIFIED_TREE);
+  mds::DatabaseAPI db;
+  std::string interval = db.GetSetting(
+    mds::DatabaseAPI::AUTO_REFRESH_INTERVAL);
+  std::string index = db.GetSetting(
+    mds::DatabaseAPI::AUTO_REFRESH_SETTING);
+  std::string path = db.GetSetting(
+    mds::DatabaseAPI::ROOT_DIR);
+  m_UnifiedTree = db.GetSettingBool(
+    mds::DatabaseAPI::UNIFIED_TREE);
 
   if(index != "")
     {
@@ -109,7 +110,8 @@ void PreferencesUI::enableActions(int index)
 
 void PreferencesUI::selectWorkingDir()
 {
-  std::string path = m_parent->getDatabaseProxy()->GetSetting(midasDatabaseProxy::ROOT_DIR);
+  mds::DatabaseAPI db;
+  std::string path = db.GetSetting(mds::DatabaseAPI::ROOT_DIR);
 
   if(path == "")
     {
@@ -135,15 +137,16 @@ int PreferencesUI::exec()
 void PreferencesUI::accept()
 {
   //Save the preferences
-  m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::AUTO_REFRESH_INTERVAL, timeSpinBox->value());
-  m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING, settingComboBox->currentIndex());
-  m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::UNIFIED_TREE, copyResourcesCheckBox->isChecked());
+  mds::DatabaseAPI db;
+  db.SetSetting(mds::DatabaseAPI::AUTO_REFRESH_INTERVAL, timeSpinBox->value());
+  db.SetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING, settingComboBox->currentIndex());
+  db.SetSetting(mds::DatabaseAPI::UNIFIED_TREE, copyResourcesCheckBox->isChecked());
 
   std::string dir = workingDirEdit->text().toStdString();
   kwsys::SystemTools::ConvertToUnixSlashes(dir);
   if(kwsys::SystemTools::FileIsDirectory(dir.c_str()))
     {
-    m_parent->getDatabaseProxy()->SetSetting(midasDatabaseProxy::ROOT_DIR, dir);
+    db.SetSetting(mds::DatabaseAPI::ROOT_DIR, dir);
     }
 
   emit intervalChanged();

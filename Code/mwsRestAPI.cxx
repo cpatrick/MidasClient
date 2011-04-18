@@ -163,7 +163,7 @@ bool RestAPI::Execute(const char*  url,
   if(post_data != NULL)
     {
     curl_easy_setopt(m_cURL, CURLOPT_POST, 1);
-    curl_easy_setopt(m_cURL, CURLOPT_POSTFIELDS,post_data);
+    curl_easy_setopt(m_cURL, CURLOPT_POSTFIELDS, post_data);
     }
   else 
     {
@@ -459,11 +459,11 @@ void RestAPI::ResetOutputBuffer()
   }
 
 //--------------------------------------------------------------------------------------------------
-void RestAPI::SetProgressCallback(curl_progress_callback fprogress, void * fprogress_data)
-  {
+void RestAPI::SetProgressCallback(curl_progress_callback fprogress, void* fprogress_data)
+{
   this->fprogress = fprogress; 
   this->fprogress_data = fprogress_data; 
-  }
+}
 
 bool RestAPI::Parse(const char* buffer,unsigned long length)
 {

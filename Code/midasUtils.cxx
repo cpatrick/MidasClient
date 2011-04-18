@@ -110,31 +110,31 @@ int64 midasUtils::GetFileLength(const char* filename)
 }
 
 //-------------------------------------------------------------------
-std::string midasUtils::BytesToString(double bytes)
+std::string midasUtils::BytesToString(double bytes, const std::string& unit)
 {
   std::stringstream text;
   double amount;
-  std::string unit;
+  std::string order;
 
   if(bytes < 1024)
     {
     amount = bytes;
-    unit = "B";
+    order = "";
     }
   else if(bytes < 1024*1024)
     {
     amount = bytes / (1024.0);
-    unit = "KB";
+    order = "K";
     }
   else if(bytes < 1024*1024*1024)
     {
     amount = bytes / (1024.0*1024.0);
-    unit = "MB";
+    order = "M";
     }
   else
     {
     amount = bytes / (1024.0*1024.0*1024.0);
-    unit = "GB";
+    order = "G";
     }
 
   if(amount >= 1000)
@@ -147,7 +147,7 @@ std::string midasUtils::BytesToString(double bytes)
     text.precision(3);
     text << amount;
     }
-  text << " " << unit;
+  text << " " << order << unit;
   return text.str();
 }
 

@@ -23,9 +23,6 @@ public:
   MidasTreeViewServer(QWidget * parent = 0); 
   ~MidasTreeViewServer();
 
-  /** Set the web API */
-  void SetWebAPI(mws::WebAPI* api);
-
   void mousePressEvent(QMouseEvent* event);
   void mouseMoveEvent(QMouseEvent* event);
 
@@ -45,7 +42,6 @@ signals:
 protected:
   void fetchItemData(MidasTreeItem* item);
 
-  mws::WebAPI*          m_WebAPI;
   ExpandTreeThread*     m_ExpandTreeThread;
   QMutex                m_Mutex;
   QPoint                m_DragStart;

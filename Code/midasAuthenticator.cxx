@@ -12,11 +12,11 @@
 #include "midasAuthenticator.h"
 #include "mwsWebAPI.h"
 #include "mwsRestXMLParser.h"
+#include "mdsDatabaseAPI.h"
 #include "midasStdOutLog.h"
 
 midasAuthenticator::midasAuthenticator()
 {
-  this->Database = NULL;
   this->ClearToken();
   this->Profile = "";
   this->Log = NULL;
@@ -27,10 +27,11 @@ midasAuthenticator::~midasAuthenticator()
 }
 
 //-------------------------------------------------------------------
-bool midasAuthenticator::Login(mws::WebAPI* api)
+bool midasAuthenticator::Login()
 {
-  midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
-  
+  mds::DatabaseAPI db;
+  midasAuthProfile profile = db.GetAuthProfile(this->Profile);
+
   if(profile.IsAnonymous())
     {
     return true;
@@ -44,16 +45,16 @@ bool midasAuthenticator::Login(mws::WebAPI* api)
     Log->Error(text.str());
     return false;
     }
-  mws::RestXMLParser parser;
-  api->GetRestAPI()->SetXMLParser(&parser);
-  return api->Login(profile.AppName.c_str(), profile.User.c_str(),
-                    profile.ApiKey.c_str());
+
+  return mws::WebAPI::Instance()->Login(profile.AppName.c_str(), 
+    profile.User.c_str(), profile.ApiKey.c_str());
 }
 
 //-------------------------------------------------------------------
 bool midasAuthenticator::IsAnonymous()
 {
-  midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
+  mds::DatabaseAPI db;
+  midasAuthProfile profile = db.GetAuthProfile(this->Profile);
   return profile.IsAnonymous();
 }
 
@@ -72,35 +73,27 @@ bool midasAuthenticator::AddAuthProfile(std::string user,
     return false;
     }
 
-  mws::RestXMLParser parser;
-  mws::WebAPI* remote = mws::WebAPI::Instance();
-  if(this->ServerURL == "")
-    {
-    this->ServerURL = this->Database->GetSetting(midasDatabaseProxy::LAST_URL);
-    }
-  remote->SetServerUrl(this->ServerURL.c_str());
-  remote->GetRestAPI()->SetXMLParser(&parser);
-
   if(user == "")
     {
-    mws::WebAPI::Instance()->SetServerUrl(this->ServerURL.c_str());
     std::stringstream text;
     if(!mws::WebAPI::Instance()->CheckConnection())
       {
-      text << this->ServerURL << " is not a valid MIDAS Rest API URL";
+      text << mws::WebAPI::Instance()->GetServerUrl()
+           << " is not a valid MIDAS Rest API URL";
       Log->Error(text.str());
       return false;
       }
     }
-  else if(!remote->Login(appName.c_str(), user.c_str(), apiKey.c_str()))
+  else if(!mws::WebAPI::Instance()->Login(appName.c_str(), user.c_str(), apiKey.c_str()))
     {
     std::stringstream text;
     text << "Login credentials refused by server." << std::endl;
     Log->Error(text.str());
     return false;
     }
-  bool success = this->Database->AddAuthProfile(
-    user, appName, apiKey, profileName, rootDir, this->ServerURL);
+  mds::DatabaseAPI db;
+  bool success = db.AddAuthProfile(user, appName, apiKey, profileName, rootDir,
+                                   mws::WebAPI::Instance()->GetServerUrl());
 
   if(!success)
     {
@@ -116,53 +109,6 @@ bool midasAuthenticator::AddAuthProfile(std::string user,
 void midasAuthenticator::ClearToken()
 {
   this->Token = "";
-}
-
-//-------------------------------------------------------------------
-/*std::string midasAuthenticator::FetchToken()
-{
-  if(this->Token != "")
-    {
-    mws::RestXMLParser parser;
-    mws::WebAPI* remote = mws::WebAPI::Instance();
-    remote->SetServerUrl(this->ServerURL.c_str());
-    remote->GetRestAPI()->SetXMLParser(&parser);
-    
-    midasAuthProfile profile = this->Database->GetAuthProfile(this->Profile);
-    if(profile.Name == "")
-      {
-      std::stringstream text;
-      text << "No profile exists with that name. Use the "
-        "\"create_profile\" command to add a profile." << std::endl;
-      Log->Error(text.str());
-      return "";
-      }
-
-    if(!remote->Login(profile.AppName.c_str(), profile.User.c_str(),
-                      profile.ApiKey.c_str()))
-      {
-      std::stringstream text;
-      text << "Login credentials refused by server."
-        << std::endl;
-      Log->Error(text.str());
-      return "";
-      }
-    this->Token = remote->GetAPIToken();
-    }
-  return this->Token;
-}*/
-
-//-------------------------------------------------------------------
-void midasAuthenticator::SetDatabase(std::string database)
-{
-  delete this->Database;
-  this->Database = new midasDatabaseProxy(database);
-}
-
-//-------------------------------------------------------------------
-void midasAuthenticator::SetServerURL(std::string url)
-{
-  this->ServerURL = url;
 }
 
 //-------------------------------------------------------------------

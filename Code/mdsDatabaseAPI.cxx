@@ -9,7 +9,7 @@
 
 =========================================================================*/
 
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 
 #include "mdoCommunity.h"
 #include "mdoCollection.h"
@@ -21,31 +21,31 @@
 #include "mdsBitstream.h"
 #include "mdsResourceUpdateHandler.h"
 
-midasDatabaseProxy::midasDatabaseProxy(std::string database)
+namespace mds {
+
+/* By default new instantiations of this class will inherit
+ * the properties set on the singleton mds::DatabaseInfo::Instance.
+ * If you wish to override these, do so after construction.
+ */
+DatabaseAPI::DatabaseAPI(const std::string& path)
 {
+  this->DatabasePath = path == "" ?
+    mds::DatabaseInfo::Instance()->GetPath() :
+    path;
+  this->Log = mds::DatabaseInfo::Instance()->GetLog();
+  this->UpdateHandler =
+    mds::DatabaseInfo::Instance()->GetResourceUpdateHandler();
+
   this->Database = new mds::SQLiteDatabase();
-  this->DatabasePath = database;
-  this->ResourceUpdateHandler = NULL;
 }
 
-midasDatabaseProxy::~midasDatabaseProxy()
+DatabaseAPI::~DatabaseAPI()
 {
   delete this->Database;
 }
 
-void midasDatabaseProxy::SetResourceUpdateHandler(
-  mds::ResourceUpdateHandler* handler)
-{
-  this->ResourceUpdateHandler = handler;
-}
-
-mds::ResourceUpdateHandler* midasDatabaseProxy::GetResourceUpdateHandler()
-{
-  return this->ResourceUpdateHandler;
-}
-
 //-------------------------------------------------------------------------
-std::string midasDatabaseProxy::GetKeyName(MidasAppSetting setting)
+std::string DatabaseAPI::GetKeyName(MidasAppSetting setting)
 {
   switch(setting)
     {
@@ -67,13 +67,7 @@ std::string midasDatabaseProxy::GetKeyName(MidasAppSetting setting)
 }
 
 //-------------------------------------------------------------------------
-mds::SQLiteDatabase* midasDatabaseProxy::GetDatabase()
-{
-  return this->Database;
-}
-
-//-------------------------------------------------------------------------
-int midasDatabaseProxy::AddResource(int type, std::string uuid,
+int DatabaseAPI::AddResource(int type, std::string uuid,
   std::string path, std::string name, int parentType, int parentId,
   int serverParent)
 {
@@ -82,7 +76,7 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
 }
 
 //-------------------------------------------------------------------------
-int midasDatabaseProxy::AddResource(int type, std::string uuid,
+int DatabaseAPI::AddResource(int type, std::string uuid,
   std::string path, std::string name, std::string parentUuid, int parentId)
 {
   name = midasUtils::EscapeForSQL(name);
@@ -110,7 +104,7 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
       {
       case midasResourceType::BITSTREAM:
         id = this->InsertBitstream(path, name);
-        if(id > 0 && this->ResourceUpdateHandler)
+        if(id > 0 && this->UpdateHandler)
           {
           item = new mdo::Item;
           item->SetUuid(parentUuid.c_str());
@@ -120,12 +114,12 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
           bitstream->SetUuid(uuid.c_str());
           bitstream->SetParentItem(item);
           bitstream->SetName(name.c_str());
-          this->ResourceUpdateHandler->AddedResource(bitstream);
+          this->UpdateHandler->AddedResource(bitstream);
           }
         break;
       case midasResourceType::COLLECTION:
         id = this->InsertCollection(name);
-        if(id > 0 && this->ResourceUpdateHandler)
+        if(id > 0 && this->UpdateHandler)
           {
           community = new mdo::Community;
           community->SetUuid(parentUuid.c_str());
@@ -135,12 +129,12 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
           collection->SetUuid(uuid.c_str());
           collection->SetParentCommunity(community);
           collection->SetName(name.c_str());
-          this->ResourceUpdateHandler->AddedResource(collection);
+          this->UpdateHandler->AddedResource(collection);
           }
         break;
       case midasResourceType::COMMUNITY:
         id = this->InsertCommunity(name);
-        if(id > 0 && this->ResourceUpdateHandler)
+        if(id > 0 && this->UpdateHandler)
           {
           community = new mdo::Community;
           if(parentUuid != "")
@@ -157,12 +151,12 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
           community->SetUuid(uuid.c_str());
           community->SetId(id);
           community->SetName(name.c_str());
-          this->ResourceUpdateHandler->AddedResource(community);
+          this->UpdateHandler->AddedResource(community);
           }
         break;
       case midasResourceType::ITEM:
         id = this->InsertItem(name);
-        if(id > 0 && this->ResourceUpdateHandler)
+        if(id > 0 && this->UpdateHandler)
           {
           collection = new mdo::Collection;
           collection->SetUuid(parentUuid.c_str());
@@ -172,7 +166,7 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
           item->SetUuid(uuid.c_str());
           item->SetParentCollection(collection);
           item->SetTitle(name.c_str());
-          this->ResourceUpdateHandler->AddedResource(item);
+          this->UpdateHandler->AddedResource(item);
           }
         break;
       default:
@@ -213,7 +207,7 @@ int midasDatabaseProxy::AddResource(int type, std::string uuid,
 }
 
 //-------------------------------------------------------------------------
-midasAuthProfile midasDatabaseProxy::GetAuthProfile(std::string name)
+midasAuthProfile DatabaseAPI::GetAuthProfile(std::string name)
 {
   std::stringstream query;
   query << "SELECT eperson, apikey, app_name, url, root_dir FROM auth_profile"
@@ -237,7 +231,7 @@ midasAuthProfile midasDatabaseProxy::GetAuthProfile(std::string name)
 }
 
 //-------------------------------------------------------------------------
-std::vector<std::string> midasDatabaseProxy::GetAuthProfiles()
+std::vector<std::string> DatabaseAPI::GetAuthProfiles()
 {
   this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery("SELECT profile_name FROM auth_profile");
@@ -251,7 +245,7 @@ std::vector<std::string> midasDatabaseProxy::GetAuthProfiles()
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::AddAuthProfile(std::string user, std::string appName,
+bool DatabaseAPI::AddAuthProfile(std::string user, std::string appName,
                                         std::string apiKey, std::string name,
                                         std::string rootDir, std::string url)
 {
@@ -268,7 +262,7 @@ bool midasDatabaseProxy::AddAuthProfile(std::string user, std::string appName,
 }
 
 //-------------------------------------------------------------------------
-void midasDatabaseProxy::DeleteProfile(std::string name)
+void DatabaseAPI::DeleteProfile(std::string name)
 {
   this->Database->Open(this->DatabasePath.c_str());
   std::stringstream query;
@@ -278,7 +272,7 @@ void midasDatabaseProxy::DeleteProfile(std::string name)
 }
 
 //-------------------------------------------------------------------------
-void midasDatabaseProxy::MarkDirtyResource(std::string uuid, int dirtyAction)
+void DatabaseAPI::MarkDirtyResource(std::string uuid, int dirtyAction)
 {
   // Clear old dirty flags so that we don't have duplicates
   this->ClearDirtyResource(uuid);
@@ -291,7 +285,7 @@ void midasDatabaseProxy::MarkDirtyResource(std::string uuid, int dirtyAction)
 }
 
 //-------------------------------------------------------------------------
-void midasDatabaseProxy::ClearDirtyResource(std::string uuid)
+void DatabaseAPI::ClearDirtyResource(std::string uuid)
 {
   this->Database->Open(this->DatabasePath.c_str());
   std::stringstream query;
@@ -301,7 +295,7 @@ void midasDatabaseProxy::ClearDirtyResource(std::string uuid)
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::IsResourceDirty(std::string uuid)
+bool DatabaseAPI::IsResourceDirty(std::string uuid)
 {
   std::stringstream query;
   query << "SELECT uuid FROM dirty_resource WHERE uuid='"
@@ -316,7 +310,7 @@ bool midasDatabaseProxy::IsResourceDirty(std::string uuid)
 }
 
 //-------------------------------------------------------------------------
-std::string midasDatabaseProxy::GetName(int type, int id)
+std::string DatabaseAPI::GetName(int type, int id)
 {
   std::stringstream query;
   
@@ -348,7 +342,7 @@ std::string midasDatabaseProxy::GetName(int type, int id)
 }
 
 //-------------------------------------------------------------------------
-int midasDatabaseProxy::GetParentId(int type, int id)
+int DatabaseAPI::GetParentId(int type, int id)
 {
   std::stringstream query;
   
@@ -383,7 +377,7 @@ int midasDatabaseProxy::GetParentId(int type, int id)
 }
 
 //-------------------------------------------------------------------------
-std::string midasDatabaseProxy::GetUuid(int type, int id)
+std::string DatabaseAPI::GetUuid(int type, int id)
 {
   std::stringstream query;
   query << "SELECT uuid FROM resource_uuid WHERE resource_type_id='" 
@@ -399,7 +393,7 @@ std::string midasDatabaseProxy::GetUuid(int type, int id)
 }
 
 //-------------------------------------------------------------------------
-midasResourceRecord midasDatabaseProxy::GetRecordByUuid(std::string uuid)
+midasResourceRecord DatabaseAPI::GetRecordByUuid(std::string uuid)
 {
   std::stringstream query;
   query << "SELECT resource_type_id, resource_id, server_parent, path FROM "
@@ -422,7 +416,7 @@ midasResourceRecord midasDatabaseProxy::GetRecordByUuid(std::string uuid)
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::AddChild(int parentType, int parentId,
+bool DatabaseAPI::AddChild(int parentType, int parentId,
                                   int childType, int childId)
 {
   std::stringstream query;
@@ -479,7 +473,7 @@ bool midasDatabaseProxy::AddChild(int parentType, int parentId,
 }
 
 //-------------------------------------------------------------------------
-int midasDatabaseProxy::InsertBitstream(std::string path, std::string name)
+int DatabaseAPI::InsertBitstream(std::string path, std::string name)
 {
   std::stringstream query;
   query << "INSERT INTO bitstream (location, internal_id, name) VALUES ('1','"
@@ -493,7 +487,7 @@ int midasDatabaseProxy::InsertBitstream(std::string path, std::string name)
 }
 
 //-------------------------------------------------------------------------
-int midasDatabaseProxy::InsertCollection(std::string name)
+int DatabaseAPI::InsertCollection(std::string name)
 {
   std::stringstream query;
   query << "INSERT INTO collection (name) VALUES ('" << name << "')";
@@ -506,7 +500,7 @@ int midasDatabaseProxy::InsertCollection(std::string name)
 }
 
 //-------------------------------------------------------------------------
-int midasDatabaseProxy::InsertCommunity(std::string name)
+int DatabaseAPI::InsertCommunity(std::string name)
 {
   std::stringstream query;
   query << "INSERT INTO community (name) VALUES ('" << name << "')";
@@ -519,7 +513,7 @@ int midasDatabaseProxy::InsertCommunity(std::string name)
 }
 
 //-------------------------------------------------------------------------
-int midasDatabaseProxy::InsertItem(std::string name)
+int DatabaseAPI::InsertItem(std::string name)
 {
   std::stringstream query;
   query << "INSERT INTO item (title) VALUES ('" << name << "')";
@@ -532,7 +526,7 @@ int midasDatabaseProxy::InsertItem(std::string name)
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::InsertResourceRecord(int type, int id,
+bool DatabaseAPI::InsertResourceRecord(int type, int id,
                                               std::string path,
                                               std::string uuid, int parentId)
 {
@@ -544,7 +538,7 @@ bool midasDatabaseProxy::InsertResourceRecord(int type, int id,
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::ResourceExists(std::string uuid)
+bool DatabaseAPI::ResourceExists(std::string uuid)
 {
   std::stringstream query;
   query << "SELECT * FROM resource_uuid WHERE uuid='" << uuid << "'";
@@ -558,19 +552,19 @@ bool midasDatabaseProxy::ResourceExists(std::string uuid)
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::Open()
+bool DatabaseAPI::Open()
 {
   return this->Database->Open(this->DatabasePath.c_str());
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::Close()
+bool DatabaseAPI::Close()
 {
   return this->Database->Close();
 }
 
 //-------------------------------------------------------------------------
-void midasDatabaseProxy::Clean()
+void DatabaseAPI::Clean()
 {
   this->Database->Open(this->DatabasePath.c_str());
   this->Database->ExecuteQuery("DELETE FROM resource_uuid");
@@ -589,7 +583,7 @@ void midasDatabaseProxy::Clean()
 }
 
 //-------------------------------------------------------------------------
-std::string midasDatabaseProxy::GetSetting(MidasAppSetting setting)
+std::string DatabaseAPI::GetSetting(MidasAppSetting setting)
 {
   std::string key = this->GetKeyName(setting);
 
@@ -608,21 +602,21 @@ std::string midasDatabaseProxy::GetSetting(MidasAppSetting setting)
 }
 
 //-------------------------------------------------------------------------
-int midasDatabaseProxy::GetSettingInt(MidasAppSetting setting)
+int DatabaseAPI::GetSettingInt(MidasAppSetting setting)
 {
   std::string val = this->GetSetting(setting);
   return atoi(val.c_str());
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::GetSettingBool(MidasAppSetting setting)
+bool DatabaseAPI::GetSettingBool(MidasAppSetting setting)
 {
   std::string val = this->GetSetting(setting);
   return atoi(val.c_str()) != 0;
 }
 
 //-------------------------------------------------------------------------
-void midasDatabaseProxy::SetSetting(MidasAppSetting setting, std::string value)
+void DatabaseAPI::SetSetting(MidasAppSetting setting, std::string value)
 {
   std::string key = this->GetKeyName(setting);
 
@@ -638,20 +632,20 @@ void midasDatabaseProxy::SetSetting(MidasAppSetting setting, std::string value)
   this->Database->Close();
 }
 
-void midasDatabaseProxy::SetSetting(MidasAppSetting setting, int value)
+void DatabaseAPI::SetSetting(MidasAppSetting setting, int value)
 {
   std::stringstream s;
   s << value;
   this->SetSetting(setting, s.str());
 }
 
-void midasDatabaseProxy::SetSetting(MidasAppSetting setting, bool value)
+void DatabaseAPI::SetSetting(MidasAppSetting setting, bool value)
 {
   this->SetSetting(setting, value ? 1 : 0);
 }
 
 //--------------------------------------------------------------------------
-std::vector<midasStatus> midasDatabaseProxy::GetStatusEntries()
+std::vector<midasStatus> DatabaseAPI::GetStatusEntries()
 {
   std::vector<midasStatus> statlist;
   this->Database->Open(this->DatabasePath.c_str());
@@ -682,7 +676,7 @@ std::vector<midasStatus> midasDatabaseProxy::GetStatusEntries()
 }
 
 //--------------------------------------------------------------------------
-std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
+std::vector<mdo::Community*> DatabaseAPI::GetTopLevelCommunities(
                                                             bool buildTree)
 {
   std::vector<mdo::Community*> communities;
@@ -712,7 +706,6 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
       {
       mds::Community mdsComm;
       mdsComm.SetObject(*i);
-      mdsComm.SetDatabase(this);
       mdsComm.FetchTree();
       }
     }
@@ -720,7 +713,7 @@ std::vector<mdo::Community*> midasDatabaseProxy::GetTopLevelCommunities(
 }
 
 //--------------------------------------------------------------------------
-bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
+bool DatabaseAPI::DeleteResource(std::string uuid, bool deleteFiles)
 {
   midasResourceRecord record = this->GetRecordByUuid(uuid);
 
@@ -743,12 +736,11 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       comm->SetId(record.Id);
       comm->SetUuid(uuid.c_str());
       mdsComm.SetObject(comm);
-      mdsComm.SetDatabase(this);
       mdsComm.SetPath(record.Path);
       ok = mdsComm.Delete(deleteFiles);
-      if(ok && this->ResourceUpdateHandler)
+      if(ok && this->UpdateHandler)
         {
-        this->ResourceUpdateHandler->DeletedResource(comm);
+        this->UpdateHandler->DeletedResource(comm);
         }
       delete comm;
       break;
@@ -757,12 +749,11 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       coll->SetId(record.Id);
       coll->SetUuid(uuid.c_str());
       mdsColl.SetObject(coll);
-      mdsColl.SetDatabase(this);
       mdsColl.SetPath(record.Path);
       ok = mdsColl.Delete(deleteFiles);
-      if(ok && this->ResourceUpdateHandler)
+      if(ok && this->UpdateHandler)
         {
-        this->ResourceUpdateHandler->DeletedResource(coll);
+        this->UpdateHandler->DeletedResource(coll);
         }
       delete coll;
       break;
@@ -771,12 +762,11 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       item->SetId(record.Id);
       item->SetUuid(uuid.c_str());
       mdsItem.SetObject(item);
-      mdsItem.SetDatabase(this);
       mdsItem.SetPath(record.Path);
       ok = mdsItem.Delete(deleteFiles);
-      if(ok && this->ResourceUpdateHandler)
+      if(ok && this->UpdateHandler)
         {
-        this->ResourceUpdateHandler->DeletedResource(item);
+        this->UpdateHandler->DeletedResource(item);
         }
       delete item;
       break;
@@ -784,13 +774,12 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
       bitstream = new mdo::Bitstream;
       bitstream->SetId(record.Id);
       bitstream->SetUuid(uuid.c_str());
+      bitstream->SetPath(record.Path);
       mdsBitstream.SetObject(bitstream);
-      mdsBitstream.SetDatabase(this);
-      mdsBitstream.SetPath(record.Path);
       ok = mdsBitstream.Delete(deleteFiles);
-      if(ok && this->ResourceUpdateHandler)
+      if(ok && this->UpdateHandler)
         {
-        this->ResourceUpdateHandler->DeletedResource(bitstream);
+        this->UpdateHandler->DeletedResource(bitstream);
         }
       delete bitstream;
       break;
@@ -801,9 +790,9 @@ bool midasDatabaseProxy::DeleteResource(std::string uuid, bool deleteFiles)
 }
 
 //--------------------------------------------------------------------------
-bool midasDatabaseProxy::UnifyTree(bool copy)
+bool DatabaseAPI::UnifyTree(bool copy)
 {
-  std::string rootDir = this->GetSetting(midasDatabaseProxy::ROOT_DIR);
+  std::string rootDir = this->GetSetting(DatabaseAPI::ROOT_DIR);
   kwsys::SystemTools::ConvertToUnixSlashes(rootDir);
   rootDir = midasUtils::TrimTrailingSlash(rootDir);
   this->Log->Message("Relocating all resources under " + rootDir);
@@ -819,7 +808,7 @@ bool midasDatabaseProxy::UnifyTree(bool copy)
 }
 
 //--------------------------------------------------------------------------
-bool midasDatabaseProxy::Relocate(mdo::Community* comm, std::string parentDir,
+bool DatabaseAPI::Relocate(mdo::Community* comm, std::string parentDir,
                                   bool copy)
 {
   std::string copyTo = parentDir + "/" + comm->GetName();
@@ -859,7 +848,7 @@ bool midasDatabaseProxy::Relocate(mdo::Community* comm, std::string parentDir,
 }
 
 //--------------------------------------------------------------------------
-bool midasDatabaseProxy::Relocate(mdo::Collection* coll,
+bool DatabaseAPI::Relocate(mdo::Collection* coll,
                                   std::string parentDir, bool copy)
 {
   std::string copyTo = parentDir + "/" + coll->GetName();
@@ -894,7 +883,7 @@ bool midasDatabaseProxy::Relocate(mdo::Collection* coll,
 }
 
 //--------------------------------------------------------------------------
-bool midasDatabaseProxy::Relocate(mdo::Item* item, std::string parentDir,
+bool DatabaseAPI::Relocate(mdo::Item* item, std::string parentDir,
                                   bool copy)
 {
   std::string copyTo = parentDir + "/" + item->GetName();
@@ -929,7 +918,7 @@ bool midasDatabaseProxy::Relocate(mdo::Item* item, std::string parentDir,
 }
 
 //--------------------------------------------------------------------------
-bool midasDatabaseProxy::Relocate(mdo::Bitstream* bitstream,
+bool DatabaseAPI::Relocate(mdo::Bitstream* bitstream,
                                   std::string parentDir, bool copy)
 {
   std::string copyTo = parentDir + "/" + bitstream->GetName();
@@ -997,7 +986,7 @@ bool midasDatabaseProxy::Relocate(mdo::Bitstream* bitstream,
 }
 
 //--------------------------------------------------------------------------
-std::vector<mdo::Object*> midasDatabaseProxy::Search(
+std::vector<mdo::Object*> DatabaseAPI::Search(
                                               std::vector<std::string> tokens)
 {
   std::vector<mdo::Object*> results;
@@ -1008,7 +997,7 @@ std::vector<mdo::Object*> midasDatabaseProxy::Search(
 }
 
 //--------------------------------------------------------------------------
-std::string midasDatabaseProxy::GetUuidFromPath(std::string path)
+std::string DatabaseAPI::GetUuidFromPath(std::string path)
 {
   // First make sure we use the absolute path
   kwsys::SystemTools::ConvertToUnixSlashes(path);
@@ -1032,7 +1021,7 @@ std::string midasDatabaseProxy::GetUuidFromPath(std::string path)
 }
 
 //-------------------------------------------------------------------------
-bool midasDatabaseProxy::CheckModifiedBitstreams()
+bool DatabaseAPI::CheckModifiedBitstreams()
 {
   std::stringstream query;
   query << "SELECT bitstream_id, last_modified, internal_id FROM bitstream "
@@ -1091,3 +1080,5 @@ bool midasDatabaseProxy::CheckModifiedBitstreams()
     }
   return status;
 }
+
+} //end namespace mds

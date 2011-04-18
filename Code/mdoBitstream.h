@@ -18,6 +18,7 @@
 namespace mdo{
 
 class Item;
+class Assetstore;
 
 /** This class represent a bitstream on the MIDAS server. */
 class Bitstream : public Object
@@ -28,11 +29,6 @@ public:
   ~Bitstream();
 
   void Clear();
-
-  // Set/Get the ID of the parent
-  void SetParent(std::string id) { m_Parent = id; }
-  std::string & GetParent() {return m_Parent;}
-  const int GetParentId() {return atoi(m_Parent.c_str());}
 
   // Set/Get the name of bitstream
   void SetName(const char* name) { m_Name = name; }
@@ -46,16 +42,20 @@ public:
 
   std::string GetTypeName() { return "Bitstream"; }
 
+  void AddLocation(Assetstore* location) { m_Locations.push_back(location); }
+  void SetLocations(std::vector<Assetstore*> locations) { m_Locations = locations; }
+  std::vector<Assetstore*> & GetLocations() { return m_Locations; }
+
   Item* GetParentItem() { return m_ParentItem; }
   void SetParentItem(Item* item) { m_ParentItem = item; }
 
 protected:
 
-  std::string  m_Parent;
-  std::string  m_Name;
-  std::string  m_Path;
-  Item*        m_ParentItem;
-  long int     m_LastModified;
+  std::string              m_Name;
+  std::string              m_Path;
+  std::vector<Assetstore*> m_Locations;
+  Item*                    m_ParentItem;
+  long int                 m_LastModified;
 };
 
 } //end namespace

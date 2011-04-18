@@ -35,11 +35,6 @@ public:
   bool Load();
   void Clear();
 
-  // Set/Get the ID of the parent
-  void SetParent(std::string id) { m_Parent = id; }
-  std::string & GetParent() {return m_Parent;}
-  const int GetParentId() {return atoi(m_Parent.c_str());}
-
   // Set/Get the title of the item
   void SetTitle(const char* title) { m_Title = title; }
   std::string & GetTitle() {return m_Title;}
@@ -81,7 +76,6 @@ protected:
 
   friend class ItemXMLParser;
   
-  std::string  m_Parent;
   std::string  m_Title;
   std::string  m_Abstract;
   std::string  m_Description;

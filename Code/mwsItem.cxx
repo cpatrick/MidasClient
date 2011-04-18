@@ -139,18 +139,15 @@ bool Item::Fetch()
   parser.AddTag("/rsp/title",m_Item->GetTitle());
   parser.AddTag("/rsp/abstract",m_Item->GetAbstract());
   parser.AddTag("/rsp/uuid",m_Item->GetUuid());
-  parser.AddTag("/rsp/parent",m_Item->GetParent());
+  parser.AddTag("/rsp/parent",m_Item->GetParentStr());
   parser.AddTag("/rsp/description",m_Item->GetDescription());
   parser.AddTag("/rsp/hasAgreement",m_Item->RefAgreement());
   parser.AddTag("/rsp/size",m_Item->GetSize());
   
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
-  
   std::stringstream url;
   url << "midas.item.get?id=" << m_Item->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!WebAPI::Instance()->Execute(url.str().c_str(), &parser))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
   
@@ -177,7 +174,6 @@ bool Item::FetchParent()
   parent->SetId(m_Item->GetParentId());
 
   mws::Collection remote;
-  remote.SetWebAPI(mws::WebAPI::Instance());
   remote.SetObject(parent);
   return remote.Fetch();
 }
@@ -195,18 +191,29 @@ bool Item::Delete()
     std::cerr << "Item::Delete() : Item id not set" << std::endl;
     return false;
     }
-       
-  RestXMLParser parser;
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.item.delete?id=" << m_Item->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!WebAPI::Instance()->Execute(url.str().c_str()))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
+}
+
+bool Item::Create()
+{
+  std::stringstream postData;
+  postData << "uuid=" << m_Item->GetUuid()
+    << "&parentid=" << m_Item->GetParentId()
+    << "&name=" << midasUtils::EscapeForURL(m_Item->GetName())
+    << "&abstract=" << midasUtils::EscapeForURL(m_Item->GetAbstract())
+    << "&description=" << midasUtils::EscapeForURL(m_Item->GetDescription())
+    << "&authors=" << midasUtils::EscapeForURL(m_Item->GetAuthorsString())
+    << "&keywords=" << midasUtils::EscapeForURL(m_Item->GetKeywordsString());
+
+  return WebAPI::Instance()->Execute("midas.item.create", NULL,
+                                     postData.str().c_str());
 }
 
 } // end namespace

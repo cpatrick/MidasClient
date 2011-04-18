@@ -34,15 +34,16 @@ void Community::SetRecursive(bool recurse)
 /** Fecth */
 bool Community::Fetch()
 {
+  mds::DatabaseAPI db;
   if(!m_Community)
     {
-    m_Database->GetLog()->Error("Community::Fetch : Community not set\n");
+    db.GetLog()->Error("Community::Fetch : Community not set\n");
     return false;
     }
 
   if(m_Community->GetId() == 0)
     {
-    m_Database->GetLog()->Error("Community::Fetch : CommunityId not set\n");
+    db.GetLog()->Error("Community::Fetch : CommunityId not set\n");
     return false;
     }
 
@@ -53,7 +54,7 @@ bool Community::Fetch()
 
   if(m_Community->GetUuid() == "")
     {
-    m_Community->SetUuid(m_Database->GetUuid(
+    m_Community->SetUuid(db.GetUuid(
       midasResourceType::COMMUNITY, m_Community->GetId()).c_str());
     }
 
@@ -61,29 +62,29 @@ bool Community::Fetch()
   query << "SELECT short_description, introductory_text, copyright_text, name "
     "FROM community WHERE community_id='" << m_Community->GetId() << "'";
 
-  m_Database->Open();
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  db.Open();
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
     std::stringstream text;
     text << "Community::Fetch : Query failed: " << query.str() << std::endl;
-    m_Database->GetLog()->Error(text.str());
-    m_Database->Close();
+    db.GetLog()->Error(text.str());
+    db.Close();
     return false;
     }
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(db.Database->GetNextRow())
     {
     m_Community->SetDescription(
-      m_Database->GetDatabase()->GetValueAsString(0));
+      db.Database->GetValueAsString(0));
     m_Community->SetIntroductoryText(
-      m_Database->GetDatabase()->GetValueAsString(1));
+      db.Database->GetValueAsString(1));
     m_Community->SetCopyright(
-      m_Database->GetDatabase()->GetValueAsString(2));
+      db.Database->GetValueAsString(2));
     m_Community->SetName(
-      m_Database->GetDatabase()->GetValueAsString(3));
+      db.Database->GetValueAsString(3));
     }
   m_Community->SetFetched(true);
-  m_Database->Close();
+  db.Close();
   return true;
 }
 
@@ -101,7 +102,6 @@ bool Community::FetchSize()
     if((*i)->GetSize() == "")
       {
       mds::Community mdsComm;
-      mdsComm.SetDatabase(m_Database);
       mdsComm.SetObject(*i);
       mdsComm.FetchSize();
       }
@@ -113,7 +113,6 @@ bool Community::FetchSize()
     if((*i)->GetSize() == "")
       {
       mds::Collection mdsColl;
-      mdsColl.SetDatabase(m_Database);
       mdsColl.SetObject(*i);
       mdsColl.FetchSize();
       }
@@ -128,25 +127,26 @@ bool Community::FetchSize()
 /** Commit */
 bool Community::Commit()
 {
+  mds::DatabaseAPI db;
   if(!m_Community)
     {
-    m_Database->GetLog()->Error("Community::Commit : Community not set\n");
+    db.GetLog()->Error("Community::Commit : Community not set\n");
     return false;
     }
 
   if(m_Community->GetId() == 0)
     {
-    m_Database->GetLog()->Error("Community::Commit : CommunityId not set\n");
+    db.GetLog()->Error("Community::Commit : CommunityId not set\n");
     return false;
     }
 
   if(m_Community->GetUuid() == "")
     {
-    m_Community->SetUuid(m_Database->GetUuid(
+    m_Community->SetUuid(db.GetUuid(
       midasResourceType::COMMUNITY, m_Community->GetId()).c_str());
     }
 
-  std::string path = m_Database->GetRecordByUuid(m_Community->GetUuid()).Path;
+  std::string path = db.GetRecordByUuid(m_Community->GetUuid()).Path;
   std::string parentDir = kwsys::SystemTools::GetParentDirectory(path.c_str());
   std::string oldName = kwsys::SystemTools::GetFilenameName(path);
 
@@ -159,9 +159,9 @@ bool Community::Commit()
       pathQuery << "UPDATE resource_uuid SET path='" << newPath <<
         "' WHERE uuid='" << m_Community->GetUuid() << "'";
 
-      m_Database->Open();
-      m_Database->GetDatabase()->ExecuteQuery(pathQuery.str().c_str());
-      m_Database->Close();
+      db.Open();
+      db.Database->ExecuteQuery(pathQuery.str().c_str());
+      db.Close();
 
       this->FetchTree();
 
@@ -170,7 +170,6 @@ bool Community::Commit()
           i != m_Community->GetCommunities().end(); ++i)
         {
         mds::Community mdsComm;
-        mdsComm.SetDatabase(m_Database);
         mdsComm.SetObject(*i);
         mdsComm.ParentPathChanged(newPath);
         }
@@ -180,14 +179,13 @@ bool Community::Commit()
           i != m_Community->GetCollections().end(); ++i)
         {
         mds::Collection mdsColl;
-        mdsColl.SetDatabase(m_Database);
         mdsColl.SetObject(*i);
         mdsColl.ParentPathChanged(newPath);
         }
       }
     else
       {
-      m_Database->GetLog()->Error("Community::Commit : could not rename "
+      db.GetLog()->Error("Community::Commit : could not rename "
         "directory on disk. It may be locked.\n");
       return false;
       }
@@ -205,45 +203,46 @@ bool Community::Commit()
     midasUtils::EscapeForSQL(m_Community->GetCopyright()) << "' WHERE "
     "community_id='" << m_Community->GetId() << "'";
 
-  m_Database->Open();
-  if(m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  db.Open();
+  if(db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->Close();
+    db.Close();
     if(m_MarkDirty)
       {
-      m_Database->MarkDirtyResource(m_Community->GetUuid(),
+      db.MarkDirtyResource(m_Community->GetUuid(),
         midasDirtyAction::MODIFIED);
       }
     return true;
     }
   std::stringstream text;
   text << "Community::Commit : Query failed: " << query.str() << std::endl;
-  m_Database->GetLog()->Error(text.str());
-  m_Database->Close();
+  db.GetLog()->Error(text.str());
+  db.Close();
   return false;
 }
 
 bool Community::FetchTree()
 {
+  mds::DatabaseAPI db;
   if(!m_Community)
     {
-    m_Database->GetLog()->Error("Community::FetchTree : Community not set\n");
+    db.GetLog()->Error("Community::FetchTree : Community not set\n");
     return false;
     }
 
   if(m_Community->GetId() == 0)
     {
-    m_Database->GetLog()->Error("Community::FetchTree : CommunityId not set\n");
+    db.GetLog()->Error("Community::FetchTree : CommunityId not set\n");
     return false;
     }
 
   if(m_Community->GetUuid() == "")
     {
-    m_Community->SetUuid(m_Database->GetUuid(
+    m_Community->SetUuid(db.GetUuid(
       midasResourceType::COMMUNITY, m_Community->GetId()).c_str());
     }
 
-  m_Community->SetDirty(m_Database->IsResourceDirty(m_Community->GetUuid()));
+  m_Community->SetDirty(db.IsResourceDirty(m_Community->GetUuid()));
 
   std::stringstream query;
   query << "SELECT community.community_id, community.name, resource_uuid.uuid "
@@ -252,20 +251,20 @@ bool Community::FetchTree()
     "community.community_id AND community.community_id IN "
     "(SELECT child_comm_id FROM community2community WHERE parent_comm_id="
     << m_Community->GetId() << ") ORDER BY community.name COLLATE NOCASE ASC";
-  m_Database->Open();
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  db.Open();
+  db.Database->ExecuteQuery(query.str().c_str());
 
   std::vector<mdo::Community*> childCommunities;
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(db.Database->GetNextRow())
     {
     mdo::Community* community = new mdo::Community;
-    community->SetId(m_Database->GetDatabase()->GetValueAsInt(0));
-    community->SetName(m_Database->GetDatabase()->GetValueAsString(1));
-    community->SetUuid(m_Database->GetDatabase()->GetValueAsString(2));
+    community->SetId(db.Database->GetValueAsInt(0));
+    community->SetName(db.Database->GetValueAsString(1));
+    community->SetUuid(db.Database->GetValueAsString(2));
     childCommunities.push_back(community);
     m_Community->AddCommunity(community);
     }
-  m_Database->Close();
+  db.Close();
 
   if(m_Recurse)
     {
@@ -274,7 +273,6 @@ bool Community::FetchTree()
       {
       mds::Community mdsComm;
       mdsComm.SetObject(*i);
-      mdsComm.SetDatabase(m_Database);
       if(!mdsComm.FetchTree())
         {
         return false;
@@ -289,20 +287,20 @@ bool Community::FetchTree()
     "collection.collection_id AND collection.collection_id IN (SELECT collection_id "
     "FROM community2collection WHERE community_id=" << m_Community->GetId() << ")"
     << " ORDER BY collection.name COLLATE NOCASE ASC";
-  m_Database->Open();
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  db.Open();
+  db.Database->ExecuteQuery(query.str().c_str());
 
   std::vector<mdo::Collection*> collections;
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(db.Database->GetNextRow())
     {
     mdo::Collection* collection = new mdo::Collection;
-    collection->SetId(m_Database->GetDatabase()->GetValueAsInt(0));
-    collection->SetName(m_Database->GetDatabase()->GetValueAsString(1));
-    collection->SetUuid(m_Database->GetDatabase()->GetValueAsString(2));
+    collection->SetId(db.Database->GetValueAsInt(0));
+    collection->SetName(db.Database->GetValueAsString(1));
+    collection->SetUuid(db.Database->GetValueAsString(2));
     collections.push_back(collection);
     m_Community->AddCollection(collection);
     }
-  m_Database->Close();
+  db.Close();
 
   if(m_Recurse)
     {
@@ -311,7 +309,6 @@ bool Community::FetchTree()
       {
       mds::Collection mdsColl;
       mdsColl.SetObject(*i);
-      mdsColl.SetDatabase(m_Database);
       if(!mdsColl.FetchTree())
         {
         return false;
@@ -323,22 +320,23 @@ bool Community::FetchTree()
 
 bool Community::Delete(bool deleteOnDisk)
 {
+  mds::DatabaseAPI db;
   std::vector<int> children;
   std::stringstream query;
   query << "SELECT child_comm_id FROM community2community WHERE "
     "parent_comm_id='" << m_Community->GetId() << "'";
-  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  db.Open();
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->Close();
+    db.Database->Close();
     return false;
     }
 
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(db.Database->GetNextRow())
     {
-    children.push_back(m_Database->GetDatabase()->GetValueAsInt(0));
+    children.push_back(db.Database->GetValueAsInt(0));
     }
-  m_Database->GetDatabase()->Close();
+  db.Database->Close();
   bool ok = true;
   for(std::vector<int>::iterator i = children.begin();
       i != children.end(); ++i)
@@ -346,10 +344,9 @@ bool Community::Delete(bool deleteOnDisk)
     mds::Community mdsComm;
     mdo::Community* comm = new mdo::Community;
     comm->SetId(*i);
-    comm->SetUuid(m_Database->GetUuid(midasResourceType::COMMUNITY, *i).c_str());
+    comm->SetUuid(db.GetUuid(midasResourceType::COMMUNITY, *i).c_str());
     mdsComm.SetObject(comm);
-    mdsComm.SetDatabase(m_Database);
-    mdsComm.SetPath(m_Database->GetRecordByUuid(comm->GetUuid()).Path);
+    mdsComm.SetPath(db.GetRecordByUuid(comm->GetUuid()).Path);
     ok &= mdsComm.Delete(deleteOnDisk);
     delete comm;
 
@@ -362,25 +359,24 @@ bool Community::Delete(bool deleteOnDisk)
   query.str(std::string());
   query << "SELECT collection_id FROM community2collection WHERE "
     "community_id='" << m_Community->GetId() << "'";
-  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
+  db.Open();
+  db.Database->ExecuteQuery(query.str().c_str());
 
   children.clear();
-  while(m_Database->GetDatabase()->GetNextRow())
+  while(db.Database->GetNextRow())
     {
-    children.push_back(m_Database->GetDatabase()->GetValueAsInt(0)); 
+    children.push_back(db.Database->GetValueAsInt(0)); 
     }
-  m_Database->GetDatabase()->Close();
+  db.Database->Close();
   for(std::vector<int>::iterator i = children.begin();
       i != children.end(); ++i)
     {
     mds::Collection mdsColl;
     mdo::Collection* coll = new mdo::Collection;
     coll->SetId(*i);
-    coll->SetUuid(m_Database->GetUuid(midasResourceType::COLLECTION, *i).c_str());
+    coll->SetUuid(db.GetUuid(midasResourceType::COLLECTION, *i).c_str());
     mdsColl.SetObject(coll);
-    mdsColl.SetDatabase(m_Database);
-    mdsColl.SetPath(m_Database->GetRecordByUuid(coll->GetUuid()).Path);
+    mdsColl.SetPath(db.GetRecordByUuid(coll->GetUuid()).Path);
     ok &= mdsColl.Delete(deleteOnDisk);
     delete coll;
 
@@ -390,60 +386,60 @@ bool Community::Delete(bool deleteOnDisk)
       }
     }
 
-  m_Database->GetDatabase()->Open(m_Database->GetDatabasePath().c_str());
-  m_Database->GetDatabase()->ExecuteQuery("BEGIN");
+  db.Open();
+  db.Database->ExecuteQuery("BEGIN");
   query.str(std::string());
   query << "DELETE FROM community2community WHERE parent_comm_id='" <<
     m_Community->GetId() << "' OR child_comm_id='" <<
     m_Community->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    db.Database->ExecuteQuery("ROLLBACK");
+    db.Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM community2collection WHERE community_id='" <<
     m_Community->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    db.Database->ExecuteQuery("ROLLBACK");
+    db.Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM community WHERE community_id='" <<
     m_Community->GetId() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    db.Database->ExecuteQuery("ROLLBACK");
+    db.Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM dirty_resource WHERE uuid='" <<
     m_Community->GetUuid() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    db.Database->ExecuteQuery("ROLLBACK");
+    db.Database->Close();
     return false;
     }
 
   query.str(std::string());
   query << "DELETE FROM resource_uuid WHERE uuid='" <<
     m_Community->GetUuid() << "'";
-  if(!m_Database->GetDatabase()->ExecuteQuery(query.str().c_str()))
+  if(!db.Database->ExecuteQuery(query.str().c_str()))
     {
-    m_Database->GetDatabase()->ExecuteQuery("ROLLBACK");
-    m_Database->GetDatabase()->Close();
+    db.Database->ExecuteQuery("ROLLBACK");
+    db.Database->Close();
     return false;
     }
-  m_Database->GetDatabase()->ExecuteQuery("COMMIT");
-  m_Database->GetDatabase()->Close();
+  db.Database->ExecuteQuery("COMMIT");
+  db.Database->Close();
   if(deleteOnDisk)
     {
     kwsys::SystemTools::RemoveADirectory(this->m_Path.c_str());
@@ -463,14 +459,15 @@ void Community::SetPath(std::string path)
 
 void Community::ParentPathChanged(std::string parentPath)
 {
+  mds::DatabaseAPI db;
   std::string newPath = parentPath + "/" + m_Community->GetName();
   std::stringstream query;
   query << "UPDATE resource_uuid SET path='" << newPath << "' WHERE "
     "uuid='" << m_Community->GetUuid() << "'";
 
-  m_Database->Open();
-  m_Database->GetDatabase()->ExecuteQuery(query.str().c_str());
-  m_Database->Close();
+  db.Open();
+  db.Database->ExecuteQuery(query.str().c_str());
+  db.Close();
 
   for(std::vector<mdo::Community*>::const_iterator i =
       m_Community->GetCommunities().begin();
@@ -478,7 +475,6 @@ void Community::ParentPathChanged(std::string parentPath)
     {
     mds::Community mdsComm;
     mdsComm.SetObject(*i);
-    mdsComm.SetDatabase(m_Database);
     mdsComm.ParentPathChanged(newPath);
     }
 
@@ -488,7 +484,6 @@ void Community::ParentPathChanged(std::string parentPath)
     {
     mds::Collection mdsColl;
     mdsColl.SetObject(*i);
-    mdsColl.SetDatabase(m_Database);
     mdsColl.ParentPathChanged(newPath);
     }
 }

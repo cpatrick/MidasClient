@@ -13,7 +13,6 @@
 #define MIDASAUTHENTICATOR_H
 
 #include "midasStandardIncludes.h"
-#include "midasDatabaseProxy.h"
 #include "midasLogAware.h"
 #include "mwsWebAPI.h"
 
@@ -26,22 +25,15 @@ class midasAuthenticator : public midasLogAware
     bool AddAuthProfile(std::string user, std::string appName,
       std::string apiKey, std::string rootDir, std::string profileName);
     
-    // Lazy getter for an api auth token
-    //std::string FetchToken();
-    // May need this function in case the old token expires
     void ClearToken();
 
-    void SetDatabase(std::string database);
-    void SetServerURL(std::string url);
     void SetProfile(std::string profile);
     std::string GetProfile() { return Profile; }
 
-    bool Login(mws::WebAPI* api);
+    bool Login();
 
     bool IsAnonymous();
   protected:
-    std::string ServerURL;
-    midasDatabaseProxy* Database;
     std::string Token;
     std::string Profile;
 };

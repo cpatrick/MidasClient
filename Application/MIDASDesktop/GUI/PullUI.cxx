@@ -3,7 +3,6 @@
 #include "MidasClientGlobal.h"
 #include "MIDASDesktopUI.h"
 #include "midasAuthenticator.h"
-#include "midasDatabaseProxy.h"
 #include "midasSynchronizer.h"
 #include "PollFilesystemThread.h"
 
@@ -114,12 +113,9 @@ void PullUI::accept()
 
   m_SynchronizerThread = new SynchronizerThread;
   midasSynchronizer* synchronizer = new midasSynchronizer;
-  synchronizer->SetDatabase(m_Parent->getSynchronizer()->GetDatabase()->GetDatabasePath());
   synchronizer->SetLog(m_Parent->getSynchronizer()->GetLog());
   synchronizer->SetProgressReporter(m_Parent->getProgress());
-  synchronizer->SetServerURL(m_Parent->getSynchronizer()->GetServerURL());
   synchronizer->SetAgreementHandler(m_Parent->getAgreementHandler());
-  synchronizer->SetResourceUpdateHandler(m_Parent->getResourceUpdateHandler());
   synchronizer->SetOverwriteHandler(m_Parent->getFileOverwriteHandler());
   //hack-ish: make sure to set the authenticator back to null so it doesn't delete the top level auth when it goes out of scope
   synchronizer->SetAuthenticator(m_Parent->getSynchronizer()->GetAuthenticator(), true);

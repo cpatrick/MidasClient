@@ -25,15 +25,16 @@ class AddAuthorUI;
 class AddKeywordUI;
 class AgreementUI;
 class FileOverwriteUI;
+class MirrorPickerUI;
 
 class midasSynchronizer;
-class midasDatabaseProxy;
 class midasProgressReporter;
 class midasAgreementHandler;
 class midasFileOverwriteHandler;
 class ButtonDelegate;
 class TextEditDelegate;
 
+class AddBitstreamsThread;
 class RefreshServerTreeThread;
 class SynchronizerThread;
 class SearchThread;
@@ -49,6 +50,10 @@ namespace mdo {
 
 namespace mds {
   class ResourceUpdateHandler;
+}
+
+namespace mws {
+  class MirrorHandler;
 }
 
 extern "C" {
@@ -89,7 +94,6 @@ public:
 
   MidasTreeViewServer * getTreeViewServer() { return treeViewServer; }
   MidasTreeViewClient * getTreeViewClient() { return treeViewClient; }
-  midasDatabaseProxy* getDatabaseProxy() { return m_database; }
   midasSynchronizer* getSynchronizer() { return m_synch; }
   midasProgressReporter* getProgress() { return m_progress; }
   PollFilesystemThread* getPollFilesystemThread() { return m_PollFilesystemThread; }
@@ -128,7 +132,7 @@ public slots:
   void showFileOverwriteDialog(const QString& path);
   void createProfile(std::string name, std::string email,
                      std::string apiName, std::string apiKey,
-                     std::string rootDir);
+                     std::string rootDir, std::string url);
   void chooseLocalDatabase();
   void createLocalDatabase();
   void setLocalDatabase(std::string file);
@@ -186,6 +190,7 @@ public slots:
   void addBitstream();
   void addBitstreams(const MidasItemTreeItem* parentItem,
                      const QStringList & files);
+  void addBitstreamsProgress(int current, int total, const QString& message);
   void pullRecursive(int type, int id);
   void viewInBrowser();
   void viewDirectory();
@@ -204,8 +209,6 @@ public slots:
   void searchItemClicked(QListWidgetItemMidasItem * item);
   void searchItemContextMenu(QContextMenuEvent * e);
   // ------------- search -------------
-
-  void setServerURL(std::string);
 
   // ------------- log ----------------
   void showLogTab();
@@ -236,6 +239,7 @@ private:
   AddKeywordUI*               dlg_addKeywordUI;
   AgreementUI*                dlg_agreementUI;
   FileOverwriteUI*            dlg_overwriteUI;
+  MirrorPickerUI*             dlg_mirrorPickerUI;
   // ------------- UI Dialogs -------------
 
   // ------------- status bar -------------
@@ -259,19 +263,17 @@ private:
   QTimer *                    refreshTimer;
   // ------------- auto-refresh -----------
 
-
   bool                        m_signIn;
   bool                        m_editMode;
   bool                        m_cancel;
-  midasDatabaseProxy*         m_database;
   midasSynchronizer*          m_synch;
-  std::string                 m_url;
   midasProgressReporter*      m_progress;
   midasAgreementHandler*      m_agreementHandler;
   midasFileOverwriteHandler*  m_overwriteHandler;
   std::vector<std::string>    m_dirtyUuids;
   std::vector<mdo::Object*>   m_SearchResults;
   mds::ResourceUpdateHandler* m_resourceUpdateHandler;
+  mws::MirrorHandler*         m_mirrorHandler;
 
   // ----------- threads -----------------
   RefreshServerTreeThread*    m_RefreshThread;
@@ -279,6 +281,7 @@ private:
   SearchThread*               m_SearchThread;
   ReadDatabaseThread*         m_ReadDatabaseThread;
   PollFilesystemThread*       m_PollFilesystemThread;
+  AddBitstreamsThread*        m_AddBitstreamsThread;
   QFutureWatcher<bool>        m_CreateDBWatcher;
   // ----------- threads -----------------
 };

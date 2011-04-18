@@ -1,10 +1,9 @@
 #include "CreateProfileUI.h"
 #include "MidasClientGlobal.h"
-#include "mwsSettings.h"
 #include "MIDASDesktopUI.h"
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 #include <QString>
 #include <QCheckBox>
 #include <QMessageBox>
@@ -40,10 +39,10 @@ void CreateProfileUI::init()
   profileComboBox->clear();
   profileComboBox->addItem("New Profile");
 
-  serverURLEdit->setText(
-    parent->getDatabaseProxy()->GetSetting(midasDatabaseProxy::LAST_URL).c_str());
+  mds::DatabaseAPI db;
+  serverURLEdit->setText(db.GetSetting(mds::DatabaseAPI::LAST_URL).c_str());
 
-  std::vector<std::string> profiles = parent->getDatabaseProxy()->GetAuthProfiles();
+  std::vector<std::string> profiles = db.GetAuthProfiles();
 
   for(std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i)
     {
@@ -63,7 +62,8 @@ void CreateProfileUI::fillData(const QString& name)
     }
   else
     {
-    midasAuthProfile profile = parent->getDatabaseProxy()->GetAuthProfile(
+    mds::DatabaseAPI db;
+    midasAuthProfile profile = db.GetAuthProfile(
       name.toStdString());
 
     profileNameEdit->setText(profile.Name.c_str());
@@ -107,7 +107,7 @@ void CreateProfileUI::rootDirChecked(int state)
 
 int CreateProfileUI::exec()
 {
-  if(this->parent->getDatabaseProxy())
+  if(mds::DatabaseInfo::Instance()->GetPath() != "")
     {
     this->init();
     return QDialog::exec();
@@ -142,8 +142,7 @@ void CreateProfileUI::accept()
 
   std::string apiKey = midasUtils::CreateDefaultAPIKey(email, password, "Default");
 
-  emit serverURLSet(serverURL);
-  emit createdProfile(profileName, email, "Default", apiKey, rootDir);
+  emit createdProfile(profileName, email, "Default", apiKey, rootDir, serverURL);
 }
 
 void CreateProfileUI::deleteProfile()
@@ -151,7 +150,8 @@ void CreateProfileUI::deleteProfile()
   std::string profileName = profileComboBox->currentText().toStdString();
   profileComboBox->removeItem(profileComboBox->currentIndex());
 
-  parent->getDatabaseProxy()->DeleteProfile(profileName);
+  mds::DatabaseAPI db;
+  db.DeleteProfile(profileName);
 
   std::stringstream text;
   text << "Deleted profile " << profileName;

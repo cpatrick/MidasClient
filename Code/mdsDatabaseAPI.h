@@ -9,13 +9,14 @@
 
 =========================================================================*/
 
-#ifndef MIDASSQLITEPROXY_H
-#define MIDASSQLITEPROXY_H
+#ifndef _MDSDATABASEAPI_H
+#define _MDSDATABASEAPI_H
 
 #include "midasStandardIncludes.h"
 #include "midasStatus.h"
 #include "mdsSQLiteDatabase.h"
 #include "midasLogAware.h"
+#include "mdsDatabaseInfo.h"
 
 namespace mdo
 {
@@ -35,6 +36,10 @@ namespace mds
   class ResourceUpdateHandler;
 }
 
+/**
+ * Identifier for any resource type (community,collection,item,bitstream)
+ * Includes Type#, Id, Parent Id, Path on disk, and uuid
+ */
 struct midasResourceRecord
 {
   midasResourceRecord() :
@@ -66,15 +71,17 @@ struct midasBitstreamStamp
   int Id;
 };
 
-class midasDatabaseProxy : public midasLogAware
+namespace mds {
+
+class DatabaseAPI : public midasLogAware
 {
-  friend class mds::Community;
-  friend class mds::Collection;
-  friend class mds::Item;
-  friend class mds::Bitstream;
+  friend class Community;
+  friend class Collection;
+  friend class Item;
+  friend class Bitstream;
 public:
-  midasDatabaseProxy(std::string database);
-  ~midasDatabaseProxy();
+  DatabaseAPI(const std::string& path = "");
+  ~DatabaseAPI();
 
   enum MidasAppSetting
     {
@@ -85,9 +92,6 @@ public:
     ROOT_DIR,
     UNIFIED_TREE
     };
-
-  mds::SQLiteDatabase* GetDatabase();
-  std::string GetDatabasePath() { return this->DatabasePath; }
 
   /**
    * Clean entries in the database
@@ -173,8 +177,6 @@ public:
    */
   bool CheckModifiedBitstreams();
 
-  void SetResourceUpdateHandler(mds::ResourceUpdateHandler* handler);
-  mds::ResourceUpdateHandler* GetResourceUpdateHandler();
 protected:
   bool InsertResourceRecord(int type, int id,
                             std::string path, std::string uuid, int parentId);
@@ -190,13 +192,14 @@ protected:
   bool Relocate(mdo::Bitstream* bitstream, std::string parentDir, bool copy);
 
   std::string GetKeyName(MidasAppSetting setting);
-
-  mds::SQLiteDatabase* Database;
-  mds::ResourceUpdateHandler* ResourceUpdateHandler;
-  std::string DatabasePath;
   
   bool Open();
   bool Close();
+
+  SQLiteDatabase* Database;
+  std::string DatabasePath;
+  ResourceUpdateHandler* UpdateHandler;
 };
 
+} //end namespace
 #endif

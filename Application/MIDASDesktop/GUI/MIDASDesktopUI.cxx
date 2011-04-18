@@ -16,7 +16,6 @@
 
 #include "midasStandardIncludes.h"
 
-#include "mwsSettings.h"
 #include "mdoCommunity.h"
 #include "mwsCommunity.h"
 #include "mwsItem.h"
@@ -28,16 +27,17 @@
 #include "mdsCommunity.h"
 #include "mdsCollection.h"
 #include "mdsItem.h"
+#include "mdsDatabaseAPI.h"
 #include "midasAuthenticator.h"
 #include "midasLog.h"
 #include "midasSynchronizer.h"
-#include "midasDatabaseProxy.h"
 #include "midasProgressReporter.h"
 
 #include "GUIAgreement.h"
 #include "GUIFileOverwriteHandler.h"
 #include "GUILogger.h"
 #include "GUIProgress.h"
+#include "GUIMirrorHandler.h"
 #include "Utils.h"
 #include "ResourceEdit.h"
 #include "ButtonDelegate.h"
@@ -56,6 +56,7 @@
 #include "ProcessingStatusUI.h"
 #include "PullUI.h"
 #include "SignInUI.h"
+#include "MirrorPickerUI.h"
 // ------------- Dialogs -------------
 
 // ------------- Threads -------------
@@ -64,6 +65,7 @@
 #include "SearchThread.h"
 #include "ReadDatabaseThread.h"
 #include "PollFilesystemThread.h"
+#include "AddBitstreamsThread.h"
 // ------------- Threads -------------
 
 // ------------- TreeModel / TreeView -------------
@@ -87,8 +89,8 @@
 MIDASDesktopUI::MIDASDesktopUI()
 {
   setupUi(this); // this sets up GUI
-  int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
-  srand (time); //init random number generator
+  unsigned int currTime = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
+  srand (currTime); //init random number generator
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
 
   // center the main window
@@ -134,6 +136,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   m_overwriteHandler =         new GUIFileOverwriteHandler( this );
   dlg_overwriteUI =            new FileOverwriteUI( this,
     dynamic_cast<GUIFileOverwriteHandler*>(this->m_overwriteHandler));
+  dlg_mirrorPickerUI =         new MirrorPickerUI( this );
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
@@ -257,11 +260,10 @@ MIDASDesktopUI::MIDASDesktopUI()
   //connect( actionSwap_with_MD5_reference, SIGNAL( triggered() ), this, SLOT( 
 
   connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
-  connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string, std::string)),
-    this, SLOT( createProfile(std::string, std::string, std::string, std::string, std::string)));
+  connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string, std::string, std::string)),
+    this, SLOT( createProfile(std::string, std::string, std::string, std::string, std::string, std::string)));
   connect( dlg_createProfileUI, SIGNAL( deletedProfile(std::string)),
     dlg_signInUI, SLOT( removeProfile(std::string)));
-  connect( dlg_createProfileUI, SIGNAL( serverURLSet(std::string)), this, SLOT( setServerURL(std::string)));
   connect( dlg_signInUI, SIGNAL( createProfileRequest() ), dlg_createProfileUI, SLOT( exec() ) );
   connect( dlg_deleteClientResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteLocalResource(bool) ) );
   connect( dlg_deleteServerResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteServerResource(bool) ) );
@@ -307,19 +309,24 @@ MIDASDesktopUI::MIDASDesktopUI()
   m_SearchThread = NULL;
   m_ReadDatabaseThread = NULL;
   m_PollFilesystemThread = NULL;
+  m_AddBitstreamsThread = NULL;
   connect(&m_CreateDBWatcher, SIGNAL(finished()), this, SLOT(newDBFinished()));
   // ------------- thread init -----------------
 
   // ------------- setup client members and logging ----
-  this->m_database = NULL;
   this->m_synch = new midasSynchronizer();
   this->m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
+  this->m_mirrorHandler = new GUIMirrorHandler(dlg_mirrorPickerUI);
   this->m_progress = new GUIProgress(this->progressBar);
   this->Log = new GUILogger(this);
   this->m_synch->SetLog(this->Log);
+  mds::DatabaseInfo::Instance()->SetLog(this->Log);
+  mds::DatabaseInfo::Instance()->SetResourceUpdateHandler(m_resourceUpdateHandler);
+  mws::WebAPI::Instance()->SetLog(this->Log);
+  mws::WebAPI::Instance()->SetAuthenticator(m_synch->GetAuthenticator());
+  mws::WebAPI::Instance()->SetMirrorHandler(m_mirrorHandler);
   this->m_synch->SetOverwriteHandler(this->m_overwriteHandler);
   this->m_synch->SetProgressReporter(m_progress);
-  this->m_synch->SetResourceUpdateHandler(m_resourceUpdateHandler);
   this->m_signIn = false;
   this->m_editMode = false;
   this->m_cancel = false;
@@ -334,12 +341,18 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgressTotal(double, double) ), this, SLOT( totalProgressUpdate(double, double) ) );
   // ------------- Progress bar ------------------------
 
+  // ------------- Mirror handler ----------------------
+  connect(dynamic_cast<GUIMirrorHandler*>(m_mirrorHandler), SIGNAL( prompt(mdo::Bitstream*) ),
+    dlg_mirrorPickerUI, SLOT( exec(mdo::Bitstream*) ) );
+  connect(dlg_mirrorPickerUI, SIGNAL( accepted() ),
+    dynamic_cast<GUIMirrorHandler*>(m_mirrorHandler), SLOT( dialogAccepted() ) );
+  // ------------- Mirror handler ----------------------
+
   // ------------- Handle stored settings -------------
   QSettings settings("Kitware", "MIDASDesktop");
   std::string lastDatabase =
     settings.value("lastDatabase", "").toString().toStdString();
   this->setLocalDatabase(lastDatabase);
-
   // ------------- Handle stored settings -------------
 }
 
@@ -368,6 +381,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete dlg_overwriteUI;
   delete dlg_deleteClientResourceUI;
   delete dlg_deleteServerResourceUI;
+  delete dlg_mirrorPickerUI;
   delete stateLabel;
   delete connectLabel;
   delete cancelButton;
@@ -377,6 +391,7 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete m_synch;
   delete m_agreementHandler;
   delete m_overwriteHandler;
+  delete m_mirrorHandler;
   if(m_RefreshThread && m_RefreshThread->isRunning())
     {
     m_RefreshThread->terminate();
@@ -400,7 +415,6 @@ MIDASDesktopUI::~MIDASDesktopUI()
   delete authorsEditor;
   delete keywordsEditor;
   delete textMetadataEditor;
-  delete mws::WebAPI::Instance()->GetRestAPI();
 }
 
 mds::ResourceUpdateHandler* MIDASDesktopUI::getResourceUpdateHandler()
@@ -412,9 +426,10 @@ void MIDASDesktopUI::showNormal()
 {
   trayIcon->setIcon(QPixmap(":icons/MIDAS_Desktop_Icon.png"));
 
-  if(m_database)
+  if(mds::DatabaseInfo::Instance()->GetPath() != "")
     {
-    if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 0)
+    mds::DatabaseAPI db;
+    if(atoi(db.GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str()) == 0)
       {
       refreshTimer->stop();
       }
@@ -523,7 +538,8 @@ void MIDASDesktopUI::closeEvent(QCloseEvent *event)
 
     if(m_signIn)
       {
-      if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 0)
+      mds::DatabaseAPI db;
+      if(atoi(db.GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str()) == 0)
         {
         refreshTimer->start();
         }
@@ -819,7 +835,6 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
   else if(communityTreeItem->isClientResource())
     {
     mds::Community mdsComm;
-    mdsComm.SetDatabase(m_database);
     mdsComm.SetObject(community);
     mdsComm.FetchSize();
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
@@ -912,7 +927,6 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
   else if(collectionTreeItem->isClientResource())
     {
     mds::Collection mdsColl;
-    mdsColl.SetDatabase(m_database);
     mdsColl.SetObject(collection);
     mdsColl.FetchSize();
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
@@ -1016,7 +1030,6 @@ void MIDASDesktopUI::infoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
   else if(itemTreeItem->isClientResource())
     {
     mds::Item mdsItem;
-    mdsItem.SetDatabase(m_database);
     mdsItem.SetObject(item);
     mdsItem.FetchSize();
     midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
@@ -1211,59 +1224,48 @@ void MIDASDesktopUI::addBitstream()
 void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
                                    const QStringList & files)
 {
-  m_PollFilesystemThread->Pause();
-  for(QStringList::const_iterator i = files.begin(); i != files.end(); ++i)
+  if(m_AddBitstreamsThread && m_AddBitstreamsThread->isRunning())
     {
-    std::string path = i->toStdString();
-    kwsys::SystemTools::ConvertToUnixSlashes(path);
-    std::string name = kwsys::SystemTools::GetFilenameName(path.c_str());
-    std::string uuid = midasUtils::GenerateUUID();
-    
-    if(m_database->GetSettingBool(midasDatabaseProxy::UNIFIED_TREE))
-      {
-      std::string copyTo = m_database->GetRecordByUuid(parentItem->getUuid()).Path;
-      copyTo += "/" + name;
-      kwsys::SystemTools::CopyAFile(path.c_str(), copyTo.c_str());
-      path = copyTo;
-      }
-
-    std::string parentUuid = this->m_database->GetUuid(
-      midasResourceType::ITEM, parentItem->getItem()->GetId());
-    int id = this->m_database->AddResource(midasResourceType::BITSTREAM, uuid, 
-      path, name, parentUuid, 0);
-
-    // Get and save file size
-    std::stringstream size;
-    size << midasUtils::GetFileLength(path.c_str());
-    mdo::Bitstream bitstream;
-    bitstream.SetId(id);
-    bitstream.SetName(name.c_str());
-    bitstream.SetSize(size.str());
-    bitstream.SetUuid(uuid.c_str());
-    bitstream.SetLastModified(kwsys::SystemTools::ModifiedTime(path.c_str()));
-    mds::Bitstream mdsBitstream;
-    mdsBitstream.SetDatabase(m_database);
-    mdsBitstream.SetObject(&bitstream);
-    mdsBitstream.MarkAsDirty();
-    mdsBitstream.Commit();
-
-    if(id)
-      {
-      std::stringstream text;
-      text << "Added bitstream " << name << " under item " << 
-        parentItem->getItem()->GetTitle() << ".";
-      this->GetLog()->Message(text.str());
-      }
+    return; //already busy adding bitstreams
     }
-  m_PollFilesystemThread->Resume();
-  this->updateClientTreeView();
+  m_PollFilesystemThread->Pause();
+  delete m_AddBitstreamsThread;
+  m_AddBitstreamsThread = new AddBitstreamsThread;
+  m_AddBitstreamsThread->SetFiles(files);
+  m_AddBitstreamsThread->SetParentItem(
+    const_cast<MidasItemTreeItem*>(parentItem));
+  
+  connect(m_AddBitstreamsThread, SIGNAL(threadComplete()),
+          m_PollFilesystemThread, SLOT(Resume()) );
+  connect(m_AddBitstreamsThread, SIGNAL(threadComplete()),
+          this, SLOT( resetStatus() ) );
+  connect(m_AddBitstreamsThread, SIGNAL(enableActions(bool)),
+          this, SLOT( enableActions(bool) ) );
+  connect(m_AddBitstreamsThread, SIGNAL(progress(int, int, const QString&)),
+          this, SLOT(addBitstreamsProgress(int, int, const QString&)) );
+  m_progress->ResetProgress();
+  m_progress->ResetOverall();
+  m_progress->SetUnit(" files");
+  m_AddBitstreamsThread->start();
+}
+
+void MIDASDesktopUI::addBitstreamsProgress(int current, int total,
+                                           const QString& message)
+{
+  m_progress->SetMessage(message.toStdString());
+  m_progress->SetMaxCount(total);
+  m_progress->SetMaxTotal(total);
+  m_progress->UpdateProgress(current, total);
+  m_progress->UpdateOverallCount(current);
+  this->Log->Status("Adding bitstream " + message.toStdString());
 }
 
 void MIDASDesktopUI::viewDirectory()
 {
   MidasTreeItem* resource = const_cast<MidasTreeItem*>(
     treeViewClient->getSelectedMidasTreeItem());
-  midasResourceRecord record = m_database->GetRecordByUuid(resource->getUuid());
+  mds::DatabaseAPI db;
+  midasResourceRecord record = db.GetRecordByUuid(resource->getUuid());
 
   std::string path = record.Type == midasResourceType::BITSTREAM ?
     kwsys::SystemTools::GetParentDirectory(record.Path.c_str())
@@ -1284,7 +1286,8 @@ void MIDASDesktopUI::openBitstream()
 {
   MidasTreeItem* resource = const_cast<MidasTreeItem*>(
     treeViewClient->getSelectedMidasTreeItem());
-  std::string path = m_database->GetRecordByUuid(resource->getUuid()).Path;
+  mds::DatabaseAPI db;
+  std::string path = db.GetRecordByUuid(resource->getUuid()).Path;
 
   path = "file:" + path;
   QUrl url(path.c_str());
@@ -1299,7 +1302,7 @@ void MIDASDesktopUI::openBitstream()
 
 void MIDASDesktopUI::viewInBrowser()
 {
-  std::string baseUrl = m_url;
+  std::string baseUrl = mws::WebAPI::Instance()->GetServerUrl();
   kwsys::SystemTools::ReplaceString(baseUrl, "/api/rest", "");
   std::stringstream path;
   path << baseUrl;
@@ -1352,13 +1355,15 @@ void MIDASDesktopUI::signInOrOut()
 
 void MIDASDesktopUI::setTimerInterval()
 {
-  int minutes = atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_INTERVAL).c_str());
+  mds::DatabaseAPI db;
+  int minutes = atoi(db.GetSetting(mds::DatabaseAPI::AUTO_REFRESH_INTERVAL).c_str());
   refreshTimer->setInterval(minutes * 60 * 1000);
 }
 
 void MIDASDesktopUI::adjustTimerSettings()
 {
-  int setting = atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str());
+  mds::DatabaseAPI db;
+  int setting = atoi(db.GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str());
 
   refreshTimer->stop();
 
@@ -1389,7 +1394,8 @@ void MIDASDesktopUI::signIn(bool ok)
     activateActions( true, MIDASDesktopUI::ACTION_CONNECTED );
 
     // start the refresh timer here if our setting = 1
-    if(atoi(m_database->GetSetting(midasDatabaseProxy::AUTO_REFRESH_SETTING).c_str()) == 1)
+    mds::DatabaseAPI db;
+    if(atoi(db.GetSetting(mds::DatabaseAPI::AUTO_REFRESH_SETTING).c_str()) == 1)
       {
       refreshTimer->start();
       }
@@ -1471,14 +1477,12 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
 
   if(midasUtils::IsDatabaseValid(file))
     {
-    this->m_synch->SetDatabase(file);
-    this->m_database = this->m_synch->GetDatabase();
+    mds::DatabaseInfo::Instance()->SetPath(file);
     QSettings settings("Kitware", "MIDASDesktop");
     settings.setValue("lastDatabase", file.c_str());
     settings.sync();
     this->displayStatus(tr("Opened database successfully."));
     this->Log->Message("Opened database " + file);
-    this->treeViewClient->SetDatabaseProxy(m_database);
     this->activateActions(true, MIDASDesktopUI::ACTION_LOCAL_DATABASE);
     this->treeViewClient->collapseAll();
     this->updateClientTreeView();
@@ -1487,10 +1491,6 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
 
     //start the filesystem monitoring thread
     m_PollFilesystemThread = new PollFilesystemThread;
-    midasDatabaseProxy* db = new midasDatabaseProxy(this->m_database->GetDatabasePath());
-    db->SetLog(this->Log);
-    m_PollFilesystemThread->SetDatabase(db);
-
     connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()));
     m_PollFilesystemThread->start();
     m_PollFilesystemThread->setPriority(QThread::LowestPriority);
@@ -1504,25 +1504,21 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     }
 }
 
-void MIDASDesktopUI::setServerURL(std::string url)
-{
-  this->m_synch->SetServerURL(url);
-  mws::WebAPI::Instance()->SetServerUrl(url.c_str());
-  this->m_url = url;
-}
-
 void MIDASDesktopUI::createProfile(std::string name, std::string email,
-                               std::string apiName, std::string apiKey,
-                               std::string rootDir)
+                                   std::string apiName, std::string apiKey,
+                                   std::string rootDir, std::string url)
 {
-  if(!m_database)
+  if(mds::DatabaseInfo::Instance()->GetPath() == "")
     {
     this->displayStatus(tr("Please choose a local database first."));
     return;
     }
 
+  mds::DatabaseAPI db;
+  db.SetSetting(mds::DatabaseAPI::LAST_URL, url);
+  std::string oldUrl = mws::WebAPI::Instance()->GetServerUrl();
+  mws::WebAPI::Instance()->SetServerUrl(url.c_str());
   std::string msg;
-  m_synch->GetAuthenticator()->SetServerURL(m_url);
   if(m_synch->GetAuthenticator()->AddAuthProfile(email, apiName, apiKey, rootDir, name))
     {
     msg = "Successfully created profile \"" + name + "\".";
@@ -1532,6 +1528,7 @@ void MIDASDesktopUI::createProfile(std::string name, std::string email,
     {
     msg = "Failed to create authentication profile.";
     }
+  mws::WebAPI::Instance()->SetServerUrl(oldUrl.c_str());
   this->displayStatus(tr(msg.c_str()));
 }
 
@@ -1560,16 +1557,9 @@ void MIDASDesktopUI::pushResources()
     }
   delete m_SynchronizerThread;
 
-  midasSynchronizer* synchronizer = new midasSynchronizer;
-  synchronizer->SetDatabase(m_synch->GetDatabase()->GetDatabasePath());
-  synchronizer->SetLog(this->m_synch->GetLog());
-  synchronizer->SetProgressReporter(this->m_progress);
-  synchronizer->SetServerURL(this->m_synch->GetServerURL());
-  synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
-
+  m_synch->SetOperation(midasSynchronizer::OPERATION_PUSH);
   m_SynchronizerThread = new SynchronizerThread;
-  m_SynchronizerThread->SetSynchronizer(synchronizer);
-  m_SynchronizerThread->SetDelete(true); //delete this synchronizer object when done
+  m_SynchronizerThread->SetSynchronizer(m_synch);
 
   connect(m_SynchronizerThread, SIGNAL(enableActions(bool) ),
     this, SLOT(enableActions(bool) ) );
@@ -1664,10 +1654,11 @@ void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)
 
 void MIDASDesktopUI::storeLastPollTime()
 {
+  mds::DatabaseAPI db;
   enableActions(false);
   mws::NewResources newResources;
   newResources.SetAuthenticator(m_synch->GetAuthenticator());
-  newResources.SetSince(m_database->GetSetting(midasDatabaseProxy::LAST_FETCH_TIME));
+  newResources.SetSince(db.GetSetting(mds::DatabaseAPI::LAST_FETCH_TIME));
   newResources.Fetch();
   enableActions(true);
 
@@ -1679,7 +1670,7 @@ void MIDASDesktopUI::storeLastPollTime()
     alertNewResources();
     }
 
-  m_database->SetSetting(midasDatabaseProxy::LAST_FETCH_TIME, newResources.GetTimestamp());
+  db.SetSetting(mds::DatabaseAPI::LAST_FETCH_TIME, newResources.GetTimestamp());
 
   this->decorateServerTree();
 }
@@ -1741,7 +1732,9 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
   const MidasTreeItem* treeItem = treeViewClient->getSelectedMidasTreeItem();
   std::string uuid = treeItem->getUuid();
   std::string name = treeItem->data(0).toString().toStdString();
-  if(!this->m_database->DeleteResource(uuid, deleteFiles))
+  
+  mds::DatabaseAPI db;
+  if(!db.DeleteResource(uuid, deleteFiles))
     {
     this->Log->Error("Error: Delete failed on resource " + name);
     }
@@ -1764,13 +1757,8 @@ void MIDASDesktopUI::deleteServerResource(bool val)
   int id = resource->getId();
   std::string typeName = kwsys::SystemTools::LowerCase(midasUtils::GetTypeName(resource->getType()));
 
-  std::stringstream url;
-  url << "midas." << typeName << ".delete?id=" << id;
-
-  mws::RestXMLParser parser;
-  mws::WebAPI::Instance()->GetRestAPI()->SetXMLParser(&parser);
   std::stringstream text;
-  if(mws::WebAPI::Instance()->Execute(url.str().c_str(), m_synch->GetAuthenticator()))
+  if(mws::WebAPI::Instance()->DeleteResource(typeName, id))
     {
     text << "Successfully deleted " << typeName
          << " with id=" << id << " from the server.";
@@ -1780,7 +1768,7 @@ void MIDASDesktopUI::deleteServerResource(bool val)
   else
     {
     text << "Failed to delete " << typeName << " with id=" << id
-      << " from the server: " << mws::WebAPI::Instance()->GetErrorMessage();
+      << " from the server";
     this->Log->Error(text.str());
     }
 }
@@ -1853,7 +1841,7 @@ void MIDASDesktopUI::resourceEdited(QTableWidgetItem* row)
 {
   if(this->m_editMode)
     {
-    ResourceEdit editor(this->m_database);
+    ResourceEdit editor;
     editor.SetLog(this->Log);
 
     connect(&editor, SIGNAL(DataModified(std::string)), treeViewClient,
@@ -1887,14 +1875,14 @@ void MIDASDesktopUI::currentFileMessage(const QString& message)
 void MIDASDesktopUI::overallProgressUpdate(int current, int max)
 {
   std::stringstream text;
-  text << "File Count: " << current << " / " << max << " files transferred";
+  text << "File Count: " << current << " / " << max << " files";
   this->fileCountLabel->setText(text.str().c_str());
 }
 
 void MIDASDesktopUI::currentProgressUpdate(double current, double max)
 {
-  std::string currentText = midasUtils::BytesToString(current);
-  std::string maxText = midasUtils::BytesToString(max);
+  std::string currentText = midasUtils::BytesToString(current, m_progress->GetUnit());
+  std::string maxText = midasUtils::BytesToString(max, m_progress->GetUnit());
   std::stringstream text;
   if(max == 0)
     {
@@ -1920,8 +1908,8 @@ void MIDASDesktopUI::currentProgressUpdate(double current, double max)
 
 void MIDASDesktopUI::totalProgressUpdate(double current, double max)
 {
-  std::string currentText = midasUtils::BytesToString(current);
-  std::string maxText = midasUtils::BytesToString(max);
+  std::string currentText = midasUtils::BytesToString(current, m_progress->GetUnit());
+  std::string maxText = midasUtils::BytesToString(max, m_progress->GetUnit());
   std::stringstream text;
   if(max == 0)
     {
@@ -1954,7 +1942,7 @@ void MIDASDesktopUI::progressSpeedUpdate(double bytesPerSec)
     }
   else
     {
-    text << "Speed: " << midasUtils::BytesToString(bytesPerSec)
+    text << "Speed: " << midasUtils::BytesToString(bytesPerSec, m_progress->GetUnit())
          << " / sec";
     }
   this->speedLabel->setText(text.str().c_str());

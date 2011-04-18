@@ -17,6 +17,7 @@
 
 #include "mdsDatabase.h"
 #include <sqlite/sqlite3.h>
+#include <QMutex>
 
 namespace mds{
 
@@ -62,6 +63,7 @@ protected:
 
   sqlite3*      m_Database;
   sqlite3_stmt* m_Statement;
+  QMutex*       m_Mutex;
   std::string   m_Query;
   std::string   m_ErrorMessage;
   bool          m_InitialFetch;

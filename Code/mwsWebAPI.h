@@ -16,55 +16,61 @@
 #include <string>
 #include <exception>
 #include <sstream>
+#include <QMutex>
 
 #include "mwsRestAPI.h"
+#include "midasLogAware.h"
 
 class midasAuthenticator;
 
 namespace mws
 {
 
+class MirrorHandler;
 class RestXMLParser;
 
-// This class provide the functionalities needed to search, download and upload files from/to a
-// MIDAS server.
-class WebAPI
+#define MWS_CONTROLLER_CLASS friend class
+
+class WebAPI : public midasLogAware
 {
+  // All of the web api controllers need to call Execute/Upload/Download
+  MWS_CONTROLLER_CLASS Community;
+  MWS_CONTROLLER_CLASS Collection;
+  MWS_CONTROLLER_CLASS Item;
+  MWS_CONTROLLER_CLASS Bitstream;
+  MWS_CONTROLLER_CLASS Search;
+  MWS_CONTROLLER_CLASS TreePath;
+  MWS_CONTROLLER_CLASS NewResources;
 public:
   // Singleton to be used in an application
   static WebAPI* Instance();
-  
-  // Set the base url
+
+  bool GetIdByUuid(const std::string& uuid, std::string& id);
+  // TODO This should probably be a method of mws::Object
+  bool CountBitstreams(int type, int id,
+                       std::string& count, std::string& size);
+  bool GetIdFromPath(const std::string& path, std::string& type,
+                     std::string& id, std::string& uuid);
+  bool DeleteResource(const std::string& typeName, int id);
+  bool CheckUserAgreement(int type, int id, std::string& hasAgreed);
+
+  // Set the REST API URL
   void SetServerUrl(const char* baseurl);
   const char* GetServerUrl();
-  
-  // Execute the command
-  bool Execute(const char* url, midasAuthenticator* auth);
-  void SetPostData(const char* postData);
-  
-  // Return the last error code
-  int GetErrorCode();
-  
-  // Return the last error message
-  const char* GetErrorMessage();
+
+  // Set the mirror handler
+  void SetMirrorHandler(MirrorHandler* handler);
+  MirrorHandler* GetMirrorHandler();
   
   // Set verbose mode
   void SetVerbose(bool verbose);
-  
-  // Get the default rest XML parser
-  RestXMLParser* GetRestXMLParser();
-  
-  // Download a file
-  bool DownloadFile(const char* url, const char* filename, midasAuthenticator* auth);
-  
-  // Upload a file
-  bool UploadFile(const char* url, const char* filename, midasAuthenticator* auth);
 
   // Set the authenticator
   void SetAuthenticator(midasAuthenticator* auth);
 
-  // Get the authenticator
-  midasAuthenticator* GetAuthenticator();
+  // Set the default progress handler
+  void SetProgressCallback(curl_progress_callback fprogress,
+                           void* progressData);
   
   // After calling Login, use this to get the API token
   std::string GetAPIToken();
@@ -73,19 +79,36 @@ public:
   bool Login(const char* applicationname,
              const char* email,
              const char* apikey);
-
-  // Return the REST API
-  RestAPI* GetRestAPI() {return m_RestAPI;}
  
   // Check the connection to the MIDAS server
   bool CheckConnection();
- 
-protected:
 
-  RestAPI*            m_RestAPI;
-  RestXMLParser*      m_RestXMLParser;
-  std::string         m_APIToken;
-  const char*         m_PostData;
+  // Cancel the upload or download
+  void Cancel();
+
+protected:
+  // Execute a web API command
+  bool Execute(const char* url, RestXMLParser* parser = NULL,
+               const char* postData = NULL,
+               bool retry = true);
+
+  // Download a file
+  bool DownloadFile(const char* url, const char* filename,
+                    curl_progress_callback fprogress = NULL,
+                    void* progressData = NULL);
+  
+  // Upload a file
+  bool UploadFile(const char* url, const char* filename,
+                  curl_progress_callback fprogress = NULL,
+                  void* progressData = NULL);
+
+  MirrorHandler*         m_MirrorHandler;
+  RestAPI*               m_RestAPI;
+  std::string            m_APIToken;
+  midasAuthenticator*    m_Authenticator;
+  QMutex*                m_Mutex;
+  curl_progress_callback m_Fprogress;
+  void*                  m_ProgressData;
 
   // constructor
   WebAPI();

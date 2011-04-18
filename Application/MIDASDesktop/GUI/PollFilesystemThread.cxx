@@ -1,5 +1,5 @@
 #include "PollFilesystemThread.h"
-#include "midasDatabaseProxy.h"
+#include "mdsDatabaseAPI.h"
 
 PollFilesystemThread::PollFilesystemThread()
 {
@@ -10,7 +10,6 @@ PollFilesystemThread::PollFilesystemThread()
 
 PollFilesystemThread::~PollFilesystemThread()
 {
-  delete m_Database;
 }
 
 void PollFilesystemThread::Pause()
@@ -36,7 +35,8 @@ void PollFilesystemThread::run()
     if(m_Run)
       {
       m_DatabaseLocked = true;
-      if(m_Run && m_Database->CheckModifiedBitstreams())
+      mds::DatabaseAPI db;
+      if(m_Run && db.CheckModifiedBitstreams())
         {
         emit needToRefresh();
         }

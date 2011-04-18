@@ -133,17 +133,14 @@ bool Collection::Fetch()
   parser.AddTag("/rsp/copyright",m_Collection->GetCopyright());
   parser.AddTag("/rsp/introductory",m_Collection->GetIntroductoryText());
   parser.AddTag("/rsp/uuid",m_Collection->GetUuid());
-  parser.AddTag("/rsp/parent",m_Collection->GetParent());
+  parser.AddTag("/rsp/parent",m_Collection->GetParentStr());
   parser.AddTag("/rsp/hasAgreement",m_Collection->RefAgreement());
   parser.AddTag("/rsp/size",m_Collection->GetSize());
 
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
-
   std::stringstream url;
   url << "midas.collection.get?id=" << m_Collection->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!WebAPI::Instance()->Execute(url.str().c_str(), &parser))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
   m_Collection->SetFetched(true);
@@ -162,8 +159,7 @@ bool Collection::FetchParent()
   m_Collection->SetParentCommunity(parent);
   parent->SetId(m_Collection->GetParentId());
 
-  mws::Community remote;
-  remote.SetWebAPI(mws::WebAPI::Instance());
+  Community remote;
   remote.SetObject(parent);
   return remote.Fetch();
 }
@@ -181,18 +177,30 @@ bool Collection::Delete()
     std::cerr << "Collection::Delete() : Collection id not set" << std::endl;
     return false;
     }
-       
-  RestXMLParser parser;
-  m_WebAPI->GetRestAPI()->SetXMLParser(&parser);
 
   std::stringstream url;
   url << "midas.collection.delete?id=" << m_Collection->GetId();
-  if(!m_WebAPI->Execute(url.str().c_str(), m_Auth))
+  if(!WebAPI::Instance()->Execute(url.str().c_str()))
     {
-    std::cout << m_WebAPI->GetErrorMessage() << std::endl;
     return false;
     }
   return true;
+}
+
+bool Collection::Create()
+{
+  std::stringstream postData;
+  postData << "uuid=" << m_Collection->GetUuid()
+    << "&parentid=" << m_Collection->GetParentId()
+    << "&name=" << midasUtils::EscapeForURL(m_Collection->GetName())
+    << "&description=" <<
+    midasUtils::EscapeForURL(m_Collection->GetDescription())
+    << "&introductorytext=" <<
+    midasUtils::EscapeForURL(m_Collection->GetIntroductoryText())
+    << "&copyright=" <<
+    midasUtils::EscapeForURL(m_Collection->GetCopyright());
+
+  return WebAPI::Instance()->Execute("midas.collection.create", NULL, postData.str().c_str());
 }
 
 } // end namespace
