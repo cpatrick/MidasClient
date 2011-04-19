@@ -36,6 +36,7 @@ public:
   virtual int rowCount(const QModelIndex &parent) const;
   virtual int columnCount(const QModelIndex &parent) const;
   virtual bool canFetchMore ( const QModelIndex & parent ) const;
+  virtual bool hasChildren( const QModelIndex & parent = QModelIndex() ) const;
 
   virtual void fetchMore ( const QModelIndex & parent );
 

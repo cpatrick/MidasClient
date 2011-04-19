@@ -9,8 +9,9 @@
 #include <string>
 #include <vector>
 
-class MidasTreeItem;
 class MidasCommunityTreeItem;
+class MidasCollectionTreeItem;
+class MidasItemTreeItem;
 
 class MidasTreeModelClient : public MidasTreeModel
 {
@@ -23,12 +24,13 @@ public:
 
   void Populate();
 
-  bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
-
   void addResource(mdo::Object*);
   void updateResource(mdo::Object*);
   void deleteResource(mdo::Object*);
-
+  void fetchMore(const QModelIndex & parent);
+  void fetchCommunity(MidasCommunityTreeItem* parent);
+  void fetchCollection(MidasCollectionTreeItem* parent);
+  void fetchItem(MidasItemTreeItem* parent);
 };
 
 #endif //__MidasTreeModelClient_H

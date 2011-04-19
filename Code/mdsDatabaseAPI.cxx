@@ -698,6 +698,11 @@ std::vector<mdo::Community*> DatabaseAPI::GetTopLevelCommunities(
     communities.push_back(community);
     }
   this->Database->Close();
+  for(std::vector<mdo::Community*>::iterator i = communities.begin();
+      i != communities.end(); ++i)
+    {
+    (*i)->SetDirty(this->IsResourceDirty((*i)->GetUuid()));
+    }
 
   if(buildTree)
     {

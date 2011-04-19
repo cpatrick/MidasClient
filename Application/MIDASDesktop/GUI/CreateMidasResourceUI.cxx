@@ -50,6 +50,7 @@ void CreateMidasResourceUI::SetType(Types type)
 void CreateMidasResourceUI::reset()
 {
   this->nameEdit->clear();
+  this->nameEdit->setFocus();
 }
 
 int CreateMidasResourceUI::exec()

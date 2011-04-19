@@ -99,7 +99,10 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
       {
       community->setDynamicFetch(true);
       }
-    community->populate(index);
+    if(!m_ClientResource) //server gives us subcommunities and collections; client only gives top level
+      {
+      community->populate(index);
+      }
     if((*itCom)->IsDirty())
       {
       community->setDecorationRole(MidasTreeItem::Dirty);
@@ -107,7 +110,10 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
     itCom++;
     row++;
     }
-  this->setFetchedChildren( true );
+  if(!this->isDynamicFetch())
+    {
+    this->setFetchedChildren( true );
+    }
 }
 
 void MidasCommunityTreeItem::updateDisplayName()

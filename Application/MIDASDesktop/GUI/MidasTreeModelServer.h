@@ -34,8 +34,6 @@ public:
   void SetWebAPI(mws::WebAPI* api);
   void Populate();
 
-  bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const; 
-
   void fetchMore ( const QModelIndex & parent );
   void fetchCollection(MidasCollectionTreeItem* parent);
   void fetchItem(MidasItemTreeItem* parent);
