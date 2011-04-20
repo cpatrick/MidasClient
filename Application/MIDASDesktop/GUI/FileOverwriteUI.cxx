@@ -5,6 +5,7 @@ FileOverwriteUI::FileOverwriteUI(MIDASDesktopUI* parent, GUIFileOverwriteHandler
 : m_Parent(parent), m_Controller(controller)
 {
   setupUi(this);
+  this->setModal(true);
   connect(overwriteButton, SIGNAL( released() ), this, SLOT( overwrite() ) );
   connect(useExistingButton, SIGNAL( released() ), this, SLOT( useExisting() ) );
 

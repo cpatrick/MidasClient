@@ -9,8 +9,7 @@ AgreementUI::AgreementUI(MIDASDesktopUI* parent, GUIAgreement* controller)
 : m_Parent(parent), m_Controller(controller), QDialog(parent)
 {
   setupUi(this);
-  connect(this, SIGNAL(accepted()),
-          controller, SLOT(finish()));
+  this->setModal(true);
   connect(this, SIGNAL(rejected()),
           controller, SLOT(cancel()));
   connect(openBrowserButton, SIGNAL(released()),

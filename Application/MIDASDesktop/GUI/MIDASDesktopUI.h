@@ -40,6 +40,7 @@ class SynchronizerThread;
 class SearchThread;
 class ReadDatabaseThread;
 class PollFilesystemThread;
+class DeleteThread;
 
 class QContextMenuEvent;
 class MidasTreeItem;
@@ -282,6 +283,7 @@ private:
   ReadDatabaseThread*         m_ReadDatabaseThread;
   PollFilesystemThread*       m_PollFilesystemThread;
   AddBitstreamsThread*        m_AddBitstreamsThread;
+  DeleteThread*               m_DeleteThread;
   QFutureWatcher<bool>        m_CreateDBWatcher;
   // ----------- threads -----------------
 };

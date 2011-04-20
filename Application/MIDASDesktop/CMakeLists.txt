@@ -49,6 +49,7 @@ set(MIDASDesktopUI_SRCS
   GUI/ReadDatabaseThread.cxx
   GUI/PollFilesystemThread.cxx
   GUI/AddBitstreamsThread.cxx
+  GUI/DeleteThread.cxx
   GUI/SearchThread.cxx
   GUI/UnifyTreeThread.cxx
   GUI/ResourceEdit.cxx
@@ -113,6 +114,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/ProcessingStatusUI.h
   GUI/RefreshServerTreeThread.h
   GUI/ExpandTreeThread.h
+  GUI/DeleteThread.h
   GUI/SynchronizerThread.h
   GUI/UnifyTreeThread.h
   GUI/GUIAgreement.h

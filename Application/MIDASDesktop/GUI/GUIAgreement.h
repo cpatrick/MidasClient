@@ -30,7 +30,6 @@ public:
   std::string getUrl();
 
 public slots:
-  void finish();
   void cancel();
 
 signals:
@@ -42,7 +41,6 @@ protected:
 
 private:
   MIDASDesktopUI* m_Parent;
-  bool m_Done;
   bool m_Canceled;
   std::string m_Url;
 };

@@ -4,19 +4,14 @@
 #include "midasSynchronizer.h"
 #include "midasAuthenticator.h"
 
-#if defined(_WIN32)
-# include <windows.h>
-#else
-# include <unistd.h>
-#endif
-
 GUIAgreement::GUIAgreement(MIDASDesktopUI* parent)
 : m_Parent(parent)
 {
   connect(this, SIGNAL(checkingAgreement()),
           m_Parent, SLOT(checkingUserAgreement()));
   connect(this, SIGNAL(displayDialog()),
-          m_Parent, SLOT(showUserAgreementDialog()));
+          m_Parent, SLOT(showUserAgreementDialog()),
+          Qt::BlockingQueuedConnection);
 }
 
 GUIAgreement::~GUIAgreement()
@@ -53,29 +48,14 @@ bool GUIAgreement::HandleAgreement(midasSynchronizer *synch)
       {
       return true;
       }
-    m_Done = false;
     m_Canceled = false;
-    emit displayDialog();
-
-    while(!m_Canceled && !m_Done)
-      {
-      #if defined(_WIN32)
-        Sleep(25);
-      #else
-        usleep(25000);
-      #endif
-      }
+    emit displayDialog(); //blocking signal, await return from modal dialog
 
     if(m_Canceled)
       {
       return false;
       }
     }
-}
-
-void GUIAgreement::finish()
-{
-  m_Done = true;
 }
 
 void GUIAgreement::cancel()

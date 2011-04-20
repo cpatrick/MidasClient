@@ -66,6 +66,7 @@
 #include "ReadDatabaseThread.h"
 #include "PollFilesystemThread.h"
 #include "AddBitstreamsThread.h"
+#include "DeleteThread.h"
 // ------------- Threads -------------
 
 // ------------- TreeModel / TreeView -------------
@@ -310,6 +311,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   m_ReadDatabaseThread = NULL;
   m_PollFilesystemThread = NULL;
   m_AddBitstreamsThread = NULL;
+  m_DeleteThread = NULL;
   connect(&m_CreateDBWatcher, SIGNAL(finished()), this, SLOT(newDBFinished()));
   // ------------- thread init -----------------
 
@@ -343,9 +345,7 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- Mirror handler ----------------------
   connect(dynamic_cast<GUIMirrorHandler*>(m_mirrorHandler), SIGNAL( prompt(mdo::Bitstream*) ),
-    dlg_mirrorPickerUI, SLOT( exec(mdo::Bitstream*) ) );
-  connect(dlg_mirrorPickerUI, SIGNAL( accepted() ),
-    dynamic_cast<GUIMirrorHandler*>(m_mirrorHandler), SLOT( dialogAccepted() ) );
+    dlg_mirrorPickerUI, SLOT( exec(mdo::Bitstream*) ), Qt::BlockingQueuedConnection );
   // ------------- Mirror handler ----------------------
 
   // ------------- Handle stored settings -------------
@@ -404,6 +404,12 @@ MIDASDesktopUI::~MIDASDesktopUI()
     m_ReadDatabaseThread->terminate();
     m_ReadDatabaseThread->wait();
     }
+  if(m_DeleteThread && m_DeleteThread->isRunning())
+    {
+    m_DeleteThread->terminate();
+    m_DeleteThread->wait();
+    }
+  delete m_DeleteThread;
 
   /*if(m_PollFilesystemThread && m_PollFilesystemThread->isRunning())
     {
@@ -1240,7 +1246,7 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
   connect(m_AddBitstreamsThread, SIGNAL(threadComplete()),
           this, SLOT( resetStatus() ) );
   connect(m_AddBitstreamsThread, SIGNAL(enableActions(bool)),
-          this, SLOT( enableActions(bool) ) );
+          this, SLOT( enableClientActions(bool) ) );
   connect(m_AddBitstreamsThread, SIGNAL(progress(int, int, const QString&)),
           this, SLOT(addBitstreamsProgress(int, int, const QString&)) );
   m_progress->ResetProgress();
@@ -1729,25 +1735,25 @@ void MIDASDesktopUI::finishedExpandingTree()
 void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
 {
   m_PollFilesystemThread->Pause();
-  const MidasTreeItem* treeItem = treeViewClient->getSelectedMidasTreeItem();
-  std::string uuid = treeItem->getUuid();
-  std::string name = treeItem->data(0).toString().toStdString();
-  
-  mds::DatabaseAPI db;
-  if(!db.DeleteResource(uuid, deleteFiles))
-    {
-    this->Log->Error("Error: Delete failed on resource " + name);
-    }
-  else
-    {
-    std::stringstream text;
-    text << "Deleted resource " << 
-      treeViewClient->getSelectedMidasTreeItem()->data(0).toString().toStdString();
-    GetLog()->Message(text.str());
-    }
-  m_PollFilesystemThread->Resume();
 
-  this->updateClientTreeView();
+  const MidasTreeItem* treeItem = treeViewClient->getSelectedMidasTreeItem();
+  if(m_DeleteThread && m_DeleteThread->isRunning())
+    {
+    return;
+    }
+  delete m_DeleteThread;
+
+  m_DeleteThread = new DeleteThread;
+  m_DeleteThread->SetResource(const_cast<MidasTreeItem*>(treeItem));
+  m_DeleteThread->SetDeleteOnDisk(deleteFiles);
+
+  connect(m_DeleteThread, SIGNAL( threadComplete() ), this, SLOT( resetStatus() ) );
+  connect(m_DeleteThread, SIGNAL( threadComplete() ), this, SLOT( updateClientTreeView() ) );
+  connect(m_DeleteThread, SIGNAL( enableActions(bool) ), this, SLOT( enableClientActions(bool) ) );
+
+  setProgressIndeterminate();
+
+  m_DeleteThread->start();
 }
 
 // Controller for deleting server resources

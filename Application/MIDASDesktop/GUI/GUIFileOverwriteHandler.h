@@ -37,7 +37,6 @@ signals:
 private:
   MIDASDesktopUI* m_Parent;
   bool            m_ApplyToAll;
-  bool            m_Done;
   Action          m_Action;
 };
 
