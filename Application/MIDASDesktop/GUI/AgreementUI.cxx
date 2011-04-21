@@ -5,24 +5,39 @@
 #include <QUrl>
 #include <QDesktopServices>
 
-AgreementUI::AgreementUI(MIDASDesktopUI* parent, GUIAgreement* controller)
-: m_Parent(parent), m_Controller(controller), QDialog(parent)
+AgreementUI::AgreementUI(QWidget* parent)
+: m_Canceled(false), QDialog(parent)
 {
   setupUi(this);
   this->setModal(true);
-  connect(this, SIGNAL(rejected()),
-          controller, SLOT(cancel()));
   connect(openBrowserButton, SIGNAL(released()),
           this, SLOT(openBrowser()));
+
+  m_Url = "";
+}
+
+AgreementUI::~AgreementUI()
+{
+}
+
+void AgreementUI::SetUrl(const QString& url)
+{
+  m_Url = url;
+}
+
+bool AgreementUI::WasCanceled()
+{
+  return m_Canceled;
 }
 
 void AgreementUI::exec()
 {
+  m_Canceled = false;
   QString labelText = "The selected resource is under a license agreement."
     " You must log in on the server and agree to the license agreement "
     "before you are allowed to pull this resource or its children.<br><br>"
     "URL: ";
-  labelText += m_Controller->getUrl().c_str();
+  labelText += m_Url;
 
   labelText += "<br><br>Click the button below to login and agree "
     "to the license, then click OK once you have agreed.";
@@ -33,12 +48,17 @@ void AgreementUI::exec()
 
 void AgreementUI::openBrowser()
 {
-  std::string url = m_Controller->getUrl().c_str();
-  QUrl qurl(url.c_str());
+  QUrl qurl(m_Url);
   if(!QDesktopServices::openUrl(qurl))
     {
     std::stringstream text;
-    text << "Error: could not open " << url << " in the browser.";
-    m_Parent->GetLog()->Error(text.str());
+    text << "Error: could not open " << m_Url.toStdString() << " in the browser.";
+    emit errorMessage(text.str().c_str());
     }
+}
+
+void AgreementUI::reject()
+{
+  m_Canceled = true;
+  QDialog::reject();
 }

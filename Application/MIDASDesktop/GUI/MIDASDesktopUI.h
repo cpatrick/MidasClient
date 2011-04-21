@@ -128,9 +128,6 @@ public slots:
   void signInOrOut();
   void signIn(bool ok);
   void signOut();
-  void checkingUserAgreement();
-  void showUserAgreementDialog();
-  void showFileOverwriteDialog(const QString& path);
   void createProfile(std::string name, std::string email,
                      std::string apiName, std::string apiKey,
                      std::string rootDir, std::string url);
@@ -213,6 +210,8 @@ public slots:
 
   // ------------- log ----------------
   void showLogTab();
+  void logError(const QString& text);
+  void logMessage(const QString& text);
   void alertErrorInLog();
   void clearLogTabIcon(int index);
   // ------------- log ----------------

@@ -16,33 +16,28 @@
 #include <QObject>
 
 class AgreementUI;
-class MIDASDesktopUI;
 class midasSynchronizer;
 
 class GUIAgreement : public QObject, public midasAgreementHandler
 {
   Q_OBJECT
 public:
-  GUIAgreement(MIDASDesktopUI* parent);
+  GUIAgreement(AgreementUI* dialog);
   ~GUIAgreement();
 
   bool HandleAgreement(midasSynchronizer* synch);
-  std::string getUrl();
-
-public slots:
-  void cancel();
 
 signals:
   void displayDialog();
   void checkingAgreement();
+  void errorMessage(const QString&);
 
 protected:
   bool checkUserHasAgreed(midasSynchronizer* synch);
 
 private:
-  MIDASDesktopUI* m_Parent;
-  bool m_Canceled;
-  std::string m_Url;
+  AgreementUI* m_Dialog;
+  std::string  m_Url;
 };
 
 #endif

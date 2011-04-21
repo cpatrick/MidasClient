@@ -4,8 +4,8 @@
 #include "mdoBitstream.h"
 
 GUIMirrorHandler::GUIMirrorHandler(MirrorPickerUI* dialog)
+: m_MirrorDialog(dialog)
 {
-  m_MirrorDialog = dialog;
 }
 
 GUIMirrorHandler::~GUIMirrorHandler()
