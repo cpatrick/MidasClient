@@ -71,8 +71,6 @@ bool Bitstream::Commit()
 {
   std::stringstream query;
   mds::DatabaseAPI db;
-  db.Open();
-  db.Database->ExecuteQuery("BEGIN"); //begin a transaction
 
   int action;
   if(m_Bitstream->GetId()) //update existing record
@@ -93,9 +91,41 @@ bool Bitstream::Commit()
     }
   else //insert new record
     {
-    //TODO validation
-    // 1. Uuid must be set (generated)
-    // 2. Parent (item) id must be set
+    if(!midasUtils::ValidateBitstreamName(m_Bitstream->GetName()))
+      {
+      db.GetLog()->Error("Invalid bitstream name: " + m_Bitstream->GetName());
+      return false;
+      }
+    if(m_Bitstream->GetUuid() == "")
+      {
+      db.GetLog()->Error("Uuid must be set when adding new bitstream");
+      return false;
+      }
+    if(m_Bitstream->GetParentId() == 0)
+      {
+      db.GetLog()->Error("ParentId must be set when adding new bitstream");
+      return false;
+      }
+    // Ensure no duplicate names under this item
+    db.Open();
+    query.str(std::string());
+    query << "SELECT bitstream.name FROM bitstream, item2bitstream WHERE "
+      "item2bitstream.bitstream_id=bitstream.bitstream_id AND "
+      "item2bitstream.item_id=" << m_Bitstream->GetParentId();
+    db.Database->ExecuteQuery(query.str().c_str());
+    while(db.Database->GetNextRow())
+      {
+      std::string name = db.Database->GetValueAsString(0);
+      if(name == m_Bitstream->GetName())
+        {
+        db.GetLog()->Error("Skipped adding " + m_Bitstream->GetName() +
+          " due to duplicate name");
+        db.Close();
+        return false;
+        }
+      }
+
+    db.Database->ExecuteQuery("BEGIN"); //begin add transaction
     action = midasDirtyAction::ADDED;
 
     // Add bitstream record

@@ -52,6 +52,7 @@ public:
   static std::string CreateDefaultAPIKey(const std::string& email,
                                          const std::string& password,
                                          const std::string& appName);
+  static bool ValidateBitstreamName(const std::string& name);
   static std::string ComputeStringMD5(const char* input);
   static bool RenameFile(const char* oldname, const char* newname);
 };
