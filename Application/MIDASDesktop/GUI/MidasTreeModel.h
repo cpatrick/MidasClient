@@ -9,7 +9,7 @@
 
 class MidasCommunityTreeItem;
 class MidasTreeItem;
-class MIDASDesktopUI;
+class midasSynchronizer;
 
 class MidasTreeModel : public QAbstractItemModel
 {
@@ -24,8 +24,8 @@ public:
   void clearExpandedList();
   void expandAllResources();
   
+  virtual void SetSynchronizer(midasSynchronizer* synch);
   virtual void Populate() = 0;
-  void SetParentUI(MIDASDesktopUI* parentUI);
 
   virtual QVariant headerData(int section, Qt::Orientation orientation,
                               int role = Qt::DisplayRole) const;
@@ -63,8 +63,8 @@ protected:
   std::map<std::string, QModelIndex> m_IndexMap;
   std::set<std::string>              m_ExpandedList;
   QList<MidasCommunityTreeItem*>     m_TopLevelCommunities;
+  midasSynchronizer*                 m_Synch;
   bool AlterList;
-  MIDASDesktopUI*                    m_ParentUI;
 };
 
 #endif

@@ -17,25 +17,19 @@
 #include "mdoItem.h"
 #include "mwsItem.h"
 #include "mdoBitstream.h"
-#include "MIDASDesktopUI.h"
-#include "midasSynchronizer.h"
 
 #include <iostream>
 #include <mdoCommunity.h>
 #include <mwsCommunity.h>
+#include "midasSynchronizer.h"
 
-MidasTreeModelServer::MidasTreeModelServer(QObject *parent) : MidasTreeModel(parent)
+MidasTreeModelServer::MidasTreeModelServer(QObject *parent)
+: MidasTreeModel(parent)
 {
 }
 
 MidasTreeModelServer::~MidasTreeModelServer()
 {
-}
-
-/** Set the web API */
-void MidasTreeModelServer::SetWebAPI(mws::WebAPI* api)
-{
-  m_WebAPI = api;
 }
 
 /** Populate the tree */
@@ -44,7 +38,7 @@ void MidasTreeModelServer::Populate()
   mws::Community remote;
   mdo::Community* community = new mdo::Community;
   community->SetId(0);
-  remote.SetAuthenticator(m_ParentUI->getSynchronizer()->GetAuthenticator());
+  remote.SetAuthenticator(m_Synch->GetAuthenticator());
   remote.SetObject(community);
 
   if(!remote.FetchTree())
@@ -126,7 +120,7 @@ void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
 {
   mws::Collection remote;
   mdo::Collection* collection = parent->getCollection();
-  remote.SetAuthenticator(m_ParentUI->getSynchronizer()->GetAuthenticator());
+  remote.SetAuthenticator(m_Synch->GetAuthenticator());
   remote.SetObject(collection);
 
   if(!remote.Fetch())
@@ -159,7 +153,7 @@ void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
 {
   mws::Item remote;
   mdo::Item* item = parent->getItem();
-  remote.SetAuthenticator(m_ParentUI->getSynchronizer()->GetAuthenticator());
+  remote.SetAuthenticator(m_Synch->GetAuthenticator());
   remote.SetObject(item);
 
   if(!remote.Fetch())

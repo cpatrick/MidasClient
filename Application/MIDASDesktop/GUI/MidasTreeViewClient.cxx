@@ -5,7 +5,6 @@
 #include <QContextMenuEvent>
 #include <QModelIndex>
 
-#include "MIDASDesktopUI.h"
 #include "MidasTreeItem.h"
 #include "MidasTreeModelClient.h"
 #include "MidasCommunityTreeItem.h"
@@ -27,7 +26,8 @@
 #include "midasLog.h"
 #include <iostream>
 
-MidasTreeViewClient::MidasTreeViewClient(QWidget * parent):MidasTreeView(parent)
+MidasTreeViewClient::MidasTreeViewClient(QWidget * parent)
+: MidasTreeView(parent)
 {
   m_Model = new MidasTreeModelClient;
 

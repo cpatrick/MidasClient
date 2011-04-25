@@ -1,5 +1,4 @@
 #include "UnifyTreeThread.h"
-#include "MIDASDesktopUI.h"
 #include "PollFilesystemThread.h"
 #include "mdsDatabaseAPI.h"
 

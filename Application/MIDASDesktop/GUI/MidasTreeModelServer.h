@@ -22,16 +22,17 @@ class MidasCommunityTreeItem;
 class MidasCollectionTreeItem;
 class MidasItemTreeItem;
 
+class midasSynchronizer;
+
 class MidasTreeModelServer : public MidasTreeModel
 {
   Q_OBJECT
 
 public:
 
-  MidasTreeModelServer(QObject *parent = 0);
+  MidasTreeModelServer(QObject* parent = 0);
   ~MidasTreeModelServer();
 
-  void SetWebAPI(mws::WebAPI* api);
   void Populate();
 
   bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const; 
@@ -48,10 +49,6 @@ public slots:
 
   void itemExpanded ( const QModelIndex & index );
   void emitLayoutChanged() { emit layoutChanged(); }
-
-private:
-
-  mws::WebAPI* m_WebAPI;
 };
 
 #endif //__MidasTreeModelServer_H

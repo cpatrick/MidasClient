@@ -53,7 +53,6 @@
 #include "CreateProfileUI.h"
 #include "DeleteResourceUI.h"
 #include "PreferencesUI.h"
-#include "ProcessingStatusUI.h"
 #include "PullUI.h"
 #include "SignInUI.h"
 #include "MirrorPickerUI.h"
@@ -137,7 +136,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_agreementUI =            new AgreementUI( this );
   dlg_overwriteUI =            new FileOverwriteUI( this );
   dlg_mirrorPickerUI =         new MirrorPickerUI( this );
-  ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
   // ------------- Auto Refresh Timer -----------
@@ -195,8 +193,8 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- setup TreeView signals -------------
 
-  treeViewServer->SetParentUI(this);
-  treeViewClient->SetParentUI(this);
+  treeViewServer->SetSynchronizer(m_synch);
+  treeViewClient->SetSynchronizer(m_synch);
 
   connect(treeViewServer, SIGNAL(midasTreeItemSelected(const MidasTreeItem*)),
     this, SLOT( updateActionState(const MidasTreeItem*) ));
@@ -252,7 +250,8 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect(dlg_createMidasResourceUI, SIGNAL( resourceCreated() ), this, SLOT( updateClientTreeView() ) );
 
-  //connect(dlg_pullUI, SIGNAL(pulledResources()), this, SLOT( updateClientTreeView() ) );
+  connect(treeViewServer, SIGNAL( enableActions(bool) ), this, SLOT( enableActions(bool) ) );
+
   // ------------- setup TreeView signals -------------
 
   // ------------- signal/slot connections -------------
@@ -366,7 +365,6 @@ MIDASDesktopUI::~MIDASDesktopUI()
     }
   delete m_SynchronizerThread;
   delete dlg_pullUI;
-  ProcessingStatusUI::finalize();
   delete trayIconMenu;
   delete showAction;
   delete trayIcon;
