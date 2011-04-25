@@ -1,10 +1,9 @@
 #include "AddKeywordUI.h"
-#include "MIDASDesktopUI.h"
 
 #include <QMessageBox>
 #include <QString>
 
-AddKeywordUI::AddKeywordUI(MIDASDesktopUI* parent)
+AddKeywordUI::AddKeywordUI(QWidget* parent)
 : ButtonEditUI(parent)
 {
   setupUi(this);

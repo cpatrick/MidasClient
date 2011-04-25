@@ -5,9 +5,10 @@
 
 #include <QFlags>
 
-class MIDASDesktopUI; 
+class midasSynchronizer;
+class MidasTreeItem;
 
-class CreateMidasResourceUI :  public QDialog, private Ui::CreateMidasResourceDialog
+class CreateMidasResourceUI : public QDialog, private Ui::CreateMidasResourceDialog
 {
   Q_OBJECT
  
@@ -21,9 +22,10 @@ public:
     };
   Q_DECLARE_FLAGS(Types, Type)
   
-  CreateMidasResourceUI(MIDASDesktopUI *parent);
-  ~CreateMidasResourceUI(){}
+  CreateMidasResourceUI(QWidget* parent, midasSynchronizer* synch);
+  ~CreateMidasResourceUI();
 
+  void SetParentResource(const MidasTreeItem* parent);
   void AddCommunity(std::string path);
   void AddSubCommunity();
   void AddCollection();
@@ -32,14 +34,18 @@ public:
   virtual bool ValidateName() const;
   virtual void SetType(Types type);
 
+signals:
+  void resourceCreated(); //emitted when a resource is added successfully
+
 public slots:
   void reset(); 
   int exec();
   virtual void accept(); 
 
-private:
-  MIDASDesktopUI* m_Parent; 
+protected:
   Types m_Type;
+  midasSynchronizer* m_Synch;
+  MidasTreeItem*     m_ParentResource;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( CreateMidasResourceUI::Types )

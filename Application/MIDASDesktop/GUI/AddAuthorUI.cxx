@@ -1,10 +1,9 @@
 #include "AddAuthorUI.h"
-#include "MIDASDesktopUI.h"
 
 #include <QMessageBox>
 #include <QString>
 
-AddAuthorUI::AddAuthorUI(MIDASDesktopUI* parent)
+AddAuthorUI::AddAuthorUI(QWidget* parent)
 : ButtonEditUI(parent)
 {
   setupUi(this);

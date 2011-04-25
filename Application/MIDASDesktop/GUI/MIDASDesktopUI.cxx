@@ -101,6 +101,10 @@ MIDASDesktopUI::MIDASDesktopUI()
       (desk.height() - frameGeometry().height()) / 2);
   // center the main window
 
+  // ------------- Synchronizer --------------
+  this->m_synch = new midasSynchronizer();
+  // ------------- Synchronizer --------------
+
   // ------------- Instantiate and setup tray icon -------------
   showAction = new QAction(tr("&Show MIDASDesktop"), this);
   connect(showAction, SIGNAL(triggered()), this, SLOT(showNormal()));
@@ -121,7 +125,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- Instantiate and setup tray icon -------------
 
   // ------------- Instantiate and setup UI dialogs -------------
-  dlg_createMidasResourceUI =  new CreateMidasResourceUI( this );
+  dlg_createMidasResourceUI =  new CreateMidasResourceUI( this, m_synch );
   dlg_signInUI =               new SignInUI( this );
   dlg_createProfileUI =        new CreateProfileUI( this );
   dlg_aboutUI =                new AboutUI( this );
@@ -245,7 +249,9 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeViewServer->model(), SIGNAL(serverPolled()), this, SLOT( storeLastPollTime()));
 
   connect(treeViewServer, SIGNAL( startedExpandingTree() ), this, SLOT( startedExpandingTree() ) );
-  connect(treeViewServer, SIGNAL( finishedExpandingTree() ), this, SLOT( finishedExpandingTree() ) ); 
+  connect(treeViewServer, SIGNAL( finishedExpandingTree() ), this, SLOT( finishedExpandingTree() ) );
+
+  connect(dlg_createMidasResourceUI, SIGNAL( resourceCreated() ), this, SLOT( updateClientTreeView() ) );
 
   //connect(dlg_pullUI, SIGNAL(pulledResources()), this, SLOT( updateClientTreeView() ) );
   // ------------- setup TreeView signals -------------
@@ -311,10 +317,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(&m_CreateDBWatcher, SIGNAL(finished()), this, SLOT(newDBFinished()));
   // ------------- thread init -----------------
 
-  // ------------- setup handlers and logging ------------
-  this->Log = new GUILogger(this);
-  this->m_synch = new midasSynchronizer();
-  this->m_synch->SetLog(this->Log);
+  // ------------- setup client members and logging ----
   this->m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
   this->m_mirrorHandler = new GUIMirrorHandler(dlg_mirrorPickerUI);
   this->m_agreementHandler = new GUIAgreement(dlg_agreementUI);
@@ -1187,24 +1190,28 @@ void MIDASDesktopUI::displayServerResourceContextMenu( QContextMenuEvent* e )
 void MIDASDesktopUI::addCommunity()
 {
   dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Community);
+  dlg_createMidasResourceUI->SetParentResource(NULL);
   dlg_createMidasResourceUI->exec();
 }
 
 void MIDASDesktopUI::addSubcommunity()
 {
   dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::SubCommunity);
+  dlg_createMidasResourceUI->SetParentResource(treeViewClient->getSelectedMidasTreeItem());
   dlg_createMidasResourceUI->exec();
 }
 
 void MIDASDesktopUI::addCollection()
 {
   dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Collection);
+  dlg_createMidasResourceUI->SetParentResource(treeViewClient->getSelectedMidasTreeItem());
   dlg_createMidasResourceUI->exec();
 }
 
 void MIDASDesktopUI::addItem()
 {
   dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Item);
+  dlg_createMidasResourceUI->SetParentResource(treeViewClient->getSelectedMidasTreeItem());
   dlg_createMidasResourceUI->exec();
 }
 
@@ -1493,9 +1500,8 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
 
     //start the filesystem monitoring thread
     m_PollFilesystemThread = new PollFilesystemThread;
-    connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()));
+    connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()), Qt::BlockingQueuedConnection);
     m_PollFilesystemThread->start();
-    m_PollFilesystemThread->setPriority(QThread::LowestPriority);
     }
   else
     {

@@ -20,10 +20,15 @@
 
 #include "midasStandardIncludes.h"
 
-CreateMidasResourceUI::CreateMidasResourceUI(MIDASDesktopUI *m_Parent):
-  QDialog(m_Parent), m_Parent(m_Parent)
+CreateMidasResourceUI::CreateMidasResourceUI(QWidget* parent,
+                                             midasSynchronizer* synch)
+: QDialog(parent), m_Synch(synch), m_ParentResource(NULL)
 {
   setupUi(this); // this sets up GUI
+}
+
+CreateMidasResourceUI::~CreateMidasResourceUI()
+{
 }
 
 void CreateMidasResourceUI::SetType(Types type)
@@ -47,6 +52,11 @@ void CreateMidasResourceUI::SetType(Types type)
     }
 }
 
+void CreateMidasResourceUI::SetParentResource(const MidasTreeItem* parent)
+{
+  m_ParentResource = const_cast<MidasTreeItem*>(parent);
+}
+
 void CreateMidasResourceUI::reset()
 {
   this->nameEdit->clear();
@@ -67,7 +77,7 @@ void CreateMidasResourceUI::accept()
     return;
     }
 
-  m_Parent->getSynchronizer()->SetOperation(midasSynchronizer::OPERATION_ADD);
+  m_Synch->SetOperation(midasSynchronizer::OPERATION_ADD);
 
   std::string type_str, path;
   mds::DatabaseAPI db;
@@ -75,7 +85,7 @@ void CreateMidasResourceUI::accept()
     {
     case Community:
       path = db.GetAuthProfile(
-        m_Parent->getSynchronizer()->GetAuthenticator()->GetProfile()).RootDir;
+        m_Synch->GetAuthenticator()->GetProfile()).RootDir;
 
       if(path == "")
         {
@@ -104,18 +114,17 @@ void CreateMidasResourceUI::accept()
     }
 
   std::stringstream text;
-  if(m_Parent->getSynchronizer()->Perform() == 0)
+  if(m_Synch->Perform() == 0)
     {
     text << "Successfully added " << type_str << ".";
-    m_Parent->GetLog()->Message(text.str());
-    m_Parent->updateClientTreeView();
+    m_Synch->GetLog()->Message(text.str());
+    emit resourceCreated();
     }
   else
     {
     text << "Failed to add " << type_str << ".";
-    m_Parent->GetLog()->Error(text.str());
+    m_Synch->GetLog()->Error(text.str());
     }
-
   QDialog::accept();
 }
 
@@ -125,7 +134,7 @@ bool CreateMidasResourceUI::ValidateName() const
 
   if(name == "")
     {
-    QMessageBox::critical(m_Parent, "Error: Name required", "Name must not be empty");
+    QMessageBox::critical(NULL, "Error: Name required", "Name must not be empty");
     return false;
     }
 
@@ -140,7 +149,7 @@ bool CreateMidasResourceUI::ValidateName() const
      name.find("\"") != name.npos ||
      name.find("\\") != name.npos)
     {
-    QMessageBox::critical(m_Parent, tr("Error: illegal characters"),
+    QMessageBox::critical(NULL, tr("Error: illegal characters"),
       tr("Name must not contain any of the following:<br /> <center>"
       "/ \\ \" : ; * ? | &lt; &gt;</center>"));
     return false;
@@ -153,70 +162,65 @@ void CreateMidasResourceUI::AddCommunity(std::string path)
   path += "/" + nameEdit->text().toStdString();
   kwsys::SystemTools::MakeDirectory(path.c_str());
 
-  m_Parent->getSynchronizer()->SetResourceType(midasResourceType::COMMUNITY);
-  m_Parent->getSynchronizer()->SetClientHandle(path);
+  m_Synch->SetResourceType(midasResourceType::COMMUNITY);
+  m_Synch->SetClientHandle(path);
 }
 
 void CreateMidasResourceUI::AddSubCommunity()
 {
-  QModelIndex selected =
-    this->m_Parent->getTreeViewClient()->getSelectedModelIndex();
-
   MidasCommunityTreeItem* parentComm =
-    reinterpret_cast<MidasCommunityTreeItem*>(
-    const_cast<MidasTreeItem*>(
-    reinterpret_cast<MidasTreeModelClient*>(
-    this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
+    dynamic_cast<MidasCommunityTreeItem*>(m_ParentResource);
+
+  if(!parentComm)
+    {
+    m_Synch->GetLog()->Error("CreateMidasResourceUI::AddSubCommunity - no parent resource");
+    return;
+    }
 
   mds::DatabaseAPI db;
-  std::string path = db.GetRecordByUuid(
-    db.GetUuid(
-    midasResourceType::COMMUNITY,
-    parentComm->getCommunity()->GetId())).Path;
+  std::string path = db.GetRecordByUuid(parentComm->getUuid()).Path;
 
   this->AddCommunity(path);
 }
 
 void CreateMidasResourceUI::AddCollection()
 {
-  QModelIndex selected = this->m_Parent->getTreeViewClient()->getSelectedModelIndex();
   MidasCommunityTreeItem* parentComm =
-    reinterpret_cast<MidasCommunityTreeItem*>(
-    const_cast<MidasTreeItem*>(
-    reinterpret_cast<MidasTreeModelClient*>(
-    this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
+    dynamic_cast<MidasCommunityTreeItem*>(m_ParentResource);
+
+  if(!parentComm)
+    {
+    m_Synch->GetLog()->Error("CreateMidasResourceUI::AddCollection - no parent resource");
+    return;
+    }
 
   mds::DatabaseAPI db;
-  std::string path = db.GetRecordByUuid(
-    db.GetUuid(
-    midasResourceType::COMMUNITY,
-    parentComm->getCommunity()->GetId())).Path;
+  std::string path = db.GetRecordByUuid(parentComm->getUuid()).Path;
 
   path += "/" + nameEdit->text().toStdString();
   kwsys::SystemTools::MakeDirectory(path.c_str());
 
-  m_Parent->getSynchronizer()->SetResourceType(midasResourceType::COLLECTION);
-  m_Parent->getSynchronizer()->SetClientHandle(path);
+  m_Synch->SetResourceType(midasResourceType::COLLECTION);
+  m_Synch->SetClientHandle(path);
 }
 
 void CreateMidasResourceUI::AddItem()
 {
-  QModelIndex selected = this->m_Parent->getTreeViewClient()->getSelectedModelIndex();
   MidasCollectionTreeItem* parentColl =
-    reinterpret_cast<MidasCollectionTreeItem*>(
-    const_cast<MidasTreeItem*>(
-    reinterpret_cast<MidasTreeModelClient*>(
-    this->m_Parent->getTreeViewClient()->model())->midasTreeItem(selected)));
+    dynamic_cast<MidasCollectionTreeItem*>(m_ParentResource);
+
+  if(!parentColl)
+    {
+    m_Synch->GetLog()->Error("CreateMidasResourceUI::AddCollection - no parent resource");
+    return;
+    }
 
   mds::DatabaseAPI db;
-  std::string path = db.GetRecordByUuid(
-    db.GetUuid(
-    midasResourceType::COLLECTION,
-    parentColl->getCollection()->GetId())).Path;
+  std::string path = db.GetRecordByUuid(parentColl->getUuid()).Path;
 
   path += "/" + nameEdit->text().toStdString();
   kwsys::SystemTools::MakeDirectory(path.c_str());
 
-  m_Parent->getSynchronizer()->SetResourceType(midasResourceType::ITEM);
-  m_Parent->getSynchronizer()->SetClientHandle(path);
+  m_Synch->SetResourceType(midasResourceType::ITEM);
+  m_Synch->SetClientHandle(path);
 }
