@@ -35,10 +35,9 @@ class ButtonDelegate;
 class TextEditDelegate;
 
 class AddBitstreamsThread;
-class RefreshServerTreeThread;
 class SynchronizerThread;
 class SearchThread;
-class ReadDatabaseThread;
+class UpdateTreeViewThread;
 class PollFilesystemThread;
 class DeleteThread;
 
@@ -276,10 +275,10 @@ private:
   mws::MirrorHandler*         m_mirrorHandler;
 
   // ----------- threads -----------------
-  RefreshServerTreeThread*    m_RefreshThread;
   SynchronizerThread*         m_SynchronizerThread;
   SearchThread*               m_SearchThread;
-  ReadDatabaseThread*         m_ReadDatabaseThread;
+  UpdateTreeViewThread*       m_ReadDatabaseThread;
+  UpdateTreeViewThread*       m_RefreshThread;
   PollFilesystemThread*       m_PollFilesystemThread;
   AddBitstreamsThread*        m_AddBitstreamsThread;
   DeleteThread*               m_DeleteThread;

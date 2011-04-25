@@ -29,7 +29,6 @@ public:
       delete m_Synchronizer;
       }
     emit enableActions(true);
-    emit threadComplete();
     }
 
   void Cancel() { m_Synchronizer->Cancel(); }
@@ -37,7 +36,6 @@ public:
 signals:
   void enableActions(bool val);
   void performReturned(int rc);
-  void threadComplete();
 
 private:
   midasSynchronizer* m_Synchronizer;

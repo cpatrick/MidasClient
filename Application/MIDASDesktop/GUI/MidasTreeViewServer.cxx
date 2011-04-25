@@ -80,7 +80,7 @@ void MidasTreeViewServer::selectByUuid(std::string uuid, bool select)
   m_ExpandTreeThread = new ExpandTreeThread(this,
     reinterpret_cast<MidasTreeModelServer*>(m_Model), uuid, select);
 
-  connect(m_ExpandTreeThread, SIGNAL(threadComplete()),
+  connect(m_ExpandTreeThread, SIGNAL( finished() ),
     this, SLOT(expansionDone()));
   connect(m_ExpandTreeThread, SIGNAL(expand(const QModelIndex&)),
     this, SLOT(expand(const QModelIndex&)));

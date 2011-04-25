@@ -46,7 +46,7 @@ set(MIDASDesktopUI_SRCS
   GUI/MirrorPickerUI.cxx
   GUI/ProcessingStatusUI.cxx
   GUI/ExpandTreeThread.cxx
-  GUI/ReadDatabaseThread.cxx
+  GUI/UpdateTreeViewThread.cxx
   GUI/PollFilesystemThread.cxx
   GUI/AddBitstreamsThread.cxx
   GUI/DeleteThread.cxx
@@ -92,7 +92,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/SignInUI.h
   GUI/SignInThread.h
   GUI/SearchThread.h
-  GUI/ReadDatabaseThread.h
+  GUI/UpdateTreeViewThread.h
   GUI/PollFilesystemThread.h
   GUI/AddBitstreamsThread.h
   GUI/AboutUI.h
@@ -112,7 +112,6 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/MidasResourceDescTable.h
   GUI/MidasSearchResultList.h
   GUI/ProcessingStatusUI.h
-  GUI/RefreshServerTreeThread.h
   GUI/ExpandTreeThread.h
   GUI/DeleteThread.h
   GUI/SynchronizerThread.h

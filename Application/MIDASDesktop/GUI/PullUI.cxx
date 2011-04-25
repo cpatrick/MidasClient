@@ -167,7 +167,7 @@ void PullUI::accept()
 
     connect(m_SynchronizerThread, SIGNAL( performReturned(int) ), this, SLOT ( pulled(int) ) );
     }
-  connect(m_SynchronizerThread, SIGNAL( threadComplete() ), m_Parent, SLOT( setProgressEmpty() ) );
+  connect(m_SynchronizerThread, SIGNAL( finished() ), m_Parent, SLOT( setProgressEmpty() ) );
   connect(m_SynchronizerThread, SIGNAL( enableActions(bool) ), m_Parent, SLOT( enableActions(bool) ) );
 
   m_Parent->getPollFilesystemThread()->Pause();

@@ -68,5 +68,4 @@ void AddBitstreamsThread::run()
     emit progress(current, total, name.c_str());
     }
   emit enableActions(true);
-  emit threadComplete();
 }

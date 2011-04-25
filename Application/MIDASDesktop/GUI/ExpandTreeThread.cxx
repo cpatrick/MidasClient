@@ -43,5 +43,4 @@ void ExpandTreeThread::run()
     }
 
   emit enableActions(true);
-  emit threadComplete();
 }

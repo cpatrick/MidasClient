@@ -43,7 +43,5 @@ void DeleteThread::run()
     {
     emit errorMessage("Error deleting resource " + m_Resource->data(0).toString());
     }
-
   emit enableActions(true);
-  emit threadComplete();
 }

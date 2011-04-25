@@ -60,13 +60,12 @@
 // ------------- Dialogs -------------
 
 // ------------- Threads -------------
-#include "RefreshServerTreeThread.h"
-#include "SynchronizerThread.h"
-#include "SearchThread.h"
-#include "ReadDatabaseThread.h"
-#include "PollFilesystemThread.h"
 #include "AddBitstreamsThread.h"
 #include "DeleteThread.h"
+#include "PollFilesystemThread.h"
+#include "SearchThread.h"
+#include "SynchronizerThread.h"
+#include "UpdateTreeViewThread.h"
 // ------------- Threads -------------
 
 // ------------- TreeModel / TreeView -------------
@@ -318,6 +317,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- thread init -----------------
 
   // ------------- setup client members and logging ----
+  this->Log = new GUILogger(this);
+  this->m_synch->SetLog(this->Log);
   this->m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
   this->m_mirrorHandler = new GUIMirrorHandler(dlg_mirrorPickerUI);
   this->m_agreementHandler = new GUIAgreement(dlg_agreementUI);
@@ -639,10 +640,9 @@ void MIDASDesktopUI::updateClientTreeView()
     }
   delete m_ReadDatabaseThread;
 
-  m_ReadDatabaseThread = new ReadDatabaseThread;
-  m_ReadDatabaseThread->SetParentUI(this);
+  m_ReadDatabaseThread = new UpdateTreeViewThread(this->treeViewClient);
 
-  connect(m_ReadDatabaseThread, SIGNAL( threadComplete() ), this, SLOT( resetStatus() ) );
+  connect(m_ReadDatabaseThread, SIGNAL( finished() ), this, SLOT( resetStatus() ) );
   connect(m_ReadDatabaseThread, SIGNAL( enableActions(bool) ), this, SLOT( enableClientActions(bool) ) );
 
   displayStatus("Reading local database...");
@@ -659,11 +659,10 @@ void MIDASDesktopUI::updateServerTreeView()
     }
   delete m_RefreshThread;
 
-  m_RefreshThread = new RefreshServerTreeThread;
-  m_RefreshThread->SetParentUI(this);
+  m_RefreshThread = new UpdateTreeViewThread(this->treeViewServer);
   
-  connect(m_RefreshThread, SIGNAL( threadComplete() ), this, SLOT( resetStatus() ) );
-  connect(m_RefreshThread, SIGNAL( threadComplete() ), this, SLOT( clearInfoPanel() ) );
+  connect(m_RefreshThread, SIGNAL( finished() ), this, SLOT( resetStatus() ) );
+  connect(m_RefreshThread, SIGNAL( finished() ), this, SLOT( clearInfoPanel() ) );
   connect(m_RefreshThread, SIGNAL( enableActions(bool) ), this, SLOT( enableActions(bool) ) );
 
   displayStatus("Refreshing server tree...");
@@ -1244,9 +1243,9 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
   m_AddBitstreamsThread->SetParentItem(
     const_cast<MidasItemTreeItem*>(parentItem));
   
-  connect(m_AddBitstreamsThread, SIGNAL(threadComplete()),
+  connect(m_AddBitstreamsThread, SIGNAL( finished() ),
           m_PollFilesystemThread, SLOT( Resume()) );
-  connect(m_AddBitstreamsThread, SIGNAL(threadComplete()),
+  connect(m_AddBitstreamsThread, SIGNAL( finished() ),
           this, SLOT( resetStatus() ) );
   connect(m_AddBitstreamsThread, SIGNAL(enableActions(bool)),
           this, SLOT( enableClientActions(bool) ) );
@@ -1617,11 +1616,11 @@ void MIDASDesktopUI::search()
   
   m_SearchResults.clear();
 
-  m_SearchThread = new SearchThread(this);
+  m_SearchThread = new SearchThread;
   m_SearchThread->SetWords(words);
   m_SearchThread->SetResults(&this->m_SearchResults);
   
-  connect(m_SearchThread, SIGNAL( threadComplete() ),
+  connect(m_SearchThread, SIGNAL( finished() ),
     this, SLOT( showSearchResults() ) );
 
   activateActions(false, ACTION_CONNECTED);
@@ -1749,8 +1748,8 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
   m_DeleteThread->SetResource(const_cast<MidasTreeItem*>(treeItem));
   m_DeleteThread->SetDeleteOnDisk(deleteFiles);
 
-  connect(m_DeleteThread, SIGNAL( threadComplete() ), this, SLOT( resetStatus() ) );
-  connect(m_DeleteThread, SIGNAL( threadComplete() ), this, SLOT( updateClientTreeView() ) );
+  connect(m_DeleteThread, SIGNAL( finished() ), this, SLOT( resetStatus() ) );
+  connect(m_DeleteThread, SIGNAL( finished() ), this, SLOT( updateClientTreeView() ) );
   connect(m_DeleteThread, SIGNAL( enableActions(bool) ), this, SLOT( enableClientActions(bool) ) );
 
   this->Log->Status("Deleting local resources...");

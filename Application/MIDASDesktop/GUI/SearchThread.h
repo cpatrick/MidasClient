@@ -4,8 +4,6 @@
 #include <QThread>
 #include "midasStandardIncludes.h"
 
-class MIDASDesktopUI;
-
 namespace mdo {
   class Object;
 }
@@ -14,7 +12,7 @@ class SearchThread : public QThread
 {
   Q_OBJECT
 public:
-  SearchThread(MIDASDesktopUI* parent);
+  SearchThread();
   ~SearchThread();
 
   void SetWords(std::vector<std::string> words);
@@ -22,11 +20,7 @@ public:
 
   virtual void run();
 
-signals:
-  void threadComplete();
-
 private:
-  MIDASDesktopUI* m_Parent;
   std::vector<std::string> m_Words;
   std::vector<mdo::Object*>* m_Results;
 };

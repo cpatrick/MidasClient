@@ -4,6 +4,7 @@
 #include "MidasClientGlobal.h"
 #include "mdsDatabaseAPI.h"
 #include "UnifyTreeThread.h"
+#include "PollFilesystemThread.h"
 #include <QString>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -58,13 +59,15 @@ void PreferencesUI::unifyTree()
     }
   delete m_UnifyTreeThread;
 
-  m_UnifyTreeThread = new UnifyTreeThread(m_parent);
+  m_UnifyTreeThread = new UnifyTreeThread;
   m_UnifyTreeThread->setCopy(copy);
     
-  connect(m_UnifyTreeThread, SIGNAL(threadComplete()), this, SLOT(unifyTreeDone()));
+  connect(m_UnifyTreeThread, SIGNAL( finished() ), this, SLOT(unifyTreeDone()));
+  connect(m_UnifyTreeThread, SIGNAL( finished() ), m_parent->getPollFilesystemThread(), SLOT( Resume() ) );
 
   m_parent->displayStatus("Copying resources into a single tree...");
   m_parent->setProgressIndeterminate();
+  m_parent->getPollFilesystemThread()->Pause();
 
   m_UnifyTreeThread->start();
 }
