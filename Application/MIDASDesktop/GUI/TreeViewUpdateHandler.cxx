@@ -10,8 +10,10 @@ TreeViewUpdateHandler::TreeViewUpdateHandler(MidasTreeView* view)
           m_View, SLOT( addResource(mdo::Object*) ) );
   connect(this, SIGNAL( ResourceUpdated(mdo::Object*) ),
           m_View, SLOT( updateResource(mdo::Object*) ) );
+  // Delete operation requires a blocking queued connection since we use another
+  // thread to delete resources
   connect(this, SIGNAL( ResourceDeleted(mdo::Object*) ),
-          m_View, SLOT( deleteResource(mdo::Object*) ) );
+          m_View, SLOT( deleteResource(mdo::Object*) ), Qt::BlockingQueuedConnection );
 }
 
 TreeViewUpdateHandler::~TreeViewUpdateHandler()

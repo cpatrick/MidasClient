@@ -16,29 +16,22 @@
 #include <QObject>
 
 class FileOverwriteUI;
-class MIDASDesktopUI;
-class midasSynchronizer;
 
 class GUIFileOverwriteHandler : public QObject, public midasFileOverwriteHandler
 {
   Q_OBJECT
 public:
-  GUIFileOverwriteHandler(MIDASDesktopUI* parent);
+  GUIFileOverwriteHandler(FileOverwriteUI* dialog);
   ~GUIFileOverwriteHandler();
 
   Action HandleConflict(std::string path);
 
-public slots:
-  void actionChosen(Action action, bool applyToAll);
-  void chooseAction(int choice, bool applyToAll);
 signals:
-  void displayDialog(const QString& path);
+  void displayDialog();
 
 private:
-  MIDASDesktopUI* m_Parent;
-  bool            m_ApplyToAll;
-  bool            m_Done;
-  Action          m_Action;
+  FileOverwriteUI* m_Dialog;
+  bool             m_ApplyToAll;
 };
 
 #endif

@@ -1,16 +1,12 @@
 #include "GUIFileOverwriteHandler.h"
-#include "MIDASDesktopUI.h"
-#if defined(_WIN32)
-# include <windows.h>
-#else
-# include <unistd.h>
-#endif
+#include "FileOverwriteUI.h"
 
-GUIFileOverwriteHandler::GUIFileOverwriteHandler(MIDASDesktopUI* parent)
-: m_Parent(parent), m_ApplyToAll(false), m_Done(false)
+GUIFileOverwriteHandler::GUIFileOverwriteHandler(FileOverwriteUI* dialog)
+: m_Dialog(dialog), m_ApplyToAll(false)
 {
-  connect(this, SIGNAL(displayDialog(const QString&) ),
-          parent, SLOT(showFileOverwriteDialog(const QString&) ) );
+  connect(this, SIGNAL( displayDialog() ),
+          dialog, SLOT( exec() ),
+          Qt::BlockingQueuedConnection);
 }
 
 GUIFileOverwriteHandler::~GUIFileOverwriteHandler()
@@ -20,30 +16,11 @@ GUIFileOverwriteHandler::~GUIFileOverwriteHandler()
 midasFileOverwriteHandler::Action GUIFileOverwriteHandler::HandleConflict(
   std::string path)
 {
-  m_Done = false;
   if(!m_ApplyToAll)
     {
-    emit displayDialog(path.c_str());
-    while(!m_Done)
-      {
-      #if defined(_WIN32)
-        Sleep(25);
-      #else
-        usleep(25000);
-      #endif
-      }
+    m_Dialog->setPath(path);
+    emit displayDialog(); //modal dialog, blocking connection
+    m_ApplyToAll = m_Dialog->ShouldApplyToAll();
     }
-  return m_Action;
-}
-
-void GUIFileOverwriteHandler::chooseAction(int choice, bool applyToAll)
-{
-  this->actionChosen((Action)choice, applyToAll);
-}
-
-void GUIFileOverwriteHandler::actionChosen(Action action, bool applyToAll)
-{
-  m_ApplyToAll = applyToAll;
-  m_Action = action;
-  m_Done = true;
+  return m_Dialog->ShouldOverwrite() ? Overwrite : UseExisting;
 }

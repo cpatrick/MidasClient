@@ -42,7 +42,7 @@ int MidasApplication::exec()
   return code; 
   }
 
-bool MidasApplication::notify ( QObject * receiver, QEvent * event )
+bool MidasApplication::notify ( QObject* receiver, QEvent* event )
   {
   try
     {
@@ -50,11 +50,12 @@ bool MidasApplication::notify ( QObject * receiver, QEvent * event )
     }
   catch (const std::exception& e)
     {
-    Logger::error("Notify event", &e);
-    assert( this->MIDASDesktop != NULL); 
-    //this->MIDASDesktop->signOut();
-    QMessageBox::critical(this->MIDASDesktop, "MIDAS Desktop error", STR2QSTR(e.what()));
+    std::stringstream text;
+    text << "Caught exception during notify to object " <<
+      receiver->objectName().toStdString();
+    text << ". Message: " << e.what();
+    this->MIDASDesktop->GetLog()->Error(text.str());
     }
-  return false; 
+  return false;
   }
 

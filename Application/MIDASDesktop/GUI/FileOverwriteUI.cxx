@@ -1,36 +1,44 @@
 #include "FileOverwriteUI.h"
 #include "GUIFileOverwriteHandler.h"
 
-FileOverwriteUI::FileOverwriteUI(MIDASDesktopUI* parent, GUIFileOverwriteHandler* controller)
-: m_Parent(parent), m_Controller(controller)
+FileOverwriteUI::FileOverwriteUI(QWidget* parent)
+: QDialog(parent), m_Overwrite(true)
 {
   setupUi(this);
+  this->setModal(true);
+
   connect(overwriteButton, SIGNAL( released() ), this, SLOT( overwrite() ) );
   connect(useExistingButton, SIGNAL( released() ), this, SLOT( useExisting() ) );
-
-  connect(this, SIGNAL( selectionMade(int, bool) ), m_Controller, SLOT( chooseAction(int, bool) ) );
 }
 
 FileOverwriteUI::~FileOverwriteUI()
 {
 }
 
-void FileOverwriteUI::setPath(const QString& path)
+bool FileOverwriteUI::ShouldOverwrite()
 {
-  m_Path = path.toStdString();
+  return m_Overwrite;
+}
+
+bool FileOverwriteUI::ShouldApplyToAll()
+{
+  return this->applyToAllCheckbox->isChecked();
+}
+
+void FileOverwriteUI::setPath(const std::string& path)
+{
+  m_Path = path;
 }
 
 void FileOverwriteUI::overwrite()
 {
-  emit selectionMade(midasFileOverwriteHandler::Overwrite,
-    applyToAllCheckbox->isChecked());
+  m_Overwrite = true;
   QDialog::accept();
 }
 
 void FileOverwriteUI::useExisting()
 {
-  emit selectionMade(midasFileOverwriteHandler::UseExisting,
-    applyToAllCheckbox->isChecked());
+  m_Overwrite = false;
   QDialog::accept();
 }
 

@@ -20,6 +20,7 @@ public:
 
   virtual void run();
 
+public slots:
   // Stop filesystem polling and wait for current poll to finish
   void Pause();
   // Resume filesystem polling

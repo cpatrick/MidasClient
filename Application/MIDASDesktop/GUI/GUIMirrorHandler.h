@@ -26,7 +26,6 @@ public:
   ~GUIMirrorHandler();
 
 public slots:
-  void dialogAccepted();
   mdo::Assetstore* HandleMirroredBitstream(mdo::Bitstream* bitstream);
 
 signals:
@@ -34,7 +33,6 @@ signals:
 
 protected:
   MirrorPickerUI* m_MirrorDialog;
-  bool            m_Done;
   std::set<int>   m_PreferredLocations;
 };
 

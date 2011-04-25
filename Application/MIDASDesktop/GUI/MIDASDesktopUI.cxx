@@ -66,6 +66,7 @@
 #include "ReadDatabaseThread.h"
 #include "PollFilesystemThread.h"
 #include "AddBitstreamsThread.h"
+#include "DeleteThread.h"
 // ------------- Threads -------------
 
 // ------------- TreeModel / TreeView -------------
@@ -130,12 +131,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_deleteServerResourceUI = new DeleteResourceUI( this, true );
   dlg_addAuthorUI =            new AddAuthorUI( this );
   dlg_addKeywordUI =           new AddKeywordUI( this );
-  m_agreementHandler =         new GUIAgreement( this );
-  dlg_agreementUI =            new AgreementUI( this,
-    dynamic_cast<GUIAgreement*>(this->m_agreementHandler) );
-  m_overwriteHandler =         new GUIFileOverwriteHandler( this );
-  dlg_overwriteUI =            new FileOverwriteUI( this,
-    dynamic_cast<GUIFileOverwriteHandler*>(this->m_overwriteHandler));
+  dlg_agreementUI =            new AgreementUI( this );
+  dlg_overwriteUI =            new FileOverwriteUI( this );
   dlg_mirrorPickerUI =         new MirrorPickerUI( this );
   ProcessingStatusUI::init( this );
   // ------------- Instantiate and setup UI dialogs -------------
@@ -310,16 +307,19 @@ MIDASDesktopUI::MIDASDesktopUI()
   m_ReadDatabaseThread = NULL;
   m_PollFilesystemThread = NULL;
   m_AddBitstreamsThread = NULL;
+  m_DeleteThread = NULL;
   connect(&m_CreateDBWatcher, SIGNAL(finished()), this, SLOT(newDBFinished()));
   // ------------- thread init -----------------
 
-  // ------------- setup client members and logging ----
+  // ------------- setup handlers and logging ------------
+  this->Log = new GUILogger(this);
   this->m_synch = new midasSynchronizer();
+  this->m_synch->SetLog(this->Log);
   this->m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
   this->m_mirrorHandler = new GUIMirrorHandler(dlg_mirrorPickerUI);
+  this->m_agreementHandler = new GUIAgreement(dlg_agreementUI);
+  this->m_overwriteHandler = new GUIFileOverwriteHandler( dlg_overwriteUI );
   this->m_progress = new GUIProgress(this->progressBar);
-  this->Log = new GUILogger(this);
-  this->m_synch->SetLog(this->Log);
   mds::DatabaseInfo::Instance()->SetLog(this->Log);
   mds::DatabaseInfo::Instance()->SetResourceUpdateHandler(m_resourceUpdateHandler);
   mws::WebAPI::Instance()->SetLog(this->Log);
@@ -330,7 +330,10 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_signIn = false;
   this->m_editMode = false;
   this->m_cancel = false;
-  // ------------- setup client members and logging ----
+
+  connect(dynamic_cast<GUIAgreement*>(m_agreementHandler), SIGNAL( errorMessage(const QString&) ),
+          this, SLOT( logError(const QString&) ) );
+  // ------------- setup handlers and logging -------------
 
   // ------------- Progress bar ------------------------
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( ProgressMessage(const QString&) ), this, SLOT( currentFileMessage(const QString&) ) );
@@ -340,13 +343,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( EstimatedTime(double) ), this, SLOT( estimatedTimeUpdate(double) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgressTotal(double, double) ), this, SLOT( totalProgressUpdate(double, double) ) );
   // ------------- Progress bar ------------------------
-
-  // ------------- Mirror handler ----------------------
-  connect(dynamic_cast<GUIMirrorHandler*>(m_mirrorHandler), SIGNAL( prompt(mdo::Bitstream*) ),
-    dlg_mirrorPickerUI, SLOT( exec(mdo::Bitstream*) ) );
-  connect(dlg_mirrorPickerUI, SIGNAL( accepted() ),
-    dynamic_cast<GUIMirrorHandler*>(m_mirrorHandler), SLOT( dialogAccepted() ) );
-  // ------------- Mirror handler ----------------------
 
   // ------------- Handle stored settings -------------
   QSettings settings("Kitware", "MIDASDesktop");
@@ -404,6 +400,12 @@ MIDASDesktopUI::~MIDASDesktopUI()
     m_ReadDatabaseThread->terminate();
     m_ReadDatabaseThread->wait();
     }
+  if(m_DeleteThread && m_DeleteThread->isRunning())
+    {
+    m_DeleteThread->terminate();
+    m_DeleteThread->wait();
+    }
+  delete m_DeleteThread;
 
   /*if(m_PollFilesystemThread && m_PollFilesystemThread->isRunning())
     {
@@ -1236,11 +1238,11 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
     const_cast<MidasItemTreeItem*>(parentItem));
   
   connect(m_AddBitstreamsThread, SIGNAL(threadComplete()),
-          m_PollFilesystemThread, SLOT(Resume()) );
+          m_PollFilesystemThread, SLOT( Resume()) );
   connect(m_AddBitstreamsThread, SIGNAL(threadComplete()),
           this, SLOT( resetStatus() ) );
   connect(m_AddBitstreamsThread, SIGNAL(enableActions(bool)),
-          this, SLOT( enableActions(bool) ) );
+          this, SLOT( enableClientActions(bool) ) );
   connect(m_AddBitstreamsThread, SIGNAL(progress(int, int, const QString&)),
           this, SLOT(addBitstreamsProgress(int, int, const QString&)) );
   m_progress->ResetProgress();
@@ -1729,25 +1731,26 @@ void MIDASDesktopUI::finishedExpandingTree()
 void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
 {
   m_PollFilesystemThread->Pause();
-  const MidasTreeItem* treeItem = treeViewClient->getSelectedMidasTreeItem();
-  std::string uuid = treeItem->getUuid();
-  std::string name = treeItem->data(0).toString().toStdString();
-  
-  mds::DatabaseAPI db;
-  if(!db.DeleteResource(uuid, deleteFiles))
-    {
-    this->Log->Error("Error: Delete failed on resource " + name);
-    }
-  else
-    {
-    std::stringstream text;
-    text << "Deleted resource " << 
-      treeViewClient->getSelectedMidasTreeItem()->data(0).toString().toStdString();
-    GetLog()->Message(text.str());
-    }
-  m_PollFilesystemThread->Resume();
 
-  this->updateClientTreeView();
+  const MidasTreeItem* treeItem = treeViewClient->getSelectedMidasTreeItem();
+  if(m_DeleteThread && m_DeleteThread->isRunning())
+    {
+    return;
+    }
+  delete m_DeleteThread;
+
+  m_DeleteThread = new DeleteThread;
+  m_DeleteThread->SetResource(const_cast<MidasTreeItem*>(treeItem));
+  m_DeleteThread->SetDeleteOnDisk(deleteFiles);
+
+  connect(m_DeleteThread, SIGNAL( threadComplete() ), this, SLOT( resetStatus() ) );
+  connect(m_DeleteThread, SIGNAL( threadComplete() ), this, SLOT( updateClientTreeView() ) );
+  connect(m_DeleteThread, SIGNAL( enableActions(bool) ), this, SLOT( enableClientActions(bool) ) );
+
+  this->Log->Status("Deleting local resources...");
+  setProgressIndeterminate();
+
+  m_DeleteThread->start();
 }
 
 // Controller for deleting server resources
@@ -1963,18 +1966,12 @@ void MIDASDesktopUI::estimatedTimeUpdate(double seconds)
   this->estimatedTimeLabel->setText(text.str().c_str());
 }
 
-void MIDASDesktopUI::showUserAgreementDialog()
+void MIDASDesktopUI::logError(const QString& text)
 {
-  dlg_agreementUI->exec();
+  this->Log->Error(text.toStdString());
 }
 
-void MIDASDesktopUI::showFileOverwriteDialog(const QString& path)
+void MIDASDesktopUI::logMessage(const QString& text)
 {
-  dlg_overwriteUI->setPath(path);
-  dlg_overwriteUI->exec();
-}
-
-void MIDASDesktopUI::checkingUserAgreement()
-{
-  this->Log->Status("Checking license agreement...");
+  this->Log->Message(text.toStdString());
 }

@@ -3,23 +3,33 @@
 
 #include "ui_AgreementUI.h"
 #include <QDialog>
+#include <QString>
 
 class MIDASDesktopUI;
-class GUIAgreement;
 
 class AgreementUI : public QDialog,private Ui::AgreementDialog
 {
   Q_OBJECT
 public:
-  AgreementUI(MIDASDesktopUI* parent, GUIAgreement* controller);
+  AgreementUI(QWidget* parent);
+  ~AgreementUI();
+
+  void SetUrl(const QString& url);
+  bool WasCanceled();
+
+signals:
+  void errorMessage(const QString&);
 
 public slots:
+  void reject();
+
   void exec();
   void openBrowser();
 
 private:
+  QString         m_Url;
   MIDASDesktopUI* m_Parent;
-  GUIAgreement*   m_Controller;
+  bool            m_Canceled;
 };
 
 #endif

@@ -6,6 +6,7 @@ MirrorPickerUI::MirrorPickerUI(QWidget* parent)
 : QDialog(parent)
 {
   setupUi(this);
+  this->setModal(true);
   mirrorListLayout->setAlignment(Qt::AlignTop);
 }
 

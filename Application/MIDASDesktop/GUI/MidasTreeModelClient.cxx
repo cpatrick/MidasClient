@@ -154,13 +154,15 @@ void MidasTreeModelClient::addResource(mdo::Object* object)
     QModelIndex parentIndex = this->getIndexByUuid(bitstream->GetParentItem()->GetUuid());
     MidasItemTreeItem* parent = dynamic_cast<MidasItemTreeItem*>(const_cast<MidasTreeItem*>(this->midasTreeItem(parentIndex)));
     MidasBitstreamTreeItem* bitstreamItem = new MidasBitstreamTreeItem(columnData, this, parent);
+    bitstreamItem->setClientResource(true);
+    bitstreamItem->setBitstream(bitstream);
+    bitstreamItem->setDecorationRole(MidasTreeItem::Dirty);
+
     this->beginInsertRows(parentIndex, parent->childCount(), parent->childCount());
     parent->appendChild(bitstreamItem);
     this->endInsertRows();
     QModelIndex index = this->index(parent->childCount()-1, 0, parentIndex);
 
-    bitstreamItem->setClientResource(true);
-    bitstreamItem->setBitstream(bitstream);
     this->registerResource(object->GetUuid(), index);
     }
   else return;

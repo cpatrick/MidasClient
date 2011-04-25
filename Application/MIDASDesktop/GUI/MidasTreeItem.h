@@ -87,4 +87,4 @@ protected:
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS( MidasTreeItem::DecorationRoles )
 
- #endif //__MidasTreeItem_H
+#endif //__MidasTreeItem_H
