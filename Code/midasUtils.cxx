@@ -397,3 +397,21 @@ bool midasUtils::RenameFile(const char* oldname, const char* newname)
   return rename(oldname, newname) == 0;
 #endif
 }
+
+//-------------------------------------------------------------------
+bool midasUtils::ValidateBitstreamName(const std::string& name)
+{
+  if(name == "" || name.find('/') != std::string::npos ||
+     name.find('\\') != std::string::npos ||
+     name.find(':') != std::string::npos ||
+     name.find('*') != std::string::npos ||
+     name.find('?') != std::string::npos ||
+     name.find('|') != std::string::npos ||
+     name.find('<') != std::string::npos ||
+     name.find('>') != std::string::npos ||
+     name.find('"') != std::string::npos)
+    {
+    return false;
+    }
+  return true;
+}
