@@ -32,6 +32,7 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(TestUploadTGZ "${MIDASCPP_BINARY_DIR}/bin/MIDAScli"
     --profile test
     --database "${MIDASCPP_BINARY_DIR}/midas.db"
+    --url ${dashboard_midas_server_url}
     upload "${MIDASCPP_BINARY_DIR}/Testing/testArchive.tar.gz"
     "${dashboard_top_level_community_name}_changed/Subcomm/Collection_changed/Item_changed")
 
