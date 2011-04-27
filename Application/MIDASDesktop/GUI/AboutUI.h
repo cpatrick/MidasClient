@@ -3,15 +3,13 @@
  
 #include "ui_AboutUI.h"
 
-class MIDASDesktopUI; 
-
 class AboutUI :  public QDialog, private Ui::AboutDialog
 {
   Q_OBJECT
  
 public:
-  AboutUI(MIDASDesktopUI *parent);
-  ~AboutUI(){}
+  AboutUI(QWidget* parent);
+  ~AboutUI();
 
 
 public slots:

@@ -20,18 +20,18 @@ midasStdOutLog::~midasStdOutLog()
 {
 }
 
-void midasStdOutLog::Error(std::string text)
+void midasStdOutLog::Error(const std::string& text)
 {
   std::cerr << text;
 }
 
-void midasStdOutLog::Message(std::string text)
+void midasStdOutLog::Message(const std::string& text)
 {
   std::cout << text;
 }
 
-void midasStdOutLog::Status(std::string text)
+void midasStdOutLog::Status(const std::string& text)
 {
-  //nop
+  //no-op in the CLI view until we get a curses view :)
 }
 

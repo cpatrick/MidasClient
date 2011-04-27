@@ -101,6 +101,7 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- Synchronizer --------------
   this->m_synch = new midasSynchronizer();
+  this->Log = new GUILogger(this);
   // ------------- Synchronizer --------------
 
   // ------------- Instantiate and setup tray icon -------------
@@ -124,11 +125,11 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- Instantiate and setup UI dialogs -------------
   dlg_createMidasResourceUI =  new CreateMidasResourceUI( this, m_synch );
-  dlg_signInUI =               new SignInUI( this );
+  dlg_signInUI =               new SignInUI( this, m_synch );
+  dlg_pullUI =                 new PullUI( this, m_synch );
   dlg_createProfileUI =        new CreateProfileUI( this );
   dlg_aboutUI =                new AboutUI( this );
   dlg_preferencesUI =          new PreferencesUI( this );
-  dlg_pullUI =                 new PullUI( this );
   dlg_deleteClientResourceUI = new DeleteResourceUI( this, false );
   dlg_deleteServerResourceUI = new DeleteResourceUI( this, true );
   dlg_addAuthorUI =            new AddAuthorUI( this );
@@ -248,26 +249,38 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(treeViewServer, SIGNAL( startedExpandingTree() ), this, SLOT( startedExpandingTree() ) );
   connect(treeViewServer, SIGNAL( finishedExpandingTree() ), this, SLOT( finishedExpandingTree() ) );
 
-  connect(dlg_createMidasResourceUI, SIGNAL( resourceCreated() ), this, SLOT( updateClientTreeView() ) );
-
   connect(treeViewServer, SIGNAL( enableActions(bool) ), this, SLOT( enableActions(bool) ) );
 
   // ------------- setup TreeView signals -------------
 
   // ------------- signal/slot connections -------------
+  connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string, std::string, std::string)),
+    this, SLOT( createProfile(std::string, std::string, std::string, std::string, std::string, std::string)));
+  connect( dlg_createProfileUI, SIGNAL( deletedProfile(std::string)),
+    dlg_signInUI, SLOT( removeProfile(std::string)));
+  connect( dlg_createProfileUI, SIGNAL( deletedProfile(std::string) ),
+    dynamic_cast<GUILogger*>(this->Log), SLOT( Status(std::string) ) );
+
+  connect( dlg_signInUI, SIGNAL( createProfileRequest() ), dlg_createProfileUI, SLOT( exec() ) );
+  connect( dlg_signInUI, SIGNAL( signingIn() ), this, SLOT( signingIn() ) );
+  connect( dlg_signInUI, SIGNAL( signedIn(bool) ), this, SLOT( signIn(bool) ) );
+
+  connect( dlg_deleteClientResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteLocalResource(bool) ) );
+  connect( dlg_deleteServerResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteServerResource(bool) ) );
+
+  connect( dlg_preferencesUI, SIGNAL( unifyingTree() ), this, SLOT( unifyingTree() ) );
+  connect( dlg_preferencesUI, SIGNAL( treeUnified() ), this, SLOT( treeUnified() ) );
+
+  connect( dlg_pullUI, SIGNAL( enableActions(bool) ), this, SLOT( enableActions(bool) ) );
+
+  connect( dlg_createMidasResourceUI, SIGNAL( resourceCreated() ), this, SLOT( updateClientTreeView() ) );
+
   connect( actionPush_Resources,          SIGNAL( triggered() ), this, SLOT( pushResources() ) );
   connect( actionPull_Resource,           SIGNAL( triggered() ), dlg_pullUI, SLOT( exec() ) );
   connect( actionOpenURL,                 SIGNAL( triggered() ), this, SLOT( viewInBrowser() ) );
   //connect( actionSwap_with_MD5_reference, SIGNAL( triggered() ), this, SLOT( 
 
   connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
-  connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string, std::string, std::string)),
-    this, SLOT( createProfile(std::string, std::string, std::string, std::string, std::string, std::string)));
-  connect( dlg_createProfileUI, SIGNAL( deletedProfile(std::string)),
-    dlg_signInUI, SLOT( removeProfile(std::string)));
-  connect( dlg_signInUI, SIGNAL( createProfileRequest() ), dlg_createProfileUI, SLOT( exec() ) );
-  connect( dlg_deleteClientResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteLocalResource(bool) ) );
-  connect( dlg_deleteServerResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteServerResource(bool) ) );
 
   connect( actionChoose_Local_Database, SIGNAL( triggered() ), this, SLOT( chooseLocalDatabase() ) );
   connect( actionNew_Local_Database, SIGNAL( triggered() ), this, SLOT( createLocalDatabase() ) );
@@ -316,7 +329,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- thread init -----------------
 
   // ------------- setup client members and logging ----
-  this->Log = new GUILogger(this);
   this->m_synch->SetLog(this->Log);
   this->m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
   this->m_mirrorHandler = new GUIMirrorHandler(dlg_mirrorPickerUI);
@@ -1347,6 +1359,12 @@ void MIDASDesktopUI::displayStatus(const QString& message)
   stateLabel->setText(message);
 }
 
+void MIDASDesktopUI::signingIn()
+{
+  displayStatus("Connecting to server...");
+  setProgressIndeterminate();
+}
+
 void MIDASDesktopUI::signInOrOut()
 {
   if ( !this->m_signIn )
@@ -1416,6 +1434,7 @@ void MIDASDesktopUI::signIn(bool ok)
     GetLog()->Message(text.str());
     m_signIn = true;
     displayStatus(tr(""));
+    this->treeViewServer->Initialize();
     }
   else
     {
@@ -1497,7 +1516,11 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
 
     //start the filesystem monitoring thread
     m_PollFilesystemThread = new PollFilesystemThread;
+    
     connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()), Qt::BlockingQueuedConnection);
+    connect(dlg_pullUI, SIGNAL( startingSynchronizer() ), m_PollFilesystemThread, SLOT( Pause() ), Qt::BlockingQueuedConnection );
+    connect(dlg_pullUI, SIGNAL( pulledResources() ), m_PollFilesystemThread, SLOT( Resume() ) );
+
     m_PollFilesystemThread->start();
     }
   else
@@ -1977,4 +2000,21 @@ void MIDASDesktopUI::logError(const QString& text)
 void MIDASDesktopUI::logMessage(const QString& text)
 {
   this->Log->Message(text.toStdString());
+}
+
+void MIDASDesktopUI::unifyingTree()
+{
+  this->displayStatus("Copying resources into a single tree...");
+  this->setProgressIndeterminate();
+  m_PollFilesystemThread->Pause();
+}
+
+void MIDASDesktopUI::treeUnified()
+{
+  this->displayStatus("Finished unifying resources on disk.");
+  this->Log->Message("Finished unifying resources on disk.");
+  this->setProgressEmpty();
+  this->updateClientTreeView();
+
+  m_PollFilesystemThread->Resume();
 }

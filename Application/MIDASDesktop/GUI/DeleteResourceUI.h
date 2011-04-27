@@ -3,15 +3,13 @@
  
 #include "ui_DeleteResourceUI.h"
 
-class MIDASDesktopUI;
-
 class DeleteResourceUI :  public QDialog, private Ui::DeleteResourceDialog
 {
   Q_OBJECT
  
 public:
 
-  DeleteResourceUI(MIDASDesktopUI *parent, bool server);
+  DeleteResourceUI(QWidget* parent, bool server);
   ~DeleteResourceUI();
 
   void init(); 
@@ -25,9 +23,7 @@ public slots:
   virtual void accept();
 
 private:
-  bool            m_Server;
-  MIDASDesktopUI* m_Parent;
-  
+  bool m_Server;
 };
 
 #endif //__DeleteResourceUI_H

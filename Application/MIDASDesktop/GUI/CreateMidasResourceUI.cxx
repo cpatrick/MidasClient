@@ -4,7 +4,6 @@
 #include <Qt>
 #include <QMessageBox>
 
-#include "MIDASDesktopUI.h"
 #include "midasSynchronizer.h"
 #include "mdsDatabaseAPI.h"
 #include "midasAuthenticator.h"

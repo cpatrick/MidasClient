@@ -123,7 +123,7 @@ public slots:
   void progressSpeedUpdate(double bytesPerSec);
   void estimatedTimeUpdate(double seconds);
   //-------------- progress tab -----------
-
+  void signingIn();
   void signInOrOut();
   void signIn(bool ok);
   void signOut();
@@ -151,6 +151,8 @@ public slots:
   // ------------- settings -------------
   void setTimerInterval();
   void adjustTimerSettings();
+  void unifyingTree();
+  void treeUnified();
   // ------------- settings -------------
 
   // -------------- progress bar ----------
@@ -226,12 +228,12 @@ private:
   void infoPanel(MidasBitstreamTreeItem* node, bool editable);
 
   // ------------- UI Dialogs -------------
-  CreateMidasResourceUI *     dlg_createMidasResourceUI;
-  CreateProfileUI *           dlg_createProfileUI;
-  SignInUI *                  dlg_signInUI;
-  AboutUI *                   dlg_aboutUI;
-  PreferencesUI *             dlg_preferencesUI;
-  PullUI *                    dlg_pullUI;
+  CreateMidasResourceUI*      dlg_createMidasResourceUI;
+  CreateProfileUI*            dlg_createProfileUI;
+  SignInUI*                   dlg_signInUI;
+  AboutUI*                    dlg_aboutUI;
+  PreferencesUI*              dlg_preferencesUI;
+  PullUI*                     dlg_pullUI;
   DeleteResourceUI*           dlg_deleteClientResourceUI;
   DeleteResourceUI*           dlg_deleteServerResourceUI;
   AddAuthorUI*                dlg_addAuthorUI;
@@ -242,24 +244,24 @@ private:
   // ------------- UI Dialogs -------------
 
   // ------------- status bar -------------
-  QLabel *                    stateLabel;
-  QLabel *                    connectLabel;
-  QProgressBar *              progressBar;
-  QPushButton *               cancelButton;
+  QLabel*                     stateLabel;
+  QLabel*                     connectLabel;
+  QProgressBar*               progressBar;
+  QPushButton*                cancelButton;
   // ------------- status bar -------------
 
-  ButtonDelegate *            authorsEditor;
-  ButtonDelegate *            keywordsEditor;
-  TextEditDelegate *          textMetadataEditor;
+  ButtonDelegate*             authorsEditor;
+  ButtonDelegate*             keywordsEditor;
+  TextEditDelegate*           textMetadataEditor;
 
   // ------------- tray ----------------
-  QAction *                   showAction;
-  QSystemTrayIcon *           trayIcon;
-  QMenu *                     trayIconMenu;
+  QAction*                    showAction;
+  QSystemTrayIcon*            trayIcon;
+  QMenu*                      trayIconMenu;
   // ------------- tray ----------------
 
   // ------------- auto-refresh -----------
-  QTimer *                    refreshTimer;
+  QTimer*                     refreshTimer;
   // ------------- auto-refresh -----------
 
   bool                        m_signIn;

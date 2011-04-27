@@ -3,8 +3,8 @@
  
 #include "ui_SignInUI.h"
 
-class MIDASDesktopUI;
 class SignInThread;
+class midasSynchronizer;
 
 class SignInUI :  public QDialog, private Ui::SignInDialog
 {
@@ -12,14 +12,15 @@ class SignInUI :  public QDialog, private Ui::SignInDialog
  
 public:
 
-  SignInUI(MIDASDesktopUI *parent);
+  SignInUI(QWidget* parent, midasSynchronizer* synch);
   ~SignInUI();
 
   void init(); 
 
 signals:
-  void signedIn();
   void createProfileRequest();
+  void signingIn();
+  void signedIn(bool);
 
 public slots:
 
@@ -28,10 +29,11 @@ public slots:
   void showCreateProfileDialog();
   void profileCreated(std::string name);
   void removeProfile(std::string name);
+  void signIn(bool ok);
 
 private:
-  SignInThread* m_SignInThread;
-  MIDASDesktopUI* parent;
+  SignInThread*      m_SignInThread;
+  midasSynchronizer* m_Synch;
   
 };
 

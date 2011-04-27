@@ -14,15 +14,18 @@
 
 #include "midasLog.h"
 
+/**
+ * Logger to stdout/stderr -- used in the CLI
+ */
 class midasStdOutLog : public midasLog
 {
 public:
   midasStdOutLog();
   ~midasStdOutLog();
 
-  void Error(std::string text);
-  void Message(std::string text);
-  void Status(std::string text);
+  void Error(const std::string& text);
+  void Message(const std::string& text);
+  void Status(const std::string& text);
 };
 
 #endif

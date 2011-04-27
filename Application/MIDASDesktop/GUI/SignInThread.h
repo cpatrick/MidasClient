@@ -4,13 +4,13 @@
 #include <QThread>
 #include <QString>
 
-class MIDASDesktopUI;
+class midasSynchronizer;
 
 class SignInThread : public QThread
 {
   Q_OBJECT
 public:
-  SignInThread(MIDASDesktopUI* parent);
+  SignInThread(midasSynchronizer* synch);
   ~SignInThread();
 
   void SetProfile(QString profile);
@@ -21,8 +21,8 @@ signals:
   void initialized(bool ok);
 
 private:
-  MIDASDesktopUI* m_Parent;
-  QString         m_Profile;
+  midasSynchronizer* m_Synch;
+  QString            m_Profile;
 };
 
 #endif

@@ -1,14 +1,14 @@
 #include "PullUI.h"
 #include "SynchronizerThread.h"
 #include "MidasClientGlobal.h"
-#include "MIDASDesktopUI.h"
 #include "midasAuthenticator.h"
 #include "midasSynchronizer.h"
+#include "midasProgressReporter.h"
 #include "PollFilesystemThread.h"
 
 /** Constructor */
-PullUI::PullUI(MIDASDesktopUI *parent):
-  QDialog(parent), m_Parent(parent)
+PullUI::PullUI(QWidget* parent, midasSynchronizer* synch)
+: QDialog(parent), m_Synch(synch)
 {
   setupUi(this);
   resetState();
@@ -112,25 +112,14 @@ void PullUI::accept()
   delete m_SynchronizerThread;
 
   m_SynchronizerThread = new SynchronizerThread;
-  midasSynchronizer* synchronizer = new midasSynchronizer;
-  synchronizer->SetLog(m_Parent->getSynchronizer()->GetLog());
-  synchronizer->SetProgressReporter(m_Parent->getProgress());
-  synchronizer->SetAgreementHandler(m_Parent->getAgreementHandler());
-  synchronizer->SetOverwriteHandler(m_Parent->getFileOverwriteHandler());
-  //hack-ish: make sure to set the authenticator back to null so it doesn't delete the top level auth when it goes out of scope
-  synchronizer->SetAuthenticator(m_Parent->getSynchronizer()->GetAuthenticator(), true);
-  m_SynchronizerThread->SetSynchronizer(synchronizer);
-  m_SynchronizerThread->SetDelete(true);
+  m_SynchronizerThread->SetSynchronizer(m_Synch);
 
   if(cloneRadioButton->isChecked())
     {
-    synchronizer->SetOperation(midasSynchronizer::OPERATION_CLONE);
-    synchronizer->SetRecursive(true);
-    m_Parent->GetLog()->Message("Cloning the server repository");
-    m_Parent->displayStatus(tr("Cloning the server respository"));
-
-    m_Parent->setProgressIndeterminate();
-    m_Parent->displayStatus("Cloning MIDAS repository...");
+    m_Synch->SetOperation(midasSynchronizer::OPERATION_CLONE);
+    m_Synch->SetRecursive(true);
+    m_Synch->GetLog()->Message("Cloning the server repository");
+    m_Synch->GetLog()->Status("Cloning the server repository");
 
     connect(m_SynchronizerThread, SIGNAL( performReturned(int) ), this, SLOT ( cloned(int) ) );
     }
@@ -139,19 +128,19 @@ void PullUI::accept()
     switch(m_ResourceType)
       {
       case midasResourceType::COMMUNITY:
-        synchronizer->SetResourceType(midasResourceType::COMMUNITY);
+        m_Synch->SetResourceType(midasResourceType::COMMUNITY);
         m_TypeName = "Community";
         break;
       case midasResourceType::COLLECTION:
-        synchronizer->SetResourceType(midasResourceType::COLLECTION);
+        m_Synch->SetResourceType(midasResourceType::COLLECTION);
         m_TypeName = "Collection";
         break;
       case midasResourceType::ITEM:
-        synchronizer->SetResourceType(midasResourceType::ITEM);
+        m_Synch->SetResourceType(midasResourceType::ITEM);
         m_TypeName = "Item";
         break;
       case midasResourceType::BITSTREAM:
-        synchronizer->SetResourceType(midasResourceType::BITSTREAM);
+        m_Synch->SetResourceType(midasResourceType::BITSTREAM);
         m_TypeName = "Bitstream";
         break;
       default:
@@ -159,18 +148,16 @@ void PullUI::accept()
       }
     std::stringstream idStr;
     idStr << m_PullId;
-    synchronizer->SetServerHandle(idStr.str());
-    synchronizer->SetOperation(midasSynchronizer::OPERATION_PULL);
-    synchronizer->SetRecursive(recursiveCheckBox->isChecked());
-
-    m_Parent->setProgressIndeterminate();
+    m_Synch->SetServerHandle(idStr.str());
+    m_Synch->SetOperation(midasSynchronizer::OPERATION_PULL);
+    m_Synch->SetRecursive(recursiveCheckBox->isChecked());
 
     connect(m_SynchronizerThread, SIGNAL( performReturned(int) ), this, SLOT ( pulled(int) ) );
     }
-  connect(m_SynchronizerThread, SIGNAL( finished() ), m_Parent, SLOT( setProgressEmpty() ) );
-  connect(m_SynchronizerThread, SIGNAL( enableActions(bool) ), m_Parent, SLOT( enableActions(bool) ) );
-
-  m_Parent->getPollFilesystemThread()->Pause();
+  // Pass up the enableActions signal
+  connect(m_SynchronizerThread, SIGNAL( enableActions(bool) ), this, SIGNAL( enableActions(bool) ) );
+  
+  emit startingSynchronizer();
   m_SynchronizerThread->start();
 
   QDialog::accept();
@@ -182,22 +169,25 @@ void PullUI::pulled(int rc)
   if(rc == MIDAS_OK)
     {
     text << "Successfully pulled " << m_TypeName << ": " << m_Name;
-    m_Parent->GetLog()->Message(text.str());
+    m_Synch->GetLog()->Message(text.str());
     }
   else if(rc == MIDAS_CANCELED)
     {
     text << "Pull canceled by user";
-    m_Parent->GetLog()->Message(text.str());
+    m_Synch->GetLog()->Message(text.str());
     }
   else
     {
     text << "Failed to pull " << m_TypeName << ": " << m_Name;
-    m_Parent->GetLog()->Error(text.str());
+    m_Synch->GetLog()->Error(text.str());
     }
   emit pulledResources();
-  m_Parent->getPollFilesystemThread()->Resume();
-  m_Parent->displayStatus(text.str().c_str());
-  m_Parent->setProgressEmpty();
+
+  m_Synch->GetLog()->Status(text.str());
+  if(m_Synch->GetProgressReporter())
+    {
+    m_Synch->GetProgressReporter()->ResetProgress();
+    }
 }
 
 void PullUI::cloned(int rc)
@@ -206,20 +196,23 @@ void PullUI::cloned(int rc)
   if(rc == MIDAS_OK)
     {
     text = "Successfully cloned the MIDAS repository.";
-    m_Parent->GetLog()->Message(text);
+    m_Synch->GetLog()->Message(text);
     }
   else if(rc == MIDAS_CANCELED)
     {
     text = "Clone canceled by user";
-    m_Parent->GetLog()->Message(text);
+    m_Synch->GetLog()->Message(text);
     }
   else
     {
     text = "Failed to clone the MIDAS repository.";
-    m_Parent->GetLog()->Error(text);
+    m_Synch->GetLog()->Error(text);
     }
   emit pulledResources();
-  m_Parent->getPollFilesystemThread()->Resume();
-  m_Parent->displayStatus(text.c_str());
-  m_Parent->setProgressEmpty();
+
+  m_Synch->GetLog()->Status(text);
+  if(m_Synch->GetProgressReporter())
+    {
+    m_Synch->GetProgressReporter()->ResetProgress();
+    }
 }

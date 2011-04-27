@@ -1,12 +1,12 @@
 #include "SignInThread.h"
 
-#include "MIDASDesktopUI.h"
 #include "mdsDatabaseAPI.h"
 #include "midasAuthenticator.h"
 #include "midasSynchronizer.h"
 #include "mwsWebAPI.h"
 
-SignInThread::SignInThread(MIDASDesktopUI* parent) : m_Parent(parent)
+SignInThread::SignInThread(midasSynchronizer* synch)
+: m_Synch(synch)
 {
 }
 
@@ -27,15 +27,13 @@ void SignInThread::run()
 
   if(mws::WebAPI::Instance()->CheckConnection())
     {
-    m_Parent->getSynchronizer()->GetAuthenticator()->SetProfile(m_Profile.toStdString());
+    m_Synch->GetAuthenticator()->SetProfile(m_Profile.toStdString());
     
-    if(!m_Parent->getSynchronizer()->GetAuthenticator()->Login())
+    if(!m_Synch->GetAuthenticator()->Login())
       {
       emit initialized(false);
       return;
       }
-
-    m_Parent->getTreeViewServer()->Initialize();
 
     emit initialized(true);
     }
