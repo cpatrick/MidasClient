@@ -16,12 +16,12 @@
 #include <QString>
 #include <QTextEdit>
 
-inline std::string removeNewLines(const std::string& text)
+inline void removeNewLines(std::string& text)
 {
   QString qstr(text.c_str());
   qstr = qstr.replace('\r', "");
   qstr = qstr.replace('\n', "");
-  return qstr.toStdString();
+  text = qstr.toStdString();
 }
 
 GUILogger::GUILogger(MIDASDesktopUI* parent) : m_Parent(parent)
@@ -40,24 +40,24 @@ GUILogger::~GUILogger()
 {
 }
 
-void GUILogger::Error(const std::string& text)
+void GUILogger::Error(std::string text)
 {
-  std::string stripped = removeNewLines(text);
+  removeNewLines(text);
 
   emit ChangeTextColor(QColor(255, 0, 0));
   emit Text(QString(text.c_str()));
   emit ErrorOccurred();
 }
 
-void GUILogger::Message(const std::string& text)
+void GUILogger::Message(std::string text)
 {
-  std::string stripped = removeNewLines(text);
+  removeNewLines(text);
 
   emit ChangeTextColor(QColor(0, 0, 0));
   emit Text(QString(text.c_str()));
 }
 
-void GUILogger::Status(const std::string& text)
+void GUILogger::Status(std::string text)
 {
   emit Status(QString(text.c_str()));
 }

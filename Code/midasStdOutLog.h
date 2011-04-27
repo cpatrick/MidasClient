@@ -23,9 +23,9 @@ public:
   midasStdOutLog();
   ~midasStdOutLog();
 
-  void Error(const std::string& text);
-  void Message(const std::string& text);
-  void Status(const std::string& text);
+  void Error(std::string text);
+  void Message(std::string text);
+  void Status(std::string text);
 };
 
 #endif

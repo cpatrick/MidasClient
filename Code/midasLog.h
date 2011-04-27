@@ -23,9 +23,9 @@ class midasLog
     midasLog() {}
     virtual ~midasLog() {}
 
-    virtual void Error(const std::string& text) = 0; 
-    virtual void Message(const std::string& text) = 0;
-    virtual void Status(const std::string& text) = 0;
+    virtual void Error(std::string text) = 0; 
+    virtual void Message(std::string text) = 0;
+    virtual void Status(std::string text) = 0;
 };
 
 #endif
