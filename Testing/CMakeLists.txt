@@ -44,7 +44,7 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(testClone ${midascli_command} --database ${sqlite_db} clone ${dashboard_midas_server_url})
 
   # "create_profile" command tests
-  add_test(testCreateProfile ${midascli_command} --database ${sqlite_db} create_profile --name test --email ${dashboard_midas_email} --app-name ${dashboard_midas_app_name} --api-key ${dashboard_midas_api_key})
+  add_test(testCreateProfile ${midascli_command} --database ${sqlite_db} create_profile --name test --email ${dashboard_midas_email} --app-name ${dashboard_midas_app_name} --api-key ${dashboard_midas_api_key} ${dashboard_midas_server_url})
   add_test(testListAllProfiles ${midascli_command} --database ${sqlite_db} create_profile)
   set_tests_properties(testListAllProfiles PROPERTIES PASS_REGULAR_EXPRESSION "^Available authentication profiles:.*test")
 
@@ -65,7 +65,7 @@ if(BUILD_MIDASCPP_TESTING)
   # "push" command tests
   add_test(testPushNoAuth ${midascli_command} --database ${sqlite_db} push)
   set_tests_properties(testPushNoAuth PROPERTIES WILL_FAIL ON)
-  add_test(testPush ${midascli_command} --database ${sqlite_db} --profile test push)
+  add_test(testPush ${midascli_command} --database ${sqlite_db} --profile test push ${dashboard_midas_server_url})
   
   # "upload" command tests
   add_test(testUpload ${midascli_command}
@@ -78,7 +78,7 @@ if(BUILD_MIDASCPP_TESTING)
     
   # "pull" command tests
   add_test(removeBitstreamOnDisk ${CMAKE_COMMAND} -E remove -f "${dashboard_top_level_community_name}/Subcomm/Collection/Item/bitstream.txt")
-  add_test(testPullRecursive ${midascli_command} --database ${sqlite_db} pull -r -p "${dashboard_top_level_community_name}")
+  add_test(testPullRecursive ${midascli_command} --database ${sqlite_db} pull -r -p "${dashboard_top_level_community_name}" ${dashboard_midas_server_url})
   set_tests_properties(testPullRecursive PROPERTIES PASS_REGULAR_EXPRESSION "bitstream\\.txt.*Done")
 
   # metadata editing tests - community
@@ -112,7 +112,7 @@ if(BUILD_MIDASCPP_TESTING)
   set_tests_properties(testStatusModified.item PROPERTIES WILL_FAIL ON)
 
   # push metadata changes
-  add_test(pushModifiedMetadata ${midascli_command} --profile test --database ${sqlite_db} push)
+  add_test(pushModifiedMetadata ${midascli_command} --profile test --database ${sqlite_db} push ${dashboard_midas_server_url})
   set_tests_properties(pushModifiedMetadata PROPERTIES
     PASS_REGULAR_EXPRESSION
     "Pushed community ${dashboard_top_level_community_name}_changed.*Pushed collection Collection_changed.*Pushed item Item_changed"
