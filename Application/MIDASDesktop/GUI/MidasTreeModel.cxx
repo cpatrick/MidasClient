@@ -189,7 +189,7 @@ bool MidasTreeModel::hasChildren( const QModelIndex & parent ) const
     {
     return true;
     }
-  const MidasTreeItem* item = (MidasTreeItem*)midasTreeItem(parent);
+  const MidasTreeItem* item = midasTreeItem(parent);
   if(item->isFetchedChildren())
     {
     return item->childCount() > 0;

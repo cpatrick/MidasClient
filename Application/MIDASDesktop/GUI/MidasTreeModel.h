@@ -43,7 +43,7 @@ public:
   virtual void clear();
   virtual void restoreExpandedState();
 
-  const inline MidasTreeItem *midasTreeItem(const QModelIndex &index) const
+  const inline MidasTreeItem* midasTreeItem(const QModelIndex &index) const
     {
     return index.isValid() ? reinterpret_cast<const MidasTreeItem*>(index.internalPointer()): NULL;
     }
