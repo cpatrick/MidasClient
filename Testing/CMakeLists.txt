@@ -48,7 +48,7 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(testListAllProfiles ${midascli_command} --database ${sqlite_db} create_profile)
   set_tests_properties(testListAllProfiles PROPERTIES PASS_REGULAR_EXPRESSION "^Available authentication profiles:.*test")
 
-  add_test(testPushNoResources ${midascli_command} --database ${sqlite_db} --profile test push)
+  add_test(testPushNoResources ${midascli_command} --database ${sqlite_db} --profile test push ${dashboard_midas_server_url})
 
   # Restore database to a fresh state again
   add_test(cleanDatabase2 ${midascli_command} --database ${sqlite_db} clean)

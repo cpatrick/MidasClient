@@ -1049,6 +1049,7 @@ int midasSynchronizer::Push()
     std::stringstream text;
     text << "There are no staged resources to push." << std::endl;
     Log->Error(text.str());
+    return MIDAS_FAILURE;
     }
 
   bool success = true;
