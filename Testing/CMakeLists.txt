@@ -70,11 +70,11 @@ if(BUILD_MIDASCPP_TESTING)
   # "upload" command tests
   add_test(testUpload ${midascli_command}
     --database ${sqlite_db}
-    --url ${dashboard_midas_server_url}
     --email ${dashboard_midas_email}
     --app-name ${dashboard_midas_app_name}
     --api-key ${dashboard_midas_api_key}
-    upload "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" "${dashboard_top_level_community_name}/Subcomm/Collection/Item")
+    upload "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" "${dashboard_top_level_community_name}/Subcomm/Collection/Item"
+    ${dashboard_midas_server_url})
     
   # "pull" command tests
   add_test(removeBitstreamOnDisk ${CMAKE_COMMAND} -E remove -f "${dashboard_top_level_community_name}/Subcomm/Collection/Item/bitstream.txt")
