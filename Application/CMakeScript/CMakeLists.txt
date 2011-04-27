@@ -32,9 +32,9 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(TestUploadTGZ "${MIDASCPP_BINARY_DIR}/bin/MIDAScli"
     --profile test
     --database "${MIDASCPP_BINARY_DIR}/midas.db"
-    --url ${dashboard_midas_server_url}
     upload "${MIDASCPP_BINARY_DIR}/Testing/testArchive.tar.gz"
-    "${dashboard_top_level_community_name}_changed/Subcomm/Collection_changed/Item_changed")
+    "${dashboard_top_level_community_name}_changed/Subcomm/Collection_changed/Item_changed"
+    ${dashboard_midas_server_url})
 
   midas_add_test(MIDAS_TGZ "${CMAKE_COMMAND}" -E echo MIDAS_TGZ{testTgz/testArchive.tar.gz.md5})
   add_test(VerifyArchivePresent "${CMAKE_COMMAND}" -E md5sum "${MIDASCPP_BINARY_DIR}/MIDAS_Data/testTgz/testArchive/Code/sql/MIDAS_SQLite.sql")
