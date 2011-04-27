@@ -1537,7 +1537,7 @@ std::string midasSynchronizer::ResolveAddPath()
 void midasSynchronizer::CountBitstreams()
 {
   if(this->Operation == midasSynchronizer::OPERATION_PULL
-     && this->Recursive)
+     && this->Recursive && !this->PathMode)
     {
     if(this->ResourceType == midasResourceType::BITSTREAM)
       {
