@@ -353,7 +353,12 @@ int midasSynchronizer::Add()
 
     mds::Bitstream mdsBitstream;
     mdsBitstream.SetObject(&bitstream);
-    mdsBitstream.Commit();
+    if(!mdsBitstream.Commit())
+      {
+      std::stringstream text;
+      text << "Commit failed for bitstream " << name << std::endl;
+      return MIDAS_FAILURE;
+      }
     }
   db.MarkDirtyResource(uuid, midasDirtyAction::ADDED);
 
