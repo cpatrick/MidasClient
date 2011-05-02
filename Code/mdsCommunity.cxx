@@ -265,6 +265,12 @@ bool Community::FetchTree()
     m_Community->AddCommunity(community);
     }
   db.Close();
+  for(std::vector<mdo::Community*>::const_iterator i =
+      m_Community->GetCommunities().begin();
+      i != m_Community->GetCommunities().end(); ++i)
+    {
+    (*i)->SetDirty(db.IsResourceDirty((*i)->GetUuid()));
+    }
 
   if(m_Recurse)
     {
@@ -301,6 +307,12 @@ bool Community::FetchTree()
     m_Community->AddCollection(collection);
     }
   db.Close();
+  for(std::vector<mdo::Collection*>::const_iterator i =
+      m_Community->GetCollections().begin();
+      i != m_Community->GetCollections().end(); ++i)
+    {
+    (*i)->SetDirty(db.IsResourceDirty((*i)->GetUuid()));
+    }
 
   if(m_Recurse)
     {

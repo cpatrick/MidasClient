@@ -80,23 +80,6 @@ void MidasTreeModelServer::Populate()
   emit serverPolled();
 }
 
-bool MidasTreeModelServer::hasChildren( const QModelIndex & parent ) const
-{
-  if (!parent.isValid())
-    {
-    return true;
-    }
-  const MidasTreeItem * item = (MidasTreeItem*)midasTreeItem(parent);
-  if(item->isFetchedChildren())
-    {
-    return item->childCount();
-    }
-  else
-    {
-    return true;
-    }
-}
-
 /** Fetch more data */
 void MidasTreeModelServer::fetchMore ( const QModelIndex & parent )
 {

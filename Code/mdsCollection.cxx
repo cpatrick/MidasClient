@@ -243,6 +243,12 @@ bool Collection::FetchTree()
     items.push_back(item);
     }
   db.Close();
+  for(std::vector<mdo::Item*>::const_iterator i =
+      m_Collection->GetItems().begin();
+      i != m_Collection->GetItems().end(); ++i)
+    {
+    (*i)->SetDirty(db.IsResourceDirty((*i)->GetUuid()));
+    }
 
   if(m_Recurse)
     {

@@ -167,7 +167,7 @@ Qt::ItemFlags MidasTreeModel::flags(const QModelIndex &index) const
 
 //-------------------------------------------------------------------------
 QModelIndex MidasTreeModel::parent(const QModelIndex &index) const
-  {
+{
   if (!index.isValid())
     {
     return QModelIndex();
@@ -181,6 +181,23 @@ QModelIndex MidasTreeModel::parent(const QModelIndex &index) const
     return QModelIndex();
     }
   return createIndex(parentItem->row(), 0, parentItem);
+}
+
+bool MidasTreeModel::hasChildren( const QModelIndex & parent ) const
+{
+  if (!parent.isValid())
+    {
+    return true;
+    }
+  const MidasTreeItem* item = midasTreeItem(parent);
+  if(item->isFetchedChildren())
+    {
+    return item->childCount() > 0;
+    }
+  else
+    {
+    return true;
+    }
 }
 
 //-------------------------------------------------------------------------
