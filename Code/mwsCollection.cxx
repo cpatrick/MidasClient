@@ -147,12 +147,6 @@ bool Collection::Fetch()
   return true;
 }
 
-/** Commit */
-bool Collection::Commit()
-{
-  return true;
-}
-
 bool Collection::FetchParent()
 {
   mdo::Community* parent = new mdo::Community;
@@ -187,7 +181,7 @@ bool Collection::Delete()
   return true;
 }
 
-bool Collection::Create()
+bool Collection::Commit()
 {
   std::stringstream postData;
   postData << "uuid=" << m_Collection->GetUuid()

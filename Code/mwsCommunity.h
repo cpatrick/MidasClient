@@ -32,13 +32,11 @@ public:
   Community();
   ~Community();
 
-  // Fill the community
   bool Fetch();
   bool FetchTree();
   bool FetchParent();
   bool Commit();
   bool Delete();
-  bool Create();
 
   void SetObject(mdo::Object* object);
   void ResolveParents();

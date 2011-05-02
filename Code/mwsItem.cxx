@@ -155,12 +155,6 @@ bool Item::Fetch()
   return true;
 }
 
-/** Commit */
-bool Item::Commit()
-{
-  return true;
-}
-
 // Add the object
 void Item::SetObject(mdo::Object* object)
 {  
@@ -201,7 +195,7 @@ bool Item::Delete()
   return true;
 }
 
-bool Item::Create()
+bool Item::Commit()
 {
   std::stringstream postData;
   postData << "uuid=" << m_Item->GetUuid()

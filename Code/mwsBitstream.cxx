@@ -150,7 +150,8 @@ bool Bitstream::Fetch()
 /** Commit the object */
 bool Bitstream::Commit()
 {
-  return true;
+  // No metadata associated with bitstreams, so a commit is just an upload
+  return this->Upload();
 }
 
 // Add the object

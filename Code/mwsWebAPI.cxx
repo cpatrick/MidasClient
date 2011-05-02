@@ -105,7 +105,7 @@ void WebAPI::Cancel()
 
 /** Execute the command */
 bool WebAPI::Execute(const char* url, RestXMLParser* parser,
-                     const char* postData, bool retry)
+                     const char* postData, bool retry, bool ignoreError)
 {
   QMutexLocker locker(m_Mutex);
   bool defaultParser = parser == NULL;
@@ -124,6 +124,11 @@ bool WebAPI::Execute(const char* url, RestXMLParser* parser,
     fullUrl << "&token=" << m_APIToken;
     }
   bool success = m_RestAPI->Execute(fullUrl.str().c_str(), postData);
+
+  if(ignoreError)
+    {
+    return success;
+    }
 
   if(retry && (!success || m_RestAPI->GetXMLParser()->GetErrorCode() != 0)
      && !m_APIToken.empty() && m_Authenticator && !m_RestAPI->ShouldCancel())

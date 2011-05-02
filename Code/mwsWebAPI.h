@@ -90,7 +90,7 @@ protected:
   // Execute a web API command
   bool Execute(const char* url, RestXMLParser* parser = NULL,
                const char* postData = NULL,
-               bool retry = true);
+               bool retry = true, bool ignoreError = false);
 
   // Download a file
   bool DownloadFile(const char* url, const char* filename,

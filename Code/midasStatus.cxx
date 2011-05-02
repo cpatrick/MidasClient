@@ -16,9 +16,9 @@ std::string midasStatus::GetName()
   return this->Name;
 }
 
-std::string midasStatus::GetUUID()
+std::string midasStatus::GetUuid()
 {
-  return this->UUID;
+  return this->Uuid;
 }
     
 midasDirtyAction::Action midasStatus::GetDirtyAction()

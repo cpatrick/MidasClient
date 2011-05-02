@@ -1045,6 +1045,51 @@ int midasSynchronizer::Push()
     return MIDAS_NO_URL;
     }
 
+  bool ok = true;
+  mdo::Community* comm = NULL;
+  mdo::Collection* coll = NULL;
+  mdo::Item* item = NULL;
+  mdo::Bitstream* bitstream = NULL;
+
+  switch(this->ResourceType)
+    {
+    case midasResourceType::COMMUNITY:
+      comm = new mdo::Community;
+      comm->SetId(atoi(this->ClientHandle.c_str()));
+      comm->SetUuid(this->ServerHandle.c_str());
+      ok = this->Push(comm);
+      delete comm;
+      return ok ? MIDAS_OK : MIDAS_FAILURE;
+    case midasResourceType::COLLECTION:
+      coll = new mdo::Collection;
+      coll->SetId(atoi(this->ClientHandle.c_str()));
+      coll->SetUuid(this->ServerHandle.c_str());
+      ok = this->Push(coll);
+      delete coll;
+      return ok ? MIDAS_OK : MIDAS_FAILURE;
+    case midasResourceType::ITEM:
+      item = new mdo::Item;
+      item->SetId(atoi(this->ClientHandle.c_str()));
+      item->SetUuid(this->ServerHandle.c_str());
+      ok = this->Push(item);
+      delete item;
+      return ok ? MIDAS_OK : MIDAS_FAILURE;
+    case midasResourceType::BITSTREAM:
+      bitstream = new mdo::Bitstream;
+      bitstream->SetId(atoi(this->ClientHandle.c_str()));
+      bitstream->SetUuid(this->ServerHandle.c_str());
+      ok = this->Push(bitstream);
+      delete bitstream;
+      return ok ? MIDAS_OK : MIDAS_FAILURE;
+    case midasResourceType::NONE:
+    default:
+      return this->PushAllDirty();
+    }
+}
+
+//-------------------------------------------------------------------
+int midasSynchronizer::PushAllDirty()
+{
   mds::DatabaseAPI db;
   std::vector<midasStatus> dirties = db.GetStatusEntries();
 
@@ -1056,29 +1101,59 @@ int midasSynchronizer::Push()
     }
 
   bool success = true;
+  this->Recursive = false;
   for(std::vector<midasStatus>::iterator i = dirties.begin();
       i != dirties.end(); ++i)
     {
-    if(i->GetUUID() == "")
+    if(i->GetUuid() == "")
       {
-      this->Log->Message("Skipping invalid dirty resource entry.\n");
+      this->Log->Error("Skipping invalid dirty resource entry.\n");
       continue;
       }
-    midasResourceRecord record = db.GetRecordByUuid(i->GetUUID());
+    midasResourceRecord record = db.GetRecordByUuid(i->GetUuid());
+
+    if(record.Id <= 0)
+      {
+      std::stringstream text;
+      text << "Invalid uuid " << record.Uuid << ". Cannot push" << std::endl;
+      this->Log->Error(text.str());
+      continue;
+      }
+
+    mdo::Community* comm = NULL;
+    mdo::Collection* coll = NULL;
+    mdo::Item* item = NULL;
+    mdo::Bitstream* bitstream = NULL;
 
     switch(record.Type)
       {
-      case midasResourceType::BITSTREAM:
-        success &= this->PushBitstream(&record);
+      case midasResourceType::COMMUNITY:
+        comm = new mdo::Community;
+        comm->SetId(record.Id);
+        comm->SetUuid(record.Uuid.c_str());
+        success &= this->Push(comm);
+        delete comm;
         break;
       case midasResourceType::COLLECTION:
-        success &= this->PushCollection(&record);
-        break;
-      case midasResourceType::COMMUNITY:
-        success &= this->PushCommunity(&record);
+        coll = new mdo::Collection;
+        coll->SetId(record.Id);
+        coll->SetUuid(record.Uuid.c_str());
+        success &= this->Push(coll);
+        delete coll;
         break;
       case midasResourceType::ITEM:
-        success &= this->PushItem(&record);
+        item = new mdo::Item;
+        item->SetId(record.Id);
+        item->SetUuid(record.Uuid.c_str());
+        success &= this->Push(item);
+        delete item;
+        break;
+      case midasResourceType::BITSTREAM:
+        bitstream = new mdo::Bitstream;
+        bitstream->SetId(record.Id);
+        bitstream->SetUuid(record.Uuid.c_str());
+        success &= this->Push(bitstream);
+        delete bitstream;
         break;
       default:
         return MIDAS_NO_RTYPE;
@@ -1116,7 +1191,7 @@ int midasSynchronizer::GetServerParentId(midasResourceType::ResourceType type,
 }
 
 //-------------------------------------------------------------------
-bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
+bool midasSynchronizer::Push(mdo::Bitstream* bitstream)
 {
   if(this->ShouldCancel)
     {
@@ -1124,37 +1199,35 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
     }
 
   mds::Bitstream mdsBitstream;
-  mdo::Bitstream bitstream;
-  bitstream.SetId(record->Id);
-  mdsBitstream.SetObject(&bitstream);
+  mdsBitstream.SetObject(bitstream);
   mdsBitstream.Fetch();
 
-  std::string name = bitstream.GetName();
-  std::string size = bitstream.GetSize();
+  std::string name = bitstream->GetName();
+  std::string size = bitstream->GetSize();
 
   this->CurrentBitstreams++;
 
-  if(midasUtils::GetFileLength(record->Path.c_str()) == 0)
+  if(midasUtils::GetFileLength(bitstream->GetPath().c_str()) == 0)
     {
     std::stringstream text;
-    text << "Error: \"" << record->Path << "\" is 0 bytes. You "
+    text << "Error: \"" << bitstream->GetPath() << "\" is 0 bytes. You "
       "may not push an empty bitstream." << std::endl;
     Log->Error(text.str());
     return false;
     }
 
   mds::DatabaseAPI db;
-  if(record->Parent == 0)
+  if(bitstream->GetParentId() == 0)
     {
-    record->Parent = this->GetServerParentId(midasResourceType::ITEM,
-      db.GetParentId(midasResourceType::BITSTREAM, record->Id));
+    bitstream->SetParentId(this->GetServerParentId(midasResourceType::ITEM,
+      db.GetParentId(midasResourceType::BITSTREAM, bitstream->GetId())));
     }
-  if(record->Parent == 0)
+  if(bitstream->GetParentId() == 0)
     {
     std::stringstream text;
     text << "The parent of bitstream \"" << name <<
       "\" could not be resolved." << std::endl;
-    Log->Error(text.str());
+    this->Log->Error(text.str());
     return false;
     }
 
@@ -1170,16 +1243,14 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
     this->Progress->SetMessage(name);
     this->Progress->ResetProgress();
     }
-  bitstream.SetParentId(record->Parent);
-  bitstream.SetUuid(record->Uuid.c_str());
 
   mws::Bitstream mwsBitstream;
-  mwsBitstream.SetObject(&bitstream);
+  mwsBitstream.SetObject(bitstream);
 
-  if(mwsBitstream.Upload())
+  if(mwsBitstream.Commit())
     {
     // Clear dirty flag on the resource
-    db.ClearDirtyResource(record->Uuid);
+    db.ClearDirtyResource(bitstream->GetUuid());
     std::stringstream text;
     text << "Pushed bitstream " << name << std::endl;
     Log->Message(text.str());
@@ -1195,64 +1266,60 @@ bool midasSynchronizer::PushBitstream(midasResourceRecord* record)
 }
 
 //-------------------------------------------------------------------
-bool midasSynchronizer::PushCollection(midasResourceRecord* record)
+bool midasSynchronizer::Push(mdo::Collection* coll)
 {
   if(this->ShouldCancel)
     {
     return false;
     }
-  mdo::Collection coll;
-  coll.SetId(record->Id);
 
   mds::Collection mdsColl;
-  mdsColl.SetObject(&coll);
+  mdsColl.SetObject(coll);
   mdsColl.Fetch();
 
   mds::DatabaseAPI db;
 
-  if(record->Parent == 0)
+  if(coll->GetParentId() == 0)
     {
-    record->Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
-      db.GetParentId(midasResourceType::COLLECTION, record->Id));
+    coll->SetParentId(this->GetServerParentId(midasResourceType::COMMUNITY,
+      db.GetParentId(midasResourceType::COLLECTION, coll->GetId())));
     }
-  if(record->Parent == 0)
+  if(coll->GetParentId() == 0)
     {
     std::stringstream text;
-    text << "The parent of collection \"" << coll.GetName() <<
+    text << "The parent of collection \"" << coll->GetName() <<
       "\" could not be resolved." << std::endl;
     Log->Error(text.str());
     return false;
     }
-  coll.SetUuid(record->Uuid.c_str());
-  coll.SetParentId(record->Parent);
 
   this->Progress->SetIndeterminate();
   std::stringstream status;
-  status << "Uploading collection " << coll.GetName() << "...";
+  status << "Uploading collection " << coll->GetName() << "...";
   this->Log->Status(status.str());
 
   mws::Collection mwsColl;
-  mwsColl.SetObject(&coll);
-  if(mwsColl.Create())
+  mwsColl.SetObject(coll);
+  if(mwsColl.Commit())
     {
     // Clear dirty flag on the resource
-    db.ClearDirtyResource(record->Uuid);
+    db.ClearDirtyResource(coll->GetUuid());
     std::stringstream text;
-    text << "Pushed collection " << coll.GetName() << std::endl;
+    text << "Pushed collection " << coll->GetName() << std::endl;
     Log->Message(text.str());
     return true;
     }
   else
     {
     std::stringstream text;
-    text << "Failed to push collection " << coll.GetName() << std::endl;
+    text << "Failed to push collection " << coll->GetName() << std::endl;
     Log->Error(text.str());
     return false;
     }
 }
 
 //-------------------------------------------------------------------
-bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
+bool midasSynchronizer::Push(mdo::Community* comm)
 {
   if(this->ShouldCancel)
     {
@@ -1261,37 +1328,33 @@ bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
 
   mds::DatabaseAPI db;
 
-  if(record->Parent == 0)
+  if(comm->GetParentId() == 0)
     {
-    record->Parent = this->GetServerParentId(midasResourceType::COMMUNITY,
-      db.GetParentId(midasResourceType::COMMUNITY, record->Id));
+    comm->SetParentId(this->GetServerParentId(midasResourceType::COMMUNITY,
+      db.GetParentId(midasResourceType::COMMUNITY, comm->GetId())));
     }
 
-  mdo::Community comm;
-  comm.SetId(record->Id);
   mds::Community mdsComm;
-  mdsComm.SetObject(&comm);
+  mdsComm.SetObject(comm);
   if(!mdsComm.Fetch())
     {
     return false;
     }
-  comm.SetUuid(record->Uuid.c_str());
-  comm.SetParentId(record->Parent);
 
   this->Progress->SetIndeterminate();
   std::stringstream status;
-  status << "Uploading community " << comm.GetName() << "...";
+  status << "Uploading community " << comm->GetName() << "...";
   this->Log->Status(status.str());
 
   // Create new community on server
   mws::Community mwsComm;
-  mwsComm.SetObject(&comm);
-  if(mwsComm.Create())
+  mwsComm.SetObject(comm);
+  if(mwsComm.Commit())
     {
     // Clear dirty flag on the resource
-    db.ClearDirtyResource(record->Uuid);
+    db.ClearDirtyResource(comm->GetUuid());
     std::stringstream text;
-    text << "Pushed community " << comm.GetName() << std::endl;
+    text << "Pushed community " << comm->GetName() << std::endl;
     Log->Message(text.str());
     Log->Status(text.str());
     return true;
@@ -1299,7 +1362,7 @@ bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
   else
     {
     std::stringstream text; 
-    text << "Failed to push community " << comm.GetName() << std::endl;
+    text << "Failed to push community " << comm->GetName() << std::endl;
     Log->Error(text.str());
     Log->Status(text.str());
     return false;
@@ -1307,59 +1370,53 @@ bool midasSynchronizer::PushCommunity(midasResourceRecord* record)
 }
 
 //-------------------------------------------------------------------
-bool midasSynchronizer::PushItem(midasResourceRecord* record)
+bool midasSynchronizer::Push(mdo::Item* item)
 {
   if(this->ShouldCancel)
     {
     return false;
     }
-
-  mdo::Item item;
-  item.SetId(record->Id);
-
   mds::Item mdsItem;
-  mdsItem.SetObject(&item);
+  mdsItem.SetObject(item);
   mdsItem.Fetch();
 
   mds::DatabaseAPI db;
 
-  if(record->Parent == 0)
+  if(item->GetParentId() == 0)
     {
-    record->Parent = this->GetServerParentId(midasResourceType::COLLECTION,
-      db.GetParentId(midasResourceType::ITEM, record->Id));
+    item->SetParentId(this->GetServerParentId(midasResourceType::COLLECTION,
+      db.GetParentId(midasResourceType::ITEM, item->GetId())));
     }
-  if(record->Parent == 0)
+  if(item->GetParentId() == 0)
     {
     std::stringstream text;
-    text << "The parent of item \"" << item.GetTitle() <<
+    text << "The parent of item \"" << item->GetTitle() <<
       "\" could not be resolved." << std::endl;
     Log->Error(text.str());
     return false;
     }
-  item.SetParentId(record->Parent);
-  item.SetUuid(record->Uuid.c_str());
 
   this->Progress->SetIndeterminate();
   std::stringstream status;
-  status << "Uploading item " << item.GetTitle() << "...";
+  status << "Uploading item " << item->GetTitle() << "...";
   this->Log->Status(status.str());
   
   mws::Item mwsItem;
-  mwsItem.SetObject(&item);
+  mwsItem.SetObject(item);
 
-  if(mwsItem.Create())
+  if(mwsItem.Commit())
     {
     // Clear dirty flag on the resource
-    db.ClearDirtyResource(record->Uuid);
+    db.ClearDirtyResource(item->GetUuid());
     std::stringstream text;
-    text << "Pushed item " << item.GetTitle() << std::endl;
+    text << "Pushed item " << item->GetTitle() << std::endl;
     Log->Message(text.str());
     return true;
     }
   else
     {
     std::stringstream text;
-    text << "Failed to push item " << item.GetTitle() << std::endl;
+    text << "Failed to push item " << item->GetTitle() << std::endl;
     Log->Error(text.str());
     return false;
     }
@@ -1476,6 +1533,7 @@ void midasSynchronizer::Reset()
 {
   this->ShouldCancel = false;
   this->PathMode = false;
+  this->Recursive = false;
   this->SetOperation(midasSynchronizer::OPERATION_NONE);
   this->SetServerHandle("");
   this->SetClientHandle("");

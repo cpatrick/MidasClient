@@ -250,12 +250,6 @@ bool Community::FetchTree()
   return true;
 }
 
-/** Commit */
-bool Community::Commit()
-{
-  return true;
-}
-
 bool Community::FetchParent()
 {
   int id = m_Community->GetParentId();
@@ -295,7 +289,7 @@ bool Community::Delete()
   return true;
 }
 
-bool Community::Create()
+bool Community::Commit()
 {
   std::stringstream postData;
   postData << "uuid=" << m_Community->GetUuid() 

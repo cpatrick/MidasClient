@@ -27,6 +27,9 @@ class midasAgreementHandler;
 namespace mdo
 {
   class Community;
+  class Collection;
+  class Item;
+  class Bitstream;
 }
 
 namespace mds
@@ -124,10 +127,12 @@ protected:
 
   /* Helper function to convert client side parent ID to server side one */
   int GetServerParentId(midasResourceType::ResourceType type, int parentId);
-  bool PushBitstream(midasResourceRecord* record);
-  bool PushCollection(midasResourceRecord* record);
-  bool PushCommunity(midasResourceRecord* record);
-  bool PushItem(midasResourceRecord* record);
+
+  bool Push(mdo::Community*);
+  bool Push(mdo::Collection*);
+  bool Push(mdo::Item*);
+  bool Push(mdo::Bitstream*);
+  int PushAllDirty();
 
   void RecurseCommunities(int parentId, mdo::Community* community);
 

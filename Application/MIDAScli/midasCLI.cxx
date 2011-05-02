@@ -515,6 +515,7 @@ bool midasCLI::ParsePull(std::vector<std::string> args)
 bool midasCLI::ParsePush(std::vector<std::string> args)
 {
   this->Synchronizer->SetOperation(midasSynchronizer::OPERATION_PUSH);
+  this->Synchronizer->SetResourceType(midasResourceType::NONE);
 
   if(!args.size() && this->GetServerUrl() == "")
     {
