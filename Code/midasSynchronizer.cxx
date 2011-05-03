@@ -1307,7 +1307,23 @@ bool midasSynchronizer::Push(mdo::Collection* coll)
     std::stringstream text;
     text << "Pushed collection " << coll->GetName() << std::endl;
     Log->Message(text.str());
-    return true;
+
+    if(this->Recursive)
+      {
+      mdsColl.SetRecursive(false); //only fetch immediate children
+      mdsColl.FetchTree();
+      bool ok = true;
+      for(std::vector<mdo::Item*>::const_iterator i = coll->GetItems().begin();
+          i != coll->GetItems().end(); ++i)
+        {
+        ok &= this->Push(*i);
+        }
+      return ok;
+      }
+    else
+      {
+      return true;
+      }
     }
   else
     {
@@ -1357,7 +1373,30 @@ bool midasSynchronizer::Push(mdo::Community* comm)
     text << "Pushed community " << comm->GetName() << std::endl;
     Log->Message(text.str());
     Log->Status(text.str());
-    return true;
+
+    if(this->Recursive)
+      {
+      mdsComm.SetRecursive(false);
+      mdsComm.FetchTree();
+      bool ok = true;
+      for(std::vector<mdo::Community*>::const_iterator i =
+          comm->GetCommunities().begin(); i != comm->GetCommunities().end();
+          ++i)
+        {
+        ok &= this->Push(*i);
+        }
+      for(std::vector<mdo::Collection*>::const_iterator i =
+          comm->GetCollections().begin(); i != comm->GetCollections().end();
+          ++i)
+        {
+        ok &= this->Push(*i);
+        }
+      return ok;
+      }
+    else
+      {
+      return true;
+      }
     }
   else
     {
@@ -1411,7 +1450,23 @@ bool midasSynchronizer::Push(mdo::Item* item)
     std::stringstream text;
     text << "Pushed item " << item->GetTitle() << std::endl;
     Log->Message(text.str());
-    return true;
+    
+    if(this->Recursive)
+      {
+      mdsItem.FetchTree();
+      bool ok = true;
+      for(std::vector<mdo::Bitstream*>::const_iterator i =
+          item->GetBitstreams().begin(); i != item->GetBitstreams().end();
+          ++i)
+        {
+        ok &= this->Push(*i);
+        }
+      return ok;
+      }
+    else
+      {
+      return true;
+      }
     }
   else
     {

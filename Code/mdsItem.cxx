@@ -232,7 +232,7 @@ bool Item::FetchTree()
   m_Item->SetDirty(db.IsResourceDirty(m_Item->GetUuid()));
 
   std::stringstream query;
-  query << "SELECT bitstream.bitstream_id, bitstream.name, bitstream.size_bytes, resource_uuid.uuid "
+  query << "SELECT bitstream.bitstream_id, bitstream.name, bitstream.size_bytes, bitstream.internal_id, resource_uuid.uuid "
     "FROM bitstream, resource_uuid WHERE resource_uuid.resource_id=bitstream.bitstream_id "
     "AND resource_uuid.resource_type_id='" << midasResourceType::BITSTREAM << "' AND "
     "bitstream.bitstream_id IN (SELECT bitstream_id FROM item2bitstream WHERE item_id="
@@ -249,7 +249,8 @@ bool Item::FetchTree()
     std::stringstream val;
     val << db.Database->GetValueAsInt64(2);
     bitstream->SetSize(val.str());
-    bitstream->SetUuid(db.Database->GetValueAsString(3));
+    bitstream->SetPath(db.Database->GetValueAsString(3));
+    bitstream->SetUuid(db.Database->GetValueAsString(4));
     bitstream->SetFetched(true);
     m_Item->AddBitstream(bitstream);
     bitstreams.push_back(bitstream);
