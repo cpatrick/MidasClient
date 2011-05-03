@@ -124,12 +124,16 @@ int CreateProfileUI::exec()
 
 void CreateProfileUI::accept()
 {
-  if(profileNameEdit->text().trimmed().toStdString() == "")
+  if(profileNameEdit->text().trimmed().isEmpty())
     {
     QMessageBox::critical(this, "Error", "You must enter a profile name.");
     return;
     }
-  if(!anonymousCheckBox->isChecked() && passwordEdit->text().toStdString() == "")
+  if(!anonymousCheckBox->isChecked() && emailEdit->text().trimmed().isEmpty())
+    {
+    QMessageBox::critical(this, "Error", "You must enter an email or choose anonymous access.");
+    }
+  if(!anonymousCheckBox->isChecked() && passwordEdit->text().isEmpty())
     {
     QMessageBox::critical(this, "Error", "You must enter a password or choose anonymous access.");
     return;
