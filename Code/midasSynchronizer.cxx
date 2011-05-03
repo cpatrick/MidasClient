@@ -1563,13 +1563,9 @@ int midasSynchronizer::Upload()
     return rc;
     }
 
-  if((rc = this->Push(bitstream)) != MIDAS_OK)
-    {
-    return rc;
-    }
+  rc = this->Push(bitstream) ? MIDAS_OK : MIDAS_FAILURE;
 
   delete bitstream;
-
   return rc;
 }
 
