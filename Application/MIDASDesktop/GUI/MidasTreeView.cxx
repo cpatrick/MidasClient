@@ -6,18 +6,23 @@
 #include "MidasItemTreeItem.h"
 #include "MidasBitstreamTreeItem.h"
 #include "MidasTreeModel.h"
-#include "MIDASDesktopUI.h"
+#include "midasSynchronizer.h"
 
 #include <QModelIndex>
 
-MidasTreeView::MidasTreeView(QWidget* parent) : QTreeView(parent)
+MidasTreeView::MidasTreeView(QWidget* parent)
+: QTreeView(parent), m_Synch(NULL)
 {
 }
 
-void MidasTreeView::SetParentUI(MIDASDesktopUI* parent)
+MidasTreeView::~MidasTreeView()
 {
-  m_Parent = parent;
-  m_Model->SetParentUI(parent);
+}
+
+void MidasTreeView::SetSynchronizer(midasSynchronizer* synch)
+{
+  m_Synch = synch;
+  m_Model->SetSynchronizer(synch);
 }
 
 void MidasTreeView::updateSelection(const QItemSelection &selected,

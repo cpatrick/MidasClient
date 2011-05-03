@@ -11,6 +11,8 @@
 
 #include "midasSynchronizer.h"
 
+#include <QMutexLocker>
+
 #include "mwsWebAPI.h"
 #include "mdoCommunity.h"
 #include "mdsCommunity.h"
@@ -57,6 +59,7 @@ midasSynchronizer::midasSynchronizer()
   this->TotalBitstreams = 0;
   this->Authenticator = new midasAuthenticator;
   this->Authenticator->SetLog(this->Log);
+  this->Mutex = new QMutex;
 }
 
 midasSynchronizer::~midasSynchronizer()
@@ -164,6 +167,7 @@ std::string midasSynchronizer::GetServerHandle()
 //-------------------------------------------------------------------
 int midasSynchronizer::Perform()
 {
+  QMutexLocker lock(this->Mutex);
   int rc = 0;
   this->ShouldCancel = false;
   if(!this->Authenticator->Login())

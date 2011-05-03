@@ -1,12 +1,10 @@
 #include "SearchThread.h"
 
-#include "MIDASDesktopUI.h"
 #include "mwsSearch.h"
 #include "mdoObject.h"
 
-SearchThread::SearchThread(MIDASDesktopUI* parent)
+SearchThread::SearchThread()
 {
-  m_Parent = parent;
 }
 
 SearchThread::~SearchThread()
@@ -26,5 +24,4 @@ void SearchThread::SetResults(std::vector<mdo::Object*>* results)
 void SearchThread::run()
 {
   *m_Results = mws::Search::SearchServer(m_Words);
-  emit threadComplete();
 }

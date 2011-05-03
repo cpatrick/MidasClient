@@ -16,7 +16,6 @@
 #include <QString>
 #include <QTextEdit>
 
-
 inline void removeNewLines(std::string& text)
 {
   QString qstr(text.c_str());

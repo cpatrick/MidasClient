@@ -29,7 +29,6 @@ signals:
   void deletedResource(mdo::Object*);
   void enableActions(bool);
   void errorMessage(const QString&);
-  void threadComplete();
 
 private:
   MidasTreeItem* m_Resource;

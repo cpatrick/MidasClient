@@ -11,7 +11,8 @@ class MidasCollectionTreeItem;
 class MidasItemTreeItem;
 class MidasBitstreamTreeItem;
 class MidasTreeModel;
-class MIDASDesktopUI;
+
+class midasSynchronizer;
 
 namespace mdo{
   class Object;
@@ -23,9 +24,10 @@ class MidasTreeView : public QTreeView
 
 public:
   MidasTreeView(QWidget* parent);
-  ~MidasTreeView() {}
+  ~MidasTreeView();
 
-  void SetParentUI(MIDASDesktopUI* parent);
+  void SetSynchronizer(midasSynchronizer* synch);
+
   virtual void Clear();
   virtual void Initialize();
 
@@ -56,8 +58,8 @@ protected:
   virtual void contextMenuEvent (QContextMenuEvent* e);
   virtual void fetchItemData(MidasTreeItem* item) = 0;
 
-  MidasTreeModel* m_Model;
-  MIDASDesktopUI* m_Parent;
+  MidasTreeModel*    m_Model;
+  midasSynchronizer* m_Synch;
 };
 
 #endif

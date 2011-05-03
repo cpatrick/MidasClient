@@ -32,6 +32,6 @@ void midasStdOutLog::Message(std::string text)
 
 void midasStdOutLog::Status(std::string text)
 {
-  //nop
+  //no-op in the CLI view until we get a curses view :)
 }
 

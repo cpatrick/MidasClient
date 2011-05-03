@@ -1,10 +1,8 @@
 #include "DeleteResourceUI.h"
-#include "MIDASDesktopUI.h"
-#include "midasSynchronizer.h"
 
 /** Constructor */
-DeleteResourceUI::DeleteResourceUI(MIDASDesktopUI *parent, bool server):
-  QDialog(parent), m_Parent(parent), m_Server(server)
+DeleteResourceUI::DeleteResourceUI(QWidget* parent, bool server):
+  QDialog(parent), m_Server(server)
 {
   setupUi(this);
 }
@@ -13,7 +11,6 @@ DeleteResourceUI::~DeleteResourceUI()
 {
 }
 
-/** */
 void DeleteResourceUI::init()
 {
   if(this->m_Server)
@@ -28,7 +25,6 @@ void DeleteResourceUI::init()
     }
 }
 
-/** */
 int DeleteResourceUI::exec()
 {
   this->init();

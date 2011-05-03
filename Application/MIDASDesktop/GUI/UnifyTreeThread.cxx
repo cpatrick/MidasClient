@@ -1,9 +1,8 @@
 #include "UnifyTreeThread.h"
-#include "MIDASDesktopUI.h"
 #include "PollFilesystemThread.h"
 #include "mdsDatabaseAPI.h"
 
-UnifyTreeThread::UnifyTreeThread(MIDASDesktopUI* parent) : m_Parent(parent)
+UnifyTreeThread::UnifyTreeThread()
 {
   m_Copy = false;
 }
@@ -24,18 +23,13 @@ bool UnifyTreeThread::isCopy()
 
 void UnifyTreeThread::run()
 {
-  m_Parent->getPollFilesystemThread()->Pause();
-
   mds::DatabaseAPI db;
   if(db.UnifyTree(m_Copy))
     {
-    m_Parent->GetLog()->Message("Finished relocating resources");
+    db.GetLog()->Message("Finished relocating resources");
     }
   else
     {
-    m_Parent->GetLog()->Error("Errors occurred while relocating resources");
+    db.GetLog()->Error("Errors occurred while relocating resources");
     }
-  m_Parent->getPollFilesystemThread()->Resume();
-
-  emit threadComplete();
 }

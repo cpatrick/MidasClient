@@ -1,5 +1,4 @@
 #include "AgreementUI.h"
-#include "MIDASDesktopUI.h"
 #include "GUIAgreement.h"
 #include <QString>
 #include <QUrl>

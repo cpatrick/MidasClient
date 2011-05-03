@@ -1,5 +1,4 @@
 #include "SignInUI.h"
-#include "MIDASDesktopUI.h"
 #include "MidasClientGlobal.h"
 #include "SignInThread.h"
 
@@ -11,8 +10,8 @@
 #include <QMessageBox>
 
 /** Constructor */
-SignInUI::SignInUI(MIDASDesktopUI* parent):
-  QDialog(parent), parent(parent)
+SignInUI::SignInUI(QWidget* parent, midasSynchronizer* synch)
+: QDialog(parent), m_Synch(synch)
 {
   setupUi(this);
   m_SignInThread = NULL;
@@ -48,7 +47,7 @@ int SignInUI::exec()
     }
   else
     {
-    this->parent->displayStatus(tr("You must select a local database first."));
+    QMessageBox::critical(this, "Error", "You must select a local database first.");
     return 0;
     }
 }
@@ -67,16 +66,20 @@ void SignInUI::accept()
     disconnect(m_SignInThread);
     }
   delete m_SignInThread;
-  m_SignInThread = new SignInThread(parent);
+  m_SignInThread = new SignInThread(m_Synch);
   m_SignInThread->SetProfile(profileComboBox->currentText());
 
-  connect(m_SignInThread, SIGNAL( initialized(bool) ), parent, SLOT( signIn(bool) ) );
+  connect(m_SignInThread, SIGNAL( initialized(bool) ), this, SLOT( signIn(bool) ) );
 
-  parent->displayStatus(tr("Connecting to server..."));
-  parent->setProgressIndeterminate();
+  emit signingIn();
 
   m_SignInThread->start();
   QDialog::accept();
+}
+
+void SignInUI::signIn(bool ok)
+{
+  emit signedIn(ok);
 }
 
 void SignInUI::profileCreated(std::string name)

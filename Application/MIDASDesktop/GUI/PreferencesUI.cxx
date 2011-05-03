@@ -1,15 +1,15 @@
 #include "PreferencesUI.h"
 
-#include "MIDASDesktopUI.h"
 #include "MidasClientGlobal.h"
 #include "mdsDatabaseAPI.h"
 #include "UnifyTreeThread.h"
+#include "PollFilesystemThread.h"
 #include <QString>
 #include <QFileDialog>
 #include <QMessageBox>
 
-PreferencesUI::PreferencesUI(MIDASDesktopUI *parent):
-  QDialog(parent), m_parent(parent)
+PreferencesUI::PreferencesUI(QWidget* parent)
+: QDialog(parent)
 {
   setupUi(this);
 
@@ -51,20 +51,18 @@ void PreferencesUI::unifyTree()
     {
     if(m_UnifyTreeThread->isRunning())
       {
-      m_parent->GetLog()->Error("Tree copy thread is already running!");
       return;
       }
     disconnect(m_UnifyTreeThread);
     }
   delete m_UnifyTreeThread;
 
-  m_UnifyTreeThread = new UnifyTreeThread(m_parent);
+  m_UnifyTreeThread = new UnifyTreeThread;
   m_UnifyTreeThread->setCopy(copy);
     
-  connect(m_UnifyTreeThread, SIGNAL(threadComplete()), this, SLOT(unifyTreeDone()));
+  connect(m_UnifyTreeThread, SIGNAL( finished() ), this, SLOT(unifyTreeDone()));
 
-  m_parent->displayStatus("Copying resources into a single tree...");
-  m_parent->setProgressIndeterminate();
+  emit unifyingTree();
 
   m_UnifyTreeThread->start();
 }
@@ -157,8 +155,5 @@ void PreferencesUI::accept()
 
 void PreferencesUI::unifyTreeDone()
 {
-  m_parent->displayStatus("Finished unifying resources on disk.");
-  m_parent->GetLog()->Message("Finished unifying resources on disk.");
-  m_parent->setProgressEmpty();
-  m_parent->updateClientTreeView();
+  emit treeUnified();
 }

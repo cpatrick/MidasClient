@@ -14,6 +14,9 @@
 
 #include "midasLog.h"
 
+/**
+ * Logger to stdout/stderr -- used in the CLI
+ */
 class midasStdOutLog : public midasLog
 {
 public:

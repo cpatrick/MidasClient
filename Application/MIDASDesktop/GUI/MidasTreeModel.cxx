@@ -2,9 +2,11 @@
 #include "MidasTreeItem.h"
 #include "MidasCommunityTreeItem.h"
 #include "mdoCommunity.h"
+#include "midasSynchronizer.h"
 #include <QPixmap>
 
-MidasTreeModel::MidasTreeModel(QObject *parent) : QAbstractItemModel(parent)
+MidasTreeModel::MidasTreeModel(QObject *parent)
+: QAbstractItemModel(parent), m_Synch(NULL)
 {
   this->AlterList = true;
 }
@@ -13,9 +15,9 @@ MidasTreeModel::~MidasTreeModel()
 {
 }
 
-void MidasTreeModel::SetParentUI(MIDASDesktopUI* parentUI)
+void MidasTreeModel::SetSynchronizer(midasSynchronizer* synch)
 {
-  m_ParentUI = parentUI;
+  m_Synch = synch;
 }
 
 //-------------------------------------------------------------------------

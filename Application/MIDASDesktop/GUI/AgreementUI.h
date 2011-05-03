@@ -5,8 +5,6 @@
 #include <QDialog>
 #include <QString>
 
-class MIDASDesktopUI;
-
 class AgreementUI : public QDialog,private Ui::AgreementDialog
 {
   Q_OBJECT
@@ -28,7 +26,6 @@ public slots:
 
 private:
   QString         m_Url;
-  MIDASDesktopUI* m_Parent;
   bool            m_Canceled;
 };
 

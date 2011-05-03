@@ -9,7 +9,6 @@
 #include <QWidget>
 
 class MidasTreeItem;
-class ButtonEditUI;
 
 class TextEditDelegate : public QItemDelegate
 {

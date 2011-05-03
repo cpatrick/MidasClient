@@ -1,6 +1,5 @@
 #include "CreateProfileUI.h"
 #include "MidasClientGlobal.h"
-#include "MIDASDesktopUI.h"
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"
 #include "mdsDatabaseAPI.h"
@@ -9,8 +8,8 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
-CreateProfileUI::CreateProfileUI(MIDASDesktopUI *parent):
-  QDialog(parent), parent(parent)
+CreateProfileUI::CreateProfileUI(QWidget* parent)
+: QDialog(parent)
 {
   setupUi(this);
 
@@ -24,6 +23,10 @@ CreateProfileUI::CreateProfileUI(MIDASDesktopUI *parent):
     this, SLOT( deleteProfile() ) );
   connect(browseButton, SIGNAL( clicked() ),
     this, SLOT( browseRootDir() ) );
+}
+
+CreateProfileUI::~CreateProfileUI()
+{
 }
 
 void CreateProfileUI::init()
@@ -114,7 +117,7 @@ int CreateProfileUI::exec()
     }
   else
     {
-    this->parent->displayStatus(tr("You must select a local database first."));
+    QMessageBox::critical(this, "Error", "You must select a local database.");
     return 0;
     }
 }
@@ -155,8 +158,7 @@ void CreateProfileUI::deleteProfile()
 
   std::stringstream text;
   text << "Deleted profile " << profileName;
-  this->parent->GetLog()->Message(text.str());
-  this->parent->displayStatus(text.str().c_str());
+  db.GetLog()->Message(text.str());
 
   init();
 

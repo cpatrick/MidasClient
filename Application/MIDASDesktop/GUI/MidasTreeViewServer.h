@@ -35,6 +35,7 @@ public slots:
 
 signals:
   void fetchedMore();
+  void enableActions(bool);
 
   void startedExpandingTree();
   void finishedExpandingTree();

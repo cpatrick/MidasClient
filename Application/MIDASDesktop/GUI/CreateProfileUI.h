@@ -3,16 +3,14 @@
  
 #include "ui_CreateProfileUI.h"
 
-class MIDASDesktopUI;
-
 class CreateProfileUI :  public QDialog, private Ui::CreateProfileDialog
 {
   Q_OBJECT
  
 public:
 
-  CreateProfileUI(MIDASDesktopUI *parent);
-  ~CreateProfileUI(){};
+  CreateProfileUI(QWidget* parent);
+  ~CreateProfileUI();
 
   void init(); 
 
@@ -32,10 +30,6 @@ public slots:
   void rootDirChecked(int state);
   void deleteProfile();
   void browseRootDir();
-
-private:
-
-  MIDASDesktopUI* parent;
   
 };
 

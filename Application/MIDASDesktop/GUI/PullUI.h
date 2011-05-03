@@ -3,8 +3,8 @@
  
 #include "ui_PullUI.h"
 
-class MIDASDesktopUI;
 class SynchronizerThread;
+class midasSynchronizer;
 
 class PullUI :  public QDialog, private Ui::PullDialog
 {
@@ -12,7 +12,7 @@ class PullUI :  public QDialog, private Ui::PullDialog
  
 public:
 
-  PullUI(MIDASDesktopUI *parent);
+  PullUI(QWidget* parent, midasSynchronizer* synch);
   ~PullUI();
 
   void setPullId(int id);
@@ -28,6 +28,8 @@ public:
 
 signals:
   void pulledResources();
+  void enableActions(bool);
+  void startingSynchronizer();
 
 public slots:
 
@@ -40,12 +42,12 @@ public slots:
 
 private:
 
-  MIDASDesktopUI* m_Parent;
   SynchronizerThread* m_SynchronizerThread;
-  std::string m_TypeName;
-  std::string m_Name;
-  int m_PullId;
-  int m_ResourceType;
+  midasSynchronizer*  m_Synch;
+  std::string         m_TypeName;
+  std::string         m_Name;
+  int                 m_PullId;
+  int                 m_ResourceType;
   
 };
 

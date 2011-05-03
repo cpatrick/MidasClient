@@ -7,7 +7,6 @@
 #include <QPixmap>
 #include <QMimeData>
 
-#include "MIDASDesktopUI.h"
 #include "MidasTreeItem.h"
 #include "MidasTreeModelServer.h"
 #include "MidasCommunityTreeItem.h"
@@ -80,14 +79,12 @@ void MidasTreeViewServer::selectByUuid(std::string uuid, bool select)
   m_ExpandTreeThread = new ExpandTreeThread(this,
     reinterpret_cast<MidasTreeModelServer*>(m_Model), uuid, select);
 
-  connect(m_ExpandTreeThread, SIGNAL(threadComplete()),
+  connect(m_ExpandTreeThread, SIGNAL( finished() ),
     this, SLOT(expansionDone()));
   connect(m_ExpandTreeThread, SIGNAL(expand(const QModelIndex&)),
     this, SLOT(expand(const QModelIndex&)));
   connect(m_ExpandTreeThread, SIGNAL(select(const QModelIndex&)),
     this, SLOT(selectByIndex(const QModelIndex&)));
-  connect(m_ExpandTreeThread, SIGNAL( enableActions(bool) ),
-    m_Parent, SLOT( enableActions(bool) ) );
 
   m_ExpandTreeThread->start();
   emit startedExpandingTree();
@@ -96,6 +93,7 @@ void MidasTreeViewServer::selectByUuid(std::string uuid, bool select)
 void MidasTreeViewServer::expansionDone()
 {
   emit finishedExpandingTree();
+  emit enableActions(true);
 }
 
 void MidasTreeViewServer::selectByIndex(const QModelIndex& index)
@@ -159,7 +157,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     mdo::Community* community = communityTreeItem->getCommunity();
     mws::Community remote;
     remote.SetObject(community);
-    remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
+    remote.SetAuthenticator(m_Synch->GetAuthenticator());
     remote.Fetch();
 
     emit midasCommunityTreeItemSelected(communityTreeItem);
@@ -169,7 +167,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     mdo::Collection* collection = collectionTreeItem->getCollection();
     mws::Collection remote;
     remote.SetObject(collection);
-    remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
+    remote.SetAuthenticator(m_Synch->GetAuthenticator());
     remote.Fetch();
 
     emit midasCollectionTreeItemSelected(collectionTreeItem);
@@ -179,7 +177,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     mdo::Item* item = itemTreeItem->getItem();
     mws::Item remote;
     remote.SetObject(item);
-    remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
+    remote.SetAuthenticator(m_Synch->GetAuthenticator());
     remote.Fetch();
 
     emit midasItemTreeItemSelected(itemTreeItem);
@@ -189,7 +187,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     mdo::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
     mws::Bitstream remote;
     remote.SetObject(bitstream);
-    remote.SetAuthenticator(this->m_Parent->getSynchronizer()->GetAuthenticator());
+    remote.SetAuthenticator(m_Synch->GetAuthenticator());
     remote.Fetch();
 
     emit midasBitstreamTreeItemSelected(bitstreamTreeItem);

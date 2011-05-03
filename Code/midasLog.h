@@ -15,7 +15,7 @@
 #include "midasStandardIncludes.h"
 
 /**
- * Class for logging messages
+ * Abstract class for logging messages
  */
 class midasLog
 {

@@ -4,13 +4,11 @@
 #include <QThread>
 #include <QString>
 
-class MIDASDesktopUI;
-
 class UnifyTreeThread : public QThread
 {
   Q_OBJECT
 public:
-  UnifyTreeThread(MIDASDesktopUI* parent);
+  UnifyTreeThread();
   ~UnifyTreeThread();
 
   virtual void run();
@@ -18,11 +16,7 @@ public:
   bool isCopy();
   void setCopy(bool val);
 
-signals:
-  void threadComplete();
-
 private:
-  MIDASDesktopUI* m_Parent;
   bool            m_Copy;
 };
 

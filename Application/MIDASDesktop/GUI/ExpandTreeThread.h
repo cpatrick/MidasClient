@@ -22,7 +22,6 @@ public:
   virtual void run();
 
 signals:
-  void threadComplete();
   void expand(const QModelIndex& index);
   void select(const QModelIndex& index);
   void enableActions(bool val);

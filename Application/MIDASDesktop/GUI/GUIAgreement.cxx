@@ -1,5 +1,4 @@
 #include "GUIAgreement.h"
-#include "MIDASDesktopUI.h"
 #include "mwsRestXMLParser.h"
 #include "midasSynchronizer.h"
 #include "midasAuthenticator.h"

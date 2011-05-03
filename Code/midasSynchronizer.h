@@ -14,6 +14,7 @@
 
 #include "midasStandardIncludes.h"
 #include "midasLogAware.h"
+#include <QMutex>
 
 struct midasResourceRecord;
 class midasStatus;
@@ -159,6 +160,7 @@ protected:
   midasAuthenticator* Authenticator;
   midasAgreementHandler* AgreementHandler;
   midasFileOverwriteHandler* OverwriteHandler;
+  QMutex* Mutex;
 };
 
 #endif
