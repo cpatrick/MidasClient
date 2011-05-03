@@ -17,6 +17,7 @@
 class CreateMidasResourceUI; 
 class SignInUI;
 class PullUI;
+class PushUI;
 class CreateProfileUI;
 class DeleteResourceUI;
 class AboutUI;
@@ -234,6 +235,7 @@ private:
   AboutUI*                    dlg_aboutUI;
   PreferencesUI*              dlg_preferencesUI;
   PullUI*                     dlg_pullUI;
+  PushUI*                     dlg_pushUI;
   DeleteResourceUI*           dlg_deleteClientResourceUI;
   DeleteResourceUI*           dlg_deleteServerResourceUI;
   AddAuthorUI*                dlg_addAuthorUI;

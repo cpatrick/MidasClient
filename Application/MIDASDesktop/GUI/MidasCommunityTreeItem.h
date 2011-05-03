@@ -2,10 +2,7 @@
 #define __MidasCommunityTreeItem_H
 
 #include "MidasTreeItem.h"
-
-namespace mdo {
-  class Community;
-}
+#include "mdoCommunity.h"
 
 class MidasCommunityTreeItem : public MidasTreeItem
 {
@@ -25,6 +22,7 @@ public:
   
   void setCommunity(mdo::Community* community);
   mdo::Community* getCommunity() const {return m_Community;}
+  mdo::Object* getObject() const { return m_Community; }
 
 private:
 

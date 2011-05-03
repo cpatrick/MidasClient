@@ -66,6 +66,7 @@ public:
   void AddBitstream(Bitstream* bitstream) {m_Bitstreams.push_back(bitstream);}
 
   std::string GetTypeName() { return "Item"; }
+  int GetResourceType() { return midasResourceType::ITEM; }
 
   Collection* GetParentCollection() { return m_ParentCollection; }
   void SetParentCollection(Collection* coll) { m_ParentCollection = coll; }

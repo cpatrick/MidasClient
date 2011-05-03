@@ -80,6 +80,7 @@ public:
   void Clear();
 
   std::string GetTypeName() { return "Community"; }
+  int GetResourceType() { return midasResourceType::COMMUNITY; }
 
   bool SetValue(std::string key, std::string value, bool append = false);
   

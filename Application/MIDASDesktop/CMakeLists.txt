@@ -23,6 +23,7 @@ set(MIDASDesktopUI_SRCS
   GUI/AboutUI.cxx
   GUI/PreferencesUI.cxx
   GUI/PullUI.cxx
+  GUI/PushUI.cxx
   GUI/GUIAgreement.cxx
   GUI/GUIFileOverwriteHandler.cxx
   GUI/GUIMirrorHandler.cxx
@@ -71,6 +72,7 @@ set(MIDASDesktopUI_UI_SRCS
   GUI/SignInUI.ui
   GUI/AboutUI.ui
   GUI/PullUI.ui
+  GUI/PushUI.ui
   GUI/PreferencesUI.ui
   GUI/AddAuthorUI.ui
   GUI/AddKeywordUI.ui
@@ -87,6 +89,7 @@ set(MIDASDesktopUI_MOC_SRCS
   GUI/CreateProfileUI.h
   GUI/DeleteResourceUI.h
   GUI/PullUI.h
+  GUI/PushUI.h
   GUI/SignInUI.h
   GUI/SignInThread.h
   GUI/SearchThread.h

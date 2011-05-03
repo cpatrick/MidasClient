@@ -1,6 +1,5 @@
 #include "PullUI.h"
 #include "SynchronizerThread.h"
-#include "MidasClientGlobal.h"
 #include "midasAuthenticator.h"
 #include "midasSynchronizer.h"
 #include "midasProgressReporter.h"
@@ -40,7 +39,7 @@ void PullUI::resetState()
   this->m_PullId = 0;
   this->m_ResourceType = 0;
   this->cloneRadioButton->setChecked(true);
-  emit radioButtonChanged();
+  this->radioButtonChanged();
 }
 
 void PullUI::setClone()
@@ -92,7 +91,7 @@ void PullUI::init()
     {
     cloneRadioButton->setChecked(true);
     }
-  emit radioButtonChanged();
+  this->radioButtonChanged();
 }
 
 /** */

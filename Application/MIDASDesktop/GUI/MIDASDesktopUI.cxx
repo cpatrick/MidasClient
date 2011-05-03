@@ -54,6 +54,7 @@
 #include "DeleteResourceUI.h"
 #include "PreferencesUI.h"
 #include "PullUI.h"
+#include "PushUI.h"
 #include "SignInUI.h"
 #include "MirrorPickerUI.h"
 // ------------- Dialogs -------------
@@ -127,6 +128,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_createMidasResourceUI =  new CreateMidasResourceUI( this, m_synch );
   dlg_signInUI =               new SignInUI( this, m_synch );
   dlg_pullUI =                 new PullUI( this, m_synch );
+  dlg_pushUI =                 new PushUI( this, m_synch);
   dlg_createProfileUI =        new CreateProfileUI( this );
   dlg_aboutUI =                new AboutUI( this );
   dlg_preferencesUI =          new PreferencesUI( this );
@@ -254,6 +256,12 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- setup TreeView signals -------------
 
   // ------------- signal/slot connections -------------
+  connect( actionPush_Resource, SIGNAL( triggered() ), this, SLOT( pushResources() ) );
+  connect( actionPull_Resource, SIGNAL( triggered() ), dlg_pullUI, SLOT( exec() ) );
+  connect( actionOpenURL,       SIGNAL( triggered() ), this, SLOT( viewInBrowser() ) );
+
+  connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
+
   connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string, std::string, std::string)),
     this, SLOT( createProfile(std::string, std::string, std::string, std::string, std::string, std::string)));
   connect( dlg_createProfileUI, SIGNAL( deletedProfile(std::string)),
@@ -267,6 +275,8 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect( dlg_deleteClientResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteLocalResource(bool) ) );
   connect( dlg_deleteServerResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteServerResource(bool) ) );
+  connect( dlg_pushUI, SIGNAL( pushedResources(int) ), this, SLOT( pushReturned(int) ) );
+  connect( dlg_pushUI, SIGNAL(enableActions(bool) ), this, SLOT(enableActions(bool) ) );
 
   connect( dlg_preferencesUI, SIGNAL( unifyingTree() ), this, SLOT( unifyingTree() ) );
   connect( dlg_preferencesUI, SIGNAL( treeUnified() ), this, SLOT( treeUnified() ) );
@@ -274,13 +284,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( dlg_pullUI, SIGNAL( enableActions(bool) ), this, SLOT( enableActions(bool) ) );
 
   connect( dlg_createMidasResourceUI, SIGNAL( resourceCreated() ), this, SLOT( updateClientTreeView() ) );
-
-  connect( actionPush_Resources,          SIGNAL( triggered() ), this, SLOT( pushResources() ) );
-  connect( actionPull_Resource,           SIGNAL( triggered() ), dlg_pullUI, SLOT( exec() ) );
-  connect( actionOpenURL,                 SIGNAL( triggered() ), this, SLOT( viewInBrowser() ) );
-  //connect( actionSwap_with_MD5_reference, SIGNAL( triggered() ), this, SLOT( 
-
-  connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
 
   connect( actionChoose_Local_Database, SIGNAL( triggered() ), this, SLOT( chooseLocalDatabase() ) );
   connect( actionNew_Local_Database, SIGNAL( triggered() ), this, SLOT( createLocalDatabase() ) );
@@ -478,7 +481,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     this->treeViewServer->setEnabled( value );
     this->pull_Button->setEnabled( value );
     this->push_Button->setEnabled( value );
-    this->actionPush_Resources->setEnabled( value );
+    this->actionPush_Resource->setEnabled( value );
     this->searchButton->setEnabled( value );
     this->searchQueryEdit->setEnabled( value );
     this->refreshButton->setEnabled( value );
@@ -1118,18 +1121,21 @@ void MIDASDesktopUI::clearInfoPanel()
 void MIDASDesktopUI::displayClientResourceContextMenu( QContextMenuEvent* e )
 {
   QMenu menu( this );
-  MidasCommunityTreeItem * communityTreeItem = NULL;
-  MidasCollectionTreeItem * collectionTreeItem = NULL;
-  MidasItemTreeItem * itemTreeItem = NULL;
-  MidasBitstreamTreeItem * bitstreamTreeItem = NULL;
+  MidasCommunityTreeItem* communityTreeItem = NULL;
+  MidasCollectionTreeItem* collectionTreeItem = NULL;
+  MidasItemTreeItem* itemTreeItem = NULL;
+  MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
 
   QModelIndex index = treeViewClient->indexAt( e->pos() );
-  MidasTreeItem * item = const_cast<MidasTreeItem*>( 
-                         reinterpret_cast<MidasTreeModelClient*>(treeViewClient->model())->midasTreeItem( index ) );
   
   if ( index.isValid() )
     {
+    MidasTreeItem* item = const_cast<MidasTreeItem*>(treeViewClient->getSelectedMidasTreeItem());
+
     treeViewClient->selectionModel()->select( index, QItemSelectionModel::SelectCurrent ); 
+
+    menu.addAction( this->actionView_Directory );
+    menu.addSeparator();
 
     if ( ( communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>( item ) ) != NULL)
       {
@@ -1148,16 +1154,14 @@ void MIDASDesktopUI::displayClientResourceContextMenu( QContextMenuEvent* e )
       {
       menu.addAction( this->actionSwap_with_MD5_reference );
       }
-    menu.addSeparator();
-    menu.addAction( this->actionView_Directory );
     menu.addAction( this->actionDelete_Resource );
     }
-  else 
+  else
     {
     treeViewServer->selectionModel()->clearSelection();
     menu.addAction( this->actionAdd_community );
-    menu.addAction( this->actionPush_Resources );
     }
+  menu.addAction( this->actionPush_Resource );
   menu.exec( e->globalPos() );
 }
 
@@ -1165,13 +1169,12 @@ void MIDASDesktopUI::displayServerResourceContextMenu( QContextMenuEvent* e )
 {
   QMenu menu( this );
   QModelIndex index = treeViewServer->indexAt( e->pos() );
-  MidasTreeItem * item = const_cast<MidasTreeItem*>( 
-                         reinterpret_cast<MidasTreeModelClient*>(treeViewServer->model())->midasTreeItem( index ) );
-  MidasItemTreeItem * itemTreeItem = NULL;
-  MidasBitstreamTreeItem * bitstreamTreeItem = NULL;
+  MidasItemTreeItem* itemTreeItem = NULL;
+  MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
 
   if ( index.isValid() )
     {
+    MidasTreeItem* item = const_cast<MidasTreeItem*>(treeViewServer->getSelectedMidasTreeItem());
     menu.addAction( this->actionPull_Resource );
     menu.addAction( this->actionOpenURL );
     menu.addAction( this->actionDelete_server );
@@ -1579,22 +1582,9 @@ void MIDASDesktopUI::pushResources()
   this->displayStatus(tr("Pushing locally added resources..."));
   this->setProgressIndeterminate();
 
-  if(m_SynchronizerThread)
-    {
-    disconnect(m_SynchronizerThread);
-    }
-  delete m_SynchronizerThread;
-
-  m_synch->SetOperation(midasSynchronizer::OPERATION_PUSH);
-  m_SynchronizerThread = new SynchronizerThread;
-  m_SynchronizerThread->SetSynchronizer(m_synch);
-
-  connect(m_SynchronizerThread, SIGNAL(enableActions(bool) ),
-    this, SLOT(enableActions(bool) ) );
-  connect(m_SynchronizerThread, SIGNAL(performReturned(int) ),
-    this, SLOT(pushReturned(int) ) );
-
-  m_SynchronizerThread->start();
+  const MidasTreeItem* resource = treeViewClient->getSelectedMidasTreeItem();
+  dlg_pushUI->setObject(resource ? resource->getObject() : NULL);
+  dlg_pushUI->exec();
 }
 
 void MIDASDesktopUI::pushReturned(int rc)

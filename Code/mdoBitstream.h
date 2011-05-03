@@ -41,6 +41,7 @@ public:
   std::string GetPath() { return m_Path; }
 
   std::string GetTypeName() { return "Bitstream"; }
+  int GetResourceType() { return midasResourceType::BITSTREAM; }
 
   void AddLocation(Assetstore* location) { m_Locations.push_back(location); }
   void SetLocations(std::vector<Assetstore*> locations) { m_Locations = locations; }

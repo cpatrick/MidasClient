@@ -52,7 +52,14 @@ bool MidasTreeView::isModelIndexSelected() const
 const QModelIndex MidasTreeView::getSelectedModelIndex() const
 {
   QModelIndexList selectedIndexes = selectionModel()->selectedIndexes();
-  return selectedIndexes.first();
+  if(selectedIndexes.size())
+    {
+    return selectedIndexes.first();
+    }
+  else
+    {
+    return QModelIndex();
+    }
 }
 
 const MidasTreeItem* MidasTreeView::getSelectedMidasTreeItem() const

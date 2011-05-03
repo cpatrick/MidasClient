@@ -66,6 +66,7 @@ public:
   virtual void SetDirty(bool dirty) { m_Dirty = dirty; }
   virtual void Clear() = 0;
   virtual std::string & GetName() = 0;
+  virtual int GetResourceType() = 0;
   virtual std::string GetTypeName() = 0;
 
   virtual std::string & RefAgreement() { return m_HasAgreement; }
