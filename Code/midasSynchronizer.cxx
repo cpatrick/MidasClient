@@ -221,7 +221,7 @@ int midasSynchronizer::Perform()
 }
 
 //-------------------------------------------------------------------
-int midasSynchronizer::Add()
+int midasSynchronizer::Add(mdo::Bitstream* result)
 {
   if(this->ServerHandle != "")
     {
@@ -358,6 +358,12 @@ int midasSynchronizer::Add()
     mds::Bitstream mdsBitstream;
     mdsBitstream.SetObject(&bitstream);
     mdsBitstream.Commit();
+
+    if(result)
+      {
+      result->SetId(id);
+      result->SetUuid(uuid.c_str());
+      }
     }
   db.MarkDirtyResource(uuid, midasDirtyAction::ADDED);
 
@@ -1549,16 +1555,20 @@ int midasSynchronizer::Upload()
 
   this->ResourceType = midasResourceType::BITSTREAM;
 
+  mdo::Bitstream* bitstream = new mdo::Bitstream;
+  
   int rc;
-  if((rc = this->Add()) != MIDAS_OK)
+  if((rc = this->Add(bitstream)) != MIDAS_OK)
     {
     return rc;
     }
 
-  if((rc = this->Push()) != MIDAS_OK)
+  if((rc = this->Push(bitstream)) != MIDAS_OK)
     {
-    //TODO roll back the add?
+    return rc;
     }
+
+  delete bitstream;
 
   return rc;
 }

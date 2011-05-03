@@ -113,7 +113,11 @@ protected:
   /* Converts a MIDAS server path into an ID and sets the appropriate type */
   bool ConvertPathToId();
 
-  int Add();
+  /**
+   * Optionally pass a bitstream object that will be filled with the id/uuid
+   * of the object that was just added.
+   */
+  int Add(mdo::Bitstream* result = NULL);
   int Clean();
   int Clone();
   int Pull();
