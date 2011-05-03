@@ -26,7 +26,7 @@
 #include "midasLog.h"
 #include <iostream>
 
-MidasTreeViewClient::MidasTreeViewClient(QWidget * parent)
+MidasTreeViewClient::MidasTreeViewClient(QWidget* parent)
 : MidasTreeView(parent)
 {
   m_Model = new MidasTreeModelClient;
@@ -43,7 +43,7 @@ MidasTreeViewClient::MidasTreeViewClient(QWidget * parent)
     this, SLOT( expand(const QModelIndex&) ) );
 
   // define action to be triggered when tree item is selected
-  QItemSelectionModel * itemSelectionModel = this->selectionModel();
+  QItemSelectionModel* itemSelectionModel = this->selectionModel();
   connect(itemSelectionModel,
      SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
      this, SLOT(updateSelection(const QItemSelection&, const QItemSelection& )));
@@ -54,7 +54,7 @@ MidasTreeViewClient::~MidasTreeViewClient()
   delete m_Model;
 }
 
-void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent *event)
+void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent* event)
 {
   MidasBitstreamTreeItem* bitstream = NULL;
   MidasTreeItem* node = const_cast<MidasTreeItem*>(
@@ -70,23 +70,7 @@ void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent *event)
     }
 }
 
-void MidasTreeViewClient::dragEnterEvent( QDragEnterEvent * event )
-{
-  if (event && event->mimeData())
-    {
-    const QMimeData * md = event->mimeData();
-    if ( md->hasUrls() || md->hasFormat("MIDAS/resource"))
-      {
-      event->acceptProposedAction();
-      }
-    }
-}
-
-void MidasTreeViewClient::dragLeaveEvent( QDragLeaveEvent * event )
-{
-}
-
-void MidasTreeViewClient::dragMoveEvent( QDragMoveEvent * event )
+void MidasTreeViewClient::dragMoveEvent(QDragMoveEvent* event)
 {
   selectionModel()->clearSelection();
   selectionModel()->select(this->indexAt(event->pos()), QItemSelectionModel::Select | QItemSelectionModel::Rows);
@@ -112,7 +96,7 @@ void MidasTreeViewClient::dragMoveEvent( QDragMoveEvent * event )
     }
 }
 
-void MidasTreeViewClient::dropEvent( QDropEvent * event )
+void MidasTreeViewClient::dropEvent(QDropEvent* event)
 {
   if (!event || !event->mimeData())
     {

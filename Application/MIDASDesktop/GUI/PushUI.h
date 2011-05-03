@@ -21,6 +21,7 @@ public:
   ~PushUI();
 
   void setObject(mdo::Object* object);
+  void setDelete(bool val);
 
   void init();
 
@@ -32,13 +33,16 @@ public slots:
 
   int exec();
   void accept();
+  void reject();
   void radioButtonChanged();
   void resetState();
+  void deleteObject();
 
 private:
 
-  mdo::Object* m_Object;
-  midasSynchronizer* m_Synch;
+  bool                m_Delete;
+  mdo::Object*        m_Object;
+  midasSynchronizer*  m_Synch;
   SynchronizerThread* m_SynchThread;
 };
 

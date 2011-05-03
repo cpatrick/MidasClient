@@ -5,7 +5,7 @@
 
 /** Constructor */
 PushUI::PushUI(QWidget* parent, midasSynchronizer* synch)
-: QDialog(parent), m_Synch(synch), m_Object(NULL), m_SynchThread(NULL)
+: QDialog(parent), m_Synch(synch), m_Object(NULL), m_SynchThread(NULL), m_Delete(false)
 {
   setupUi(this);
   resetState();
@@ -22,6 +22,11 @@ PushUI::~PushUI()
 void PushUI::setObject(mdo::Object* object)
 {
   m_Object = object;
+}
+
+void PushUI::setDelete(bool val)
+{
+  m_Delete = val;
 }
 
 void PushUI::resetState()
@@ -83,7 +88,30 @@ void PushUI::accept()
   connect(m_SynchThread, SIGNAL( enableActions(bool) ),
           this, SIGNAL( enableActions(bool) ) );
 
+  if(m_Delete)
+    {
+    connect(m_SynchThread, SIGNAL( finished() ),
+            this, SLOT( deleteObject() ) );
+    }
+
   m_SynchThread->start();
 
+  m_Delete = false;
   QDialog::accept();
+}
+
+void PushUI::reject()
+{
+  if(m_Delete)
+    {
+    this->deleteObject();
+    }
+
+  m_Delete = false;
+  QDialog::reject();
+}
+
+void PushUI::deleteObject()
+{
+  delete m_Object;
 }

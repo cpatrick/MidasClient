@@ -192,6 +192,7 @@ public slots:
                      const QStringList & files);
   void addBitstreamsProgress(int current, int total, const QString& message);
   void pullRecursive(int type, int id);
+  void dragNDropPush(int type, int id);
   void viewInBrowser();
   void viewDirectory();
   void openBitstream();

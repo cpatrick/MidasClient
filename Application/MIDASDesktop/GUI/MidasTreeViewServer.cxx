@@ -103,48 +103,6 @@ void MidasTreeViewServer::selectByIndex(const QModelIndex& index)
   scrollTo(index);
 }
 
-void MidasTreeViewServer::mousePressEvent(QMouseEvent* event)
-{
-  if(event->button() == Qt::LeftButton)
-    {
-    m_DragStart = event->pos();
-    }
-  QTreeView::mousePressEvent(event);
-}
-
-void MidasTreeViewServer::mouseMoveEvent(QMouseEvent* event)
-{
-  if (!(event->buttons() & Qt::LeftButton))
-    {
-    return;
-    }
-  if ((event->pos() - m_DragStart).manhattanLength()
-    < QApplication::startDragDistance())
-    {
-    return;
-    }
-
-  QModelIndex index = this->indexAt(m_DragStart);
-  if(!index.isValid())
-    {
-    event->setAccepted(false);
-    return;
-    }
-
-  MidasTreeItem* resource =
-    const_cast<MidasTreeItem*>(m_Model->midasTreeItem(index));
-
-  QDrag* drag = new QDrag(this);
-  QMimeData* mimeData = new QMimeData;
-  std::stringstream data;
-  data << resource->getType() << " " << resource->getId();
-
-  mimeData->setData("MIDAS/resource", QString(data.str().c_str()).toAscii());
-  drag->setPixmap(resource->getDecoration());
-  drag->setMimeData(mimeData);
-  Qt::DropAction dropAction = drag->start();
-}
-
 void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
 {
   MidasCommunityTreeItem* communityTreeItem = NULL;
@@ -191,5 +149,37 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     remote.Fetch();
 
     emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
+    }
+}
+
+void MidasTreeViewServer::dragMoveEvent(QDragMoveEvent* event)
+{
+  selectionModel()->clearSelection();
+  selectionModel()->select(this->indexAt(event->pos()), QItemSelectionModel::Select | QItemSelectionModel::Rows);
+
+  if(event->mimeData()->hasFormat("MIDAS/resource"))
+    {
+    event->setAccepted(!indexAt(event->pos()).isValid());
+    }
+}
+
+void MidasTreeViewServer::dropEvent( QDropEvent * event )
+{
+  if (!event || !event->mimeData())
+    {
+    event->setAccepted(false);
+    return;
+    }
+  const QMimeData* md = event->mimeData();
+  if(md->hasFormat("MIDAS/resource"))
+    {
+    QString data = QString(md->data("MIDAS/resource"));
+    std::vector<std::string> tokens;
+    kwutils::tokenize(data.toStdString(), tokens);
+
+    int type = atoi( tokens[0].c_str() );
+    int id   = atoi( tokens[1].c_str() );
+    emit resourceDropped(type, id);
+    event->acceptProposedAction();
     }
 }

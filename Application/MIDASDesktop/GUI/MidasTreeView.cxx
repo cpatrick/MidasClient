@@ -9,6 +9,7 @@
 #include "midasSynchronizer.h"
 
 #include <QModelIndex>
+#include <QtGui>
 
 MidasTreeView::MidasTreeView(QWidget* parent)
 : QTreeView(parent), m_Synch(NULL)
@@ -45,7 +46,7 @@ void MidasTreeView::updateSelection(const QItemSelection &selected,
 
 bool MidasTreeView::isModelIndexSelected() const
 {
-  QItemSelectionModel * selectionModel = this->selectionModel();
+  QItemSelectionModel* selectionModel = this->selectionModel();
   return (selectionModel->selectedIndexes().size() > 0);
 }
 
@@ -86,12 +87,95 @@ void MidasTreeView::Initialize()
   m_Model->restoreExpandedState();
 }
 
+
+void MidasTreeView::decorateByUuid(std::string uuid)
+{
+  m_Model->decorateByUuid(uuid);
+}
+
 void MidasTreeView::contextMenuEvent(QContextMenuEvent * e)
 {
   emit midasTreeViewContextMenu( e );
 }
 
-void MidasTreeView::decorateByUuid(std::string uuid)
+void MidasTreeView::dragEnterEvent(QDragEnterEvent* event)
 {
-  m_Model->decorateByUuid(uuid);
+  if (event && event->mimeData())
+    {
+    const QMimeData* md = event->mimeData();
+    if ( md->hasUrls() || md->hasFormat("MIDAS/resource"))
+      {
+      event->acceptProposedAction();
+      }
+    }
+}
+
+void MidasTreeView::dragLeaveEvent(QDragLeaveEvent* event)
+{
+}
+
+void MidasTreeView::dragMoveEvent(QDragMoveEvent* event)
+{
+}
+
+void MidasTreeView::dropEvent(QDropEvent* event)
+{
+}
+
+void MidasTreeView::mouseDoubleClickEvent(QMouseEvent* event)
+{
+}
+
+void MidasTreeView::mousePressEvent(QMouseEvent* event)
+{
+  if(event->button() == Qt::LeftButton)
+    {
+    m_DragStart = event->pos();
+    }
+  QTreeView::mousePressEvent(event);
+}
+
+void MidasTreeView::mouseMoveEvent(QMouseEvent* event)
+{
+  if (!(event->buttons() & Qt::LeftButton))
+    {
+    return;
+    }
+  if ((event->pos() - m_DragStart).manhattanLength()
+       < QApplication::startDragDistance())
+    {
+    return;
+    }
+
+  QModelIndex index = this->indexAt(m_DragStart);
+  if(!index.isValid())
+    {
+    event->setAccepted(false);
+    return;
+    }
+
+  MidasTreeItem* resource =
+    const_cast<MidasTreeItem*>(m_Model->midasTreeItem(index));
+
+  QDrag* drag = new QDrag(this);
+  QMimeData* mimeData = new QMimeData;
+  std::stringstream data;
+  data << resource->getType() << " " << resource->getId();
+
+  mimeData->setData("MIDAS/resource", QString(data.str().c_str()).toAscii());
+  drag->setPixmap(resource->getDecoration());
+  drag->setMimeData(mimeData);
+  Qt::DropAction dropAction = drag->start();
+}
+
+void MidasTreeView::addResource(mdo::Object*)
+{
+}
+
+void MidasTreeView::updateResource(mdo::Object*)
+{
+}
+
+void MidasTreeView::deleteResource(mdo::Object*)
+{
 }

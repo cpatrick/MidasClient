@@ -208,6 +208,9 @@ MIDASDesktopUI::MIDASDesktopUI()
     this, SLOT( addBitstreams(const MidasItemTreeItem*, const QStringList&)));
   connect(treeViewClient, SIGNAL(resourceDropped(int, int)),
     this, SLOT( pullRecursive(int, int) ) );
+  connect(treeViewServer, SIGNAL(resourceDropped(int, int)),
+    this, SLOT( dragNDropPush(int, int) ) );
+
 
   connect(treeViewClient, SIGNAL( bitstreamOpenRequest() ), this, SLOT( openBitstream() ) );
 
@@ -1521,7 +1524,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     m_PollFilesystemThread = new PollFilesystemThread;
     
     connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()), Qt::BlockingQueuedConnection);
-    connect(dlg_pullUI, SIGNAL( startingSynchronizer() ), m_PollFilesystemThread, SLOT( Pause() ), Qt::BlockingQueuedConnection );
+    connect(dlg_pullUI, SIGNAL( startingSynchronizer() ), m_PollFilesystemThread, SLOT( Pause() ));
     connect(dlg_pullUI, SIGNAL( pulledResources() ), m_PollFilesystemThread, SLOT( Resume() ) );
 
     m_PollFilesystemThread->start();
@@ -1820,6 +1823,46 @@ void MIDASDesktopUI::pullRecursive(int type, int id)
     dlg_pullUI->setPullId(id);
     dlg_pullUI->accept();
     }
+}
+
+void MIDASDesktopUI::dragNDropPush(int type, int id)
+{
+  mdo::Community* comm = NULL;
+  mdo::Collection* coll = NULL;
+  mdo::Item* item = NULL;
+  mdo::Bitstream* bitstream = NULL;
+  mdo::Object* obj = NULL;
+
+  mds::DatabaseAPI db;
+  std::string uuid = db.GetUuid(type, id);
+
+  switch(type)
+    {
+    case midasResourceType::COMMUNITY:
+      comm = new mdo::Community;
+      obj = comm;
+      break;
+    case midasResourceType::COLLECTION:
+      coll = new mdo::Collection;
+      obj = coll;
+      break;
+    case midasResourceType::ITEM:
+      item = new mdo::Item;
+      obj = item;
+      break;
+    case midasResourceType::BITSTREAM:
+      bitstream = new mdo::Bitstream;
+      obj = bitstream;
+      break;
+    default:
+      return;
+    }
+  obj->SetId(id);
+  obj->SetUuid(uuid.c_str());
+
+  dlg_pushUI->setObject(obj);
+  dlg_pushUI->setDelete(true); //will delete obj when done
+  dlg_pushUI->exec();
 }
 
 void MIDASDesktopUI::enableResourceEditing(bool val)
