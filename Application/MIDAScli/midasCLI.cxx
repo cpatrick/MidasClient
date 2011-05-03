@@ -612,6 +612,16 @@ bool midasCLI::ParseUpload(std::vector<std::string> args)
   this->Synchronizer->SetClientHandle(args[0]);
   this->Synchronizer->SetServerHandle(args[1]);
 
+  if(args.size() >= 3)
+    {
+    mws::WebAPI::Instance()->SetServerUrl(args[2].c_str());
+    }
+  if(this->GetServerUrl() == "")
+    {
+    this->PrintCommandHelp("upload");
+    return false;
+    }
+
   return true;
 }
 

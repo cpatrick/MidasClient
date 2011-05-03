@@ -357,7 +357,12 @@ int midasSynchronizer::Add()
 
     mds::Bitstream mdsBitstream;
     mdsBitstream.SetObject(&bitstream);
-    mdsBitstream.Commit();
+    if(!mdsBitstream.Commit())
+      {
+      std::stringstream text;
+      text << "Commit failed for bitstream " << name << std::endl;
+      return MIDAS_FAILURE;
+      }
     }
   db.MarkDirtyResource(uuid, midasDirtyAction::ADDED);
 
@@ -1053,6 +1058,7 @@ int midasSynchronizer::Push()
     std::stringstream text;
     text << "There are no staged resources to push." << std::endl;
     Log->Error(text.str());
+    return MIDAS_FAILURE;
     }
 
   bool success = true;
@@ -1540,7 +1546,7 @@ std::string midasSynchronizer::ResolveAddPath()
 void midasSynchronizer::CountBitstreams()
 {
   if(this->Operation == midasSynchronizer::OPERATION_PULL
-     && this->Recursive)
+     && this->Recursive && !this->PathMode)
     {
     if(this->ResourceType == midasResourceType::BITSTREAM)
       {

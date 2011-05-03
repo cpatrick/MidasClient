@@ -76,6 +76,8 @@ bool Bitstream::Commit()
   if(m_Bitstream->GetId()) //update existing record
     {
     action = midasDirtyAction::MODIFIED;
+    db.Open();
+    db.Database->ExecuteQuery("BEGIN"); //begin update transaction
     query << "UPDATE bitstream SET "
       << "size_bytes='" << m_Bitstream->GetSize() << "', "
       << "name='" << midasUtils::EscapeForSQL(m_Bitstream->GetName()) << "', "
