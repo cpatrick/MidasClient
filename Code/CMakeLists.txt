@@ -24,6 +24,7 @@ set(MIDASRest_SRCS
   mdoCollection.cxx
   mdoCommunity.cxx
   mdoItem.cxx
+  mdoVersion.cxx
   mdoProxy.cxx
   mdoProxyInterface.cxx
 

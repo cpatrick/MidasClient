@@ -26,7 +26,7 @@ INSERT INTO app_settings (key, value) VALUES ('refresh_setting', '0');
 INSERT INTO app_settings (key, value) VALUES ('refresh_interval', '5');
 
 CREATE TABLE version (
-    name text,
+    name character varying(64),
     major integer,
     minor integer,
     patch integer

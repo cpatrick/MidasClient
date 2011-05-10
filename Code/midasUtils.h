@@ -22,8 +22,12 @@
   typedef unsigned long long int uint64;
 #endif
 
-namespace mdo{
+namespace mdo {
   class Object;
+}
+
+namespace mds {
+  class UpgradeHandler;
 }
 
 class midasUtils
@@ -39,7 +43,7 @@ public:
   static std::string FormatTimeString(double seconds);
   static double StringToDouble(const std::string& num);
   static std::string GetTypeName(int type);
-  static bool IsDatabaseValid(std::string path);
+  static bool IsDatabaseValid(std::string path, mds::UpgradeHandler* handler);
   static bool CreateNewDatabase(std::string path);
   static mdo::Object* FetchByUuid(std::string uuid);
   static void StringTrim(std::string& str);
