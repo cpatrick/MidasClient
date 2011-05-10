@@ -76,19 +76,6 @@ file(APPEND "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h" ";\n}\n}\n")
 include_directories("${MIDASCPP_BINARY_DIR}/Code")
 message(STATUS "Finishing configuring SQLite table definitions")
 
-# Add target to build the database from definitions at build time
-add_custom_command (
-  OUTPUT ${midas_db}
-  DEPENDS "${MIDASCPP_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql"
-  COMMAND sqlite3 -init "${MIDASCPP_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql" ${midas_db} "SELECT * FROM resource_uuid;"
-  WORKING_DIRECTORY "${MIDASCPP_BINARY_DIR}"
-  COMMENT "Creating SQLite database..."
-)
-add_custom_target (
-  sqlite_db ALL
-  DEPENDS sqlite3 ${midas_db}
-)
-
 # Must reconfigure table def header when we change the SQL definitions
 add_custom_command (
   OUTPUT "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h"
