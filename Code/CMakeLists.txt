@@ -46,6 +46,8 @@ set(MIDASRest_SRCS
   mdsCollection.cxx
   mdsItem.cxx
   mdsBitstream.cxx
+  mdsVersion.cxx
+  mdsUpgrade.cxx
 )
 
 set(MIDASSynch_SRCS
@@ -61,7 +63,7 @@ set(midas_db "${MIDASCPP_BINARY_DIR}/midas.db")
 
 # NOTE: runtime database creation requires a re-configure and re-build to get the latest table defs
 message(STATUS "Configuring SQLite table definitions into C++...")
-file(WRITE "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h" "namespace mds {\nconst char* getTableDefs()\n{\n  return ")
+file(WRITE "${MIDASCPP_BINARY_DIR}/Code/mdsTableDefs.h" "namespace mdsUpgrade {\nconst char* getTableDefs()\n{\n  return ")
 file(STRINGS "${MIDASCPP_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql" sql_defs)
 
 foreach(sql_def ${sql_defs})
@@ -69,11 +71,13 @@ foreach(sql_def ${sql_defs})
   # Ignore comment lines
   if(NOT sql_def MATCHES "^--")
     string(REPLACE "\"" "\\\"" sql_def "${sql_def}")
-    file(APPEND "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h" "  \"${sql_def} \"\n")
+    file(APPEND "${MIDASCPP_BINARY_DIR}/Code/mdsTableDefs.h" "  \"${sql_def} \"\n")
   endif()
 endforeach()
 
-file(APPEND "${MIDASCPP_BINARY_DIR}/Code/midasTableDefs.h" ";\n}\n}\n")
+file(APPEND "${MIDASCPP_BINARY_DIR}/Code/mdsTableDefs.h"
+     "\n  \"INSERT INTO version(name, major, minor, patch) VALUES ('MIDASClient', '${MIDASCPP_VERSION_MAJOR}', '${MIDASCPP_VERSION_MINOR}', '${MIDASCPP_VERSION_PATCH}');\"")
+file(APPEND "${MIDASCPP_BINARY_DIR}/Code/mdsTableDefs.h" ";\n}\n}\n")
 include_directories("${MIDASCPP_BINARY_DIR}/Code")
 message(STATUS "Finishing configuring SQLite table definitions")
 

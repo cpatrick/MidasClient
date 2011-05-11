@@ -21,7 +21,7 @@
 #include "mdoItem.h"
 #include "mdoVersion.h"
 #include "midasStandardIncludes.h"
-#include "midasTableDefs.h"
+#include "mdsTableDefs.h"
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -215,6 +215,9 @@ bool midasUtils::IsDatabaseValid(std::string path,
                               MIDAS_CLIENT_VERSION_MINOR,
                               MIDAS_CLIENT_VERSION_PATCH);
 
+  // we should also do a check on the most recent addition to the table
+  // (whenever we add one).  If the field isn't there, we should run
+  // the upgrade.
   if(productVersion > dbVersion)
     {
     ok &= handler->Upgrade(path, dbVersion, productVersion);
@@ -235,9 +238,9 @@ bool midasUtils::CreateNewDatabase(std::string path)
     {
     return false;
     }
-  
+
   std::vector<std::string> lines;
-  kwsys::SystemTools::Split(mds::getTableDefs(), lines, ';');
+  kwsys::SystemTools::Split(mdsUpgrade::getTableDefs(), lines, ';');
 
   bool success = true;
   for(std::vector<std::string>::iterator i = lines.begin();

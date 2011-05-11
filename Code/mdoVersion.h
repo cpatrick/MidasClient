@@ -12,7 +12,7 @@ class Version
 {
 public:
   Version();
-  Version(int major, int minor, int patch);
+  Version(int major, int minor, int patch, std::string name = "MIDASClient");
   ~Version();
 
   std::string VersionString();

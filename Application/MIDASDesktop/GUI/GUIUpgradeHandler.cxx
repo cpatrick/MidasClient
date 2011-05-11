@@ -1,6 +1,7 @@
 #include "GUIUpgradeHandler.h"
 #include "UpgradeUI.h"
 #include "mdoVersion.h"
+#include "mdsUpgrade.h"
 
 GUIUpgradeHandler::GUIUpgradeHandler(UpgradeUI* ui)
 {
@@ -20,8 +21,17 @@ bool GUIUpgradeHandler::Upgrade(const std::string& path,
 
   if(m_Dialog->exec() == QDialog::Accepted)
     {
-    //TODO upgrade the database
-    return true;
+    Log->Message("Upgrading database schema to version " + productVersion.VersionString());
+    if(mds::Upgrade::UpgradeDatabase(path, dbVersion))
+      {
+      Log->Message("Database upgrade successful");
+      return true;
+      }
+    else
+      {
+      Log->Error("Database upgrade failed");
+      return false;
+      }
     }
   return false;
 }

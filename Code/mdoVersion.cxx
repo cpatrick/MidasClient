@@ -4,12 +4,12 @@ namespace mdo
 {
 
 Version::Version()
-: Major(0), Minor(0), Patch(0)
+: Major(0), Minor(0), Patch(0), Name("MIDASClient")
 {
 }
 
-Version::Version(int major, int minor, int patch)
-: Major(major), Minor(minor), Patch(patch)
+Version::Version(int major, int minor, int patch, std::string name)
+: Major(major), Minor(minor), Patch(patch), Name(name)
 {
 }
 
