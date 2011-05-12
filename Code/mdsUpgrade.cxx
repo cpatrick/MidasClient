@@ -1,6 +1,7 @@
 #include "mdsUpgrade.h"
 #include "mdsDatabaseAPI.h"
 #include "mdsVersion.h"
+#include "mdoVersion.h"
 
 namespace mds {
 
@@ -9,7 +10,10 @@ bool Upgrade::UpgradeDatabase(const std::string& path, mdo::Version dbVersion)
   mds::DatabaseInfo::Instance()->SetPath(path);
 
   bool status = true;
-  if(dbVersion < mdo::Version(1, 8, 0))
+
+  mdo::Version v1_8_0(1, 8, 0);
+
+  if(dbVersion < v1_8_0)
     {
     status &= Upgrade::Upgrade1_8_0();
     }
