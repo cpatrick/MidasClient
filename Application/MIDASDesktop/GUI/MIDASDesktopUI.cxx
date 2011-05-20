@@ -117,7 +117,7 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   trayIcon = new QSystemTrayIcon(this);
   trayIcon->setContextMenu(trayIconMenu);
-  trayIcon->setIcon(QPixmap(":icons/MIDAS_Desktop_Icon.png"));
+  trayIcon->setIcon(QPixmap(":icons/MIDAS_Desktop_LargeIcon.png"));
   trayIcon->setToolTip(STR2QSTR(MIDAS_CLIENT_VERSION_STR));
   trayIcon->setVisible(true);
 
@@ -313,6 +313,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect( searchButton,   SIGNAL( released() ), this, SLOT( search() ) );
   connect( cancelButton,   SIGNAL( released() ), this, SLOT( cancel() ) );
   connect( editInfoButton, SIGNAL( released() ), this, SLOT( editInfo() ) );
+  connect( showNewResourcesButton, SIGNAL( released() ), this, SLOT( decorateServerTree() ) );
 
   connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
   connect( logAndSearchTabContainer, SIGNAL( currentChanged(int) ),
@@ -445,7 +446,7 @@ mds::ResourceUpdateHandler* MIDASDesktopUI::getResourceUpdateHandler()
 
 void MIDASDesktopUI::showNormal()
 {
-  trayIcon->setIcon(QPixmap(":icons/MIDAS_Desktop_Icon.png"));
+  trayIcon->setIcon(QPixmap(":icons/MIDAS_Desktop_LargeIcon.png"));
 
   if(mds::DatabaseInfo::Instance()->GetPath() != "")
     {
@@ -487,6 +488,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     this->searchButton->setEnabled( value );
     this->searchQueryEdit->setEnabled( value );
     this->refreshButton->setEnabled( value );
+    this->showNewResourcesButton->setEnabled( value );
     actionSign_In->setText( value ? tr("Sign Out") : tr("Sign In") );
     }
 
@@ -1704,8 +1706,6 @@ void MIDASDesktopUI::storeLastPollTime()
     }
 
   db.SetSetting(mds::DatabaseAPI::LAST_FETCH_TIME, newResources.GetTimestamp());
-
-  this->decorateServerTree();
 }
 
 void MIDASDesktopUI::decorateServerTree()

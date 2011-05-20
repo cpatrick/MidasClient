@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../MIDASDesktopIcons.qrc">
-    <normaloff>:/icons/MIDAS_Desktop_Icon.png</normaloff>:/icons/MIDAS_Desktop_Icon.png</iconset>
+    <normaloff>:/icons/MIDAS_Desktop_LargeIcon.png</normaloff>:/icons/MIDAS_Desktop_LargeIcon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout">
@@ -54,6 +54,9 @@
             <layout class="QGridLayout" name="treesLayout">
              <item row="0" column="0">
               <layout class="QHBoxLayout" name="horizontalLayout">
+               <property name="spacing">
+                <number>3</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label">
                  <property name="text">
@@ -97,10 +100,36 @@
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QPushButton" name="showNewResourcesButton">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>22</width>
+                   <height>22</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Show new resources</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../MIDASDesktopIcons.qrc">
+                   <normaloff>:/icons/document_add.png</normaloff>:/icons/document_add.png</iconset>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
              <item row="0" column="2">
               <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <property name="spacing">
+                <number>3</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_2">
                  <property name="text">
@@ -131,6 +160,9 @@
                    <width>22</width>
                    <height>22</height>
                   </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Refresh List</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -199,6 +231,9 @@
              </item>
              <item row="1" column="1">
               <layout class="QVBoxLayout" name="verticalLayout_4">
+               <property name="spacing">
+                <number>3</number>
+               </property>
                <item>
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
@@ -1112,6 +1147,8 @@
   <tabstop>log</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
