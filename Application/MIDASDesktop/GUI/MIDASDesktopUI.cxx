@@ -38,6 +38,7 @@
 #include "GUILogger.h"
 #include "GUIProgress.h"
 #include "GUIMirrorHandler.h"
+#include "GUIUpgradeHandler.h"
 #include "Utils.h"
 #include "ResourceEdit.h"
 #include "ButtonDelegate.h"
@@ -53,6 +54,7 @@
 #include "CreateProfileUI.h"
 #include "DeleteResourceUI.h"
 #include "PreferencesUI.h"
+#include "UpgradeUI.h"
 #include "PullUI.h"
 #include "SignInUI.h"
 #include "MirrorPickerUI.h"
@@ -137,6 +139,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_agreementUI =            new AgreementUI( this );
   dlg_overwriteUI =            new FileOverwriteUI( this );
   dlg_mirrorPickerUI =         new MirrorPickerUI( this );
+  dlg_upgradeUI =              new UpgradeUI( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
   // ------------- Auto Refresh Timer -----------
@@ -334,6 +337,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_mirrorHandler = new GUIMirrorHandler(dlg_mirrorPickerUI);
   this->m_agreementHandler = new GUIAgreement(dlg_agreementUI);
   this->m_overwriteHandler = new GUIFileOverwriteHandler( dlg_overwriteUI );
+  this->m_dbUpgradeHandler = new GUIUpgradeHandler( dlg_upgradeUI );
+  this->m_dbUpgradeHandler->SetLog(this->Log);
   this->m_progress = new GUIProgress(this->progressBar);
   mds::DatabaseInfo::Instance()->SetLog(this->Log);
   mds::DatabaseInfo::Instance()->SetResourceUpdateHandler(m_resourceUpdateHandler);
@@ -1483,7 +1488,7 @@ void MIDASDesktopUI::createLocalDatabase()
 
 void MIDASDesktopUI::setLocalDatabase(std::string file)
 {
-  if(file == "" || !midasUtils::IsDatabaseValid(file))
+  if(file == "" || !midasUtils::IsDatabaseValid(file, m_dbUpgradeHandler))
     {
     std::stringstream text;
     text << file << " is not a valid MIDAS SQLite database. Defaulting "
@@ -1491,7 +1496,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     GetLog()->Message(text.str());
     std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory()
       + "/midas.db";
-    if(midasUtils::IsDatabaseValid(path))
+    if(midasUtils::IsDatabaseValid(path, m_dbUpgradeHandler))
       {
       setLocalDatabase(path);
       return;
@@ -1500,7 +1505,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     return;
     }
 
-  if(midasUtils::IsDatabaseValid(file))
+  if(midasUtils::IsDatabaseValid(file, m_dbUpgradeHandler))
     {
     mds::DatabaseInfo::Instance()->SetPath(file);
     QSettings settings("Kitware", "MIDASDesktop");

@@ -55,9 +55,7 @@ SET(MIDASCPP_VERSION_MAJOR "1")
 SET(MIDASCPP_VERSION_MINOR "7")
 SET(MIDASCPP_VERSION_PATCH "0")
 
-# Version string should not include patch level.  The major.minor is
-# enough to distinguish available features of the toolkit.
-SET(MIDASCPP_VERSION_STRING "${MIDASCPP_VERSION_MAJOR}.${MIDASCPP_VERSION_MINOR}")
+SET(MIDASCPP_VERSION_STRING "${MIDASCPP_VERSION_MAJOR}.${MIDASCPP_VERSION_MINOR}.${MIDASCPP_VERSION_PATCH}")
 
 #-----------------------------------------------------------------------------
 # Output directories.

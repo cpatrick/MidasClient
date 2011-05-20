@@ -1,9 +1,4 @@
 -------------------------------------------------------------------------------
--- Program:   MIDAS Server
--- Language:  PHP/HTML/Java/Javascript/SQL
--- Date:      $Date: 2010-01-26 15:56:46 -0500 (Tue, 26 Jan 2010) $
--- Version:   $Revision: 1259 $
---
 -- Copyright (c) Kitware Inc. 28 Corporate Drive. All rights reserved.
 -- Clifton Park, NY, 12065, USA.
 --
@@ -12,120 +7,6 @@
 -- the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 -- PURPOSE.  See the above copyright notices for more information.
 -------------------------------------------------------------------------------
-
--- Delete all old tables if they exist
--- This text is a result of the query:
--- SELECT 'DROP TABLE IF EXISTS ' || name || ';' FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';
-DROP TABLE IF EXISTS auth_profile;
-DROP TABLE IF EXISTS app_settings;
-DROP TABLE IF EXISTS version;
-DROP TABLE IF EXISTS cart;
-DROP TABLE IF EXISTS cart2eperson;
-DROP TABLE IF EXISTS cart2item;
-DROP TABLE IF EXISTS cartgroup;
-DROP TABLE IF EXISTS cartgroup2cart;
-DROP TABLE IF EXISTS cart2cart;
-DROP TABLE IF EXISTS dirty_resource;
-DROP TABLE IF EXISTS modality;
-DROP TABLE IF EXISTS midas_itemstats;
-DROP TABLE IF EXISTS midas_resourcelog;
-DROP TABLE IF EXISTS bitstream;
-DROP TABLE IF EXISTS bitstreamformatregistry;
-DROP TABLE IF EXISTS bundle;
-DROP TABLE IF EXISTS bundle2bitstream;
-DROP TABLE IF EXISTS checksum_history;
-DROP TABLE IF EXISTS checksum_results;
-DROP TABLE IF EXISTS collection;
-DROP TABLE IF EXISTS collection2item;
-DROP TABLE IF EXISTS itemsbyauthor;
-DROP TABLE IF EXISTS itemsbydate;
-DROP TABLE IF EXISTS itemsbydateaccessioned;
-DROP TABLE IF EXISTS itemsbysubject;
-DROP TABLE IF EXISTS itemsbytitle;
-DROP TABLE IF EXISTS communities2item;
-DROP TABLE IF EXISTS community;
-DROP TABLE IF EXISTS community2collection;
-DROP TABLE IF EXISTS community2community;
-DROP TABLE IF EXISTS metadatafieldregistry;
-DROP TABLE IF EXISTS metadatavalue;
-DROP TABLE IF EXISTS eperson;
-DROP TABLE IF EXISTS epersongroup;
-DROP TABLE IF EXISTS epersongroup2eperson;
-DROP TABLE IF EXISTS epersongroup2workspaceitem;
-DROP TABLE IF EXISTS fileextension;
-DROP TABLE IF EXISTS group2group;
-DROP TABLE IF EXISTS group2groupcache;
-DROP TABLE IF EXISTS resource_uuid;
-DROP TABLE IF EXISTS handle;
-DROP TABLE IF EXISTS history;
-DROP TABLE IF EXISTS historystate;
-DROP TABLE IF EXISTS item;
-DROP TABLE IF EXISTS item2bundle;
-DROP TABLE IF EXISTS item2bitstream;
-DROP TABLE IF EXISTS metadataschemaregistry;
-DROP TABLE IF EXISTS midas_bitstream;
-DROP TABLE IF EXISTS midas_collectionsubmit;
-DROP TABLE IF EXISTS midas_searchsshfs;
-DROP TABLE IF EXISTS midas_sshfs;
-DROP TABLE IF EXISTS midas_statistics;
-DROP TABLE IF EXISTS midas_userquota;
-DROP TABLE IF EXISTS most_recent_checksum;
-DROP TABLE IF EXISTS registrationdata;
-DROP TABLE IF EXISTS resourcepolicy;
-DROP TABLE IF EXISTS subscription;
-DROP TABLE IF EXISTS tasklistitem;
-DROP TABLE IF EXISTS workflowitem;
-DROP TABLE IF EXISTS workspaceitem;
-DROP TABLE IF EXISTS midas_epersonapi;
-DROP TABLE IF EXISTS midas_apitoken;
-DROP TABLE IF EXISTS mde_resource;
-DROP TABLE IF EXISTS mde_image;
-DROP TABLE IF EXISTS mde_medicalimage;
-DROP TABLE IF EXISTS mde_device;
-DROP TABLE IF EXISTS mde_device2medicalimage;
-DROP TABLE IF EXISTS mde_institution;
-DROP TABLE IF EXISTS mde_institution2medicalimage;
-DROP TABLE IF EXISTS mde_project;
-DROP TABLE IF EXISTS mde_project2medicalimage;
-DROP TABLE IF EXISTS mde_color;
-DROP TABLE IF EXISTS mde_document;
-DROP TABLE IF EXISTS mde_keyword;
-DROP TABLE IF EXISTS mde_picture;
-DROP TABLE IF EXISTS mde_subject;
-DROP TABLE IF EXISTS mde_subject2medicalimage;
-DROP TABLE IF EXISTS thumbnail;
-DROP TABLE IF EXISTS mderesource2thumbnail;
-DROP TABLE IF EXISTS bitstream2thumbnail;
-DROP TABLE IF EXISTS bitstream2resource;
-DROP TABLE IF EXISTS workflow;
-DROP TABLE IF EXISTS workflow_history;
-DROP TABLE IF EXISTS workflow_history_step;
-DROP TABLE IF EXISTS workflow_step;
-DROP TABLE IF EXISTS workflow_step2field;
-DROP TABLE IF EXISTS workflow_dependency;
-DROP TABLE IF EXISTS workflow_field;
-DROP TABLE IF EXISTS community2collection_main;
-DROP TABLE IF EXISTS community2community_main;
-DROP TABLE IF EXISTS filecache;
-DROP TABLE IF EXISTS filecache_statistics;
-DROP TABLE IF EXISTS filecache_statistics_details;
-DROP TABLE IF EXISTS item2item;
-
--- Delete all old views if they exist
--- This text is a result of the query:
--- SELECT 'DROP VIEW IF EXISTS ' || name || ';' FROM sqlite_master WHERE type='view' AND name NOT LIKE 'sqlite_%';
-DROP VIEW IF EXISTS collectionitemsbyauthor;
-DROP VIEW IF EXISTS collectionitemsbydate;
-DROP VIEW IF EXISTS collectionitemsbydateaccession;
-DROP VIEW IF EXISTS collectionitemsbysubject;
-DROP VIEW IF EXISTS collectionitemsbytitle;
-DROP VIEW IF EXISTS community2item;
-DROP VIEW IF EXISTS communityitemsbyauthor;
-DROP VIEW IF EXISTS communityitemsbydate;
-DROP VIEW IF EXISTS communityitemsbydateaccession;
-DROP VIEW IF EXISTS communityitemsbysubject;
-DROP VIEW IF EXISTS communityitemsbytitle;
-DROP VIEW IF EXISTS dcvalue;
 
 CREATE TABLE auth_profile (
   profile_name character varying(64) PRIMARY KEY,
@@ -144,18 +25,12 @@ CREATE TABLE app_settings (
 INSERT INTO app_settings (key, value) VALUES ('refresh_setting', '0');
 INSERT INTO app_settings (key, value) VALUES ('refresh_interval', '5');
 
---
--- Name: bitstream; Type: TABLE; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE TABLE version (
-    name text,
+    name character varying(64),
     major integer,
     minor integer,
     patch integer
 );
-
-INSERT INTO version(name,major,minor,patch) VALUES ('midas','2','5','0');
 
 CREATE TABLE bitstream (
     bitstream_id integer PRIMARY KEY AUTOINCREMENT,
@@ -175,10 +50,6 @@ CREATE TABLE bitstream (
     sequence_id integer
 );
 
---
--- Name: collection; Type: TABLE; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE TABLE collection (
     collection_id integer PRIMARY KEY AUTOINCREMENT,
     name character varying(128),
@@ -197,19 +68,11 @@ CREATE TABLE collection (
     admin integer
 );
 
---
--- Name: collection2item; Type: TABLE; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE TABLE collection2item (
     id integer PRIMARY KEY AUTOINCREMENT,
     collection_id integer,
     item_id integer
 );
-
---
--- Name: community; Type: TABLE; Schema: public; Owner: midas; Tablespace:
---
 
 CREATE TABLE community (
     community_id integer PRIMARY KEY AUTOINCREMENT,
@@ -221,29 +84,17 @@ CREATE TABLE community (
     side_bar_text text
 );
 
---
--- Name: community2collection; Type: TABLE; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE TABLE community2collection (
     id integer PRIMARY KEY AUTOINCREMENT,
     community_id integer,
     collection_id integer
 );
 
---
--- Name: community2community; Type: TABLE; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE TABLE community2community (
     id integer PRIMARY KEY AUTOINCREMENT,
     parent_comm_id integer,
     child_comm_id integer
 );
-
---
--- Name: metadatafieldregistry; Type: TABLE; Schema: public; Owner: midas; Tablespace:
---
 
 CREATE TABLE metadatafieldregistry (
     metadata_field_id integer PRIMARY KEY AUTOINCREMENT,
@@ -252,10 +103,6 @@ CREATE TABLE metadatafieldregistry (
     qualifier character varying(64),
     scope_note text
 );
-
---
--- Name: metadatavalue; Type: TABLE; Schema: public; Owner: midas; Tablespace:
---
 
 CREATE TABLE metadatavalue (
     metadata_value_id integer PRIMARY KEY AUTOINCREMENT,
@@ -297,6 +144,7 @@ CREATE TABLE item2bitstream (
     bitstream_id integer
 );
 
+-- List of item metadata fields copied from MIDAS server
 INSERT INTO metadatafieldregistry VALUES (1, 1, 'contributor', NULL, 'A person, organization, or service responsible for the content of the resource.  Catch-all for unspecified contributors.');
 INSERT INTO metadatafieldregistry VALUES (2, 1, 'contributor', 'advisor', 'Use primarily for thesis advisor.');
 INSERT INTO metadatafieldregistry VALUES (3, 1, 'contributor', 'author', NULL);
@@ -380,38 +228,9 @@ INSERT INTO metadatafieldregistry VALUES (73, 1, 'description', 'pagesextent', '
 INSERT INTO metadatafieldregistry VALUES (74, 1, 'identifier', 'doi', 'Digital Object Identifier');
 INSERT INTO metadatafieldregistry VALUES (75, 1, 'identifier', 'pubmed', 'PubMed id');
 
---
--- Name: collection2item_collection_idx; Type: INDEX; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE INDEX collection2item_collection_idx ON collection2item (collection_id);
-
---
--- Name: collection2item_item_id_idx; Type: INDEX; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE INDEX collection2item_item_id_idx ON collection2item (item_id);
-
---
--- Name: community2collection_collection_id_idx; Type: INDEX; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE INDEX community2collection_collection_id_idx ON community2collection (collection_id);
-
---
--- Name: community2collection_community_id_idx; Type: INDEX; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE INDEX community2collection_community_id_idx ON community2collection (community_id);
-
---
--- Name: metadatavalue_item_idx; Type: INDEX; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE INDEX metadatavalue_item_idx ON metadatavalue (item_id);
-
---
--- Name: metadatavalue_item_idx2; Type: INDEX; Schema: public; Owner: midas; Tablespace:
---
-
 CREATE INDEX metadatavalue_item_idx2 ON metadatavalue (item_id, metadata_field_id);

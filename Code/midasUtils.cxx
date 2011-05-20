@@ -11,6 +11,7 @@
 
 #include "midasUtils.h"
 #include "mdsSQLiteDatabase.h"
+#include "mdsUpgradeHandler.h"
 #include "mwsWebAPI.h"
 #include "mwsRestXMLParser.h"
 #include "mdoObject.h"
@@ -18,8 +19,9 @@
 #include "mdoCollection.h"
 #include "mdoCommunity.h"
 #include "mdoItem.h"
+#include "mdoVersion.h"
 #include "midasStandardIncludes.h"
-#include "midasTableDefs.h"
+#include "mdsTableDefs.h"
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -182,19 +184,50 @@ std::string midasUtils::FormatTimeString(double seconds)
 }
 
 //-------------------------------------------------------------------
-bool midasUtils::IsDatabaseValid(std::string path)
+bool midasUtils::IsDatabaseValid(std::string path,
+                                 mds::UpgradeHandler* handler)
 {
+  bool ok = true;
   if(!kwsys::SystemTools::FileExists(path.c_str(), true))
     {
     return false;
     }
 
   mds::SQLiteDatabase db;
-  bool result = db.Open(path.c_str());
-  result &= db.ExecuteQuery("SELECT * FROM dirty_resource");
-  while(db.GetNextRow());
-  result &= db.Close();
-  return result;
+  if(!db.Open(path.c_str()))
+    {
+    return false;
+    }
+  if(!db.ExecuteQuery("SELECT major, minor, patch FROM version "
+                      "WHERE name='MIDASClient'"))
+    {
+    db.Close();
+    return false;
+    }
+  mdo::Version dbVersion;
+  while(db.GetNextRow())
+    {
+    dbVersion.Major = db.GetValueAsInt(0);
+    dbVersion.Minor = db.GetValueAsInt(1);
+    dbVersion.Patch = db.GetValueAsInt(2);
+    }
+  mdo::Version productVersion(MIDAS_CLIENT_VERSION_MAJOR,
+                              MIDAS_CLIENT_VERSION_MINOR,
+                              MIDAS_CLIENT_VERSION_PATCH);
+
+  // we should also do a check on the most recent addition to the table
+  // (whenever we add one).  If the field isn't there, we should run
+  // the upgrade.
+  if(productVersion > dbVersion)
+    {
+    ok &= handler->Upgrade(path, dbVersion, productVersion);
+    }
+
+  if(!db.Close())
+    {
+    return false;
+    }
+  return ok;
 }
 
 //-------------------------------------------------------------------
@@ -205,9 +238,9 @@ bool midasUtils::CreateNewDatabase(std::string path)
     {
     return false;
     }
-  
+
   std::vector<std::string> lines;
-  kwsys::SystemTools::Split(mds::getTableDefs(), lines, ';');
+  kwsys::SystemTools::Split(mdsUpgrade::getTableDefs(), lines, ';');
 
   bool success = true;
   for(std::vector<std::string>::iterator i = lines.begin();

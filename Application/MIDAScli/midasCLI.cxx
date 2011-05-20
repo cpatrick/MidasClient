@@ -146,6 +146,20 @@ int midasCLI::Perform(std::vector<std::string> args)
       {
       i++;
       this->Database = args[i];
+
+      if(!kwsys::SystemTools::FileExists(this->Database.c_str(), true))
+        {
+        this->Log->Message("Creating new database...\n");
+        if(midasUtils::CreateNewDatabase(this->Database))
+          {
+          this->Log->Message("Succesfully created database.\n");
+          }
+        else
+          {
+          this->Log->Error("Failed to create new database.\n");
+          return -1;
+          }
+        }
       }
     else if(args[i] == "--profile" && i + 1 < args.size())
       {

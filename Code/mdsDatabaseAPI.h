@@ -79,6 +79,7 @@ class DatabaseAPI : public midasLogAware
   friend class Collection;
   friend class Item;
   friend class Bitstream;
+  friend class Version;
 public:
   DatabaseAPI(const std::string& path = "");
   ~DatabaseAPI();
