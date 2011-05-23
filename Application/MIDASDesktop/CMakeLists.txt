@@ -252,9 +252,13 @@ if (DEFINED QT_QMAKE_EXECUTABLE)
     set (QT_INSTALL_LIB_DIR bin)
     foreach(qtlib ${QTLIBLIST})
       if(APPLE)
-        # We statically link on our mac installer currently.
-        #INSTALL(DIRECTORY "${QT_${qtlib}_LIBRARY_RELEASE}" 
-          #DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime)
+        if(IS_DIRECTORY "${QT_${qtlib}_LIBRARY_RELEASE}")
+          install(DIRECTORY "${QT_${qtlib}_LIBRARY_RELEASE}" 
+            DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime)
+        else()
+          install(FILES "${QT_${qtlib}_LIBRARY_RELEASE}" 
+            DESTINATION ${QT_INSTALL_LIB_DIR} COMPONENT Runtime)
+        endif()
       elseif(UNIX)
         # Install .so and versioned .so.x.y
         get_filename_component(QT_LIB_DIR_tmp ${QT_${qtlib}_LIBRARY_RELEASE} PATH)
