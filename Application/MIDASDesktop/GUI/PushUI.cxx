@@ -68,7 +68,7 @@ void PushUI::accept()
 
   m_Synch->SetOperation(midasSynchronizer::OPERATION_PUSH);
 
-  if(m_Object)
+  if(m_Object && this->selectedRadioButton->isChecked())
     {
     std::stringstream text;
     text << m_Object->GetId();
