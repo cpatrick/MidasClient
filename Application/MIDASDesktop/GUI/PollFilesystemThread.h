@@ -30,6 +30,7 @@ public slots:
 
 signals:
   void needToRefresh();
+  void paused();
 
 private:
   bool m_Run;

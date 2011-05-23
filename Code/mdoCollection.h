@@ -62,6 +62,7 @@ public:
   void AddItem(Item* item) {m_Items.push_back(item);}
   
   std::string GetTypeName() { return "Collection"; }
+  int GetResourceType() { return midasResourceType::COLLECTION; }
 
   Community* GetParentCommunity() { return m_ParentCommunity; }
   void SetParentCommunity(Community* comm) { m_ParentCommunity = comm; }

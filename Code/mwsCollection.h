@@ -37,7 +37,6 @@ public:
   bool FetchParent();
   bool Commit();
   bool Delete();
-  bool Create();
 
   void SetObject(mdo::Object* object);
 protected:

@@ -2,11 +2,7 @@
 #define __MidasBitstreamTreeItem_H
 
 #include "MidasTreeItem.h"
-
-namespace mdo
-{
-  class Bitstream;
-}
+#include "mdoBitstream.h"
 
 class MidasBitstreamTreeItem : public MidasTreeItem
 {
@@ -26,6 +22,7 @@ public:
 
   void setBitstream(mdo::Bitstream* bitstream) {m_Bitstream = bitstream;}
   mdo::Bitstream* getBitstream() const {return m_Bitstream;}
+  mdo::Object* getObject() const { return m_Bitstream; }
 
   virtual void populate(QModelIndex parent);
   

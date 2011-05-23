@@ -3,8 +3,6 @@
 
 #include "MidasTreeView.h"
 #include <QMutex>
-#include <QPoint>
-#include <string>
 
 class MidasTreeModelServer;
 class ExpandTreeThread;
@@ -23,9 +21,6 @@ public:
   MidasTreeViewServer(QWidget * parent = 0); 
   ~MidasTreeViewServer();
 
-  void mousePressEvent(QMouseEvent* event);
-  void mouseMoveEvent(QMouseEvent* event);
-
 public slots:
   void selectByUuid(std::string uuid, bool select = false);
   void alertFetchedMore();
@@ -43,9 +38,11 @@ signals:
 protected:
   void fetchItemData(MidasTreeItem* item);
 
+  void dragMoveEvent(QDragMoveEvent* event);
+  void dropEvent(QDropEvent* event);
+
   ExpandTreeThread*     m_ExpandTreeThread;
   QMutex                m_Mutex;
-  QPoint                m_DragStart;
  };
 
 #endif //__MidasTreeViewServer_H

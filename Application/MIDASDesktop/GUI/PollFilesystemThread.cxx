@@ -16,6 +16,7 @@ void PollFilesystemThread::Pause()
 {
   m_Run = false;
   while(m_DatabaseLocked) {}
+  emit paused();
 }
 
 void PollFilesystemThread::Resume()

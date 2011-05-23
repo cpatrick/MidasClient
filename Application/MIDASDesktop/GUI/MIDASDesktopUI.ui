@@ -765,7 +765,7 @@
      <addaction name="separator"/>
      <addaction name="actionAdd_bitstream"/>
      <addaction name="separator"/>
-     <addaction name="actionPush_Resources"/>
+     <addaction name="actionPush_Resource"/>
      <addaction name="actionSwap_with_MD5_reference"/>
      <addaction name="actionDelete_Resource"/>
      <addaction name="separator"/>
@@ -926,7 +926,7 @@
     <string>Add a new bitstream under the current item</string>
    </property>
   </action>
-  <action name="actionPush_Resources">
+  <action name="actionPush_Resource">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -935,10 +935,10 @@
      <normaloff>:/icons/nav_left_green.png</normaloff>:/icons/nav_left_green.png</iconset>
    </property>
    <property name="text">
-    <string>Push Resources</string>
+    <string>Push Resource...</string>
    </property>
    <property name="statusTip">
-    <string>Upload added resources to the server</string>
+    <string>Push resource(s) to the server</string>
    </property>
   </action>
   <action name="actionPull_Resource">

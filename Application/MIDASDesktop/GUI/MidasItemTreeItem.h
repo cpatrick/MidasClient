@@ -2,11 +2,7 @@
 #define __MidasItemTreeItem_H
 
 #include "MidasTreeItem.h"
-
-namespace mdo
-{
-  class Item;
-}
+#include "mdoItem.h"
 
 class MidasItemTreeItem : public MidasTreeItem
 {
@@ -25,6 +21,7 @@ public:
 
   void setItem(mdo::Item* item) {m_Item = item;}
   mdo::Item* getItem() const {return m_Item;}
+  mdo::Object* getObject() const { return m_Item; }
 
 private:
 
