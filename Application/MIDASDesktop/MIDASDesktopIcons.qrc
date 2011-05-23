@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/">
+    <file>icons/plus.png</file>
+    <file>icons/minus.png</file>
     <file>icons/delete_small.png</file>
     <file>icons/refresh.png</file>
     <file>icons/gpl_folder_red.png</file>

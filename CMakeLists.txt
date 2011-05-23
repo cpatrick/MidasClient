@@ -52,7 +52,7 @@ ENDIF("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" MATCHES "^2\\.4$")
 #-----------------------------------------------------------------------------
 # MIDAS version number.  An even minor number corresponds to releases.
 SET(MIDASCPP_VERSION_MAJOR "1")
-SET(MIDASCPP_VERSION_MINOR "7")
+SET(MIDASCPP_VERSION_MINOR "8")
 SET(MIDASCPP_VERSION_PATCH "0")
 
 SET(MIDASCPP_VERSION_STRING "${MIDASCPP_VERSION_MAJOR}.${MIDASCPP_VERSION_MINOR}.${MIDASCPP_VERSION_PATCH}")

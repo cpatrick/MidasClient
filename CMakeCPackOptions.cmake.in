@@ -5,10 +5,10 @@
 if(CPACK_GENERATOR MATCHES "NSIS")
   # set the install/unistall icon used for the installer itself
   # There is a bug in NSI that does not handle full unix paths properly. 
-  SET(CPACK_NSIS_MUI_ICON "@MIDASCPP_SOURCE_DIR@/Application/MIDASDesktop/icons\\MIDAS_Desktop_Icon.ico")
-  SET(CPACK_NSIS_MUI_UNIICON "@MIDASCPP_SOURCE_DIR@/Application/MIDASDesktop/icons\\MIDAS_Desktop_Icon.ico")
+  SET(CPACK_NSIS_MUI_ICON "@MIDASCPP_SOURCE_DIR@/Application/MIDASDesktop/icons\\MIDAS_Desktop_LargeIcon.ico")
+  SET(CPACK_NSIS_MUI_UNIICON "@MIDASCPP_SOURCE_DIR@/Application/MIDASDesktop/icons\\MIDAS_Desktop_LargeIcon.ico")
   # set the package header icon for MUI
-  SET(CPACK_PACKAGE_ICON "@MIDASCPP_SOURCE_DIR@/Application/MIDASDesktop/icons\\MIDAS_Desktop_Icon.ico")
+  SET(CPACK_PACKAGE_ICON "@MIDASCPP_SOURCE_DIR@/Application/MIDASDesktop/icons\\MIDAS_Desktop_LargeIcon.ico")
   # tell cpack to create links to the doc files
   #SET(CPACK_NSIS_MENU_LINKS
   #  "doc/cmake-@CMake_VERSION_MAJOR@.@CMake_VERSION_MINOR@/cmake-gui.html" "cmake-gui Help"
