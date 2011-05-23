@@ -94,9 +94,6 @@ add_custom_target (
 )
 
 #-----------------------------------------------------------------------------
-install (FILES ${midas_db} DESTINATION "." COMPONENT Runtime)
-
-#-----------------------------------------------------------------------------
 #
 add_library(MIDAS ${MIDASRest_SRCS} ${MIDASSynch_SRCS})
 add_dependencies(MIDAS reconfigure_tabledefs)
