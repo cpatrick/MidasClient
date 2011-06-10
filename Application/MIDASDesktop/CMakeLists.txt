@@ -1,159 +1,39 @@
 project(MIDASDesktop)
 cmake_minimum_required(VERSION 2.6)
 
-include_directories(
-  "${MIDASCPP_BINARY_DIR}/Code"
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
-  GUI
-  icons
-  MIDAScpp
-  utils
-)
-
-subdirs(utils)
+find_package(Qt4 REQUIRED)
 
 set(MIDASDesktopUI_SRCS
   GUI/MIDASDesktopUI.cxx
-  GUI/SignInUI.cxx
-  GUI/SignInThread.cxx
-  GUI/CreateMidasResourceUI.cxx
-  GUI/CreateProfileUI.cxx
-  GUI/DeleteResourceUI.cxx
-  GUI/AboutUI.cxx
-  GUI/PreferencesUI.cxx
-  GUI/PullUI.cxx
-  GUI/PushUI.cxx
-  GUI/GUIAgreement.cxx
-  GUI/GUIFileOverwriteHandler.cxx
-  GUI/GUIMirrorHandler.cxx
-  GUI/GUIUpgradeHandler.cxx
   GUI/GUILogger.cxx
-  GUI/GUIProgress.cxx
-  GUI/MidasTreeView.cxx
-  GUI/MidasTreeViewServer.cxx
-  GUI/MidasTreeViewClient.cxx
-  GUI/TreeViewUpdateHandler.cxx
-  GUI/MidasTreeItem.cxx
-  GUI/MidasTreeModel.cxx
-  GUI/MidasTreeModelServer.cxx
-  GUI/MidasTreeModelClient.cxx
-  GUI/MidasCommunityTreeItem.cxx
-  GUI/MidasCollectionTreeItem.cxx
-  GUI/MidasItemTreeItem.cxx
-  GUI/MidasBitstreamTreeItem.cxx
-  GUI/MidasApplication.cxx
-  GUI/MidasResourceDescTable.cxx
-  GUI/MidasSearchResultList.cxx
-  GUI/MirrorPickerUI.cxx
-  GUI/ExpandTreeThread.cxx
-  GUI/UpdateTreeViewThread.cxx
-  GUI/PollFilesystemThread.cxx
-  GUI/AddBitstreamsThread.cxx
-  GUI/DeleteThread.cxx
-  GUI/SearchThread.cxx
-  GUI/UnifyTreeThread.cxx
-  GUI/ResourceEdit.cxx
-  GUI/ButtonDelegate.cxx
-  GUI/ButtonLineEdit.cxx
-  GUI/AddAuthorUI.cxx
-  GUI/AddKeywordUI.cxx
-  GUI/AgreementUI.cxx
-  GUI/UpgradeUI.cxx
-  GUI/FileOverwriteUI.cxx
-  GUI/TextEditDelegate.cxx
 )
 
 set(MIDASDesktopUI_SRCS ${MIDASDesktopUI_SRCS} MIDASDesktop.rc)
 
 set(MIDASDesktopUI_UI_SRCS
   GUI/MIDASDesktopUI.ui
-  GUI/CreateMidasResourceUI.ui
-  GUI/CreateProfileUI.ui
-  GUI/DeleteResourceUI.ui
-  GUI/SignInUI.ui
-  GUI/AboutUI.ui
-  GUI/PullUI.ui
-  GUI/PushUI.ui
-  GUI/PreferencesUI.ui
-  GUI/AddAuthorUI.ui
-  GUI/AddKeywordUI.ui
-  GUI/AgreementUI.ui
-  GUI/UpgradeUI.ui
-  GUI/FileOverwriteUI.ui
-  GUI/MirrorPickerUI.ui
 )
 
 set(MIDASDesktopUI_RCCS MIDASDesktopIcons.qrc)
 
 set(MIDASDesktopUI_MOC_SRCS
   GUI/MIDASDesktopUI.h 
-  GUI/CreateMidasResourceUI.h
-  GUI/CreateProfileUI.h
-  GUI/DeleteResourceUI.h
-  GUI/PullUI.h
-  GUI/PushUI.h
-  GUI/SignInUI.h
-  GUI/SignInThread.h
-  GUI/SearchThread.h
-  GUI/UpdateTreeViewThread.h
-  GUI/PollFilesystemThread.h
-  GUI/AddBitstreamsThread.h
-  GUI/AboutUI.h
-  GUI/PreferencesUI.h
-  GUI/MidasTreeView.h
-  GUI/MidasTreeViewServer.h
-  GUI/MidasTreeViewClient.h
-  GUI/MidasTreeItem.h
-  GUI/MidasTreeModel.h
-  GUI/MidasTreeModelServer.h
-  GUI/MidasTreeModelClient.h
-  GUI/MidasCommunityTreeItem.h
-  GUI/MidasCollectionTreeItem.h
-  GUI/MidasItemTreeItem.h
-  GUI/MidasBitstreamTreeItem.h
-  GUI/MidasApplication.h
-  GUI/MidasResourceDescTable.h
-  GUI/MidasSearchResultList.h
-  GUI/ExpandTreeThread.h
-  GUI/DeleteThread.h
-  GUI/SynchronizerThread.h
-  GUI/UnifyTreeThread.h
-  GUI/GUIAgreement.h
-  GUI/GUIFileOverwriteHandler.h
-  GUI/GUIMirrorHandler.h
-  GUI/GUIProgress.h
   GUI/GUILogger.h
-  GUI/GUIUpgradeHandler.h
-  GUI/ResourceEdit.h
-  GUI/TextEditDelegate.h
-  GUI/ButtonDelegate.h
-  GUI/ButtonLineEdit.h
-  GUI/ButtonEditUI.h
-  GUI/AddAuthorUI.h
-  GUI/AddKeywordUI.h
-  GUI/AgreementUI.h
-  GUI/UpgradeUI.h
-  GUI/FileOverwriteUI.h
-  GUI/TreeViewUpdateHandler.h
-  GUI/MirrorPickerUI.h
 )
 
 QT4_WRAP_CPP(MIDASDesktopUI_SRCS ${MIDASDesktopUI_MOC_SRCS})
 QT4_WRAP_UI(MIDASDesktopUI_UI_CXX ${MIDASDesktopUI_UI_SRCS})
 QT4_ADD_RESOURCES(MIDASDesktopUI_SRCS ${MIDASDesktopUI_RCCS})
 
-add_library(MIDASDesktopLib ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX})
-
 # MIDASDesktop Executable
 if(WIN32)
-  add_executable(MIDASDesktop WIN32 main.cxx MIDASDesktop.rc)
+  add_executable(MIDASDesktop WIN32 ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX} main.cxx MIDASDesktop.rc)
 else(WIN32)
-  add_executable(MIDASDesktop main.cxx)
+  add_executable(MIDASDesktop ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX} main.cxx)
 endif(WIN32)
 
 if(WIN32)
-  target_link_libraries (MIDASDesktopLib
+  target_link_libraries (MIDASDesktop
     imm32.lib
     winmm.lib
     Snmpapi.lib
@@ -173,53 +53,48 @@ if(UNIX)
   find_library(CRYPT_LIBRARY crypt)
 
   if(NOT APPLE)
-    target_link_libraries(MIDASDesktopLib ${X11_LIBRARIES})
+    target_link_libraries(MIDASDesktop ${X11_LIBRARIES})
     
     if(XFT_LIBRARY)
-      target_link_libraries(MIDASDesktopLib ${XFT_LIBRARY})
+      target_link_libraries(MIDASDesktop ${XFT_LIBRARY})
     endif(XFT_LIBRARY)
     
     if(GLIB_LIBRARY)
-      target_link_libraries(MIDASDesktopLib ${GLIB_LIBRARY})
+      target_link_libraries(MIDASDesktop ${GLIB_LIBRARY})
     endif(GLIB_LIBRARY)
     
     if(GTHREAD_LIBRARY)
-      target_link_libraries(MIDASDesktopLib ${GTHREAD_LIBRARY})
+      target_link_libraries(MIDASDesktop ${GTHREAD_LIBRARY})
     endif(GTHREAD_LIBRARY)
 
     if(XT_LIBRARY)
-      target_link_libraries(MIDASDesktopLib ${XT_LIBRARY})
+      target_link_libraries(MIDASDesktop ${XT_LIBRARY})
     endif(XT_LIBRARY)
 
     if(XI_LIBRARY)
-      target_link_libraries(MIDASDesktopLib ${XI_LIBRARY})
+      target_link_libraries(MIDASDesktop ${XI_LIBRARY})
     endif(XI_LIBRARY)
     
     if(XINERAMA_LIBRARY)
-      target_link_libraries(MIDASDesktopLib ${XINERAMA_LIBRARY})
+      target_link_libraries(MIDASDesktop ${XINERAMA_LIBRARY})
     endif(XINERAMA_LIBRARY)
 
     if(XRANDR_LIBRARY)
-      target_link_libraries(MIDASDesktopLib ${XRANDR_LIBRARY})
+      target_link_libraries(MIDASDesktop ${XRANDR_LIBRARY})
     endif(XRANDR_LIBRARY)
     
     if(XCURSOR_LIBRARY)
-      target_link_libraries(MIDASDesktopLib ${XCURSOR_LIBRARY})
+      target_link_libraries(MIDASDesktop ${XCURSOR_LIBRARY})
     endif(XCURSOR_LIBRARY)
       
     if(CRYPT_LIBRARY)
-      target_link_libraries(MIDASDesktopLib ${CRYPT_LIBRARY})
+      target_link_libraries(MIDASDesktop ${CRYPT_LIBRARY})
     endif(CRYPT_LIBRARY)
   endif(NOT APPLE)
 endif(UNIX)
 
-target_link_libraries(MIDASDesktopLib
-  MIDAS
-  MIDASDesktopUtils
-  kwsys
-  ${QT_QTCORE_LIBRARY}
-  ${QT_QTGUI_LIBRARY}
-  ${QT_QTMAIN_LIBRARY}
+target_link_libraries(MIDASDesktop
+  CTKDataManagementMIDASClientWidgets
 )
 
 if ( APPLE ) 
@@ -228,7 +103,6 @@ if ( APPLE )
     find_library ( APLICATIONSERVICES_LIBRARY ApplicationServices )
     find_library ( APPKIT_LIBRARY AppKit )
     target_link_libraries(MIDASDesktop
-      MIDASDesktopLib
       ${APPKIT_LIBRARY}
       ${CARBON_LIBRARY}
       ${APPLICATIONSERVICES_LIBRARY}
@@ -237,8 +111,6 @@ if ( APPLE )
         "/Library/Frameworks/QtGui.framework/Versions/Current/Resources/qt_menu.nib"
         CACHE PATH "Location of the qt_menu.nib resource to be packaged for install")
     install(DIRECTORY ${QT_QTGUI_MENU_NIB} DESTINATION bin COMPONENT Runtime)
-else ( APPLE )
-  target_link_libraries(MIDASDesktop MIDASDesktopLib)
 endif( APPLE )
 
 install(TARGETS MIDASDesktop DESTINATION bin COMPONENT Runtime)
