@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the License for more information.
 #=============================================================================
-set(CTEST_PROJECT_NAME "MIDAScpp")
+set(CTEST_PROJECT_NAME "MIDASClient")
 set(CTEST_NIGHTLY_START_TIME "21:00:00 EDT")
 
 set(CTEST_DROP_METHOD "http")
