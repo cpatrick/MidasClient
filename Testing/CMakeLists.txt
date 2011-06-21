@@ -1,4 +1,4 @@
-if(BUILD_MIDASClient_TESTING)
+if(BUILD_TESTING)
   set(midascli_command "${MIDASClient_BINARY_DIR}/bin/MIDAScli")
   set(sqlite3_command "${MIDASClient_BINARY_DIR}/bin/sqlite3")
   set(dashboard_midas_server_url http://localhost/midas/api/rest CACHE STRING "The URL of the REST API for MIDAS testing")
@@ -131,4 +131,4 @@ if(BUILD_MIDASClient_TESTING)
   add_test(deleteNewDatabase "${CMAKE_COMMAND}" -E remove -f ${new_db})
   add_test(testCreateDatabaseRuntime ${midascli_command} --database ${new_db} clean)
 
-endif(BUILD_MIDASClient_TESTING)
+endif(BUILD_TESTING)
