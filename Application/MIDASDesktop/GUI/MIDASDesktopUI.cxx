@@ -5,6 +5,8 @@
 #include <QContextMenuEvent>
 #include <QHeaderView>
 #include <QFileDialog>
+#include <QFileInfo>
+#include <QString>
 #include <QTest>
 #include <QSettings>
 #include <QDesktopServices>
@@ -23,7 +25,7 @@
 #include "mdsBitstream.h"
 #include "mwsNewResources.h"
 #include "mwsSearch.h"
-#include "mwsRestXMLParser.h"
+#include "mwsRestResponseParser.h"
 #include "mdsCommunity.h"
 #include "mdsCollection.h"
 #include "mdsItem.h"
@@ -39,7 +41,6 @@
 #include "GUIProgress.h"
 #include "GUIMirrorHandler.h"
 #include "GUIUpgradeHandler.h"
-#include "Utils.h"
 #include "ResourceEdit.h"
 #include "ButtonDelegate.h"
 #include "TextEditDelegate.h"
@@ -80,7 +81,6 @@
 #include "MidasCollectionTreeItem.h"
 #include "MidasBitstreamTreeItem.h"
 #include "MidasItemTreeItem.h"
-#include "Logger.h"
 #include "MidasClientGlobal.h"
 #include "mwsWebAPI.h"
 #include "TreeViewUpdateHandler.h"
@@ -91,7 +91,7 @@
 MIDASDesktopUI::MIDASDesktopUI()
 {
   setupUi(this); // this sets up GUI
-  unsigned int currTime = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
+  unsigned int currTime = static_cast<unsigned int>(midasUtils::CurrentTime() * 1000);
   srand (currTime); //init random number generator
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
 
@@ -1298,9 +1298,9 @@ void MIDASDesktopUI::viewDirectory()
   mds::DatabaseAPI db;
   midasResourceRecord record = db.GetRecordByUuid(resource->getUuid());
 
+  QFileInfo fileInfo(record.Path.c_str());
   std::string path = record.Type == midasResourceType::BITSTREAM ?
-    kwsys::SystemTools::GetParentDirectory(record.Path.c_str())
-    : record.Path;
+    fileInfo.dir().path().toStdString() : record.Path;
 
   path = "file:" + path;
   QUrl url(path.c_str());
@@ -1333,10 +1333,10 @@ void MIDASDesktopUI::openBitstream()
 
 void MIDASDesktopUI::viewInBrowser()
 {
-  std::string baseUrl = mws::WebAPI::Instance()->GetServerUrl();
-  kwsys::SystemTools::ReplaceString(baseUrl, "/api/rest", "");
+  QString baseUrl = mws::WebAPI::Instance()->GetServerUrl();
+  baseUrl = baseUrl.replace("/api/rest", "");
   std::stringstream path;
-  path << baseUrl;
+  path << baseUrl.toStdString();
 
   MidasTreeItem* resource = const_cast<MidasTreeItem*>(
     treeViewServer->getSelectedMidasTreeItem());
@@ -1476,7 +1476,8 @@ void MIDASDesktopUI::createLocalDatabase()
     tr("Database Files (*.db)"), 0,
     QFileDialog::ShowDirsOnly).toStdString();
 
-  if(kwsys::SystemTools::FileExists(file.c_str()))
+  QFileInfo fileInfo(file.c_str());
+  if(fileInfo.exists())
     {
     std::stringstream text;
     text << "Error: " << file << " already exists.  Choose a new file name.";
@@ -1502,8 +1503,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     text << file << " is not a valid MIDAS SQLite database. Defaulting "
       " to midas.db.";
     GetLog()->Message(text.str());
-    std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory()
-      + "/midas.db";
+    std::string path = QDir::currentPath().toStdString() + "/midas.db";
     if(midasUtils::IsDatabaseValid(path, m_dbUpgradeHandler))
       {
       setLocalDatabase(path);
@@ -1627,7 +1627,7 @@ void MIDASDesktopUI::search()
   this->displayStatus(tr("Searching...")); 
   searchItemsListWidget->clear();
   std::vector<std::string> words;
-  kwutils::tokenize(searchQueryEdit->text().toStdString(), words);
+  midasUtils::Tokenize(searchQueryEdit->text().toStdString(), words);
 
   if(m_SearchThread)
     {
@@ -1782,7 +1782,7 @@ void MIDASDesktopUI::deleteServerResource(bool val)
 {
   const MidasTreeItem* resource = this->treeViewServer->getSelectedMidasTreeItem();
   int id = resource->getId();
-  std::string typeName = kwsys::SystemTools::LowerCase(midasUtils::GetTypeName(resource->getType()));
+  std::string typeName = QString(midasUtils::GetTypeName(resource->getType()).c_str()).toStdString();
 
   std::stringstream text;
   if(mws::WebAPI::Instance()->DeleteResource(typeName, id))

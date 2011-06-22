@@ -11,11 +11,6 @@
 #include "MidasClientGlobal.h"
 
 #include <iostream>
-#include <QDir>
-#include "MIDASDesktopUI.h"
-#include "Utils.h"
-#include "mwsRestAPI.h"
-#include "Logger.h"
 
 int main(int argc, char **argv)
 {

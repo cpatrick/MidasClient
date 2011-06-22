@@ -29,6 +29,8 @@
 #include "mdoItem.h"
 #include "mdoBitstream.h"
 
+#include <QDir>
+#include <QFileInfo>
 
 midasCLI::midasCLI()
 {
@@ -36,7 +38,7 @@ midasCLI::midasCLI()
   this->UseTempProfile = false;
   this->RootDir = "";
   this->Synchronizer = new midasSynchronizer();
-  this->Database = kwsys::SystemTools::GetCurrentWorkingDirectory() + "/midas.db";
+  this->Database = QDir::currentPath().toStdString() + "/midas.db";
   this->Synchronizer->SetProgressReporter(
     reinterpret_cast<midasProgressReporter*>(
     new midasDotProgressReporter(30)));
@@ -45,7 +47,7 @@ midasCLI::midasCLI()
   mds::DatabaseInfo::Instance()->SetLog(this->GetLog());
   mws::WebAPI::Instance()->SetLog(this->GetLog());
   mws::WebAPI::Instance()->SetAuthenticator(this->Synchronizer->GetAuthenticator());
-  unsigned int time = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
+  unsigned int time = static_cast<unsigned int>(midasUtils::CurrentTime() * 1000);
   srand (time); //init random number generator
 }
 
@@ -147,7 +149,8 @@ int midasCLI::Perform(std::vector<std::string> args)
       i++;
       this->Database = args[i];
 
-      if(!kwsys::SystemTools::FileExists(this->Database.c_str(), true))
+      QFileInfo fileInfo(this->Database.c_str());
+      if(!fileInfo.isFile())
         {
         this->Log->Message("Creating new database...\n");
         if(midasUtils::CreateNewDatabase(this->Database))
@@ -251,7 +254,8 @@ int midasCLI::RunSynchronizer()
   std::string oldRoot = "";
   if(this->RootDir != "")
     {
-    if(!kwsys::SystemTools::FileIsDirectory(this->RootDir.c_str()))
+    QFileInfo fileInfo(this->RootDir.c_str());
+    if(!fileInfo.isDir())
       {
       std::cerr << "Failed: \"" << this->RootDir << "\" does not refer to a "
         "valid directory." << std::endl;
@@ -556,13 +560,14 @@ int midasCLI::SetRootDir(std::vector<std::string> args)
     }
 
   std::string root_dir = args[0];
-  if(!kwsys::SystemTools::FileIsDirectory(root_dir.c_str()))
+  QFileInfo fileInfo(root_dir.c_str());
+  if(!fileInfo.isDir())
     {
     std::cerr << "Failed: \"" << root_dir << "\" does not refer to a valid "
       "directory." << std::endl;
     return -1;
     }
-  kwsys::SystemTools::ConvertToUnixSlashes(root_dir);
+  root_dir = fileInfo.absoluteFilePath().toStdString();
   mds::DatabaseAPI db;
   db.SetSetting(mds::DatabaseAPI::ROOT_DIR, root_dir);
 

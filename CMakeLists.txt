@@ -10,26 +10,16 @@ configure_file(${MIDASClient_SOURCE_DIR}/CTestCustom.cmake.in
   ${MIDASClient_BINARY_DIR}/CTestCustom.cmake @ONLY)
 enable_testing()
 
-include(ExternalProject)
+#-----------------------------------------------------------------------------
+# Superbuild Option - Enabled by default
+#
+OPTION(MIDASClient_SUPERBUILD "Build CTK and the projects it depends on via SuperBuild.cmake." ON)
+MARK_AS_ADVANCED(MIDASClient_SUPERBUILD)
 
-ExternalProject_Add(CTK
-      SOURCE_DIR "${MIDASClient_BINARY_DIR}/CTK"
-      BINARY_DIR CTK-build
-      PREFIX CTK-cmake
-      GIT_REPOSITORY "git://github.com/zachmullen/CTK.git"
-      GIT_TAG "origin/add-midascpp-library"
-      CMAKE_GENERATOR "${CMAKE_GENERATOR}"
-      INSTALL_COMMAND ""
-      CMAKE_ARGS
-        -DCTK_LIB_DataManagement/MIDASClient/Core:BOOL=ON
-        -DCTK_LIB_DataManagement/MIDASClient/Widgets:BOOL=ON
-        -DCTK_LIB_PluginFramework:BOOL=OFF
-        -DGIT_EXECUTABLE:FILEPATH=${GIT_EXECUTABLE}
-      DEPENDS
-      )
-
-#INCLUDE(${CMAKE_ROOT}/Modules/CMakeBackwardCompatibilityC.cmake)
-#INCLUDE(${CMAKE_ROOT}/Modules/CMakeBackwardCompatibilityCXX.cmake)
+if(MIDASClient_SUPERBUILD)
+  include("${CMAKE_CURRENT_SOURCE_DIR}/SuperBuild.cmake")
+  return()
+endif()
 
 add_subdirectory(Application)
 add_subdirectory(Testing)

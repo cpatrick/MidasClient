@@ -1,9 +1,24 @@
 project(MIDASDesktop)
 cmake_minimum_required(VERSION 2.6)
 
+include(${MIDASClient_BINARY_DIR}/../CTK-Build/CTK-Build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
+include(${MIDASClient_BINARY_DIR}/../CTK-Build/CTK-Build/Libs/DataManagement/MIDASClient/Widgets/CTKDataManagementMIDASClientWidgetsConfig.cmake)
+
+include_directories(
+  ${MIDASDesktop_SOURCE_DIR}
+  ${MIDASDesktop_SOURCE_DIR}/GUI
+  ${MIDASDesktop_BINARY_DIR}
+  ${CTKDataManagementMIDASClientCore_INCLUDE_DIRS}
+  ${CTKDataManagementMIDASClientWidgets_INCLUDE_DIRS})
+link_directories(
+  ${CTKDataManagementMIDASClientCore_LIBRARY_DIRS}
+  ${CTKDataManagementMIDASClientWidgets_LIBRARY_DIRS}
+)
+
 find_package(Qt4 REQUIRED)
 
 set(MIDASDesktopUI_SRCS
+  GUI/MidasApplication.cxx
   GUI/MIDASDesktopUI.cxx
   GUI/GUILogger.cxx
 )
@@ -17,6 +32,7 @@ set(MIDASDesktopUI_UI_SRCS
 set(MIDASDesktopUI_RCCS MIDASDesktopIcons.qrc)
 
 set(MIDASDesktopUI_MOC_SRCS
+  GUI/MidasApplication.h
   GUI/MIDASDesktopUI.h 
   GUI/GUILogger.h
 )
@@ -31,6 +47,12 @@ if(WIN32)
 else(WIN32)
   add_executable(MIDASDesktop ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX} main.cxx)
 endif(WIN32)
+
+target_link_libraries(MIDASDesktop
+  ${CTKDataManagementMIDASClientWidgets_LIBRARIES}
+  ${CTKDataManagementMIDASClientCore_LIBRARIES}
+  ${QT_QTMAIN_LIBRARY}
+)
 
 if(WIN32)
   target_link_libraries (MIDASDesktop
@@ -92,10 +114,6 @@ if(UNIX)
     endif(CRYPT_LIBRARY)
   endif(NOT APPLE)
 endif(UNIX)
-
-target_link_libraries(MIDASDesktop
-  CTKDataManagementMIDASClientWidgets
-)
 
 if ( APPLE ) 
     # Link with frameworks required for static Qt
