@@ -19,5 +19,3 @@ target_link_libraries(MIDAScli
 )
 
 install(TARGETS MIDAScli DESTINATION bin COMPONENT Runtime)
-
-set(midas_db "${CMAKE_BINARY_DIR}/midas.db")
