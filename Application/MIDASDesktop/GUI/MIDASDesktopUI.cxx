@@ -369,6 +369,12 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( Speed(double) ), this, SLOT( progressSpeedUpdate(double) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( EstimatedTime(double) ), this, SLOT( estimatedTimeUpdate(double) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgressTotal(double, double) ), this, SLOT( totalProgressUpdate(double, double) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMin(int) ), progressBar_current, SLOT( setMinimum(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMax(int) ), progressBar_current, SLOT( setMaximum(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressValue(int) ), progressBar_current, SLOT( setValue(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMin(int) ), progressBar, SLOT( setMinimum(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMax(int) ), progressBar, SLOT( setMaximum(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressValue(int) ), progressBar, SLOT( setValue(int) ) );
   // ------------- Progress bar ------------------------
 
   // ------------- Handle stored settings -------------
@@ -1975,6 +1981,8 @@ void MIDASDesktopUI::currentProgressUpdate(double current, double max)
   int percent = static_cast<int>(fraction * 100.0);
   progressBar_current->setMaximum(100);
   progressBar_current->setValue(percent);
+  progressBar->setMaximum(100);
+  progressBar->setValue(percent);
 }
 
 void MIDASDesktopUI::totalProgressUpdate(double current, double max)
