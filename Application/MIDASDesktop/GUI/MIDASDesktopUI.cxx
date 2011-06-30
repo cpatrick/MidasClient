@@ -717,6 +717,10 @@ void MIDASDesktopUI::cancel()
     {
     dlg_pullUI->getSynchronizerThread()->Cancel();
     }
+  if(dlg_pushUI->getSynchronizerThread())
+    {
+    dlg_pushUI->getSynchronizerThread()->Cancel();
+    }
   if(m_dirtyUuids.size())
     {
     m_cancel = true;
@@ -1662,7 +1666,7 @@ void MIDASDesktopUI::showSearchResults()
   this->resetStatus();
 }
 
-void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem * listItem)
+void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem* listItem)
 {
   this->treeViewServer->selectByUuid(listItem->getObject()->GetUuid(), true);
 }
