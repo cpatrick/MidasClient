@@ -14,10 +14,11 @@ ExternalProject_Add(CTK
     -DCTK_LIB_DataManagement/MIDASClient/Widgets:BOOL=ON
     -DCTK_LIB_PluginFramework:BOOL=OFF
     -DGIT_EXECUTABLE:FILEPATH=${GIT_EXECUTABLE}
+    -DGITCOMMAND:FILEPATH=${GIT_EXECUTABLE}
   DEPENDS
   )
 
-ExternalProject_Add(MIDASClient-Configure
+ExternalProject_Add(MIDASClient-configure
   DOWNLOAD_COMMAND ""
   CMAKE_GENERATOR "${CMAKE_GENERATOR}"
   CMAKE_ARGS
@@ -35,14 +36,14 @@ ExternalProject_Add(MIDASClient-Configure
     CTK
   )
 
-ExternalProject_Add(MIDASClient-Build
+ExternalProject_Add(MIDASClient-build
     DOWNLOAD_COMMAND ""
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
     SOURCE_DIR ${MIDASClient_SOURCE_DIR}
     BINARY_DIR MIDASClient-build
     INSTALL_COMMAND ""
     DEPENDS
-      "MIDASClient-Configure"
+      "MIDASClient-configure"
     )
 
 #-----------------------------------------------------------------------------
