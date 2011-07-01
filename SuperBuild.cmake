@@ -23,6 +23,10 @@ ExternalProject_Add(MIDASClient-Configure
   CMAKE_ARGS
     -DMIDASClient_SUPERBUILD:BOOL=OFF
     -DBUILD_TESTING:BOOL=${BUILD_TESTING}
+    -Ddashboard_midas_server_url=${dashboard_midas_server_url}
+    -Ddashboard_midas_api_key=${dashboard_midas_api_key}
+    -Ddashboard_midas_app_name=${dashboard_midas_app_name}
+    -Ddashboard_midas_email=${dashboard_midas_email}
   SOURCE_DIR ${MIDASClient_SOURCE_DIR}
   BINARY_DIR ${MIDASClient_BINARY_DIR}/MIDASClient-build
   BUILD_COMMAND ""

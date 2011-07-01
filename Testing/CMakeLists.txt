@@ -1,10 +1,6 @@
 if(BUILD_TESTING)
   set(midascli_command "${MIDASClient_BINARY_DIR}/bin/MIDAScli")
   set(sqlite3_command "${MIDASClient_BINARY_DIR}/bin/sqlite3")
-  set(dashboard_midas_server_url http://localhost/midas/api/rest CACHE STRING "The URL of the REST API for MIDAS testing")
-  set(dashboard_midas_api_key NO_KEY CACHE STRING "The MIDAS API key for test dashboard")
-  set(dashboard_midas_app_name test CACHE STRING "The MIDAS API name for test dashboard")
-  set(dashboard_midas_email admin@localhost CACHE STRING "The MIDAS login email for test dashboard")
   site_name(dashboard_top_level_community_name)
 
   set(sqlite_db "${MIDASClient_BINARY_DIR}/midas.db")
