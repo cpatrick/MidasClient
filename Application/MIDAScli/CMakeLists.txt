@@ -7,7 +7,7 @@ set(MIDAScli_SRCS
   midasCLI.h
 )
 
-include(${MIDASClient_BINARY_DIR}/../CTK-Build/CTK-Build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
+include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
 
 include_directories(${CTKDataManagementMIDASClientCore_INCLUDE_DIRS})
 link_directories(${CTKDataManagementMIDASClientCore_LIBRARY_DIRS})

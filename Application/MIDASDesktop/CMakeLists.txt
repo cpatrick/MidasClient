@@ -1,8 +1,8 @@
 project(MIDASDesktop)
 cmake_minimum_required(VERSION 2.6)
 
-include(${MIDASClient_BINARY_DIR}/../CTK-Build/CTK-Build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
-include(${MIDASClient_BINARY_DIR}/../CTK-Build/CTK-Build/Libs/DataManagement/MIDASClient/Widgets/CTKDataManagementMIDASClientWidgetsConfig.cmake)
+include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
+include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Widgets/CTKDataManagementMIDASClientWidgetsConfig.cmake)
 
 include_directories(
   ${MIDASDesktop_SOURCE_DIR}
