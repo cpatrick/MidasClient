@@ -44,6 +44,7 @@
 #include "ResourceEdit.h"
 #include "ButtonDelegate.h"
 #include "TextEditDelegate.h"
+#include "IncompleteTransferWidget.h"
 
 // ------------- Dialogs -------------
 #include "AboutUI.h"
@@ -144,6 +145,20 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_upgradeUI =              new UpgradeUI( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
+  // ------------- Incomplete transfer tab ----------------------
+  transferWidget = new IncompleteTransferWidget(this, m_synch);
+  incompleteTransfersTab->layout()->addWidget(transferWidget);
+
+  connect(transferWidget, SIGNAL( ActivateActions(bool) ),
+          this, SLOT( enableActions(bool) ) );
+  connect(transferWidget, SIGNAL( UploadComplete() ),
+          this, SLOT( updateServerTreeView() ) );
+  connect(transferWidget, SIGNAL( DownloadStarted() ),
+          this, SLOT( showProgressTab() ) );
+  connect(transferWidget, SIGNAL( UploadStarted() ),
+          this, SLOT( showProgressTab() ) );
+  // ------------- Incomplete transfer tab ----------------------
+
   // ------------- Auto Refresh Timer -----------
   refreshTimer = new QTimer(this);
   connect(refreshTimer, SIGNAL( timeout() ), treeViewServer, SLOT( Update() ) );
@@ -189,7 +204,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   cancelButton->setText("Cancel");
   cancelButton->setIcon(QPixmap(":icons/delete2.png"));
   cancelButton->setEnabled(false);
-  cancelButton->setMaximumHeight(21);
+  cancelButton->setMaximumHeight(25);
 
   statusBar()->addWidget( stateLabel, 1 );
   statusBar()->addWidget( progressBar, 1 );
@@ -323,7 +338,7 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
   connect( logAndSearchTabContainer, SIGNAL( currentChanged(int) ),
-    this, SLOT( clearLogTabIcon(int) ) );
+    this, SLOT( tabChanged(int) ) );
 
   // ------------- signal/slot connections -------------
 
@@ -501,6 +516,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     this->searchQueryEdit->setEnabled( value );
     this->refreshButton->setEnabled( value );
     this->showNewResourcesButton->setEnabled( value );
+    this->transferWidget->SetEnabled( value );
     actionSign_In->setText( value ? tr("Sign Out") : tr("Sign In") );
     }
 
@@ -715,6 +731,7 @@ void MIDASDesktopUI::enableClientActions(bool val)
 //Send cancel signals to any active push or pull operation
 void MIDASDesktopUI::cancel()
 {
+  m_synch->Cancel();
   if(m_SynchronizerThread)
     {
     m_SynchronizerThread->Cancel();
@@ -1812,18 +1829,28 @@ void MIDASDesktopUI::deleteServerResource(bool val)
 
 void MIDASDesktopUI::alertErrorInLog()
 {
-  if(this->logAndSearchTabContainer->currentIndex() != 2)
+  if(this->logAndSearchTabContainer->currentIndex() != MIDAS_TAB_LOG)
     {
-    this->logAndSearchTabContainer->setTabIcon(2, QPixmap(":icons/exclamation.png"));
+    this->logAndSearchTabContainer->setTabIcon(
+      MIDAS_TAB_LOG, QPixmap(":icons/exclamation.png"));
     }
 }
 
-void MIDASDesktopUI::clearLogTabIcon(int index)
+void MIDASDesktopUI::tabChanged(int index)
 {
-  if(index == 2)
+  if(index == MIDAS_TAB_LOG) //log tab
     {
     this->logAndSearchTabContainer->setTabIcon(2, QPixmap());
     }
+  else if(index == MIDAS_TAB_INCOMPLETE_TRANSFERS)
+    {
+    this->transferWidget->Populate();
+    }
+}
+
+void MIDASDesktopUI::showProgressTab()
+{
+  this->logAndSearchTabContainer->setCurrentIndex(MIDAS_TAB_PROGRESS);
 }
 
 void MIDASDesktopUI::pullRecursive(int type, int id)

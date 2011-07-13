@@ -1,6 +1,11 @@
 #ifndef __MIDASDesktopUI_H
 #define __MIDASDesktopUI_H
 
+#define MIDAS_TAB_SEARCH               0
+#define MIDAS_TAB_PROGRESS             1
+#define MIDAS_TAB_LOG                  2
+#define MIDAS_TAB_INCOMPLETE_TRANSFERS 3
+
 #include <QFlags>
 #include <QProgressBar>
 #include <QPushButton>
@@ -45,6 +50,7 @@ class DeleteThread;
 
 class QContextMenuEvent;
 class MidasTreeItem;
+class IncompleteTransferWidget;
 
 namespace mdo {
   class Object;
@@ -161,6 +167,7 @@ public slots:
   // -------------- progress bar ----------
   void setProgressIndeterminate();
   void setProgressEmpty();
+  void showProgressTab();
   // -------------- progress bar ----------
 
   // ------------- tray icon -------------
@@ -218,7 +225,7 @@ public slots:
   void logError(const QString& text);
   void logMessage(const QString& text);
   void alertErrorInLog();
-  void clearLogTabIcon(int index);
+  void tabChanged(int index);
   // ------------- log ----------------
 
   void newDBFinished();
@@ -248,6 +255,8 @@ private:
   FileOverwriteUI*            dlg_overwriteUI;
   MirrorPickerUI*             dlg_mirrorPickerUI;
   // ------------- UI Dialogs -------------
+
+  IncompleteTransferWidget*   transferWidget;
 
   // ------------- status bar -------------
   QLabel*                     stateLabel;
