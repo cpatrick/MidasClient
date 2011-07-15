@@ -1212,10 +1212,16 @@ void MIDASDesktopUI::displayServerResourceContextMenu( QContextMenuEvent* e )
   if ( index.isValid() )
     {
     MidasTreeItem* item = const_cast<MidasTreeItem*>(treeViewServer->getSelectedMidasTreeItem());
+
+    if(!item->resourceIsFetched())
+      {
+      return;
+      }
     menu.addAction( this->actionPull_Resource );
     menu.addAction( this->actionOpenURL );
     menu.addAction( this->actionDelete_server );
     treeViewServer->selectionModel()->select( index, QItemSelectionModel::SelectCurrent );
+
     if ( ( itemTreeItem = dynamic_cast<MidasItemTreeItem*>( item ) ) != NULL )
       {
       menu.addSeparator();
