@@ -96,6 +96,10 @@ void MidasTreeModelClient::addResource(mdo::Object* object)
     else
       {
       QModelIndex parentIndex = this->getIndexByUuid(comm->GetParentCommunity()->GetUuid());
+      if(!parentIndex.isValid())
+        {
+        return;
+        }
       MidasCommunityTreeItem* parent = dynamic_cast<MidasCommunityTreeItem*>(const_cast<MidasTreeItem*>(this->midasTreeItem(parentIndex)));
       communityItem = new MidasCommunityTreeItem(columnData, this, parent);
       this->beginInsertRows(parentIndex, parent->childCount(), parent->childCount());
@@ -114,6 +118,10 @@ void MidasTreeModelClient::addResource(mdo::Object* object)
     columnData << coll->GetName().c_str();
     
     QModelIndex parentIndex = this->getIndexByUuid(coll->GetParentCommunity()->GetUuid());
+    if(!parentIndex.isValid())
+      {
+      return;
+      }
     MidasCommunityTreeItem* parent = dynamic_cast<MidasCommunityTreeItem*>(const_cast<MidasTreeItem*>(this->midasTreeItem(parentIndex)));
     MidasCollectionTreeItem* collectionItem = new MidasCollectionTreeItem(columnData, this, parent);
     this->beginInsertRows(parentIndex, parent->childCount(), parent->childCount());
@@ -131,6 +139,10 @@ void MidasTreeModelClient::addResource(mdo::Object* object)
     columnData << item->GetTitle().c_str();
 
     QModelIndex parentIndex = this->getIndexByUuid(item->GetParentCollection()->GetUuid());
+    if(!parentIndex.isValid())
+      {
+      return;
+      }
     MidasCollectionTreeItem* parent = dynamic_cast<MidasCollectionTreeItem*>(const_cast<MidasTreeItem*>(this->midasTreeItem(parentIndex)));
     MidasItemTreeItem* itemTreeItem = new MidasItemTreeItem(columnData, this, parent);
     this->beginInsertRows(parentIndex, parent->childCount(), parent->childCount());
@@ -148,6 +160,10 @@ void MidasTreeModelClient::addResource(mdo::Object* object)
     columnData << bitstream->GetName().c_str();
 
     QModelIndex parentIndex = this->getIndexByUuid(bitstream->GetParentItem()->GetUuid());
+    if(!parentIndex.isValid())
+      {
+      return;
+      }
     MidasItemTreeItem* parent = dynamic_cast<MidasItemTreeItem*>(const_cast<MidasTreeItem*>(this->midasTreeItem(parentIndex)));
     MidasBitstreamTreeItem* bitstreamItem = new MidasBitstreamTreeItem(columnData, this, parent);
     bitstreamItem->setClientResource(true);
