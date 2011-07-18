@@ -5,6 +5,8 @@
 #include <QContextMenuEvent>
 #include <QHeaderView>
 #include <QFileDialog>
+#include <QFileInfo>
+#include <QString>
 #include <QTest>
 #include <QSettings>
 #include <QDesktopServices>
@@ -23,7 +25,7 @@
 #include "mdsBitstream.h"
 #include "mwsNewResources.h"
 #include "mwsSearch.h"
-#include "mwsRestXMLParser.h"
+#include "mwsRestResponseParser.h"
 #include "mdsCommunity.h"
 #include "mdsCollection.h"
 #include "mdsItem.h"
@@ -39,10 +41,10 @@
 #include "GUIProgress.h"
 #include "GUIMirrorHandler.h"
 #include "GUIUpgradeHandler.h"
-#include "Utils.h"
 #include "ResourceEdit.h"
 #include "ButtonDelegate.h"
 #include "TextEditDelegate.h"
+#include "IncompleteTransferWidget.h"
 
 // ------------- Dialogs -------------
 #include "AboutUI.h"
@@ -80,7 +82,6 @@
 #include "MidasCollectionTreeItem.h"
 #include "MidasBitstreamTreeItem.h"
 #include "MidasItemTreeItem.h"
-#include "Logger.h"
 #include "MidasClientGlobal.h"
 #include "mwsWebAPI.h"
 #include "TreeViewUpdateHandler.h"
@@ -91,7 +92,7 @@
 MIDASDesktopUI::MIDASDesktopUI()
 {
   setupUi(this); // this sets up GUI
-  unsigned int currTime = static_cast<unsigned int>(kwsys::SystemTools::GetTime() * 1000);
+  unsigned int currTime = static_cast<unsigned int>(midasUtils::CurrentTime() * 1000);
   srand (currTime); //init random number generator
   this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
 
@@ -144,6 +145,20 @@ MIDASDesktopUI::MIDASDesktopUI()
   dlg_upgradeUI =              new UpgradeUI( this );
   // ------------- Instantiate and setup UI dialogs -------------
 
+  // ------------- Incomplete transfer tab ----------------------
+  transferWidget = new IncompleteTransferWidget(this, m_synch);
+  incompleteTransfersTab->layout()->addWidget(transferWidget);
+
+  connect(transferWidget, SIGNAL( ActivateActions(bool) ),
+          this, SLOT( enableActions(bool) ) );
+  connect(transferWidget, SIGNAL( UploadComplete() ),
+          this, SLOT( updateServerTreeView() ) );
+  connect(transferWidget, SIGNAL( DownloadStarted() ),
+          this, SLOT( showProgressTab() ) );
+  connect(transferWidget, SIGNAL( UploadStarted() ),
+          this, SLOT( showProgressTab() ) );
+  // ------------- Incomplete transfer tab ----------------------
+
   // ------------- Auto Refresh Timer -----------
   refreshTimer = new QTimer(this);
   connect(refreshTimer, SIGNAL( timeout() ), treeViewServer, SLOT( Update() ) );
@@ -189,7 +204,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   cancelButton->setText("Cancel");
   cancelButton->setIcon(QPixmap(":icons/delete2.png"));
   cancelButton->setEnabled(false);
-  cancelButton->setMaximumHeight(21);
+  cancelButton->setMaximumHeight(25);
 
   statusBar()->addWidget( stateLabel, 1 );
   statusBar()->addWidget( progressBar, 1 );
@@ -323,7 +338,7 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
   connect( logAndSearchTabContainer, SIGNAL( currentChanged(int) ),
-    this, SLOT( clearLogTabIcon(int) ) );
+    this, SLOT( tabChanged(int) ) );
 
   // ------------- signal/slot connections -------------
 
@@ -369,6 +384,12 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( Speed(double) ), this, SLOT( progressSpeedUpdate(double) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( EstimatedTime(double) ), this, SLOT( estimatedTimeUpdate(double) ) );
   connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgressTotal(double, double) ), this, SLOT( totalProgressUpdate(double, double) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMin(int) ), progressBar_current, SLOT( setMinimum(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMax(int) ), progressBar_current, SLOT( setMaximum(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressValue(int) ), progressBar_current, SLOT( setValue(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMin(int) ), progressBar, SLOT( setMinimum(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMax(int) ), progressBar, SLOT( setMaximum(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressValue(int) ), progressBar, SLOT( setValue(int) ) );
   // ------------- Progress bar ------------------------
 
   // ------------- Handle stored settings -------------
@@ -495,6 +516,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     this->searchQueryEdit->setEnabled( value );
     this->refreshButton->setEnabled( value );
     this->showNewResourcesButton->setEnabled( value );
+    this->transferWidget->SetEnabled( value );
     actionSign_In->setText( value ? tr("Sign Out") : tr("Sign In") );
     }
 
@@ -709,6 +731,7 @@ void MIDASDesktopUI::enableClientActions(bool val)
 //Send cancel signals to any active push or pull operation
 void MIDASDesktopUI::cancel()
 {
+  m_synch->Cancel();
   if(m_SynchronizerThread)
     {
     m_SynchronizerThread->Cancel();
@@ -716,6 +739,10 @@ void MIDASDesktopUI::cancel()
   if(dlg_pullUI->getSynchronizerThread())
     {
     dlg_pullUI->getSynchronizerThread()->Cancel();
+    }
+  if(dlg_pushUI->getSynchronizerThread())
+    {
+    dlg_pushUI->getSynchronizerThread()->Cancel();
     }
   if(m_dirtyUuids.size())
     {
@@ -1185,10 +1212,16 @@ void MIDASDesktopUI::displayServerResourceContextMenu( QContextMenuEvent* e )
   if ( index.isValid() )
     {
     MidasTreeItem* item = const_cast<MidasTreeItem*>(treeViewServer->getSelectedMidasTreeItem());
+
+    if(!item->resourceIsFetched())
+      {
+      return;
+      }
     menu.addAction( this->actionPull_Resource );
     menu.addAction( this->actionOpenURL );
     menu.addAction( this->actionDelete_server );
     treeViewServer->selectionModel()->select( index, QItemSelectionModel::SelectCurrent );
+
     if ( ( itemTreeItem = dynamic_cast<MidasItemTreeItem*>( item ) ) != NULL )
       {
       menu.addSeparator();
@@ -1298,9 +1331,9 @@ void MIDASDesktopUI::viewDirectory()
   mds::DatabaseAPI db;
   midasResourceRecord record = db.GetRecordByUuid(resource->getUuid());
 
+  QFileInfo fileInfo(record.Path.c_str());
   std::string path = record.Type == midasResourceType::BITSTREAM ?
-    kwsys::SystemTools::GetParentDirectory(record.Path.c_str())
-    : record.Path;
+    fileInfo.dir().path().toStdString() : record.Path;
 
   path = "file:" + path;
   QUrl url(path.c_str());
@@ -1333,10 +1366,10 @@ void MIDASDesktopUI::openBitstream()
 
 void MIDASDesktopUI::viewInBrowser()
 {
-  std::string baseUrl = mws::WebAPI::Instance()->GetServerUrl();
-  kwsys::SystemTools::ReplaceString(baseUrl, "/api/rest", "");
+  QString baseUrl = mws::WebAPI::Instance()->GetServerUrl();
+  baseUrl = baseUrl.replace("/api/rest", "");
   std::stringstream path;
-  path << baseUrl;
+  path << baseUrl.toStdString();
 
   MidasTreeItem* resource = const_cast<MidasTreeItem*>(
     treeViewServer->getSelectedMidasTreeItem());
@@ -1476,7 +1509,8 @@ void MIDASDesktopUI::createLocalDatabase()
     tr("Database Files (*.db)"), 0,
     QFileDialog::ShowDirsOnly).toStdString();
 
-  if(kwsys::SystemTools::FileExists(file.c_str()))
+  QFileInfo fileInfo(file.c_str());
+  if(fileInfo.exists())
     {
     std::stringstream text;
     text << "Error: " << file << " already exists.  Choose a new file name.";
@@ -1502,8 +1536,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     text << file << " is not a valid MIDAS SQLite database. Defaulting "
       " to midas.db.";
     GetLog()->Message(text.str());
-    std::string path = kwsys::SystemTools::GetCurrentWorkingDirectory()
-      + "/midas.db";
+    std::string path = QDir::currentPath().toStdString() + "/midas.db";
     if(midasUtils::IsDatabaseValid(path, m_dbUpgradeHandler))
       {
       setLocalDatabase(path);
@@ -1627,7 +1660,7 @@ void MIDASDesktopUI::search()
   this->displayStatus(tr("Searching...")); 
   searchItemsListWidget->clear();
   std::vector<std::string> words;
-  kwutils::tokenize(searchQueryEdit->text().toStdString(), words);
+  midasUtils::Tokenize(searchQueryEdit->text().toStdString(), words);
 
   if(m_SearchThread)
     {
@@ -1662,7 +1695,7 @@ void MIDASDesktopUI::showSearchResults()
   this->resetStatus();
 }
 
-void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem * listItem)
+void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem* listItem)
 {
   this->treeViewServer->selectByUuid(listItem->getObject()->GetUuid(), true);
 }
@@ -1782,7 +1815,7 @@ void MIDASDesktopUI::deleteServerResource(bool val)
 {
   const MidasTreeItem* resource = this->treeViewServer->getSelectedMidasTreeItem();
   int id = resource->getId();
-  std::string typeName = kwsys::SystemTools::LowerCase(midasUtils::GetTypeName(resource->getType()));
+  std::string typeName = QString(midasUtils::GetTypeName(resource->getType()).c_str()).toStdString();
 
   std::stringstream text;
   if(mws::WebAPI::Instance()->DeleteResource(typeName, id))
@@ -1802,18 +1835,28 @@ void MIDASDesktopUI::deleteServerResource(bool val)
 
 void MIDASDesktopUI::alertErrorInLog()
 {
-  if(this->logAndSearchTabContainer->currentIndex() != 2)
+  if(this->logAndSearchTabContainer->currentIndex() != MIDAS_TAB_LOG)
     {
-    this->logAndSearchTabContainer->setTabIcon(2, QPixmap(":icons/exclamation.png"));
+    this->logAndSearchTabContainer->setTabIcon(
+      MIDAS_TAB_LOG, QPixmap(":icons/exclamation.png"));
     }
 }
 
-void MIDASDesktopUI::clearLogTabIcon(int index)
+void MIDASDesktopUI::tabChanged(int index)
 {
-  if(index == 2)
+  if(index == MIDAS_TAB_LOG) //log tab
     {
     this->logAndSearchTabContainer->setTabIcon(2, QPixmap());
     }
+  else if(index == MIDAS_TAB_INCOMPLETE_TRANSFERS)
+    {
+    this->transferWidget->Populate();
+    }
+}
+
+void MIDASDesktopUI::showProgressTab()
+{
+  this->logAndSearchTabContainer->setCurrentIndex(MIDAS_TAB_PROGRESS);
 }
 
 void MIDASDesktopUI::pullRecursive(int type, int id)
@@ -1971,6 +2014,8 @@ void MIDASDesktopUI::currentProgressUpdate(double current, double max)
   int percent = static_cast<int>(fraction * 100.0);
   progressBar_current->setMaximum(100);
   progressBar_current->setValue(percent);
+  progressBar->setMaximum(100);
+  progressBar->setValue(percent);
 }
 
 void MIDASDesktopUI::totalProgressUpdate(double current, double max)

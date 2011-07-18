@@ -1,19 +1,15 @@
-if(BUILD_MIDASCPP_TESTING)
-  set(midascli_command "${MIDASCPP_BINARY_DIR}/bin/MIDAScli")
-  set(sqlite3_command "${MIDASCPP_BINARY_DIR}/bin/sqlite3")
-  set(dashboard_midas_server_url http://localhost/midas/api/rest CACHE STRING "The URL of the REST API for MIDAS testing")
-  set(dashboard_midas_api_key NO_KEY CACHE STRING "The MIDAS API key for test dashboard")
-  set(dashboard_midas_app_name test CACHE STRING "The MIDAS API name for test dashboard")
-  set(dashboard_midas_email admin@localhost CACHE STRING "The MIDAS login email for test dashboard")
+if(BUILD_TESTING)
+  set(midascli_command "${MIDASClient_BINARY_DIR}/bin/MIDAScli")
+  set(sqlite3_command "${MIDASClient_BINARY_DIR}/bin/sqlite3")
   site_name(dashboard_top_level_community_name)
 
-  set(sqlite_db "${MIDASCPP_BINARY_DIR}/midas.db")
-  set(new_db "${MIDASCPP_BINARY_DIR}/midas_new.db")
+  set(sqlite_db "${MIDASClient_BINARY_DIR}/midas.db")
+  set(new_db "${MIDASClient_BINARY_DIR}/midas_new.db")
 
     # Setup a mock tree we can add
   configure_file(
-    "${MIDASCPP_SOURCE_DIR}/README.txt"
-    "${MIDASCPP_BINARY_DIR}/Testing/${dashboard_top_level_community_name}/Subcomm/Collection/Item/bitstream.txt"
+    "${MIDASClient_SOURCE_DIR}/Copyright.txt"
+    "${MIDASClient_BINARY_DIR}/Testing/${dashboard_top_level_community_name}/Subcomm/Collection/Item/bitstream.txt"
     COPYONLY
   )
 
@@ -34,7 +30,7 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(printHelp.status ${midascli_command} --help status)
   add_test(printHelp.upload ${midascli_command} --help upload)
 
-  add_test(setRootDir ${midascli_command} --database ${sqlite_db} set_root_dir "${MIDASCPP_BINARY_DIR}/Testing")
+  add_test(setRootDir ${midascli_command} --database ${sqlite_db} set_root_dir "${MIDASClient_BINARY_DIR}/Testing")
 
   # Restore database to a fresh state
   add_test(cleanDatabase ${midascli_command} --database ${sqlite_db} clean)
@@ -74,7 +70,7 @@ if(BUILD_MIDASCPP_TESTING)
     --email ${dashboard_midas_email}
     --app-name ${dashboard_midas_app_name}
     --api-key ${dashboard_midas_api_key}
-    upload "${MIDASCPP_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" "${dashboard_top_level_community_name}/Subcomm/Collection/Item"
+    upload "${MIDASClient_SOURCE_DIR}/Application/MIDASDesktop/icons/add2.png" "${dashboard_top_level_community_name}/Subcomm/Collection/Item"
     ${dashboard_midas_server_url})
 
   # "pull" command tests
@@ -131,4 +127,4 @@ if(BUILD_MIDASCPP_TESTING)
   add_test(deleteNewDatabase "${CMAKE_COMMAND}" -E remove -f ${new_db})
   add_test(testCreateDatabaseRuntime ${midascli_command} --database ${new_db} clean)
 
-endif(BUILD_MIDASCPP_TESTING)
+endif(BUILD_TESTING)

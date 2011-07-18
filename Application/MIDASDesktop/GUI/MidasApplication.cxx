@@ -3,8 +3,6 @@
 #include <QMessageBox>
 
 #include "MIDASDesktopUI.h"
-#include "Utils.h"
-#include "Logger.h"
 #include "MidasClientGlobal.h"
 
 MidasApplication* MidasApplication::m_instance = NULL; 

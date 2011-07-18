@@ -1,9 +1,3 @@
-INCLUDE_DIRECTORIES(${MIDASCPP_SOURCE_DIR}/Code)
-SUBDIRS(CMakeScript MIDAScli)
-
-SET(BUILD_MIDAS_DESKTOP OFF CACHE BOOL "Build MIDASDesktop GUI")
-
-IF(BUILD_MIDAS_DESKTOP)
-  SUBDIRS(MIDASDesktop)
-ENDIF(BUILD_MIDAS_DESKTOP)
-
+add_subdirectory(CMakeScript)
+add_subdirectory(MIDAScli)
+add_subdirectory(MIDASDesktop)

@@ -1,4 +1,4 @@
-Program:   MIDASCPP
+Program:   MIDASClient
 Language:  C/C++
 
 Copyright (c) 2009 Kitware, Inc.  All rights reserved.
