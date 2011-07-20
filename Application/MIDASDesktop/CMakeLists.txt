@@ -135,7 +135,7 @@ install(TARGETS MIDASDesktop DESTINATION bin COMPONENT Runtime)
 
 # -----Install Qt Shared libraries-------------
 if (DEFINED QT_QMAKE_EXECUTABLE)
-    set (QTLIBLIST QTCORE QTGUI)
+    set (QTLIBLIST QTCORE QTGUI QTNETWORK QTSCRIPT)
     if(UNIX OR APPLE)
       list(APPEND QTLIBLIST QTDBUS)
     endif()
