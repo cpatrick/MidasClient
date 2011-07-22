@@ -34,4 +34,9 @@ endif()
 add_subdirectory(Application)
 add_subdirectory(Testing)
 
+# CPack package specifications
+include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
+set(MIDASClient_VERSION_MAJOR ${CTKDataManagementMIDASClientCore_VERSION_MAJOR})
+set(MIDASClient_VERSION_MINOR ${CTKDataManagementMIDASClientCore_VERSION_MINOR})
+set(MIDASClient_VERSION_PATCH ${CTKDataManagementMIDASClientCore_VERSION_PATCH})
 include("${MIDASClient_SOURCE_DIR}/MIDASCPack.cmake")
