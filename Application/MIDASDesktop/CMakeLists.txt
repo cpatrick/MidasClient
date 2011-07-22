@@ -152,13 +152,9 @@ if (DEFINED QT_QMAKE_EXECUTABLE)
   endif()
   foreach(qtlib ${QTLIBLIST})
     if(APPLE)
-      if(IS_DIRECTORY "${QT_${qtlib}_LIBRARY_RELEASE}")
-        install(DIRECTORY "${QT_${qtlib}_LIBRARY_RELEASE}" 
-          DESTINATION ${QT_INSTALL_LIB_DIR})
-      else()
-        install(FILES "${QT_${qtlib}_LIBRARY_RELEASE}" 
-          DESTINATION ${QT_INSTALL_LIB_DIR})
-      endif()
+      get_filename_component(libName "${QT_${qtlib}_LIBRARY_RELEASE}" NAME_WE)
+      install(FILES "${QT_${qtlib}_LIBRARY_RELEASE}/Versions/4/${libName}"
+          DESTINATION "${QT_INSTALL_LIB_DIR}/Versions/4/${libName}")
     elseif(UNIX)
       # Install .so and versioned .so.x.y
       get_filename_component(QT_LIB_DIR_tmp ${QT_${qtlib}_LIBRARY_RELEASE} PATH)
