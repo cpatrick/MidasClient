@@ -48,7 +48,9 @@ elseif(APPLE)
   add_executable(MIDASDesktop MACOSX_BUNDLE ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX} main.cxx)
   set_target_properties(MIDASDesktop PROPERTIES
     MACOSX_BUNDLE_INFO_STRING "MIDAS Desktop"
-    MACOSX_BUNDLE_ICON_FILE "${MIDASDesktop_SOURCE_DIR}/icons/MIDAS_Desktop_LargeIcon.png")
+    # Need to install this.
+    #MACOSX_BUNDLE_ICON_FILE "${MIDASDesktop_SOURCE_DIR}/icons/MIDAS_Desktop_LargeIcon.png"
+    )
 else()
   add_executable(MIDASDesktop ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX} main.cxx)
 endif()
@@ -133,7 +135,7 @@ if ( APPLE )
   set(QT_QTGUI_MENU_NIB
       "/Library/Frameworks/QtGui.framework/Versions/Current/Resources/qt_menu.nib"
       CACHE PATH "Location of the qt_menu.nib resource to be packaged for install")
-  install(DIRECTORY ${QT_QTGUI_MENU_NIB} DESTINATION "MIDASDesktop.app/Contents/MacOS")
+  install(DIRECTORY ${QT_QTGUI_MENU_NIB} DESTINATION "MIDASDesktop.app/Contents/Resources")
   install(TARGETS MIDASDesktop BUNDLE DESTINATION ".")
 else()
   install(TARGETS MIDASDesktop DESTINATION bin COMPONENT Runtime)
@@ -142,9 +144,6 @@ endif()
 # -----Install Qt Shared libraries-------------
 if (DEFINED QT_QMAKE_EXECUTABLE)
   set (QTLIBLIST QTCORE QTGUI QTNETWORK QTSCRIPT)
-  if(UNIX OR APPLE)
-    list(APPEND QTLIBLIST QTDBUS)
-  endif()
   if(APPLE)
     set(QT_INSTALL_LIB_DIR "MIDASDesktop.app/Contents/MacOS")
   else()
@@ -153,8 +152,15 @@ if (DEFINED QT_QMAKE_EXECUTABLE)
   foreach(qtlib ${QTLIBLIST})
     if(APPLE)
       get_filename_component(libName "${QT_${qtlib}_LIBRARY_RELEASE}" NAME_WE)
-      install(FILES "${QT_${qtlib}_LIBRARY_RELEASE}/Versions/4/${libName}"
-          DESTINATION "${QT_INSTALL_LIB_DIR}/${libName}.framework/Versions/4")
+      if(NOT EXISTS "${MIDASClient_BINARY_DIR}/tempLibs/${libName}")
+        file(COPY "${QT_${qtlib}_LIBRARY_RELEASE}/Versions/4/${libName}"
+             DESTINATION "${MIDASClient_BINARY_DIR}/tempLibs")
+        execute_process(COMMAND install_name_tool -change
+          "QtCore.framework/Versions/4/QtCore" "@executable_path/QtCore"
+          "${MIDASClient_BINARY_DIR}/tempLibs/${libName}")
+      endif()
+      install(FILES "${MIDASClient_BINARY_DIR}/tempLibs/${libName}"
+          DESTINATION "${QT_INSTALL_LIB_DIR}")
     elseif(UNIX)
       # Install .so and versioned .so.x.y
       get_filename_component(QT_LIB_DIR_tmp ${QT_${qtlib}_LIBRARY_RELEASE} PATH)
@@ -180,4 +186,8 @@ if (DEFINED QT_QMAKE_EXECUTABLE)
         COMPONENT Applications)
     endif()
   endforeach(qtlib)
+
+  if(APPLE)
+    
+  endif()
 endif(DEFINED QT_QMAKE_EXECUTABLE)
