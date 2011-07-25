@@ -18,4 +18,4 @@ target_link_libraries(MIDAScli
   ${CTKDataManagementMIDASClientCore_LIBRARIES}
 )
 
-install(TARGETS MIDAScli DESTINATION bin COMPONENT Runtime)
+#install(TARGETS MIDAScli DESTINATION bin COMPONENT Runtime)
