@@ -131,12 +131,12 @@ if(APPLE)
     ${CARBON_LIBRARY}
     ${APPLICATIONSERVICES_LIBRARY}
   )
-  install(TARGETS MIDASDesktop BUNDLE DESTINATION ".")
   install(FILES "${MIDASDesktop_SOURCE_DIR}/icons/MIDAS_Desktop_LargeIcon.icns"
           DESTINATION "MIDASDesktop.app/Contents/Resources")
   install(CODE
     "execute_process(COMMAND macdeployqt \"${MIDASDesktop_BINARY_DIR}/MIDASDesktop.app\")
     ")
+  install(TARGETS MIDASDesktop BUNDLE DESTINATION ".")
 else()
   install(TARGETS MIDASDesktop DESTINATION bin COMPONENT Runtime)
 endif()
