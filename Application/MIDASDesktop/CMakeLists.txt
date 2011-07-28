@@ -121,7 +121,7 @@ if(UNIX)
   endif(NOT APPLE)
 endif(UNIX)
 
-if ( APPLE ) 
+if(APPLE)
   # Link with frameworks required for static Qt
   find_library ( CARBON_LIBRARY Carbon )
   find_library ( APLICATIONSERVICES_LIBRARY ApplicationServices )
@@ -131,42 +131,23 @@ if ( APPLE )
     ${CARBON_LIBRARY}
     ${APPLICATIONSERVICES_LIBRARY}
   )
-  set(QT_QTGUI_MENU_NIB
-      "/Library/Frameworks/QtGui.framework/Versions/Current/Resources/qt_menu.nib"
-      CACHE PATH "Location of the qt_menu.nib resource to be packaged for install")
-  install(DIRECTORY ${QT_QTGUI_MENU_NIB} DESTINATION "MIDASDesktop.app/Contents/Resources")
+  install(TARGETS MIDASDesktop BUNDLE DESTINATION ".")
   install(FILES "${MIDASDesktop_SOURCE_DIR}/icons/MIDAS_Desktop_LargeIcon.icns"
           DESTINATION "MIDASDesktop.app/Contents/Resources")
-  install(TARGETS MIDASDesktop BUNDLE DESTINATION ".")
+  install(CODE
+    "execute_process(COMMAND macdeployqt \"${MIDASDesktop_BINARY_DIR}/MIDASDesktop.app\")
+    ")
 else()
   install(TARGETS MIDASDesktop DESTINATION bin COMPONENT Runtime)
 endif()
 
-# -----Install Qt Shared libraries-------------
+# -----Install Qt Shared libraries on linux and windows-------------
 if (DEFINED QT_QMAKE_EXECUTABLE)
-  set (QTLIBLIST QTCORE QTGUI QTNETWORK QTSCRIPT)
-  if(APPLE)
-    set(QT_INSTALL_LIB_DIR "MIDASDesktop.app/Contents/MacOS")
-  else()
-    set(QT_INSTALL_LIB_DIR bin)
-  endif()
+  set(QTLIBLIST QTCORE QTGUI QTNETWORK QTSCRIPT)
+  set(QT_INSTALL_LIB_DIR bin)
+
   foreach(qtlib ${QTLIBLIST})
-    if(APPLE)
-      get_filename_component(libName "${QT_${qtlib}_LIBRARY_RELEASE}" NAME_WE)
-      if(NOT EXISTS "${MIDASClient_BINARY_DIR}/tempLibs/${libName}")
-        file(COPY "${QT_${qtlib}_LIBRARY_RELEASE}/Versions/4/${libName}"
-             DESTINATION "${MIDASClient_BINARY_DIR}/tempLibs")
-        # Change the reference to QtCore to be in the current directory
-        execute_process(COMMAND install_name_tool -change
-          "QtCore.framework/Versions/4/QtCore" "@executable_path/QtCore"
-          "${MIDASClient_BINARY_DIR}/tempLibs/${libName}")
-        # Change the id of the shared library
-        execute_process(COMMAND install_name_tool -id "${libName}"
-          "${MIDASClient_BINARY_DIR}/tempLibs/${libName}")
-      endif()
-      install(FILES "${MIDASClient_BINARY_DIR}/tempLibs/${libName}"
-          DESTINATION "${QT_INSTALL_LIB_DIR}")
-    elseif(UNIX)
+    if(NOT APPLE AND UNIX)
       # Install .so and versioned .so.x.y
       get_filename_component(QT_LIB_DIR_tmp ${QT_${qtlib}_LIBRARY_RELEASE} PATH)
       get_filename_component(QT_LIB_NAME_tmp ${QT_${qtlib}_LIBRARY_RELEASE} NAME)
