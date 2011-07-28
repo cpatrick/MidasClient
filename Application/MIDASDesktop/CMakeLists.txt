@@ -48,8 +48,7 @@ elseif(APPLE)
   add_executable(MIDASDesktop MACOSX_BUNDLE ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX} main.cxx)
   set_target_properties(MIDASDesktop PROPERTIES
     MACOSX_BUNDLE_INFO_STRING "MIDAS Desktop"
-    # Need to install this.
-    #MACOSX_BUNDLE_ICON_FILE "${MIDASDesktop_SOURCE_DIR}/icons/MIDAS_Desktop_LargeIcon.png"
+    MACOSX_BUNDLE_ICON_FILE "MIDAS_Desktop_LargeIcon.icns"
     )
 else()
   add_executable(MIDASDesktop ${MIDASDesktopUI_SRCS} ${MIDASDesktopUI_UI_CXX} main.cxx)
@@ -136,6 +135,8 @@ if ( APPLE )
       "/Library/Frameworks/QtGui.framework/Versions/Current/Resources/qt_menu.nib"
       CACHE PATH "Location of the qt_menu.nib resource to be packaged for install")
   install(DIRECTORY ${QT_QTGUI_MENU_NIB} DESTINATION "MIDASDesktop.app/Contents/Resources")
+  install(FILES "${MIDASDesktop_SOURCE_DIR}/icons/MIDAS_Desktop_LargeIcon.icns"
+          DESTINATION "MIDASDesktop.app/Contents/Resources")
   install(TARGETS MIDASDesktop BUNDLE DESTINATION ".")
 else()
   install(TARGETS MIDASDesktop DESTINATION bin COMPONENT Runtime)
@@ -155,8 +156,12 @@ if (DEFINED QT_QMAKE_EXECUTABLE)
       if(NOT EXISTS "${MIDASClient_BINARY_DIR}/tempLibs/${libName}")
         file(COPY "${QT_${qtlib}_LIBRARY_RELEASE}/Versions/4/${libName}"
              DESTINATION "${MIDASClient_BINARY_DIR}/tempLibs")
+        # Change the reference to QtCore to be in the current directory
         execute_process(COMMAND install_name_tool -change
           "QtCore.framework/Versions/4/QtCore" "@executable_path/QtCore"
+          "${MIDASClient_BINARY_DIR}/tempLibs/${libName}")
+        # Change the id of the shared library
+        execute_process(COMMAND install_name_tool -id "${libName}"
           "${MIDASClient_BINARY_DIR}/tempLibs/${libName}")
       endif()
       install(FILES "${MIDASClient_BINARY_DIR}/tempLibs/${libName}"
@@ -187,7 +192,4 @@ if (DEFINED QT_QMAKE_EXECUTABLE)
     endif()
   endforeach(qtlib)
 
-  if(APPLE)
-    
-  endif()
 endif(DEFINED QT_QMAKE_EXECUTABLE)
