@@ -9,16 +9,10 @@
 =========================================================================*/
 // MIDAScli is a command line application to interact with MIDAS as a command line
 
-#include "midasCLI.h"
+#include "midasCLIApplication.h"
 
 int main(int argc, char **argv)
 {
-  std::vector<std::string> args;
-  for(int i = 1; i < argc; i++)
-    {
-    args.push_back(argv[i]);
-    }
-  
-  midasCLI cli;
-  return cli.Perform(args);
+  midasCLIApplication app(argc, argv);
+  return app.exec();
 }
