@@ -2,7 +2,7 @@
 #include "midasCLI.h"
 
 midasCLIApplication::midasCLIApplication ( int & argc, char ** argv):
-QApplication(argc, argv)
+QCoreApplication(argc, argv)
 {
   for(int i = 1; i < argc; i++)
     {
@@ -26,7 +26,7 @@ bool midasCLIApplication::notify(QObject* receiver, QEvent* event)
 {
   try
     {
-    return QApplication::notify(receiver, event); 
+    return QCoreApplication::notify(receiver, event); 
     }
   catch (const std::exception& e)
     {

@@ -1,13 +1,13 @@
 #ifndef __midasCLIApplication_H
 #define __midasCLIApplication_H
 
-#include <QApplication>
+#include <QCoreApplication>
 
 #include "midasStandardIncludes.h"
 
 class midasCLI;
 
-class midasCLIApplication : public QApplication
+class midasCLIApplication : public QCoreApplication
 {
   Q_OBJECT
 
