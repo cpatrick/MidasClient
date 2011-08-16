@@ -31,8 +31,8 @@ if(MIDASClient_SUPERBUILD)
   return()
 endif()
 
-add_subdirectory(Application)
 add_subdirectory(Testing)
+add_subdirectory(Application)
 
 # CPack package specifications
 include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
