@@ -28,6 +28,7 @@ ExternalProject_Add(MIDASClient-configure
     -Ddashboard_midas_api_key=${dashboard_midas_api_key}
     -Ddashboard_midas_app_name=${dashboard_midas_app_name}
     -Ddashboard_midas_email=${dashboard_midas_email}
+    -Ddashboard_top_level_community_name=${dashboard_top_level_community_name}
   SOURCE_DIR ${MIDASClient_SOURCE_DIR}
   BINARY_DIR ${MIDASClient_BINARY_DIR}/MIDASClient-build
   BUILD_COMMAND ""
