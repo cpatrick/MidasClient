@@ -29,7 +29,7 @@ if(BUILD_TESTING)
   file(MAKE_DIRECTORY "${MIDAS_KEY_DIR}/testTgz")
   file(WRITE "${MIDAS_KEY_DIR}/testTgz/testArchive.tar.gz.md5" ${computedChecksum})
 
-  add_test(TestUploadTGZ "${MIDASClient_BINARY_DIR}/bin/MIDAScli"
+  add_test(TestUploadTGZ "${MIDASClient_BINARY_DIR}/Application/MIDAScli/MIDAScli"
     --profile test
     --database "${MIDASClient_BINARY_DIR}/midas.db"
     upload "${MIDASClient_BINARY_DIR}/Testing/testArchive.tar.gz"
