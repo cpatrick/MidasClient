@@ -35,10 +35,6 @@ endif()
 add_subdirectory(Testing)
 add_subdirectory(Application)
 
-# Configure into the MIDASClient build directory itself (that's where we run CTest)
-configure_file(${MIDASClient_SOURCE_DIR}/CTestCustom.cmake.in
-  ${MIDASClient_BINARY_DIR}/MIDASClient-build/CTestCustom.cmake @ONLY)
-
 # CPack package specifications
 include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
 set(MIDASClient_VERSION_MAJOR ${CTKDataManagementMIDASClientCore_VERSION_MAJOR})
