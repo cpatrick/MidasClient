@@ -1,14 +1,14 @@
 SET(CTEST_CUSTOM_COVERAGE_EXCLUDE
   ${CTEST_CUSTOM_COVERAGE_EXCLUDE}
-
-  # Exclude kwsys files from coverage results. They are reported
-  # (with better coverage results) on kwsys dashboards...
-  "/Utilities/kwsys/"
   )
 
 SET(CTEST_CUSTOM_WARNING_EXCEPTION
   ${CTEST_CUSTOM_WARNING_EXCEPTION}
-  "warning: \".*printf\" redefined"                          #from curl code
-  "warning: this is the location of the previous definition" #from curl code
-  "warning: cast from pointer to integer of different size"  #from sqlite code
+  "warning: \".*printf\" redefined"
+  "this is the location of the previous definition"
+  "cast from pointer to integer of different size"           #from sqlite
+  "cast to pointer from integer of different size"           #from sqlite
+  
+  "This function or variable may be unsafe"                  #from CTK
+  "no public symbols found"                                  #from CTK
   )

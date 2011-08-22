@@ -8,9 +8,9 @@ project(MIDASClient)
 option(BUILD_TESTING "Build MIDAS Client application testing" OFF)
 
 include(CTest)
+enable_testing()
 configure_file(${MIDASClient_SOURCE_DIR}/CTestCustom.cmake.in
   ${MIDASClient_BINARY_DIR}/CTestCustom.cmake @ONLY)
-enable_testing()
 
 # Let user set these options here if they choose to enable testing
 if(BUILD_TESTING)
@@ -34,6 +34,10 @@ endif()
 
 add_subdirectory(Testing)
 add_subdirectory(Application)
+
+# Configure into the MIDASClient build directory itself (that's where we run CTest)
+configure_file(${MIDASClient_SOURCE_DIR}/CTestCustom.cmake.in
+  ${MIDASClient_BINARY_DIR}/MIDASClient-build/CTestCustom.cmake @ONLY)
 
 # CPack package specifications
 include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
