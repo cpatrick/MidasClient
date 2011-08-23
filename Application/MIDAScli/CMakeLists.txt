@@ -4,8 +4,15 @@ cmake_minimum_required(VERSION 2.6)
 set(MIDAScli_SRCS
   main.cxx
   midasCLI.cxx
-  midasCLI.h
+  midasCLIApplication.cxx
 )
+
+set(MIDAScli_MOC_SRCS
+  midasCLIApplication.h
+)
+
+find_package(Qt4 REQUIRED)
+QT4_WRAP_CPP(MIDAScli_SRCS ${MIDAScli_MOC_SRCS})
 
 include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
 

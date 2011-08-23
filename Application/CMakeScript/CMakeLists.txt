@@ -18,7 +18,7 @@ if(BUILD_TESTING)
 
   # ----------------------- Test MIDAS_TGZ capabilities ----------------------------------------
   if(NOT EXISTS "${MIDASClient_BINARY_DIR}/Testing/testArchive.tar.gz")
-    execute_process(COMMAND "${CMAKE_COMMAND}" -E tar czf testArchive.tar.gz Code
+    execute_process(COMMAND "${CMAKE_COMMAND}" -E tar czf testArchive.tar.gz Application
       WORKING_DIRECTORY "${MIDASClient_SOURCE_DIR}")
     file(RENAME "${MIDASClient_SOURCE_DIR}/testArchive.tar.gz" "${MIDASClient_BINARY_DIR}/Testing/testArchive.tar.gz")
   endif(NOT EXISTS "${MIDASClient_BINARY_DIR}/Testing/testArchive.tar.gz")
@@ -29,7 +29,7 @@ if(BUILD_TESTING)
   file(MAKE_DIRECTORY "${MIDAS_KEY_DIR}/testTgz")
   file(WRITE "${MIDAS_KEY_DIR}/testTgz/testArchive.tar.gz.md5" ${computedChecksum})
 
-  add_test(TestUploadTGZ "${MIDASClient_BINARY_DIR}/bin/MIDAScli"
+  add_test(TestUploadTGZ "${MIDASClient_BINARY_DIR}/Application/MIDAScli/MIDAScli"
     --profile test
     --database "${MIDASClient_BINARY_DIR}/midas.db"
     upload "${MIDASClient_BINARY_DIR}/Testing/testArchive.tar.gz"
@@ -37,7 +37,7 @@ if(BUILD_TESTING)
     ${dashboard_midas_server_url})
 
   midas_add_test(MIDAS_TGZ "${CMAKE_COMMAND}" -E echo MIDAS_TGZ{testTgz/testArchive.tar.gz.md5})
-  add_test(VerifyArchivePresent "${CMAKE_COMMAND}" -E md5sum "${MIDASClient_BINARY_DIR}/MIDAS_Data/testTgz/testArchive/Code/sql/MIDAS_SQLite.sql")
+  add_test(VerifyArchivePresent "${CMAKE_COMMAND}" -E md5sum "${MIDASClient_BINARY_DIR}/MIDAS_Data/testTgz/testArchive/Application/CMakeScript/MIDAS.cmake")
 
   set_tests_properties(
     TestAddMidasTest

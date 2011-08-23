@@ -8,9 +8,9 @@ project(MIDASClient)
 option(BUILD_TESTING "Build MIDAS Client application testing" OFF)
 
 include(CTest)
+enable_testing()
 configure_file(${MIDASClient_SOURCE_DIR}/CTestCustom.cmake.in
   ${MIDASClient_BINARY_DIR}/CTestCustom.cmake @ONLY)
-enable_testing()
 
 # Let user set these options here if they choose to enable testing
 if(BUILD_TESTING)
@@ -18,6 +18,7 @@ if(BUILD_TESTING)
   set(dashboard_midas_api_key NO_KEY CACHE STRING "The MIDAS API key for test dashboard")
   set(dashboard_midas_app_name test CACHE STRING "The MIDAS API name for test dashboard")
   set(dashboard_midas_email admin@localhost CACHE STRING "The MIDAS login email for test dashboard")
+  site_name(dashboard_top_level_community_name)
 endif(BUILD_TESTING)
 
 #-----------------------------------------------------------------------------
@@ -31,8 +32,8 @@ if(MIDASClient_SUPERBUILD)
   return()
 endif()
 
-add_subdirectory(Application)
 add_subdirectory(Testing)
+add_subdirectory(Application)
 
 # CPack package specifications
 include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)

@@ -1,6 +1,6 @@
 if(BUILD_TESTING)
-  set(midascli_command "${MIDASClient_BINARY_DIR}/bin/MIDAScli")
-  set(sqlite3_command "${MIDASClient_BINARY_DIR}/bin/sqlite3")
+  set(midascli_command "${MIDASClient_BINARY_DIR}/Application/MIDAScli/MIDAScli")
+  set(sqlite3_command "${MIDASClient_BINARY_DIR}/../CTK-build/sqlite-build/sqlite3")
   site_name(dashboard_top_level_community_name)
 
   set(sqlite_db "${MIDASClient_BINARY_DIR}/midas.db")
