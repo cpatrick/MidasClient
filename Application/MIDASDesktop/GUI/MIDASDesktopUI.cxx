@@ -73,8 +73,10 @@
 // ------------- Threads -------------
 
 // ------------- TreeModel / TreeView -------------
+#include "MidasTreeViewBase.h"
 #include "MidasTreeItem.h"
 #include "MidasTreeViewServer.h"
+#include "Midas3TreeViewServer.h"
 #include "MidasTreeModelServer.h"
 #include "MidasTreeViewClient.h"
 #include "MidasTreeModelClient.h"
@@ -93,8 +95,10 @@ MIDASDesktopUI::MIDASDesktopUI()
 {
   setupUi(this); // this sets up GUI
   unsigned int currTime = static_cast<unsigned int>(midasUtils::CurrentTime() * 1000);
-  srand (currTime); //init random number generator
-  this->setWindowTitle( STR2QSTR( MIDAS_CLIENT_VERSION_STR ) );
+  srand(currTime); //init random number generator
+  this->setWindowTitle(STR2QSTR(MIDAS_CLIENT_VERSION_STR));
+
+  this->treeViewServer = NULL;
 
   // center the main window
   int scrn = QApplication::desktop()->screenNumber(this);
@@ -128,51 +132,51 @@ MIDASDesktopUI::MIDASDesktopUI()
   // ------------- Instantiate and setup tray icon -------------
 
   // ------------- Instantiate and setup UI dialogs -------------
-  dlg_createMidasResourceUI =  new CreateMidasResourceUI( this, m_synch );
-  dlg_signInUI =               new SignInUI( this, m_synch );
-  dlg_pullUI =                 new PullUI( this, m_synch );
-  dlg_pushUI =                 new PushUI( this, m_synch);
-  dlg_createProfileUI =        new CreateProfileUI( this );
-  dlg_aboutUI =                new AboutUI( this );
-  dlg_preferencesUI =          new PreferencesUI( this );
-  dlg_deleteClientResourceUI = new DeleteResourceUI( this, false );
-  dlg_deleteServerResourceUI = new DeleteResourceUI( this, true );
-  dlg_addAuthorUI =            new AddAuthorUI( this );
-  dlg_addKeywordUI =           new AddKeywordUI( this );
-  dlg_agreementUI =            new AgreementUI( this );
-  dlg_overwriteUI =            new FileOverwriteUI( this );
-  dlg_mirrorPickerUI =         new MirrorPickerUI( this );
-  dlg_upgradeUI =              new UpgradeUI( this );
+  dlg_createMidasResourceUI =  new CreateMidasResourceUI(this, m_synch);
+  dlg_signInUI =               new SignInUI(this, m_synch);
+  dlg_pullUI =                 new PullUI(this, m_synch);
+  dlg_pushUI =                 new PushUI(this, m_synch);
+  dlg_createProfileUI =        new CreateProfileUI(this);
+  dlg_aboutUI =                new AboutUI(this);
+  dlg_preferencesUI =          new PreferencesUI(this);
+  dlg_deleteClientResourceUI = new DeleteResourceUI(this, false);
+  dlg_deleteServerResourceUI = new DeleteResourceUI(this, true);
+  dlg_addAuthorUI =            new AddAuthorUI(this);
+  dlg_addKeywordUI =           new AddKeywordUI(this);
+  dlg_agreementUI =            new AgreementUI(this);
+  dlg_overwriteUI =            new FileOverwriteUI(this);
+  dlg_mirrorPickerUI =         new MirrorPickerUI(this);
+  dlg_upgradeUI =              new UpgradeUI(this);
   // ------------- Instantiate and setup UI dialogs -------------
 
   // ------------- Incomplete transfer tab ----------------------
   transferWidget = new IncompleteTransferWidget(this, m_synch);
   incompleteTransfersTab->layout()->addWidget(transferWidget);
 
-  connect(transferWidget, SIGNAL( ActivateActions(bool) ),
-          this, SLOT( enableActions(bool) ) );
-  connect(transferWidget, SIGNAL( UploadComplete() ),
-          this, SLOT( updateServerTreeView() ) );
-  connect(transferWidget, SIGNAL( DownloadStarted() ),
-          this, SLOT( showProgressTab() ) );
-  connect(transferWidget, SIGNAL( UploadStarted() ),
-          this, SLOT( showProgressTab() ) );
+  connect(transferWidget, SIGNAL(ActivateActions(bool)),
+          this, SLOT(enableActions(bool)));
+  connect(transferWidget, SIGNAL(UploadComplete()),
+          this, SLOT(updateServerTreeView()));
+  connect(transferWidget, SIGNAL(DownloadStarted()),
+          this, SLOT(showProgressTab()));
+  connect(transferWidget, SIGNAL(UploadStarted()),
+          this, SLOT(showProgressTab()));
   // ------------- Incomplete transfer tab ----------------------
 
   // ------------- Auto Refresh Timer -----------
   refreshTimer = new QTimer(this);
-  connect(refreshTimer, SIGNAL( timeout() ), treeViewServer, SLOT( Update() ) );
-  connect(dlg_preferencesUI, SIGNAL( intervalChanged() ), this, SLOT( setTimerInterval() ) );
-  connect(dlg_preferencesUI, SIGNAL( settingChanged() ), this, SLOT( adjustTimerSettings() ) );
+  
+  connect(dlg_preferencesUI, SIGNAL(intervalChanged()), this, SLOT(setTimerInterval()));
+  connect(dlg_preferencesUI, SIGNAL(settingChanged()), this, SLOT(adjustTimerSettings()));
   // ------------- Auto Refresh Timer -----------
 
   // ------------- Item info panel -------------
-  midasTreeItemInfoTable->horizontalHeader()->setStretchLastSection( false );
+  midasTreeItemInfoTable->horizontalHeader()->setStretchLastSection(false);
   midasTreeItemInfoTable->horizontalHeader()->hide();
   midasTreeItemInfoTable->verticalHeader()->hide();
 
-  connect(midasTreeItemInfoTable, SIGNAL( itemChanged( QTableWidgetItem*) ), this, SLOT(
-    resourceEdited(QTableWidgetItem*) ) );
+  connect(midasTreeItemInfoTable, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(
+    resourceEdited(QTableWidgetItem*)));
 
   textMetadataEditor = new TextEditDelegate(this);
 
@@ -195,10 +199,10 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   progressBar->setTextVisible(false);
 
-  connectLabel->setAlignment( Qt::AlignCenter );
-  connectLabel->setFrameShape( QFrame::Panel );
-  connectLabel->setFrameShadow( QFrame::Sunken );
-  connectLabel->setMinimumSize( connectLabel->sizeHint() );
+  connectLabel->setAlignment(Qt::AlignCenter);
+  connectLabel->setFrameShape(QFrame::Panel);
+  connectLabel->setFrameShadow(QFrame::Sunken);
+  connectLabel->setMinimumSize(connectLabel->sizeHint());
   connectLabel->clear();
 
   cancelButton->setText("Cancel");
@@ -206,139 +210,110 @@ MIDASDesktopUI::MIDASDesktopUI()
   cancelButton->setEnabled(false);
   cancelButton->setMaximumHeight(25);
 
-  statusBar()->addWidget( stateLabel, 1 );
-  statusBar()->addWidget( progressBar, 1 );
-  statusBar()->addWidget( cancelButton );
-  statusBar()->addWidget( connectLabel );
+  statusBar()->addWidget(stateLabel, 1);
+  statusBar()->addWidget(progressBar, 1);
+  statusBar()->addWidget(cancelButton);
+  statusBar()->addWidget(connectLabel);
   // ------------- Status bar -------------
 
   // ------------- setup TreeView signals -------------
 
-  treeViewServer->SetSynchronizer(m_synch);
   treeViewClient->SetSynchronizer(m_synch);
-
-  connect(treeViewServer, SIGNAL(midasTreeItemSelected(const MidasTreeItem*)),
-    this, SLOT( updateActionState(const MidasTreeItem*) ));
   connect(treeViewClient, SIGNAL(midasTreeItemSelected(const MidasTreeItem*)),
-    this, SLOT( updateActionStateClient(const MidasTreeItem*) ));
+    this, SLOT(updateActionStateClient(const MidasTreeItem*)));
 
   connect(treeViewClient, SIGNAL(bitstreamsDropped(const MidasItemTreeItem*, const QStringList&)),
-    this, SLOT( addBitstreams(const MidasItemTreeItem*, const QStringList&)));
+    this, SLOT(addBitstreams(const MidasItemTreeItem*, const QStringList&)));
   connect(treeViewClient, SIGNAL(resourceDropped(int, int)),
-    this, SLOT( pullRecursive(int, int) ) );
-  connect(treeViewServer, SIGNAL(resourceDropped(int, int)),
-    this, SLOT( dragNDropPush(int, int) ) );
+    this, SLOT(pullRecursive(int, int)));
 
+  connect(treeViewClient, SIGNAL(bitstreamOpenRequest()), this, SLOT(openBitstream()));
 
-  connect(treeViewClient, SIGNAL( bitstreamOpenRequest() ), this, SLOT( openBitstream() ) );
-
-  connect(treeViewServer, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
-    this, SLOT( updateInfoPanel(const MidasCommunityTreeItem*) ));
   connect(treeViewClient, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
-    this, SLOT( updateInfoPanel(const MidasCommunityTreeItem*) ));
+    this, SLOT(updateInfoPanel(const MidasCommunityTreeItem*)));
 
-  connect(treeViewServer, SIGNAL(midasCollectionTreeItemSelected(const MidasCollectionTreeItem*)),
-    this, SLOT( updateInfoPanel(const MidasCollectionTreeItem*) ));
   connect(treeViewClient, SIGNAL(midasCollectionTreeItemSelected(const MidasCollectionTreeItem*)),
-    this, SLOT( updateInfoPanel(const MidasCollectionTreeItem*) ));
+    this, SLOT(updateInfoPanel(const MidasCollectionTreeItem*)));
 
-  connect(treeViewServer, SIGNAL(midasItemTreeItemSelected(const MidasItemTreeItem*)),
-    this, SLOT( updateInfoPanel(const MidasItemTreeItem*) ));
   connect(treeViewClient, SIGNAL(midasItemTreeItemSelected(const MidasItemTreeItem*)),
-    this, SLOT( updateInfoPanel(const MidasItemTreeItem*) ));
+    this, SLOT(updateInfoPanel(const MidasItemTreeItem*)));
 
-  connect(treeViewServer, SIGNAL(midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem*)),
-    this, SLOT( updateInfoPanel(const MidasBitstreamTreeItem*) ) );
   connect(treeViewClient, SIGNAL(midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem*)),
-    this, SLOT( updateInfoPanel(const MidasBitstreamTreeItem*) ) );
+    this, SLOT(updateInfoPanel(const MidasBitstreamTreeItem*)));
 
-  connect(treeViewServer, SIGNAL(midasNoTreeItemSelected()),
-    this, SLOT( clearInfoPanel() ));
   connect(treeViewClient, SIGNAL(midasNoTreeItemSelected()),
-    this, SLOT( clearInfoPanel() ));
+    this, SLOT(clearInfoPanel()));
 
-  connect(treeViewServer, SIGNAL(midasNoTreeItemSelected()),
-    dlg_pullUI, SLOT( resetState() ));
+  connect(refreshClientButton, SIGNAL(released()), this, SLOT(updateClientTreeView()));
 
-  connect(refreshClientButton, SIGNAL(released()), this, SLOT( updateClientTreeView() ) );
-
-  connect(treeViewServer, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
-    this, SLOT( displayServerResourceContextMenu(QContextMenuEvent*) ));
   connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
-    this, SLOT( displayClientResourceContextMenu(QContextMenuEvent*) ));
-
-  connect(treeViewServer->model(), SIGNAL(serverPolled()), this, SLOT( storeLastPollTime()));
-
-  connect(treeViewServer, SIGNAL( startedExpandingTree() ), this, SLOT( startedExpandingTree() ) );
-  connect(treeViewServer, SIGNAL( finishedExpandingTree() ), this, SLOT( finishedExpandingTree() ) );
-
-  connect(treeViewServer, SIGNAL( enableActions(bool) ), this, SLOT( enableActions(bool) ) );
+    this, SLOT(displayClientResourceContextMenu(QContextMenuEvent*)));
 
   // ------------- setup TreeView signals -------------
 
   // ------------- signal/slot connections -------------
-  connect( actionPush_Resource, SIGNAL( triggered() ), this, SLOT( pushResources() ) );
-  connect( actionPull_Resource, SIGNAL( triggered() ), dlg_pullUI, SLOT( exec() ) );
-  connect( actionOpenURL,       SIGNAL( triggered() ), this, SLOT( viewInBrowser() ) );
+  connect(actionPush_Resource, SIGNAL(triggered()), this, SLOT(pushResources()));
+  connect(actionPull_Resource, SIGNAL(triggered()), dlg_pullUI, SLOT(exec()));
+  connect(actionOpenURL,       SIGNAL(triggered()), this, SLOT(viewInBrowser()));
 
-  connect( actionCreate_Profile, SIGNAL( triggered() ), dlg_createProfileUI, SLOT( exec() ) );
+  connect(actionCreate_Profile, SIGNAL(triggered()), dlg_createProfileUI, SLOT(exec()));
 
-  connect( dlg_createProfileUI, SIGNAL( createdProfile(std::string, std::string, std::string, std::string, std::string, std::string)),
-    this, SLOT( createProfile(std::string, std::string, std::string, std::string, std::string, std::string)));
-  connect( dlg_createProfileUI, SIGNAL( deletedProfile(std::string)),
-    dlg_signInUI, SLOT( removeProfile(std::string)));
-  connect( dlg_createProfileUI, SIGNAL( deletedProfile(std::string) ),
-    dynamic_cast<GUILogger*>(this->Log), SLOT( Status(std::string) ) );
+  connect(dlg_createProfileUI, SIGNAL(createdProfile(std::string, std::string, std::string, std::string, std::string, std::string)),
+    this, SLOT(createProfile(std::string, std::string, std::string, std::string, std::string, std::string)));
+  connect(dlg_createProfileUI, SIGNAL(deletedProfile(std::string)),
+    dlg_signInUI, SLOT(removeProfile(std::string)));
+  connect(dlg_createProfileUI, SIGNAL(deletedProfile(std::string)),
+    dynamic_cast<GUILogger*>(this->Log), SLOT(Status(std::string)));
 
-  connect( dlg_signInUI, SIGNAL( createProfileRequest() ), dlg_createProfileUI, SLOT( exec() ) );
-  connect( dlg_signInUI, SIGNAL( signingIn() ), this, SLOT( signingIn() ) );
-  connect( dlg_signInUI, SIGNAL( signedIn(bool) ), this, SLOT( signIn(bool) ) );
+  connect(dlg_signInUI, SIGNAL(createProfileRequest()), dlg_createProfileUI, SLOT(exec()));
+  connect(dlg_signInUI, SIGNAL(signingIn()), this, SLOT(signingIn()));
+  connect(dlg_signInUI, SIGNAL(signedIn(bool)), this, SLOT(signIn(bool)));
 
-  connect( dlg_deleteClientResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteLocalResource(bool) ) );
-  connect( dlg_deleteServerResourceUI, SIGNAL( deleteResource(bool) ), this, SLOT( deleteServerResource(bool) ) );
-  connect( dlg_pushUI, SIGNAL( pushedResources(int) ), this, SLOT( pushReturned(int) ) );
-  connect( dlg_pushUI, SIGNAL(enableActions(bool) ), this, SLOT(enableActions(bool) ) );
+  connect(dlg_deleteClientResourceUI, SIGNAL(deleteResource(bool)), this, SLOT(deleteLocalResource(bool)));
+  connect(dlg_deleteServerResourceUI, SIGNAL(deleteResource(bool)), this, SLOT(deleteServerResource(bool)));
+  connect(dlg_pushUI, SIGNAL(pushedResources(int)), this, SLOT(pushReturned(int)));
+  connect(dlg_pushUI, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
 
-  connect( dlg_preferencesUI, SIGNAL( unifyingTree() ), this, SLOT( unifyingTree() ) );
-  connect( dlg_preferencesUI, SIGNAL( treeUnified() ), this, SLOT( treeUnified() ) );
+  connect(dlg_preferencesUI, SIGNAL(unifyingTree()), this, SLOT(unifyingTree()));
+  connect(dlg_preferencesUI, SIGNAL(treeUnified()), this, SLOT(treeUnified()));
 
-  connect( dlg_pullUI, SIGNAL( enableActions(bool) ), this, SLOT( enableActions(bool) ) );
+  connect(dlg_pullUI, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
 
-  connect( dlg_createMidasResourceUI, SIGNAL( resourceCreated() ), this, SLOT( updateClientTreeView() ) );
+  connect(dlg_createMidasResourceUI, SIGNAL(resourceCreated()), this, SLOT(updateClientTreeView()));
 
-  connect( actionChoose_Local_Database, SIGNAL( triggered() ), this, SLOT( chooseLocalDatabase() ) );
-  connect( actionNew_Local_Database, SIGNAL( triggered() ), this, SLOT( createLocalDatabase() ) );
+  connect(actionChoose_Local_Database, SIGNAL(triggered()), this, SLOT(chooseLocalDatabase()));
+  connect(actionNew_Local_Database, SIGNAL(triggered()), this, SLOT(createLocalDatabase()));
 
-  connect( actionSign_In,      SIGNAL( triggered() ), this, SLOT( signInOrOut() ) );
-  connect( actionQuit,         SIGNAL( triggered() ), qApp, SLOT( quit() ) );
-  connect( actionAbout,        SIGNAL( triggered() ), dlg_aboutUI, SLOT( exec() ) );
-  connect( actionPreferences,  SIGNAL( triggered() ), dlg_preferencesUI, SLOT( exec() ) );
+  connect(actionSign_In,      SIGNAL(triggered()), this, SLOT(signInOrOut()));
+  connect(actionQuit,         SIGNAL(triggered()), qApp, SLOT(quit()));
+  connect(actionAbout,        SIGNAL(triggered()), dlg_aboutUI, SLOT(exec()));
+  connect(actionPreferences,  SIGNAL(triggered()), dlg_preferencesUI, SLOT(exec()));
 
-  connect( actionAdd_community,    SIGNAL(triggered()), this, SLOT(addCommunity()));
-  connect( actionAdd_subcommunity, SIGNAL(triggered()), this, SLOT(addSubcommunity()));
-  connect( actionAdd_collection,   SIGNAL(triggered()), this, SLOT(addCollection()));
-  connect( actionAdd_item,         SIGNAL(triggered()), this, SLOT(addItem()));
-  connect( actionAdd_bitstream,    SIGNAL(triggered()), this, SLOT(addBitstream()));
-  connect( actionDelete_Resource,  SIGNAL(triggered()), dlg_deleteClientResourceUI, SLOT( exec() ) );
-  connect( actionDelete_server,    SIGNAL(triggered()), dlg_deleteServerResourceUI, SLOT( exec() ) );
-  connect( actionView_Directory,   SIGNAL(triggered()), this, SLOT(viewDirectory()));
+  connect(actionAdd_community,    SIGNAL(triggered()), this, SLOT(addCommunity()));
+  connect(actionAdd_subcommunity, SIGNAL(triggered()), this, SLOT(addSubcommunity()));
+  connect(actionAdd_collection,   SIGNAL(triggered()), this, SLOT(addCollection()));
+  connect(actionAdd_item,         SIGNAL(triggered()), this, SLOT(addItem()));
+  connect(actionAdd_bitstream,    SIGNAL(triggered()), this, SLOT(addBitstream()));
+  connect(actionDelete_Resource,  SIGNAL(triggered()), dlg_deleteClientResourceUI, SLOT(exec()));
+  connect(actionDelete_server,    SIGNAL(triggered()), dlg_deleteServerResourceUI, SLOT(exec()));
+  connect(actionView_Directory,   SIGNAL(triggered()), this, SLOT(viewDirectory()));
 
-  connect( searchItemsListWidget, SIGNAL( midasListWidgetItemClicked( QListWidgetItemMidasItem * ) ),
-    this, SLOT( searchItemClicked( QListWidgetItemMidasItem * ) ) );
-  connect( searchItemsListWidget, SIGNAL( midasListWidgetContextMenu( QContextMenuEvent * ) ),
-    this, SLOT( searchItemContextMenu( QContextMenuEvent * ) ) );
+  connect(searchItemsListWidget, SIGNAL(midasListWidgetItemClicked(QListWidgetItemMidasItem *)),
+    this, SLOT(searchItemClicked(QListWidgetItemMidasItem *)));
+  connect(searchItemsListWidget, SIGNAL(midasListWidgetContextMenu(QContextMenuEvent *)),
+    this, SLOT(searchItemContextMenu(QContextMenuEvent *)));
 
-  connect( push_Button,    SIGNAL( released() ), this, SLOT( pushResources() ) );
-  connect( pull_Button,    SIGNAL( released() ), dlg_pullUI, SLOT( exec() ) );
-  connect( refreshButton,  SIGNAL( released() ), this, SLOT( updateServerTreeView() ) );
-  connect( searchButton,   SIGNAL( released() ), this, SLOT( search() ) );
-  connect( cancelButton,   SIGNAL( released() ), this, SLOT( cancel() ) );
-  connect( editInfoButton, SIGNAL( released() ), this, SLOT( editInfo() ) );
-  connect( showNewResourcesButton, SIGNAL( released() ), this, SLOT( decorateServerTree() ) );
+  connect(push_Button,    SIGNAL(released()), this, SLOT(pushResources()));
+  connect(pull_Button,    SIGNAL(released()), dlg_pullUI, SLOT(exec()));
+  connect(refreshButton,  SIGNAL(released()), this, SLOT(updateServerTreeView()));
+  connect(searchButton,   SIGNAL(released()), this, SLOT(search()));
+  connect(cancelButton,   SIGNAL(released()), this, SLOT(cancel()));
+  connect(editInfoButton, SIGNAL(released()), this, SLOT(editInfo()));
+  connect(showNewResourcesButton, SIGNAL(released()), this, SLOT(decorateServerTree()));
 
-  connect( log, SIGNAL( textChanged() ), this, SLOT( showLogTab() ) );
-  connect( logAndSearchTabContainer, SIGNAL( currentChanged(int) ),
-    this, SLOT( tabChanged(int) ) );
+  connect(log, SIGNAL(textChanged()), this, SLOT(showLogTab()));
+  connect(logAndSearchTabContainer, SIGNAL(currentChanged(int)),
+    this, SLOT(tabChanged(int)));
 
   // ------------- signal/slot connections -------------
 
@@ -358,8 +333,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
   this->m_mirrorHandler = new GUIMirrorHandler(dlg_mirrorPickerUI);
   this->m_agreementHandler = new GUIAgreement(dlg_agreementUI);
-  this->m_overwriteHandler = new GUIFileOverwriteHandler( dlg_overwriteUI );
-  this->m_dbUpgradeHandler = new GUIUpgradeHandler( dlg_upgradeUI );
+  this->m_overwriteHandler = new GUIFileOverwriteHandler(dlg_overwriteUI);
+  this->m_dbUpgradeHandler = new GUIUpgradeHandler(dlg_upgradeUI);
   this->m_dbUpgradeHandler->SetLog(this->Log);
   this->m_progress = new GUIProgress(this->progressBar);
   mds::DatabaseInfo::Instance()->SetLog(this->Log);
@@ -373,23 +348,23 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_editMode = false;
   this->m_cancel = false;
 
-  connect(dynamic_cast<GUIAgreement*>(m_agreementHandler), SIGNAL( errorMessage(const QString&) ),
-          this, SLOT( logError(const QString&) ) );
+  connect(dynamic_cast<GUIAgreement*>(m_agreementHandler), SIGNAL(errorMessage(const QString&)),
+          this, SLOT(logError(const QString&)));
   // ------------- setup handlers and logging -------------
 
   // ------------- Progress bar ------------------------
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( ProgressMessage(const QString&) ), this, SLOT( currentFileMessage(const QString&) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgressCount(int, int) ), this, SLOT( overallProgressUpdate(int, int) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( CurrentProgress(double, double) ), this, SLOT( currentProgressUpdate(double, double) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( Speed(double) ), this, SLOT( progressSpeedUpdate(double) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( EstimatedTime(double) ), this, SLOT( estimatedTimeUpdate(double) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( OverallProgressTotal(double, double) ), this, SLOT( totalProgressUpdate(double, double) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMin(int) ), progressBar_current, SLOT( setMinimum(int) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMax(int) ), progressBar_current, SLOT( setMaximum(int) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressValue(int) ), progressBar_current, SLOT( setValue(int) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMin(int) ), progressBar, SLOT( setMinimum(int) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressMax(int) ), progressBar, SLOT( setMaximum(int) ) );
-  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL( UpdateProgressValue(int) ), progressBar, SLOT( setValue(int) ) );
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(ProgressMessage(const QString&)), this, SLOT(currentFileMessage(const QString&)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(OverallProgressCount(int, int)), this, SLOT(overallProgressUpdate(int, int)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(CurrentProgress(double, double)), this, SLOT(currentProgressUpdate(double, double)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(Speed(double)), this, SLOT(progressSpeedUpdate(double)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(EstimatedTime(double)), this, SLOT(estimatedTimeUpdate(double)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(OverallProgressTotal(double, double)), this, SLOT(totalProgressUpdate(double, double)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(UpdateProgressMin(int)), progressBar_current, SLOT(setMinimum(int)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(UpdateProgressMax(int)), progressBar_current, SLOT(setMaximum(int)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(UpdateProgressValue(int)), progressBar_current, SLOT(setValue(int)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(UpdateProgressMin(int)), progressBar, SLOT(setMinimum(int)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(UpdateProgressMax(int)), progressBar, SLOT(setMaximum(int)));
+  connect(dynamic_cast<GUIProgress*>(m_progress), SIGNAL(UpdateProgressValue(int)), progressBar, SLOT(setValue(int)));
   // ------------- Progress bar ------------------------
 
   // ------------- Handle stored settings -------------
@@ -493,87 +468,87 @@ void MIDASDesktopUI::showNormal()
 
 void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
 {
-  if ( activateAction & ACTION_LOCAL_DATABASE )
+  if (activateAction & ACTION_LOCAL_DATABASE)
     {
-    this->treeViewClient->setEnabled( value );
-    this->refreshClientButton->setEnabled( value );
-    this->clientCollapseAllButton->setEnabled( value );
-    this->clientExpandAllButton->setEnabled( value );
-    this->actionAdd_community->setEnabled( value );
-    this->actionCreate_Profile->setEnabled( value );
-    this->actionPreferences->setEnabled( value );
-    this->midasTreeItemInfoGroupBox->setEnabled( value );
+    this->treeViewClient->setEnabled(value);
+    this->refreshClientButton->setEnabled(value);
+    this->clientCollapseAllButton->setEnabled(value);
+    this->clientExpandAllButton->setEnabled(value);
+    this->actionAdd_community->setEnabled(value);
+    this->actionCreate_Profile->setEnabled(value);
+    this->actionPreferences->setEnabled(value);
+    this->midasTreeItemInfoGroupBox->setEnabled(value);
     }
 
-  if ( activateAction & ACTION_CONNECTED )
+  if (activateAction & ACTION_CONNECTED)
     {
-    this->searchTab->setEnabled( value );
-    this->treeViewServer->setEnabled( value );
-    this->pull_Button->setEnabled( value );
-    this->push_Button->setEnabled( value );
-    this->actionPush_Resource->setEnabled( value );
-    this->searchButton->setEnabled( value );
-    this->searchQueryEdit->setEnabled( value );
-    this->refreshButton->setEnabled( value );
-    this->showNewResourcesButton->setEnabled( value );
-    this->transferWidget->SetEnabled( value );
-    actionSign_In->setText( value ? tr("Sign Out") : tr("Sign In") );
+    this->searchTab->setEnabled(value);
+    this->treeViewServer->setEnabled(value);
+    this->pull_Button->setEnabled(value);
+    this->push_Button->setEnabled(value);
+    this->actionPush_Resource->setEnabled(value);
+    this->searchButton->setEnabled(value);
+    this->searchQueryEdit->setEnabled(value);
+    this->refreshButton->setEnabled(value);
+    this->showNewResourcesButton->setEnabled(value);
+    this->transferWidget->SetEnabled(value);
+    actionSign_In->setText(value ? tr("Sign Out") : tr("Sign In"));
     }
 
-  if ( activateAction & ACTION_COMMUNITY  )
+  if (activateAction & ACTION_COMMUNITY)
     {
-    this->actionPull_Resource->setEnabled( value );
-    this->actionOpenURL->setEnabled( value );
-    this->actionDelete_server->setEnabled( value );
+    this->actionPull_Resource->setEnabled(value);
+    this->actionOpenURL->setEnabled(value);
+    this->actionDelete_server->setEnabled(value);
     }
 
-  if ( activateAction & ACTION_COLLECTION  )
+  if (activateAction & ACTION_COLLECTION)
     {
-    this->actionPull_Resource->setEnabled( value );
-    this->actionOpenURL->setEnabled( value );
-    this->actionDelete_server->setEnabled( value );
+    this->actionPull_Resource->setEnabled(value);
+    this->actionOpenURL->setEnabled(value);
+    this->actionDelete_server->setEnabled(value);
     }
 
-  if ( activateAction & ACTION_ITEM  )
+  if (activateAction & ACTION_ITEM)
     {
-    this->actionPull_Resource->setEnabled( value );
-    this->actionOpenURL->setEnabled( value );
-    this->actionDelete_server->setEnabled( value );
-    this->actionDownload_key_files_tgz->setEnabled( value );
-    this->actionDownload_key_files_zip->setEnabled( value );
+    this->actionPull_Resource->setEnabled(value);
+    this->actionOpenURL->setEnabled(value);
+    this->actionDelete_server->setEnabled(value);
+    this->actionDownload_key_files_tgz->setEnabled(value);
+    this->actionDownload_key_files_zip->setEnabled(value);
     }
 
-  if ( activateAction & ACTION_BITSTREAM )
+  if (activateAction & ACTION_BITSTREAM)
     {
-    this->actionPull_Resource->setEnabled( value );
-    this->actionDelete_server->setEnabled( value );
-    this->actionDownload_key_file->setEnabled( value );
+    this->actionPull_Resource->setEnabled(value);
+    this->actionDelete_server->setEnabled(value);
+    this->actionDownload_key_file->setEnabled(value);
     }
 
-  if ( activateAction & ACTION_CLIENT_COMMUNITY )
+  if (activateAction & ACTION_CLIENT_COMMUNITY)
     {
-    this->actionAdd_subcommunity->setEnabled( value );
-    this->actionAdd_collection->setEnabled( value );
+    this->actionAdd_subcommunity->setEnabled(value);
+    this->actionAdd_collection->setEnabled(value);
     }
 
-  if ( activateAction & ACTION_CLIENT_COLLECTION )
+  if (activateAction & ACTION_CLIENT_COLLECTION)
     {
-    this->actionAdd_item->setEnabled( value );
+    this->actionAdd_item->setEnabled(value);
     }
 
-  if ( activateAction & ACTION_CLIENT_ITEM )
+  if (activateAction & ACTION_CLIENT_ITEM)
     {
-    this->actionAdd_bitstream->setEnabled( value );
+    this->actionAdd_bitstream->setEnabled(value);
     }
 
-  if ( activateAction & ACTION_CLIENT_BITSTREAM )
+  if (activateAction & ACTION_CLIENT_BITSTREAM)
     {
     }
 
-  if( activateAction & ACTION_CLIENT_RESOURCE )
+  if(activateAction & ACTION_CLIENT_RESOURCE)
     {
-    this->actionDelete_Resource->setEnabled( value );
-    this->actionView_Directory->setEnabled( value );
+    this->actionDelete_Resource->setEnabled(value);
+    this->actionView_Directory->setEnabled(value);
     }
 }
 
@@ -620,56 +595,56 @@ void MIDASDesktopUI::iconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void MIDASDesktopUI::updateActionState( const MidasTreeItem* item )
+void MIDASDesktopUI::updateActionState(const MidasTreeItem* item)
 {
   // disable all actions
-  this->activateActions( false, ACTION_ALL_CONNECTED );
+  this->activateActions(false, ACTION_ALL_CONNECTED);
   this->dlg_pullUI->setPullId(item->getId());
   this->dlg_pullUI->setResourceType(item->getType());
   this->dlg_pullUI->setResourceName(item->data(0).toString().toStdString());
 
   if (item->getType() == midasResourceType::COMMUNITY)
     {
-    this->activateActions( true, ACTION_COMMUNITY );
+    this->activateActions(true, ACTION_COMMUNITY);
     }
   else if (item->getType() == midasResourceType::COLLECTION)
     {
-    this->activateActions( true, ACTION_COLLECTION );
+    this->activateActions(true, ACTION_COLLECTION);
     }
   else if (item->getType() == midasResourceType::ITEM)
     {
-    this->activateActions( true, ACTION_ITEM | ACTION_BITSTREAM );
+    this->activateActions(true, ACTION_ITEM | ACTION_BITSTREAM);
     }
   else if (item->getType() == midasResourceType::BITSTREAM)
     {
-    this->activateActions( true, ACTION_BITSTREAM );
+    this->activateActions(true, ACTION_BITSTREAM);
     }
 }
 
-void MIDASDesktopUI::updateActionStateClient( const MidasTreeItem* item )
+void MIDASDesktopUI::updateActionStateClient(const MidasTreeItem* item)
 {
   // disable all actions
-  this->activateActions( false, ACTION_ALL_CONNECTED );
-  this->activateActions( false, ACTION_CLIENT_COMMUNITY
+  this->activateActions(false, ACTION_ALL_CONNECTED);
+  this->activateActions(false, ACTION_CLIENT_COMMUNITY
                               | ACTION_CLIENT_COLLECTION
                               | ACTION_CLIENT_ITEM
-                              | ACTION_CLIENT_BITSTREAM );
+                              | ACTION_CLIENT_BITSTREAM);
 
   if (item->getType() == midasResourceType::COMMUNITY)
     {
-    this->activateActions( true, ACTION_CLIENT_COMMUNITY );
+    this->activateActions(true, ACTION_CLIENT_COMMUNITY);
     }
   else if (item->getType() == midasResourceType::COLLECTION)
     {
-    this->activateActions( true, ACTION_CLIENT_COLLECTION );
+    this->activateActions(true, ACTION_CLIENT_COLLECTION);
     }
   else if (item->getType() == midasResourceType::ITEM)
     {
-    this->activateActions( true, ACTION_CLIENT_ITEM );
+    this->activateActions(true, ACTION_CLIENT_ITEM);
     }
   else if (item->getType() == midasResourceType::BITSTREAM)
     {
-    this->activateActions( true, ACTION_CLIENT_BITSTREAM );
+    this->activateActions(true, ACTION_CLIENT_BITSTREAM);
     }
 }
 
@@ -687,8 +662,8 @@ void MIDASDesktopUI::updateClientTreeView()
 
   m_ReadDatabaseThread = new UpdateTreeViewThread(this->treeViewClient);
 
-  connect(m_ReadDatabaseThread, SIGNAL( finished() ), this, SLOT( resetStatus() ) );
-  connect(m_ReadDatabaseThread, SIGNAL( enableActions(bool) ), this, SLOT( enableClientActions(bool) ) );
+  connect(m_ReadDatabaseThread, SIGNAL(finished()), this, SLOT(resetStatus()));
+  connect(m_ReadDatabaseThread, SIGNAL(enableActions(bool)), this, SLOT(enableClientActions(bool)));
 
   displayStatus("Reading local database...");
   setProgressIndeterminate();
@@ -706,9 +681,9 @@ void MIDASDesktopUI::updateServerTreeView()
 
   m_RefreshThread = new UpdateTreeViewThread(this->treeViewServer);
   
-  connect(m_RefreshThread, SIGNAL( finished() ), this, SLOT( resetStatus() ) );
-  connect(m_RefreshThread, SIGNAL( finished() ), this, SLOT( clearInfoPanel() ) );
-  connect(m_RefreshThread, SIGNAL( enableActions(bool) ), this, SLOT( enableActions(bool) ) );
+  connect(m_RefreshThread, SIGNAL(finished()), this, SLOT(resetStatus()));
+  connect(m_RefreshThread, SIGNAL(finished()), this, SLOT(clearInfoPanel()));
+  connect(m_RefreshThread, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
 
   displayStatus("Refreshing server tree...");
   setProgressIndeterminate();
@@ -758,7 +733,7 @@ void MIDASDesktopUI::resetStatus()
 
 void MIDASDesktopUI::alertNewResources()
 {
-  disconnect(trayIcon, SIGNAL( messageClicked() ), this, SLOT( showNormal() ) );
+  disconnect(trayIcon, SIGNAL(messageClicked()), this, SLOT(showNormal()));
   trayIcon->showMessage(tr("MIDASDesktop - New Resources"),
     tr("There are new resources on the MIDAS server.  Click this message "
     "to show the MIDASDesktop window."));
@@ -766,7 +741,7 @@ void MIDASDesktopUI::alertNewResources()
   if(this->isHidden())
     {
     trayIcon->setIcon(QPixmap(":icons/MIDAS_Desktop_Icon_Red_v1.png"));
-    connect(trayIcon, SIGNAL( messageClicked() ), this, SLOT( showNormal() ) );
+    connect(trayIcon, SIGNAL(messageClicked()), this, SLOT(showNormal()));
     }
 }
 
@@ -775,25 +750,25 @@ void MIDASDesktopUI::showLogTab()
   // Put anything that should happen whenever new text appears in the log.
 }
 
-void MIDASDesktopUI::updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem )
+void MIDASDesktopUI::updateInfoPanel(const MidasCommunityTreeItem* communityTreeItem)
 {
   this->m_editMode = false;
   infoPanel(const_cast<MidasCommunityTreeItem*>(communityTreeItem), false);
 }
 
-void MIDASDesktopUI::updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem )
+void MIDASDesktopUI::updateInfoPanel(const MidasCollectionTreeItem* collectionTreeItem)
 {
   this->m_editMode = false;
   infoPanel(const_cast<MidasCollectionTreeItem*>(collectionTreeItem), false);
 }
 
-void MIDASDesktopUI::updateInfoPanel( const MidasItemTreeItem* itemTreeItem )
+void MIDASDesktopUI::updateInfoPanel(const MidasItemTreeItem* itemTreeItem)
 {
   this->m_editMode = false;
   infoPanel(const_cast<MidasItemTreeItem*>(itemTreeItem), false);
 }
 
-void MIDASDesktopUI::updateInfoPanel( const MidasBitstreamTreeItem* bitstreamTreeItem )
+void MIDASDesktopUI::updateInfoPanel(const MidasBitstreamTreeItem* bitstreamTreeItem)
 {
   this->m_editMode = false;
   infoPanel(const_cast<MidasBitstreamTreeItem*>(bitstreamTreeItem), false);
@@ -822,7 +797,7 @@ void MIDASDesktopUI::infoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
   if(community->GetLinks() != "" || edit) i++;
   if(community->GetSize() != "" || communityTreeItem->isClientResource()) i++;
 
-  midasTreeItemInfoTable->setRowCount( i );
+  midasTreeItemInfoTable->setRowCount(i);
   i = 0; 
   
   if(community->GetName() != "" || edit)
@@ -925,7 +900,7 @@ void MIDASDesktopUI::infoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
   if(collection->GetIntroductoryText() != "" || edit) i++;
   if(collection->GetSize() != "" || collectionTreeItem->isClientResource()) i++;
   
-  midasTreeItemInfoTable->setRowCount( i );
+  midasTreeItemInfoTable->setRowCount(i);
   i = 0;
 
   if(collection->GetName() != "" || edit)
@@ -1151,95 +1126,104 @@ void MIDASDesktopUI::infoPanel(MidasBitstreamTreeItem* bitstreamTreeItem, bool e
 void MIDASDesktopUI::clearInfoPanel()
 {
   midasTreeItemInfoTable->clear();
-  midasTreeItemInfoTable->setRowCount( 0 );
+  midasTreeItemInfoTable->setRowCount(0);
   enableResourceEditing(false);
 }
 
-void MIDASDesktopUI::displayClientResourceContextMenu( QContextMenuEvent* e )
+void MIDASDesktopUI::displayClientResourceContextMenu(QContextMenuEvent* e)
 {
-  QMenu menu( this );
+  QMenu menu(this);
   MidasCommunityTreeItem* communityTreeItem = NULL;
   MidasCollectionTreeItem* collectionTreeItem = NULL;
   MidasItemTreeItem* itemTreeItem = NULL;
   MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
 
-  QModelIndex index = treeViewClient->indexAt( e->pos() );
+  QModelIndex index = treeViewClient->indexAt(e->pos());
   
-  if ( index.isValid() )
+  if (index.isValid())
     {
     MidasTreeItem* item = const_cast<MidasTreeItem*>(treeViewClient->getSelectedMidasTreeItem());
 
-    treeViewClient->selectionModel()->select( index, QItemSelectionModel::SelectCurrent ); 
+    treeViewClient->selectionModel()->select(index, QItemSelectionModel::SelectCurrent); 
 
-    menu.addAction( this->actionView_Directory );
+    menu.addAction(this->actionView_Directory);
     menu.addSeparator();
 
-    if ( ( communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>( item ) ) != NULL)
+    if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
       {
-      menu.addAction( this->actionAdd_subcommunity );
-      menu.addAction( this->actionAdd_collection );
+      menu.addAction(this->actionAdd_subcommunity);
+      menu.addAction(this->actionAdd_collection);
       }
-    else if ( ( collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>( item ) ) != NULL )
+    else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
       {
-      menu.addAction( this->actionAdd_item );
+      menu.addAction(this->actionAdd_item);
       }
-    else if ( ( itemTreeItem = dynamic_cast<MidasItemTreeItem*>( item ) ) != NULL )
+    else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
       {
-      menu.addAction( this->actionAdd_bitstream );
+      menu.addAction(this->actionAdd_bitstream);
       }
-    else if ( ( bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>( item ) ) != NULL )
+    else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
       {
-      menu.addAction( this->actionSwap_with_MD5_reference );
+      menu.addAction(this->actionSwap_with_MD5_reference);
       }
-    menu.addAction( this->actionDelete_Resource );
+    menu.addAction(this->actionDelete_Resource);
     }
   else
     {
     treeViewServer->selectionModel()->clearSelection();
-    menu.addAction( this->actionAdd_community );
+    menu.addAction(this->actionAdd_community);
     }
-  menu.addAction( this->actionPush_Resource );
-  menu.exec( e->globalPos() );
+  menu.addAction(this->actionPush_Resource);
+  menu.exec(e->globalPos());
 }
 
-void MIDASDesktopUI::displayServerResourceContextMenu( QContextMenuEvent* e )
+void MIDASDesktopUI::displayServerResourceContextMenu(QContextMenuEvent* e)
 {
-  QMenu menu( this );
-  QModelIndex index = treeViewServer->indexAt( e->pos() );
-  MidasItemTreeItem* itemTreeItem = NULL;
-  MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
-
-  if ( index.isValid() )
+  QMenu menu(this);
+  if(IS_MIDAS3)
     {
-    MidasTreeItem* item = const_cast<MidasTreeItem*>(treeViewServer->getSelectedMidasTreeItem());
+    // TODO context menu in midas 3 server tree?
+    Midas3TreeViewServer* treeView = dynamic_cast<Midas3TreeViewServer*>(this->treeViewServer);
+    }
+  else
+    {
+    MidasTreeViewServer* treeView = dynamic_cast<MidasTreeViewServer*>(this->treeViewServer);
+    QModelIndex index = treeView->indexAt(e->pos());
+    MidasItemTreeItem* itemTreeItem = NULL;
+    MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
 
-    if(!item->resourceIsFetched())
+    if(index.isValid())
       {
+      MidasTreeItem* item = const_cast<MidasTreeItem*>(treeView->getSelectedMidasTreeItem());
+
+      if(!item->resourceIsFetched())
+        {
+        return;
+        }
+      menu.addAction(this->actionPull_Resource);
+      menu.addAction(this->actionOpenURL);
+      menu.addAction(this->actionDelete_server);
+      treeViewServer->selectionModel()->select(index, QItemSelectionModel::SelectCurrent);
+
+      if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
+        {
+        menu.addSeparator();
+        menu.addAction(this->actionDownload_key_files_tgz);
+        menu.addAction(this->actionDownload_key_files_zip);
+        }
+      else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
+        {
+        menu.addSeparator();
+        menu.addAction(this->actionDownload_key_file);
+        }
+      }
+    else 
+      {
+      treeViewServer->selectionModel()->clearSelection();
       return;
       }
-    menu.addAction( this->actionPull_Resource );
-    menu.addAction( this->actionOpenURL );
-    menu.addAction( this->actionDelete_server );
-    treeViewServer->selectionModel()->select( index, QItemSelectionModel::SelectCurrent );
-
-    if ( ( itemTreeItem = dynamic_cast<MidasItemTreeItem*>( item ) ) != NULL )
-      {
-      menu.addSeparator();
-      menu.addAction( this->actionDownload_key_files_tgz );
-      menu.addAction( this->actionDownload_key_files_zip );
-      }
-    else if ( ( bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>( item ) ) != NULL )
-      {
-      menu.addSeparator();
-      menu.addAction( this->actionDownload_key_file );
-      }
     }
-  else 
-    {
-    treeViewServer->selectionModel()->clearSelection();
-    return;
-    }
-  menu.exec( e->globalPos() );
+  menu.exec(e->globalPos());
 }
 
 void MIDASDesktopUI::addCommunity()
@@ -1299,14 +1283,14 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
   m_AddBitstreamsThread->SetParentItem(
     const_cast<MidasItemTreeItem*>(parentItem));
   
-  connect(m_AddBitstreamsThread, SIGNAL( finished() ),
-          m_PollFilesystemThread, SLOT( Resume()) );
-  connect(m_AddBitstreamsThread, SIGNAL( finished() ),
-          this, SLOT( resetStatus() ) );
+  connect(m_AddBitstreamsThread, SIGNAL(finished()),
+          m_PollFilesystemThread, SLOT(Resume()));
+  connect(m_AddBitstreamsThread, SIGNAL(finished()),
+          this, SLOT(resetStatus()));
   connect(m_AddBitstreamsThread, SIGNAL(enableActions(bool)),
-          this, SLOT( enableClientActions(bool) ) );
+          this, SLOT(enableClientActions(bool)));
   connect(m_AddBitstreamsThread, SIGNAL(progress(int, int, const QString&)),
-          this, SLOT(addBitstreamsProgress(int, int, const QString&)) );
+          this, SLOT(addBitstreamsProgress(int, int, const QString&)));
   m_progress->ResetProgress();
   m_progress->ResetOverall();
   m_progress->SetUnit(" files");
@@ -1371,32 +1355,41 @@ void MIDASDesktopUI::viewInBrowser()
   std::stringstream path;
   path << baseUrl.toStdString();
 
-  MidasTreeItem* resource = const_cast<MidasTreeItem*>(
-    treeViewServer->getSelectedMidasTreeItem());
-  MidasCommunityTreeItem* comm = NULL;
-  MidasCollectionTreeItem* coll = NULL;
-  MidasItemTreeItem* item = NULL;
+  if(IS_MIDAS3)
+    {
+    // TODO view in browser: MIDAS 3 version
+    }
+  else
+    {
+    MidasTreeItem* resource = const_cast<MidasTreeItem*>(
+      dynamic_cast<MidasTreeViewServer*>(
+      this->treeViewServer)
+      ->getSelectedMidasTreeItem());
+    MidasCommunityTreeItem* comm = NULL;
+    MidasCollectionTreeItem* coll = NULL;
+    MidasItemTreeItem* item = NULL;
 
-  if ((comm = dynamic_cast<MidasCommunityTreeItem*>(resource)) != NULL)
-    {
-    path << "/community/view/" << comm->getCommunity()->GetId();
-    }
-  else if ((coll = dynamic_cast<MidasCollectionTreeItem*>(resource)) != NULL)
-    {
-    path << "/collection/view/" << coll->getCollection()->GetId();
-    }
-  else if ((item = dynamic_cast<MidasItemTreeItem*>(resource)) != NULL)
-    {
-    path << "/item/view/" << item->getItem()->GetId();
-    }
+    if ((comm = dynamic_cast<MidasCommunityTreeItem*>(resource)) != NULL)
+      {
+      path << "/community/view/" << comm->getCommunity()->GetId();
+      }
+    else if ((coll = dynamic_cast<MidasCollectionTreeItem*>(resource)) != NULL)
+      {
+      path << "/collection/view/" << coll->getCollection()->GetId();
+      }
+    else if ((item = dynamic_cast<MidasItemTreeItem*>(resource)) != NULL)
+      {
+      path << "/item/view/" << item->getItem()->GetId();
+      }
 
-  QUrl url(path.str().c_str());
-  if(!QDesktopServices::openUrl(url))
-    {
-    std::stringstream text;
-    text << "The operating system does not know how to open "
-      << path.str() << std::endl;
-    GetLog()->Error(text.str());
+    QUrl url(path.str().c_str());
+    if(!QDesktopServices::openUrl(url))
+      {
+      std::stringstream text;
+      text << "The operating system does not know how to open "
+        << path.str() << std::endl;
+      GetLog()->Error(text.str());
+      }
     }
 }
 
@@ -1413,7 +1406,7 @@ void MIDASDesktopUI::signingIn()
 
 void MIDASDesktopUI::signInOrOut()
 {
-  if ( !this->m_signIn )
+  if (!this->m_signIn)
     {
     this->dlg_signInUI->exec();
     }
@@ -1461,7 +1454,6 @@ void MIDASDesktopUI::signIn(bool ok)
   if(ok)
     {
     connectLabel->hide();
-    activateActions( true, MIDASDesktopUI::ACTION_CONNECTED );
 
     // start the refresh timer here if our setting = 1
     mds::DatabaseAPI db;
@@ -1471,8 +1463,8 @@ void MIDASDesktopUI::signIn(bool ok)
       }
 
     // Satus bar
-    std::string connect = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 
-    connectLabel->setText( connect.c_str() );
+    std::string connectStr = "  Connected to " + std::string(mws::WebAPI::Instance()->GetServerUrl()) + "  "; 
+    connectLabel->setText(connectStr.c_str());
     connectLabel->show();
 
     std::stringstream text;
@@ -1480,6 +1472,47 @@ void MIDASDesktopUI::signIn(bool ok)
     GetLog()->Message(text.str());
     m_signIn = true;
     displayStatus(tr(""));
+
+    delete this->treeViewServer;
+    if(IS_MIDAS3)
+      {
+      this->treeViewServer = new Midas3TreeViewServer(this);
+      }
+    else
+      {
+      this->treeViewServer = new MidasTreeViewServer(this);
+
+      connect(treeViewServer, SIGNAL(midasTreeItemSelected(const MidasTreeItem*)),
+            this, SLOT(updateActionState(const MidasTreeItem*)));
+      connect(treeViewServer, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
+            this, SLOT(updateInfoPanel(const MidasCommunityTreeItem*)));
+      connect(treeViewServer, SIGNAL(midasCollectionTreeItemSelected(const MidasCollectionTreeItem*)),
+              this, SLOT(updateInfoPanel(const MidasCollectionTreeItem*)));
+      connect(treeViewServer, SIGNAL(midasItemTreeItemSelected(const MidasItemTreeItem*)),
+              this, SLOT(updateInfoPanel(const MidasItemTreeItem*)));
+      connect(treeViewServer, SIGNAL(midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem*)),
+            this, SLOT(updateInfoPanel(const MidasBitstreamTreeItem*)));
+      }
+    delete this->treeViewPlaceholder;
+    this->treeViewPlaceholder = NULL;
+    this->serverTreeViewContainer->layout()->addWidget(this->treeViewServer);
+    activateActions(true, MIDASDesktopUI::ACTION_CONNECTED);
+    treeViewServer->SetSynchronizer(m_synch);
+    connect(refreshTimer, SIGNAL(timeout()), treeViewServer, SLOT(Update()));
+    connect(treeViewServer, SIGNAL(resourceDropped(int, int)),
+            this, SLOT(dragNDropPush(int, int)));
+    connect(treeViewServer, SIGNAL(midasNoTreeItemSelected()),
+            this, SLOT(clearInfoPanel()));
+    connect(treeViewServer, SIGNAL(midasNoTreeItemSelected()),
+            dlg_pullUI, SLOT(resetState()));
+    connect(treeViewServer, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
+            this, SLOT(displayServerResourceContextMenu(QContextMenuEvent*)));
+    connect(treeViewServer->model(), SIGNAL(serverPolled()), this, SLOT(storeLastPollTime()));
+
+    connect(treeViewServer, SIGNAL(startedExpandingTree()), this, SLOT(startedExpandingTree()));
+    connect(treeViewServer, SIGNAL(finishedExpandingTree()), this, SLOT(finishedExpandingTree()));
+
+    connect(treeViewServer, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
     this->treeViewServer->Initialize();
     }
   else
@@ -1564,8 +1597,8 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     m_PollFilesystemThread = new PollFilesystemThread;
     
     connect(m_PollFilesystemThread, SIGNAL(needToRefresh()), this, SLOT(updateClientTreeView()), Qt::BlockingQueuedConnection);
-    connect(dlg_pullUI, SIGNAL( startingSynchronizer() ), m_PollFilesystemThread, SLOT( Pause() ));
-    connect(dlg_pullUI, SIGNAL( pulledResources() ), m_PollFilesystemThread, SLOT( Resume() ) );
+    connect(dlg_pullUI, SIGNAL(startingSynchronizer()), m_PollFilesystemThread, SLOT(Pause()));
+    connect(dlg_pullUI, SIGNAL(pulledResources()), m_PollFilesystemThread, SLOT(Resume()));
 
     m_PollFilesystemThread->start();
     }
@@ -1578,9 +1611,9 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     }
 }
 
-void MIDASDesktopUI::createProfile(std::string name, std::string email,
-                                   std::string apiName, std::string apiKey,
-                                   std::string rootDir, std::string url)
+void MIDASDesktopUI::createProfile(const std::string& name, const std::string& email,
+                                   const std::string& apiName, const std::string& password,
+                                   const std::string& rootDir, const std::string& url)
 {
   if(mds::DatabaseInfo::Instance()->GetPath() == "")
     {
@@ -1593,7 +1626,7 @@ void MIDASDesktopUI::createProfile(std::string name, std::string email,
   std::string oldUrl = mws::WebAPI::Instance()->GetServerUrl();
   mws::WebAPI::Instance()->SetServerUrl(url.c_str());
   std::string msg;
-  if(m_synch->GetAuthenticator()->AddAuthProfile(email, apiName, apiKey, rootDir, name))
+  if(m_synch->GetAuthenticator()->AddAuthProfile(email, apiName, password, rootDir, name))
     {
     msg = "Successfully created profile \"" + name + "\".";
     this->dlg_signInUI->profileCreated(name);
@@ -1615,6 +1648,8 @@ void MIDASDesktopUI::signOut()
   connectLabel->hide();
   this->displayStatus(tr("Logout"));
   this->searchItemsListWidget->clear();
+  this->m_synch->GetAuthenticator()->ClearToken();
+  mws::WebAPI::Instance()->Logout();
   m_signIn = false;
 
   refreshTimer->stop();
@@ -1674,8 +1709,8 @@ void MIDASDesktopUI::search()
   m_SearchThread->SetWords(words);
   m_SearchThread->SetResults(&this->m_SearchResults);
   
-  connect(m_SearchThread, SIGNAL( finished() ),
-    this, SLOT( showSearchResults() ) );
+  connect(m_SearchThread, SIGNAL(finished()),
+    this, SLOT(showSearchResults()));
 
   activateActions(false, ACTION_CONNECTED);
   displayStatus("Performing search...");
@@ -1697,24 +1732,30 @@ void MIDASDesktopUI::showSearchResults()
 
 void MIDASDesktopUI::searchItemClicked(QListWidgetItemMidasItem* listItem)
 {
-  this->treeViewServer->selectByUuid(listItem->getObject()->GetUuid(), true);
+  // TODO MIDAS3ify
+  dynamic_cast<MidasTreeViewServer*>(this->treeViewServer)
+    ->selectByUuid(listItem->getObject()->GetUuid(), true);
 }
 
 void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)
 {
-  QMenu menu( this );
-  QModelIndex index = searchItemsListWidget->indexAt( e->pos() );
+  QMenu menu(this);
+  QModelIndex index = searchItemsListWidget->indexAt(e->pos());
 
-  if ( index.isValid() )
+  if (index.isValid())
     {
-    menu.addAction( this->actionOpenURL );
-    menu.addAction( this->actionPull_Resource );
-    menu.exec( e->globalPos() );
+    menu.addAction(this->actionOpenURL);
+    menu.addAction(this->actionPull_Resource);
+    menu.exec(e->globalPos());
     }
 }
 
 void MIDASDesktopUI::storeLastPollTime()
 {
+  if(IS_MIDAS3)
+    {
+    return; //no new resources call for MIDAS 3 yet.
+    }
   mds::DatabaseAPI db;
   enableActions(false);
   mws::NewResources newResources;
@@ -1736,27 +1777,41 @@ void MIDASDesktopUI::storeLastPollTime()
 
 void MIDASDesktopUI::decorateServerTree()
 {
-  if(m_cancel)
+  if(IS_MIDAS3)
     {
-    m_cancel = false;
-    m_dirtyUuids.clear();
-    return;
+    // TODO midas 3 server tree decoration
     }
-  if(m_dirtyUuids.size())
+  else
     {
-    enableActions(false);
-    connect(treeViewServer, SIGNAL( finishedExpandingTree() ),
-      this, SLOT( decorateCallback() ) );
-    this->treeViewServer->selectByUuid(m_dirtyUuids[0]);
+    if(m_cancel)
+      {
+      m_cancel = false;
+      m_dirtyUuids.clear();
+      return;
+      }
+    if(m_dirtyUuids.size())
+      {
+      enableActions(false);
+      connect(treeViewServer, SIGNAL(finishedExpandingTree()),
+        this, SLOT(decorateCallback()));
+      dynamic_cast<MidasTreeViewServer*>(this->treeViewServer)->selectByUuid(m_dirtyUuids[0]);
+      }
     }
 }
 
 void MIDASDesktopUI::decorateCallback()
 {
-  this->treeViewServer->decorateByUuid(m_dirtyUuids[0]);
+  if(IS_MIDAS3)
+    {
+    dynamic_cast<Midas3TreeViewServer*>(this->treeViewServer)->decorateByUuid(m_dirtyUuids[0]);
+    }
+  else
+    {
+    dynamic_cast<MidasTreeViewServer*>(this->treeViewServer)->decorateByUuid(m_dirtyUuids[0]);
+    }
   m_dirtyUuids.erase(m_dirtyUuids.begin());
-  disconnect(treeViewServer, SIGNAL( finishedExpandingTree() ),
-    this, SLOT( decorateCallback() ) );
+  disconnect(treeViewServer, SIGNAL(finishedExpandingTree()),
+    this, SLOT(decorateCallback()));
   decorateServerTree();
 }
 
@@ -1800,9 +1855,9 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
   m_DeleteThread->SetResource(const_cast<MidasTreeItem*>(treeItem));
   m_DeleteThread->SetDeleteOnDisk(deleteFiles);
 
-  connect(m_DeleteThread, SIGNAL( finished() ), this, SLOT( resetStatus() ) );
-  connect(m_DeleteThread, SIGNAL( finished() ), this, SLOT( updateClientTreeView() ) );
-  connect(m_DeleteThread, SIGNAL( enableActions(bool) ), this, SLOT( enableClientActions(bool) ) );
+  connect(m_DeleteThread, SIGNAL(finished()), this, SLOT(resetStatus()));
+  connect(m_DeleteThread, SIGNAL(finished()), this, SLOT(updateClientTreeView()));
+  connect(m_DeleteThread, SIGNAL(enableActions(bool)), this, SLOT(enableClientActions(bool)));
 
   this->Log->Status("Deleting local resources...");
   setProgressIndeterminate();
@@ -1813,23 +1868,30 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
 // Controller for deleting server resources
 void MIDASDesktopUI::deleteServerResource(bool val)
 {
-  const MidasTreeItem* resource = this->treeViewServer->getSelectedMidasTreeItem();
-  int id = resource->getId();
-  std::string typeName = QString(midasUtils::GetTypeName(resource->getType()).c_str()).toStdString();
-
-  std::stringstream text;
-  if(mws::WebAPI::Instance()->DeleteResource(typeName, id))
+  if(IS_MIDAS3)
     {
-    text << "Successfully deleted " << typeName
-         << " with id=" << id << " from the server.";
-    this->Log->Message(text.str());
-    this->updateServerTreeView();
+    // TODO delete server resource
     }
   else
     {
-    text << "Failed to delete " << typeName << " with id=" << id
-      << " from the server";
-    this->Log->Error(text.str());
+    const MidasTreeItem* resource = dynamic_cast<MidasTreeViewServer*>(this->treeViewServer)->getSelectedMidasTreeItem();
+    int id = resource->getId();
+    std::string typeName = QString(midasUtils::GetTypeName(resource->getType()).c_str()).toStdString();
+
+    std::stringstream text;
+    if(mws::WebAPI::Instance()->DeleteResource(typeName, id))
+      {
+      text << "Successfully deleted " << typeName
+           << " with id=" << id << " from the server.";
+      this->Log->Message(text.str());
+      this->updateServerTreeView();
+      }
+    else
+      {
+      text << "Failed to delete " << typeName << " with id=" << id
+        << " from the server";
+      this->Log->Error(text.str());
+      }
     }
 }
 
@@ -1955,7 +2017,7 @@ void MIDASDesktopUI::resourceEdited(QTableWidgetItem* row)
     editor.SetLog(this->Log);
 
     connect(&editor, SIGNAL(DataModified(std::string)), treeViewClient,
-      SLOT( decorateByUuid(std::string) ) );
+      SLOT(decorateByUuid(std::string)));
 
     editor.Save(row);
     disconnect(&editor);

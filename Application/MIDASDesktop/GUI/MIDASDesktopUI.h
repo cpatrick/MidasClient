@@ -52,6 +52,8 @@ class QContextMenuEvent;
 class MidasTreeItem;
 class IncompleteTransferWidget;
 
+class MidasTreeViewBase;
+
 namespace mdo {
   class Object;
 }
@@ -101,8 +103,8 @@ public:
 
   void activateActions(bool value, ActivateActions activateAction); 
 
-  MidasTreeViewServer * getTreeViewServer() { return treeViewServer; }
-  MidasTreeViewClient * getTreeViewClient() { return treeViewClient; }
+  MidasTreeViewBase* getTreeViewServer() { return treeViewServer; }
+  MidasTreeViewBase* getTreeViewClient() { return treeViewClient; }
   midasSynchronizer* getSynchronizer() { return m_synch; }
   midasProgressReporter* getProgress() { return m_progress; }
   PollFilesystemThread* getPollFilesystemThread() { return m_PollFilesystemThread; }
@@ -136,9 +138,9 @@ public slots:
   void signInOrOut();
   void signIn(bool ok);
   void signOut();
-  void createProfile(std::string name, std::string email,
-                     std::string apiName, std::string apiKey,
-                     std::string rootDir, std::string url);
+  void createProfile(const std::string& name, const std::string& email,
+                     const std::string& apiName, const std::string& password,
+                     const std::string& rootDir, const std::string& url);
   void chooseLocalDatabase();
   void createLocalDatabase();
   void setLocalDatabase(std::string file);
@@ -176,10 +178,10 @@ public slots:
   // ------------- tray icon -------------
 
   // ------------- UI updates -------------
-  void updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem );
-  void updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem );
-  void updateInfoPanel( const MidasItemTreeItem* itemTreeItem );
-  void updateInfoPanel( const MidasBitstreamTreeItem* bitstreamTreeItem );
+  void updateInfoPanel(const MidasCommunityTreeItem* communityTreeItem);
+  void updateInfoPanel(const MidasCollectionTreeItem* collectionTreeItem);
+  void updateInfoPanel(const MidasItemTreeItem* itemTreeItem);
+  void updateInfoPanel(const MidasBitstreamTreeItem* bitstreamTreeItem);
   void clearInfoPanel();
   void editInfo();
 
@@ -302,6 +304,8 @@ private:
   DeleteThread*               m_DeleteThread;
   QFutureWatcher<bool>        m_CreateDBWatcher;
   // ----------- threads -----------------
+
+  MidasTreeViewBase*          treeViewServer;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( MIDASDesktopUI::ActivateActions )

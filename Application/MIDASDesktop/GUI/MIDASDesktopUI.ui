@@ -206,23 +206,7 @@
                </item>
               </layout>
              </item>
-             <item row="1" column="0">
-              <widget class="MidasTreeViewServer" name="treeViewServer">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="acceptDrops">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
+             <item row="2" column="1">
               <layout class="QVBoxLayout" name="verticalLayout_4">
                <property name="spacing">
                 <number>3</number>
@@ -289,7 +273,7 @@
                </item>
               </layout>
              </item>
-             <item row="1" column="2">
+             <item row="1" column="2" rowspan="2">
               <widget class="MidasTreeViewClient" name="treeViewClient">
                <property name="enabled">
                 <bool>false</bool>
@@ -303,6 +287,31 @@
                <property name="acceptDrops">
                 <bool>true</bool>
                </property>
+              </widget>
+             </item>
+             <item row="1" column="0" rowspan="2">
+              <widget class="QWidget" name="serverTreeViewContainer" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_3">
+                <property name="margin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QTreeView" name="treeViewPlaceholder">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="acceptDrops">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
@@ -1115,11 +1124,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MidasTreeViewServer</class>
-   <extends>QTreeView</extends>
-   <header>MidasTreeViewServer.h</header>
-  </customwidget>
-  <customwidget>
    <class>MidasSearchResultList</class>
    <extends>QListWidget</extends>
    <header>MidasSearchResultList.h</header>
@@ -1137,7 +1141,6 @@
  </customwidgets>
  <tabstops>
   <tabstop>refreshButton</tabstop>
-  <tabstop>treeViewServer</tabstop>
   <tabstop>pull_Button</tabstop>
   <tabstop>push_Button</tabstop>
   <tabstop>treeViewClient</tabstop>
@@ -1154,6 +1157,8 @@
   <tabstop>log</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

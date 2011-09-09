@@ -59,5 +59,6 @@
     <file>icons/control_play_blue.png</file>
     <file>icons/arrow_up.png</file>
     <file>icons/arrow_down.png</file>
+    <file>icons/user_group.png</file>
   </qresource>
 </RCC>
