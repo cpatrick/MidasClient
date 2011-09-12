@@ -50,6 +50,9 @@ class DeleteThread;
 
 class QContextMenuEvent;
 class MidasTreeItem;
+class Midas3TreeItem;
+class Midas3FolderTreeItem;
+class Midas3ItemTreeItem;
 class IncompleteTransferWidget;
 
 class MidasTreeViewBase;
@@ -182,10 +185,13 @@ public slots:
   void updateInfoPanel(const MidasCollectionTreeItem* collectionTreeItem);
   void updateInfoPanel(const MidasItemTreeItem* itemTreeItem);
   void updateInfoPanel(const MidasBitstreamTreeItem* bitstreamTreeItem);
+  void updateInfoPanel(const Midas3FolderTreeItem* folderTreeItem);
+  void updateInfoPanel(const Midas3ItemTreeItem* itemTreeItem);
   void clearInfoPanel();
   void editInfo();
 
   void updateActionState(const MidasTreeItem* item);
+  void updateActionState(const Midas3TreeItem* item);
   void updateActionStateClient(const MidasTreeItem* item);
 
   void displayServerResourceContextMenu(QContextMenuEvent* e);
