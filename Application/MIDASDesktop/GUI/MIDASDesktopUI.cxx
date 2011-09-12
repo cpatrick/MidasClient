@@ -1666,11 +1666,24 @@ void MIDASDesktopUI::createLocalDatabase()
 
   if(file != "")
     {
-    this->Log->Message("Creating new local database at " + file);
-    this->actionNew_Local_Database->setEnabled(false);
-    this->setProgressIndeterminate();
-    QFuture<bool> future = QtConcurrent::run(midasUtils::CreateNewDatabase, file);
-    m_CreateDBWatcher.setFuture(future);
+    QMessageBox msgBox;
+    msgBox.setText("Do you want to create a MIDAS 2 or MIDAS 3 database?");
+    msgBox.setInformativeText("");
+    QAbstractButton* midas2Button = msgBox.addButton("MIDAS 2", QMessageBox::YesRole);
+    QAbstractButton* midas3Button = msgBox.addButton("MIDAS 3", QMessageBox::YesRole);
+    QAbstractButton* cancelButton = msgBox.addButton("Cancel", QMessageBox::NoRole);
+    msgBox.setIcon(QMessageBox::Question);
+    msgBox.exec();
+ 
+    if(msgBox.clickedButton() != cancelButton)
+      {
+      this->Log->Message("Creating new local database at " + file);
+      this->actionNew_Local_Database->setEnabled(false);
+      this->setProgressIndeterminate();
+      bool midas3 = msgBox.clickedButton() == midas3Button;
+      QFuture<bool> future = QtConcurrent::run(midasUtils::CreateNewDatabase, file, midas3);
+      m_CreateDBWatcher.setFuture(future);
+      }
     }
 }
 
