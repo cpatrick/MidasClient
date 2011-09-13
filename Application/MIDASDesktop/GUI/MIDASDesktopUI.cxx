@@ -1286,7 +1286,7 @@ void MIDASDesktopUI::displayClientResourceContextMenu(QContextMenuEvent* e)
 void MIDASDesktopUI::displayServerResourceContextMenu(QContextMenuEvent* e)
 {
   QMenu menu(this);
-  if(IS_MIDAS3)
+  if(SERVER_IS_MIDAS3)
     {
     // TODO context menu in midas 3 server tree?
     Midas3TreeViewServer* treeView = dynamic_cast<Midas3TreeViewServer*>(this->treeViewServer);
@@ -1461,7 +1461,7 @@ void MIDASDesktopUI::viewInBrowser()
   std::stringstream path;
   path << baseUrl.toStdString();
 
-  if(IS_MIDAS3)
+  if(SERVER_IS_MIDAS3)
     {
     // TODO view in browser: MIDAS 3 version
     }
@@ -1580,7 +1580,7 @@ void MIDASDesktopUI::signIn(bool ok)
     displayStatus(tr(""));
 
     delete this->treeViewServer;
-    if(IS_MIDAS3)
+    if(SERVER_IS_MIDAS3)
       {
       this->treeViewServer = new Midas3TreeViewServer(this);
 
@@ -1878,7 +1878,7 @@ void MIDASDesktopUI::searchItemContextMenu(QContextMenuEvent* e)
 
 void MIDASDesktopUI::storeLastPollTime()
 {
-  if(IS_MIDAS3)
+  if(SERVER_IS_MIDAS3)
     {
     return; //no new resources call for MIDAS 3 yet.
     }
@@ -1903,7 +1903,7 @@ void MIDASDesktopUI::storeLastPollTime()
 
 void MIDASDesktopUI::decorateServerTree()
 {
-  if(IS_MIDAS3)
+  if(SERVER_IS_MIDAS3)
     {
     // TODO midas 3 server tree decoration
     }
@@ -1927,7 +1927,7 @@ void MIDASDesktopUI::decorateServerTree()
 
 void MIDASDesktopUI::decorateCallback()
 {
-  if(IS_MIDAS3)
+  if(SERVER_IS_MIDAS3)
     {
     dynamic_cast<Midas3TreeViewServer*>(this->treeViewServer)->decorateByUuid(m_dirtyUuids[0]);
     }
@@ -1994,7 +1994,7 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
 // Controller for deleting server resources
 void MIDASDesktopUI::deleteServerResource(bool val)
 {
-  if(IS_MIDAS3)
+  if(SERVER_IS_MIDAS3)
     {
     // TODO delete server resource
     }
