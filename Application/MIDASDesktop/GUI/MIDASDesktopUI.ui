@@ -273,22 +273,6 @@
                </item>
               </layout>
              </item>
-             <item row="1" column="2" rowspan="2">
-              <widget class="MidasTreeViewClient" name="treeViewClient">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="acceptDrops">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
              <item row="1" column="0" rowspan="2">
               <widget class="QWidget" name="serverTreeViewContainer" native="true">
                <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -296,7 +280,32 @@
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QTreeView" name="treeViewPlaceholder">
+                 <widget class="QTreeView" name="treeViewServerPlaceholder">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="acceptDrops">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="1" column="2" rowspan="2">
+              <widget class="QWidget" name="clientTreeViewContainer" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_5">
+                <property name="margin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QTreeView" name="treeViewClientPlaceholder">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -1133,17 +1142,11 @@
    <extends>QTableWidget</extends>
    <header>MidasResourceDescTable.h</header>
   </customwidget>
-  <customwidget>
-   <class>MidasTreeViewClient</class>
-   <extends>QTreeView</extends>
-   <header>MidasTreeViewClient.h</header>
-  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>refreshButton</tabstop>
   <tabstop>pull_Button</tabstop>
   <tabstop>push_Button</tabstop>
-  <tabstop>treeViewClient</tabstop>
   <tabstop>refreshClientButton</tabstop>
   <tabstop>clientExpandAllButton</tabstop>
   <tabstop>clientCollapseAllButton</tabstop>
@@ -1177,40 +1180,10 @@
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../../../../../Users/Zach Mullen/.designer/MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
-  <connection>
-   <sender>clientExpandAllButton</sender>
-   <signal>clicked()</signal>
-   <receiver>treeViewClient</receiver>
-   <slot>expandAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>583</x>
-     <y>51</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>581</x>
-     <y>85</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>clientCollapseAllButton</sender>
-   <signal>clicked()</signal>
-   <receiver>treeViewClient</receiver>
-   <slot>collapseAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>611</x>
-     <y>51</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>612</x>
-     <y>187</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>clearLogButton</sender>
    <signal>clicked()</signal>

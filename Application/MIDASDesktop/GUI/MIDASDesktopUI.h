@@ -50,6 +50,10 @@ class DeleteThread;
 
 class QContextMenuEvent;
 class MidasTreeItem;
+class MidasCommunityTreeItem;
+class MidasCollectionTreeItem;
+class MidasItemTreeItem;
+class MidasBitstreamTreeItem;
 class Midas3TreeItem;
 class Midas3FolderTreeItem;
 class Midas3ItemTreeItem;
@@ -312,8 +316,9 @@ private:
   // ----------- threads -----------------
 
   MidasTreeViewBase*          treeViewServer;
+  MidasTreeViewBase*          treeViewClient;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( MIDASDesktopUI::ActivateActions )
+Q_DECLARE_OPERATORS_FOR_FLAGS(MIDASDesktopUI::ActivateActions)
 
 #endif //__MIDASDesktopUI_H

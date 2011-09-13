@@ -84,6 +84,7 @@
 #include "Midas3TreeViewServer.h"
 #include "MidasTreeModelServer.h"
 #include "MidasTreeViewClient.h"
+#include "Midas3TreeViewClient.h"
 #include "MidasTreeModelClient.h"
 #include "MidasCommunityTreeItem.h"
 #include "MidasCollectionTreeItem.h"
@@ -104,6 +105,8 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->setWindowTitle(STR2QSTR(MIDAS_CLIENT_VERSION_STR));
 
   this->treeViewServer = NULL;
+  this->treeViewClient = NULL;
+  this->m_resourceUpdateHandler = NULL;
 
   // center the main window
   int scrn = QApplication::desktop()->screenNumber(this);
@@ -221,41 +224,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   statusBar()->addWidget(connectLabel);
   // ------------- Status bar -------------
 
-  // ------------- setup TreeView signals -------------
-
-  treeViewClient->SetSynchronizer(m_synch);
-  connect(treeViewClient, SIGNAL(midasTreeItemSelected(const MidasTreeItem*)),
-    this, SLOT(updateActionStateClient(const MidasTreeItem*)));
-
-  connect(treeViewClient, SIGNAL(bitstreamsDropped(const MidasItemTreeItem*, const QStringList&)),
-    this, SLOT(addBitstreams(const MidasItemTreeItem*, const QStringList&)));
-  connect(treeViewClient, SIGNAL(resourceDropped(int, int)),
-    this, SLOT(pullRecursive(int, int)));
-
-  connect(treeViewClient, SIGNAL(bitstreamOpenRequest()), this, SLOT(openBitstream()));
-
-  connect(treeViewClient, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
-    this, SLOT(updateInfoPanel(const MidasCommunityTreeItem*)));
-
-  connect(treeViewClient, SIGNAL(midasCollectionTreeItemSelected(const MidasCollectionTreeItem*)),
-    this, SLOT(updateInfoPanel(const MidasCollectionTreeItem*)));
-
-  connect(treeViewClient, SIGNAL(midasItemTreeItemSelected(const MidasItemTreeItem*)),
-    this, SLOT(updateInfoPanel(const MidasItemTreeItem*)));
-
-  connect(treeViewClient, SIGNAL(midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem*)),
-    this, SLOT(updateInfoPanel(const MidasBitstreamTreeItem*)));
-
-  connect(treeViewClient, SIGNAL(midasNoTreeItemSelected()),
-    this, SLOT(clearInfoPanel()));
-
-  connect(refreshClientButton, SIGNAL(released()), this, SLOT(updateClientTreeView()));
-
-  connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
-    this, SLOT(displayClientResourceContextMenu(QContextMenuEvent*)));
-
-  // ------------- setup TreeView signals -------------
-
   // ------------- signal/slot connections -------------
   connect(actionPush_Resource, SIGNAL(triggered()), this, SLOT(pushResources()));
   connect(actionPull_Resource, SIGNAL(triggered()), dlg_pullUI, SLOT(exec()));
@@ -335,7 +303,6 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- setup client members and logging ----
   this->m_synch->SetLog(this->Log);
-  this->m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
   this->m_mirrorHandler = new GUIMirrorHandler(dlg_mirrorPickerUI);
   this->m_agreementHandler = new GUIAgreement(dlg_agreementUI);
   this->m_overwriteHandler = new GUIFileOverwriteHandler(dlg_overwriteUI);
@@ -343,7 +310,6 @@ MIDASDesktopUI::MIDASDesktopUI()
   this->m_dbUpgradeHandler->SetLog(this->Log);
   this->m_progress = new GUIProgress(this->progressBar);
   mds::DatabaseInfo::Instance()->SetLog(this->Log);
-  mds::DatabaseInfo::Instance()->SetResourceUpdateHandler(m_resourceUpdateHandler);
   mws::WebAPI::Instance()->SetLog(this->Log);
   mws::WebAPI::Instance()->SetAuthenticator(m_synch->GetAuthenticator());
   mws::WebAPI::Instance()->SetMirrorHandler(m_mirrorHandler);
@@ -1238,49 +1204,56 @@ void MIDASDesktopUI::clearInfoPanel()
 
 void MIDASDesktopUI::displayClientResourceContextMenu(QContextMenuEvent* e)
 {
-  QMenu menu(this);
-  MidasCommunityTreeItem* communityTreeItem = NULL;
-  MidasCollectionTreeItem* collectionTreeItem = NULL;
-  MidasItemTreeItem* itemTreeItem = NULL;
-  MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
-
-  QModelIndex index = treeViewClient->indexAt(e->pos());
-  
-  if (index.isValid())
+  if(DB_IS_MIDAS3)
     {
-    MidasTreeItem* item = const_cast<MidasTreeItem*>(treeViewClient->getSelectedMidasTreeItem());
-
-    treeViewClient->selectionModel()->select(index, QItemSelectionModel::SelectCurrent); 
-
-    menu.addAction(this->actionView_Directory);
-    menu.addSeparator();
-
-    if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
-      {
-      menu.addAction(this->actionAdd_subcommunity);
-      menu.addAction(this->actionAdd_collection);
-      }
-    else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
-      {
-      menu.addAction(this->actionAdd_item);
-      }
-    else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
-      {
-      menu.addAction(this->actionAdd_bitstream);
-      }
-    else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
-      {
-      menu.addAction(this->actionSwap_with_MD5_reference);
-      }
-    menu.addAction(this->actionDelete_Resource);
+    // TODO midas3ify
     }
   else
     {
-    treeViewServer->selectionModel()->clearSelection();
-    menu.addAction(this->actionAdd_community);
-    }
-  menu.addAction(this->actionPush_Resource);
-  menu.exec(e->globalPos());
+    QMenu menu(this);
+    MidasCommunityTreeItem* communityTreeItem = NULL;
+    MidasCollectionTreeItem* collectionTreeItem = NULL;
+    MidasItemTreeItem* itemTreeItem = NULL;
+    MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
+
+    QModelIndex index = treeViewClient->indexAt(e->pos());
+    
+    if (index.isValid())
+      {
+      MidasTreeItem* item = const_cast<MidasTreeItem*>(dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
+
+      treeViewClient->selectionModel()->select(index, QItemSelectionModel::SelectCurrent); 
+
+      menu.addAction(this->actionView_Directory);
+      menu.addSeparator();
+
+      if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
+        {
+        menu.addAction(this->actionAdd_subcommunity);
+        menu.addAction(this->actionAdd_collection);
+        }
+      else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
+        {
+        menu.addAction(this->actionAdd_item);
+        }
+      else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
+        {
+        menu.addAction(this->actionAdd_bitstream);
+        }
+      else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
+        {
+        menu.addAction(this->actionSwap_with_MD5_reference);
+        }
+      menu.addAction(this->actionDelete_Resource);
+      }
+    else
+      {
+      treeViewServer->selectionModel()->clearSelection();
+      menu.addAction(this->actionAdd_community);
+      }
+    menu.addAction(this->actionPush_Resource);
+    menu.exec(e->globalPos());
+  }
 }
 
 void MIDASDesktopUI::displayServerResourceContextMenu(QContextMenuEvent* e)
@@ -1342,21 +1315,21 @@ void MIDASDesktopUI::addCommunity()
 void MIDASDesktopUI::addSubcommunity()
 {
   dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::SubCommunity);
-  dlg_createMidasResourceUI->SetParentResource(treeViewClient->getSelectedMidasTreeItem());
+  dlg_createMidasResourceUI->SetParentResource(dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
   dlg_createMidasResourceUI->exec();
 }
 
 void MIDASDesktopUI::addCollection()
 {
   dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Collection);
-  dlg_createMidasResourceUI->SetParentResource(treeViewClient->getSelectedMidasTreeItem());
+  dlg_createMidasResourceUI->SetParentResource(dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
   dlg_createMidasResourceUI->exec();
 }
 
 void MIDASDesktopUI::addItem()
 {
   dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Item);
-  dlg_createMidasResourceUI->SetParentResource(treeViewClient->getSelectedMidasTreeItem());
+  dlg_createMidasResourceUI->SetParentResource(dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
   dlg_createMidasResourceUI->exec();
 }
 
@@ -1371,7 +1344,7 @@ void MIDASDesktopUI::addBitstream()
     {
     addBitstreams(reinterpret_cast<MidasItemTreeItem*>(
       const_cast<MidasTreeItem*>(
-      treeViewClient->getSelectedMidasTreeItem())), files);
+      dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem())), files);
     }
 }
 
@@ -1417,7 +1390,7 @@ void MIDASDesktopUI::addBitstreamsProgress(int current, int total,
 void MIDASDesktopUI::viewDirectory()
 {
   MidasTreeItem* resource = const_cast<MidasTreeItem*>(
-    treeViewClient->getSelectedMidasTreeItem());
+    dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
   mds::DatabaseAPI db;
   midasResourceRecord record = db.GetRecordByUuid(resource->getUuid());
 
@@ -1439,7 +1412,7 @@ void MIDASDesktopUI::viewDirectory()
 void MIDASDesktopUI::openBitstream()
 {
   MidasTreeItem* resource = const_cast<MidasTreeItem*>(
-    treeViewClient->getSelectedMidasTreeItem());
+    dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
   mds::DatabaseAPI db;
   std::string path = db.GetRecordByUuid(resource->getUuid()).Path;
 
@@ -1606,8 +1579,8 @@ void MIDASDesktopUI::signIn(bool ok)
       connect(treeViewServer, SIGNAL(midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem*)),
             this, SLOT(updateInfoPanel(const MidasBitstreamTreeItem*)));
       }
-    delete this->treeViewPlaceholder;
-    this->treeViewPlaceholder = NULL;
+    delete this->treeViewServerPlaceholder;
+    this->treeViewServerPlaceholder = NULL;
     this->serverTreeViewContainer->layout()->addWidget(this->treeViewServer);
     activateActions(true, MIDASDesktopUI::ACTION_CONNECTED);
     treeViewServer->SetSynchronizer(m_synch);
@@ -1713,7 +1686,57 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
     settings.sync();
     this->displayStatus(tr("Opened database successfully."));
     this->Log->Message("Opened database " + file);
+
+    delete this->treeViewClient;
+    if(DB_IS_MIDAS3)
+      {
+      this->treeViewClient = new Midas3TreeViewClient(this);
+
+      connect(treeViewClient, SIGNAL(midas3FolderTreeItemSelected(const Midas3FolderTreeItem*)),
+        this, SLOT(updateInfoPanel(const MidasCommunityTreeItem*)));
+      connect(treeViewClient, SIGNAL(midas3ItemTreeItemSelected(const Midas3ItemTreeItem*)),
+        this, SLOT(updateInfoPanel(const Midas3ItemTreeItem*)));
+      }
+    else
+      {
+      this->treeViewClient = new MidasTreeViewClient(this);
+
+      connect(treeViewClient, SIGNAL(midasCommunityTreeItemSelected(const MidasCommunityTreeItem*)),
+        this, SLOT(updateInfoPanel(const MidasCommunityTreeItem*)));
+      connect(treeViewClient, SIGNAL(midasCollectionTreeItemSelected(const MidasCollectionTreeItem*)),
+        this, SLOT(updateInfoPanel(const MidasCollectionTreeItem*)));
+      connect(treeViewClient, SIGNAL(midasItemTreeItemSelected(const MidasItemTreeItem*)),
+        this, SLOT(updateInfoPanel(const MidasItemTreeItem*)));
+      connect(treeViewClient, SIGNAL(midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem*)),
+        this, SLOT(updateInfoPanel(const MidasBitstreamTreeItem*)));
+      }
+    delete m_resourceUpdateHandler;
+    m_resourceUpdateHandler = new TreeViewUpdateHandler(treeViewClient);
+    mds::DatabaseInfo::Instance()->SetResourceUpdateHandler(m_resourceUpdateHandler);
+    delete this->treeViewClientPlaceholder;
+    this->treeViewClientPlaceholder = NULL;
+    this->clientTreeViewContainer->layout()->addWidget(this->treeViewClient);
     this->activateActions(true, MIDASDesktopUI::ACTION_LOCAL_DATABASE);
+
+    treeViewClient->SetSynchronizer(m_synch);
+    connect(treeViewClient, SIGNAL(midasTreeItemSelected(const MidasTreeItem*)),
+      this, SLOT(updateActionStateClient(const MidasTreeItem*)));
+
+    connect(treeViewClient, SIGNAL(bitstreamsDropped(const MidasItemTreeItem*, const QStringList&)),
+      this, SLOT(addBitstreams(const MidasItemTreeItem*, const QStringList&)));
+    connect(treeViewClient, SIGNAL(resourceDropped(int, int)),
+      this, SLOT(pullRecursive(int, int)));
+
+    connect(treeViewClient, SIGNAL(bitstreamOpenRequest()), this, SLOT(openBitstream()));
+
+    connect(treeViewClient, SIGNAL(midasNoTreeItemSelected()),
+      this, SLOT(clearInfoPanel()));
+
+    connect(refreshClientButton, SIGNAL(released()), this, SLOT(updateClientTreeView()));
+
+    connect(treeViewClient, SIGNAL(midasTreeViewContextMenu(QContextMenuEvent*)),
+      this, SLOT(displayClientResourceContextMenu(QContextMenuEvent*)));
+
     this->treeViewClient->collapseAll();
     this->updateClientTreeView();
     setTimerInterval();
@@ -1786,7 +1809,8 @@ void MIDASDesktopUI::pushResources()
   this->displayStatus(tr("Pushing locally added resources..."));
   this->setProgressIndeterminate();
 
-  const MidasTreeItem* resource = treeViewClient->getSelectedMidasTreeItem();
+  const MidasTreeItem* resource =
+    dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem();
   dlg_pushUI->setObject(resource ? resource->getObject() : NULL);
   dlg_pushUI->exec();
 }
@@ -1970,7 +1994,7 @@ void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
 {
   m_PollFilesystemThread->Pause();
 
-  const MidasTreeItem* treeItem = treeViewClient->getSelectedMidasTreeItem();
+  const MidasTreeItem* treeItem = dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem();
   if(m_DeleteThread && m_DeleteThread->isRunning())
     {
     return;
@@ -2109,7 +2133,7 @@ void MIDASDesktopUI::enableResourceEditing(bool val)
 void MIDASDesktopUI::editInfo()
 {
   MidasTreeItem* node = const_cast<MidasTreeItem*>(
-    treeViewClient->getSelectedMidasTreeItem());
+    dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
 
   MidasCommunityTreeItem* comm = NULL;
   MidasCollectionTreeItem* coll = NULL;
