@@ -267,6 +267,10 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(actionAdd_collection,   SIGNAL(triggered()), this, SLOT(addCollection()));
   connect(actionAdd_item,         SIGNAL(triggered()), this, SLOT(addItem()));
   connect(actionAdd_bitstream,    SIGNAL(triggered()), this, SLOT(addBitstream()));
+  connect(actionAdd_community3,   SIGNAL(triggered()), this, SLOT(addCommunity3()));
+  connect(actionAdd_Top_Level_Folder, SIGNAL(triggered()), this, SLOT(addTopLevelFolder()));
+  connect(actionAdd_Subfolder,    SIGNAL(triggered()), this, SLOT(addSubfolder()));
+  connect(actionAdd_item3,        SIGNAL(triggered()), this, SLOT(addItem3()));
   connect(actionDelete_Resource,  SIGNAL(triggered()), dlg_deleteClientResourceUI, SLOT(exec()));
   connect(actionDelete_server,    SIGNAL(triggered()), dlg_deleteServerResourceUI, SLOT(exec()));
   connect(actionView_Directory,   SIGNAL(triggered()), this, SLOT(viewDirectory()));
@@ -439,19 +443,28 @@ void MIDASDesktopUI::showNormal()
 
 void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
 {
-  if (activateAction & ACTION_LOCAL_DATABASE)
+  if(activateAction & ACTION_LOCAL_DATABASE)
     {
     this->treeViewClient->setEnabled(value);
     this->refreshClientButton->setEnabled(value);
     this->clientCollapseAllButton->setEnabled(value);
     this->clientExpandAllButton->setEnabled(value);
-    this->actionAdd_community->setEnabled(value);
+    if(DB_IS_MIDAS3)
+      {
+      this->actionAdd_community3->setEnabled(value);
+      this->menuMIDAS_2->setEnabled(false);
+      }
+    else
+      {
+      this->actionAdd_community->setEnabled(value);
+      this->menuMIDAS_3->setEnabled(false);
+      }
     this->actionCreate_Profile->setEnabled(value);
     this->actionPreferences->setEnabled(value);
     this->midasTreeItemInfoGroupBox->setEnabled(value);
     }
 
-  if (activateAction & ACTION_CONNECTED)
+  if(activateAction & ACTION_CONNECTED)
     {
     this->searchTab->setEnabled(value);
     this->treeViewServer->setEnabled(value);
@@ -466,21 +479,21 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     actionSign_In->setText(value ? tr("Sign Out") : tr("Sign In"));
     }
 
-  if (activateAction & ACTION_COMMUNITY)
+  if(activateAction & ACTION_COMMUNITY)
     {
     this->actionPull_Resource->setEnabled(value);
     this->actionOpenURL->setEnabled(value);
     this->actionDelete_server->setEnabled(value);
     }
 
-  if (activateAction & ACTION_COLLECTION)
+  if(activateAction & ACTION_COLLECTION)
     {
     this->actionPull_Resource->setEnabled(value);
     this->actionOpenURL->setEnabled(value);
     this->actionDelete_server->setEnabled(value);
     }
 
-  if (activateAction & ACTION_ITEM)
+  if(activateAction & ACTION_ITEM)
     {
     this->actionPull_Resource->setEnabled(value);
     this->actionOpenURL->setEnabled(value);
@@ -489,30 +502,30 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     this->actionDownload_key_files_zip->setEnabled(value);
     }
 
-  if (activateAction & ACTION_BITSTREAM)
+  if(activateAction & ACTION_BITSTREAM)
     {
     this->actionPull_Resource->setEnabled(value);
     this->actionDelete_server->setEnabled(value);
     this->actionDownload_key_file->setEnabled(value);
     }
 
-  if (activateAction & ACTION_CLIENT_COMMUNITY)
+  if(activateAction & ACTION_CLIENT_COMMUNITY)
     {
     this->actionAdd_subcommunity->setEnabled(value);
     this->actionAdd_collection->setEnabled(value);
     }
 
-  if (activateAction & ACTION_CLIENT_COLLECTION)
+  if(activateAction & ACTION_CLIENT_COLLECTION)
     {
     this->actionAdd_item->setEnabled(value);
     }
 
-  if (activateAction & ACTION_CLIENT_ITEM)
+  if(activateAction & ACTION_CLIENT_ITEM)
     {
     this->actionAdd_bitstream->setEnabled(value);
     }
 
-  if (activateAction & ACTION_CLIENT_BITSTREAM)
+  if(activateAction & ACTION_CLIENT_BITSTREAM)
     {
     }
 
@@ -520,6 +533,22 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     {
     this->actionDelete_Resource->setEnabled(value);
     this->actionView_Directory->setEnabled(value);
+    }
+
+  if(activateAction & ACTION_CLIENT_COMMUNITY3)
+    {
+    this->actionAdd_Subfolder->setEnabled(value);
+    }
+
+  if(activateAction & ACTION_CLIENT_FOLDER3)
+    {
+    this->actionAdd_Subfolder->setEnabled(value);
+    this->actionAdd_item3->setEnabled(value);
+    }
+
+  if(activateAction & ACTION_CLIENT_ITEM3)
+    {
+    //TODO activate item actions
     }
 }
 
@@ -594,8 +623,23 @@ void MIDASDesktopUI::updateActionState(const MidasTreeItem* item)
 
 void MIDASDesktopUI::updateActionState(const Midas3TreeItem* item)
 {
-  //TODO
-  (void)item;
+  this->activateActions(false, ACTION_ALL_CONNECTED);
+  this->dlg_pullUI->setPullId(item->getId());
+  //TODO this->dlg_pullUI->setResourceType(item->getType());
+  this->dlg_pullUI->setResourceName(item->data(0).toString().toStdString());
+
+  if(item->getType() == midas3ResourceType::COMMUNITY)
+    {
+    this->activateActions(true, ACTION_COMMUNITY3);
+    }
+  else if(item->getType() == midas3ResourceType::FOLDER)
+    {
+    this->activateActions(true, ACTION_FOLDER3);
+    }
+  else if(item->getType() == midas3ResourceType::ITEM)
+    {
+    this->activateActions(true, ACTION_ITEM3);
+    }
 }
 
 void MIDASDesktopUI::updateActionStateClient(const MidasTreeItem* item)
@@ -622,6 +666,27 @@ void MIDASDesktopUI::updateActionStateClient(const MidasTreeItem* item)
   else if (item->getType() == midasResourceType::BITSTREAM)
     {
     this->activateActions(true, ACTION_CLIENT_BITSTREAM);
+    }
+}
+
+void MIDASDesktopUI::updateActionStateClient(const Midas3TreeItem* item)
+{
+  this->activateActions(false, ACTION_ALL_CONNECTED);
+  this->activateActions(false, ACTION_CLIENT_COMMUNITY3
+                              | ACTION_CLIENT_FOLDER3
+                              | ACTION_CLIENT_ITEM3);
+
+  if(item->getType() == midas3ResourceType::COMMUNITY)
+    {
+    this->activateActions(true, ACTION_CLIENT_COMMUNITY3);
+    }
+  else if(item->getType() == midas3ResourceType::FOLDER)
+    {
+    this->activateActions(true, ACTION_CLIENT_FOLDER3);
+    }
+  else if(item->getType() == midas3ResourceType::ITEM)
+    {
+    this->activateActions(true, ACTION_CLIENT_ITEM3);
     }
 }
 
@@ -1204,21 +1269,50 @@ void MIDASDesktopUI::clearInfoPanel()
 
 void MIDASDesktopUI::displayClientResourceContextMenu(QContextMenuEvent* e)
 {
+  QMenu menu(this);
+  QModelIndex index = treeViewClient->indexAt(e->pos());
+
   if(DB_IS_MIDAS3)
     {
-    // TODO midas3ify
+    Midas3FolderTreeItem* folderTreeItem = NULL;
+    Midas3ItemTreeItem* itemTreeItem = NULL;
+
+    if(index.isValid())
+      {
+      Midas3TreeItem* item = const_cast<Midas3TreeItem*>(
+        dynamic_cast<Midas3TreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
+
+      treeViewClient->selectionModel()->select(index, QItemSelectionModel::SelectCurrent); 
+
+      menu.addAction(this->actionView_Directory);
+      menu.addSeparator();
+
+      if((folderTreeItem = dynamic_cast<Midas3FolderTreeItem*>(item)) != NULL)
+        {
+        menu.addAction(this->actionAdd_Subfolder);
+        menu.addAction(this->actionAdd_item3);
+        }
+      else if((itemTreeItem = dynamic_cast<Midas3ItemTreeItem*>(item)) != NULL)
+        {
+        //menu.addAction(this->actionAdd_item);
+        }
+      menu.addAction(this->actionDelete_Resource);
+      }
+    else
+      {
+      //treeViewServer->selectionModel()->clearSelection();
+      menu.addAction(this->actionAdd_community3);
+      menu.addAction(this->actionAdd_Top_Level_Folder);
+      }
     }
   else
     {
-    QMenu menu(this);
     MidasCommunityTreeItem* communityTreeItem = NULL;
     MidasCollectionTreeItem* collectionTreeItem = NULL;
     MidasItemTreeItem* itemTreeItem = NULL;
     MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
-
-    QModelIndex index = treeViewClient->indexAt(e->pos());
     
-    if (index.isValid())
+    if(index.isValid())
       {
       MidasTreeItem* item = const_cast<MidasTreeItem*>(dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
 
@@ -1227,20 +1321,20 @@ void MIDASDesktopUI::displayClientResourceContextMenu(QContextMenuEvent* e)
       menu.addAction(this->actionView_Directory);
       menu.addSeparator();
 
-      if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
+      if((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
         {
         menu.addAction(this->actionAdd_subcommunity);
         menu.addAction(this->actionAdd_collection);
         }
-      else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
+      else if((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
         {
         menu.addAction(this->actionAdd_item);
         }
-      else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
+      else if((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
         {
         menu.addAction(this->actionAdd_bitstream);
         }
-      else if ((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
+      else if((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
         {
         menu.addAction(this->actionSwap_with_MD5_reference);
         }
@@ -1251,9 +1345,9 @@ void MIDASDesktopUI::displayClientResourceContextMenu(QContextMenuEvent* e)
       treeViewServer->selectionModel()->clearSelection();
       menu.addAction(this->actionAdd_community);
       }
-    menu.addAction(this->actionPush_Resource);
-    menu.exec(e->globalPos());
   }
+  menu.addAction(this->actionPush_Resource);
+  menu.exec(e->globalPos());
 }
 
 void MIDASDesktopUI::displayServerResourceContextMenu(QContextMenuEvent* e)
@@ -1330,6 +1424,34 @@ void MIDASDesktopUI::addItem()
 {
   dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Item);
   dlg_createMidasResourceUI->SetParentResource(dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
+  dlg_createMidasResourceUI->exec();
+}
+
+void MIDASDesktopUI::addCommunity3()
+{
+  dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Community3);
+  dlg_createMidasResourceUI->SetParentResource3(NULL);
+  dlg_createMidasResourceUI->exec();
+}
+
+void MIDASDesktopUI::addTopLevelFolder()
+{
+  dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Folder);
+  dlg_createMidasResourceUI->SetParentResource3(NULL);
+  dlg_createMidasResourceUI->exec();
+}
+
+void MIDASDesktopUI::addSubfolder()
+{
+  dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::SubFolder);
+  dlg_createMidasResourceUI->SetParentResource3(dynamic_cast<Midas3TreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
+  dlg_createMidasResourceUI->exec();
+}
+
+void MIDASDesktopUI::addItem3()
+{
+  dlg_createMidasResourceUI->SetType(CreateMidasResourceUI::Item3);
+  dlg_createMidasResourceUI->SetParentResource3(dynamic_cast<Midas3TreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
   dlg_createMidasResourceUI->exec();
 }
 

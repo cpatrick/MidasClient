@@ -747,7 +747,7 @@
     <addaction name="actionCreate_Profile"/>
     <addaction name="actionPreferences"/>
    </widget>
-   <widget class="QMenu" name="menuCommunity">
+   <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
@@ -776,17 +776,38 @@
       <iconset resource="../MIDASDesktopIcons.qrc">
        <normaloff>:/icons/workstation_network.png</normaloff>:/icons/workstation_network.png</iconset>
      </property>
-     <addaction name="actionAdd_community"/>
-     <addaction name="separator"/>
-     <addaction name="actionAdd_subcommunity"/>
-     <addaction name="actionAdd_collection"/>
-     <addaction name="separator"/>
-     <addaction name="actionAdd_item"/>
-     <addaction name="separator"/>
-     <addaction name="actionAdd_bitstream"/>
+     <widget class="QMenu" name="menuMIDAS_2">
+      <property name="title">
+       <string>MIDAS 2</string>
+      </property>
+      <addaction name="actionAdd_community"/>
+      <addaction name="separator"/>
+      <addaction name="actionAdd_subcommunity"/>
+      <addaction name="actionAdd_collection"/>
+      <addaction name="separator"/>
+      <addaction name="actionAdd_item"/>
+      <addaction name="actionAdd_bitstream"/>
+      <addaction name="separator"/>
+      <addaction name="actionSwap_with_MD5_reference"/>
+     </widget>
+     <widget class="QMenu" name="menuMIDAS_3">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="title">
+       <string>MIDAS 3</string>
+      </property>
+      <addaction name="actionAdd_community3"/>
+      <addaction name="actionAdd_Top_Level_Folder"/>
+      <addaction name="separator"/>
+      <addaction name="actionAdd_Subfolder"/>
+      <addaction name="separator"/>
+      <addaction name="actionAdd_item3"/>
+     </widget>
+     <addaction name="menuMIDAS_2"/>
+     <addaction name="menuMIDAS_3"/>
      <addaction name="separator"/>
      <addaction name="actionPush_Resource"/>
-     <addaction name="actionSwap_with_MD5_reference"/>
      <addaction name="actionDelete_Resource"/>
      <addaction name="separator"/>
      <addaction name="actionView_Directory"/>
@@ -795,7 +816,7 @@
     <addaction name="menuServer"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuCommunity"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -1130,6 +1151,54 @@
     <string>Upgrade Database</string>
    </property>
   </action>
+  <action name="actionAdd_community3">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/user_group.png</normaloff>:/icons/user_group.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Community</string>
+   </property>
+  </action>
+  <action name="actionAdd_Top_Level_Folder">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/gpl_folder_add.png</normaloff>:/icons/gpl_folder_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Top Level Folder</string>
+   </property>
+  </action>
+  <action name="actionAdd_Subfolder">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/gpl_folder_add.png</normaloff>:/icons/gpl_folder_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Subfolder</string>
+   </property>
+  </action>
+  <action name="actionAdd_item3">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/document_add.png</normaloff>:/icons/document_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Item</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1181,7 +1250,7 @@
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
-  <include location="../../../../../Users/Zach Mullen/.designer/MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
   <connection>

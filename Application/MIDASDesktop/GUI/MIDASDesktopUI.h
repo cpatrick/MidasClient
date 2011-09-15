@@ -101,7 +101,14 @@ public:
     ACTION_CLIENT_ITEM           = 0x200,
     ACTION_CLIENT_BITSTREAM      = 0x400,
     ACTION_CLIENT_RESOURCE       = 0x780, //0x80 + 0x100 + 0x200 + 0x400 (any client side resource)
-    ACTION_LOCAL_DATABASE        = 0x800
+    ACTION_LOCAL_DATABASE        = 0x800,
+
+    ACTION_COMMUNITY3            = 0x1000,
+    ACTION_FOLDER3               = 0x2000,
+    ACTION_ITEM3                 = 0x4000,
+    ACTION_CLIENT_COMMUNITY3     = 0x8000,
+    ACTION_CLIENT_FOLDER3        = 0x10000,
+    ACTION_CLIENT_ITEM3          = 0x20000
     }; 
   Q_DECLARE_FLAGS(ActivateActions, ActivateAction)
      
@@ -197,6 +204,7 @@ public slots:
   void updateActionState(const MidasTreeItem* item);
   void updateActionState(const Midas3TreeItem* item);
   void updateActionStateClient(const MidasTreeItem* item);
+  void updateActionStateClient(const Midas3TreeItem* item);
 
   void displayServerResourceContextMenu(QContextMenuEvent* e);
   void displayClientResourceContextMenu(QContextMenuEvent* e);
@@ -209,6 +217,10 @@ public slots:
   void addCollection();
   void addItem();
   void addBitstream();
+  void addCommunity3();
+  void addTopLevelFolder();
+  void addSubfolder();
+  void addItem3();
   void addBitstreams(const MidasItemTreeItem* parentItem,
                      const QStringList & files);
   void addBitstreamsProgress(int current, int total, const QString& message);
