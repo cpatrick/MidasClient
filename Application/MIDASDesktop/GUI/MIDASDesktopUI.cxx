@@ -252,7 +252,7 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   connect(dlg_pullUI, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
 
-  connect(dlg_createMidasResourceUI, SIGNAL(resourceCreated()), this, SLOT(updateClientTreeView()));
+  //connect(dlg_createMidasResourceUI, SIGNAL(resourceCreated()), this, SLOT(updateClientTreeView()));
 
   connect(actionChoose_Local_Database, SIGNAL(triggered()), this, SLOT(chooseLocalDatabase()));
   connect(actionNew_Local_Database, SIGNAL(triggered()), this, SLOT(createLocalDatabase()));
