@@ -551,6 +551,11 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     {
     //TODO activate item actions
     }
+
+  if(activateAction & ACTION_CLIENT_RESOURCE3)
+    {
+    this->actionDelete_Resource->setEnabled(value);
+    }
 }
 
 void MIDASDesktopUI::closeEvent(QCloseEvent *event)
@@ -2118,26 +2123,32 @@ void MIDASDesktopUI::finishedExpandingTree()
 void MIDASDesktopUI::deleteLocalResource(bool deleteFiles)
 {
   m_PollFilesystemThread->Pause();
-
-  const MidasTreeItem* treeItem = dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem();
   if(m_DeleteThread && m_DeleteThread->isRunning())
     {
     return;
     }
   delete m_DeleteThread;
-
   m_DeleteThread = new DeleteThread;
-  m_DeleteThread->SetResource(const_cast<MidasTreeItem*>(treeItem));
   m_DeleteThread->SetDeleteOnDisk(deleteFiles);
 
+  connect(m_DeleteThread, SIGNAL(enableActions(bool)), this, SLOT(enableClientActions(bool)));
   connect(m_DeleteThread, SIGNAL(finished()), this, SLOT(resetStatus()));
   connect(m_DeleteThread, SIGNAL(finished()), this, SLOT(updateClientTreeView()));
-  connect(m_DeleteThread, SIGNAL(enableActions(bool)), this, SLOT(enableClientActions(bool)));
+
+  if(DB_IS_MIDAS3)
+    {
+    const Midas3TreeItem* treeItem = dynamic_cast<Midas3TreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem();
+    m_DeleteThread->SetResource3(const_cast<Midas3TreeItem*>(treeItem));
+    }
+  else
+    {
+    const MidasTreeItem* treeItem = dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem();
+    m_DeleteThread->SetResource(const_cast<MidasTreeItem*>(treeItem));
+    }
 
   this->Log->Status("Deleting local resources...");
-  setProgressIndeterminate();
-
   m_DeleteThread->start();
+  setProgressIndeterminate();
 }
 
 // Controller for deleting server resources

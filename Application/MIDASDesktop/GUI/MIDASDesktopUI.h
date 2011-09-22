@@ -108,7 +108,8 @@ public:
     ACTION_ITEM3                 = 0x4000,
     ACTION_CLIENT_COMMUNITY3     = 0x8000,
     ACTION_CLIENT_FOLDER3        = 0x10000,
-    ACTION_CLIENT_ITEM3          = 0x20000
+    ACTION_CLIENT_ITEM3          = 0x20000,
+    ACTION_CLIENT_RESOURCE3      = 0x38000
     }; 
   Q_DECLARE_FLAGS(ActivateActions, ActivateAction)
      
