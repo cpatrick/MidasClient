@@ -558,7 +558,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
     }
 }
 
-void MIDASDesktopUI::closeEvent(QCloseEvent *event)
+void MIDASDesktopUI::closeEvent(QCloseEvent* event)
 {
   if (trayIcon->isVisible())
     {
@@ -587,7 +587,7 @@ void MIDASDesktopUI::closeEvent(QCloseEvent *event)
 
 void MIDASDesktopUI::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-  switch (reason)
+  switch(reason)
     {
     case QSystemTrayIcon::Trigger:
       break;
@@ -603,7 +603,6 @@ void MIDASDesktopUI::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 void MIDASDesktopUI::updateActionState(const MidasTreeItem* item)
 {
-  // disable all actions
   this->activateActions(false, ACTION_ALL_CONNECTED);
   this->dlg_pullUI->setPullId(item->getId());
   this->dlg_pullUI->setResourceType(item->getType());
@@ -650,7 +649,6 @@ void MIDASDesktopUI::updateActionState(const Midas3TreeItem* item)
 
 void MIDASDesktopUI::updateActionStateClient(const MidasTreeItem* item)
 {
-  // disable all actions
   this->activateActions(false, ACTION_ALL_CONNECTED);
   this->activateActions(false, ACTION_CLIENT_COMMUNITY
                               | ACTION_CLIENT_COLLECTION

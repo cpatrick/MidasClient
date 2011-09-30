@@ -60,5 +60,7 @@
     <file>icons/arrow_up.png</file>
     <file>icons/arrow_down.png</file>
     <file>icons/user_group.png</file>
+    <file>icons/page.png</file>
+    <file>icons/page24.png</file>
   </qresource>
 </RCC>
