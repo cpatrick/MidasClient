@@ -803,6 +803,8 @@
       <addaction name="actionAdd_Subfolder"/>
       <addaction name="separator"/>
       <addaction name="actionAdd_item3"/>
+      <addaction name="separator"/>
+      <addaction name="actionAdd_bitstream3"/>
      </widget>
      <addaction name="menuMIDAS_2"/>
      <addaction name="menuMIDAS_3"/>
@@ -1199,6 +1201,18 @@
     <string>Add Item</string>
    </property>
   </action>
+  <action name="actionAdd_bitstream3">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/page.png</normaloff>:/icons/page.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Bitstreams</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1229,6 +1243,7 @@
   <tabstop>log</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>

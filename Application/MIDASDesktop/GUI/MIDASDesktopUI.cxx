@@ -31,6 +31,7 @@
 #include "mdsItem.h"
 #include "m3doFolder.h"
 #include "m3doItem.h"
+#include "m3doBitstream.h"
 #include "mdsDatabaseAPI.h"
 #include "midasAuthenticator.h"
 #include "midasLog.h"
@@ -80,6 +81,7 @@
 #include "Midas3TreeItem.h"
 #include "Midas3FolderTreeItem.h"
 #include "Midas3ItemTreeItem.h"
+#include "Midas3BitstreamTreeItem.h"
 #include "MidasTreeViewServer.h"
 #include "Midas3TreeViewServer.h"
 #include "MidasTreeModelServer.h"
@@ -549,7 +551,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
 
   if(activateAction & ACTION_CLIENT_ITEM3)
     {
-    //TODO activate item actions
+    this->actionAdd_bitstream3->setEnabled(value);
     }
 
   if(activateAction & ACTION_CLIENT_RESOURCE3)
@@ -560,7 +562,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
 
 void MIDASDesktopUI::closeEvent(QCloseEvent* event)
 {
-  if (trayIcon->isVisible())
+  if(trayIcon->isVisible())
     {
     trayIcon->showMessage(tr("MIDASDesktop"),
       tr("The program will keep running in the system tray.  To terminate "
@@ -904,6 +906,70 @@ void MIDASDesktopUI::updateInfoPanel(const Midas3ItemTreeItem* itemTreeItem)
     //textMetadataEditor->setField(ITEM3_DESCRIPTION);
     //textMetadataEditor->setItem(itemTreeItem);
     //midasTreeItemInfoTable->setItemDelegateForRow(i, textMetadataEditor);
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
+
+  midasTreeItemInfoTable->resizeColumnsToContents();
+  int leftoverSpace = midasTreeItemInfoTable->width() - midasTreeItemInfoTable->columnWidth(0) - midasTreeItemInfoTable->columnWidth(1);
+  midasTreeItemInfoTable->horizontalHeader()->setStretchLastSection(leftoverSpace > 0);
+  midasTreeItemInfoTable->resizeColumnsToContents();
+  midasTreeItemInfoTable->resizeRowsToContents();
+}
+
+void MIDASDesktopUI::updateInfoPanel(const Midas3BitstreamTreeItem* bitstreamTreeItem)
+{
+  this->m_editMode = false;
+  QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip | QTableWidgetDescriptionItem::AlignLeft;
+
+  midasTreeItemInfoGroupBox->setTitle("Bitstream information"); 
+  midasTreeItemInfoTable->setGridStyle(Qt::NoPen);
+  midasTreeItemInfoTable->clearSelection();
+
+  m3do::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
+
+  int i = 0;
+
+  if(bitstream->GetName() != "") i++;
+  if(bitstream->GetChecksum() != "") i++;
+  if(bitstream->GetSize() != "") i++;
+  if(bitstream->GetPath() != "") i++;
+
+  midasTreeItemInfoTable->setRowCount(i);
+  i = 0; 
+  
+  if(bitstream->GetName() != "")
+    {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i, 0, new QTableWidgetDescriptionItem("Name", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i, 1, new QTableWidgetMidas3BitstreamDescItem(bitstream, bitstream->GetName().c_str(), BITSTREAM3_NAME, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++; 
+    }
+
+  if(bitstream->GetChecksum() != "")
+    {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i, 0, new QTableWidgetDescriptionItem("MD5", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i, 1, new QTableWidgetMidas3BitstreamDescItem(bitstream, bitstream->GetChecksum().c_str(), BITSTREAM3_CHECKSUM, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
+
+  if(bitstream->GetSize() != "")
+    {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i, 0, new QTableWidgetDescriptionItem("Size", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i, 1, new QTableWidgetMidas3BitstreamDescItem(bitstream, midasUtils::BytesToString(midasUtils::StringToDouble(bitstream->GetSize())).c_str(), BITSTREAM3_SIZE, options));
+    midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
+    i++;
+    }
+
+  if(bitstream->GetPath() != "")
+    {
+    midasTreeItemInfoTable->setRowHeight(i, QTableWidgetDescriptionItem::rowHeight);
+    midasTreeItemInfoTable->setItem(i, 0, new QTableWidgetDescriptionItem("Path", QTableWidgetDescriptionItem::Bold));
+    midasTreeItemInfoTable->setItem(i, 1, new QTableWidgetMidas3BitstreamDescItem(bitstream, bitstream->GetPath().c_str(), BITSTREAM3_PATH, options));
     midasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
@@ -1298,7 +1364,7 @@ void MIDASDesktopUI::displayClientResourceContextMenu(QContextMenuEvent* e)
         }
       else if((itemTreeItem = dynamic_cast<Midas3ItemTreeItem*>(item)) != NULL)
         {
-        //menu.addAction(this->actionAdd_item);
+        menu.addAction(this->actionAdd_bitstream3);
         }
       menu.addAction(this->actionDelete_Resource);
       }
@@ -1684,11 +1750,13 @@ void MIDASDesktopUI::signIn(bool ok)
       this->treeViewServer = new Midas3TreeViewServer(this);
 
       connect(treeViewServer, SIGNAL(midasTreeItemSelected(const Midas3TreeItem*)),
-            this, SLOT(updateActionState(const Midas3TreeItem*)));
+              this, SLOT(updateActionState(const Midas3TreeItem*)));
       connect(treeViewServer, SIGNAL(midas3FolderTreeItemSelected(const Midas3FolderTreeItem*)),
-            this, SLOT(updateInfoPanel(const Midas3FolderTreeItem*)));
+              this, SLOT(updateInfoPanel(const Midas3FolderTreeItem*)));
       connect(treeViewServer, SIGNAL(midas3ItemTreeItemSelected(const Midas3ItemTreeItem*)),
               this, SLOT(updateInfoPanel(const Midas3ItemTreeItem*)));
+      connect(treeViewServer, SIGNAL(midas3BitstreamTreeItemSelected(const Midas3BitstreamTreeItem*)),
+              this, SLOT(updateInfoPanel(const Midas3BitstreamTreeItem*)));
       }
     else
       {

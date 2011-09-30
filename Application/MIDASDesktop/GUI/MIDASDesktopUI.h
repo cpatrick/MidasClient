@@ -57,6 +57,7 @@ class MidasBitstreamTreeItem;
 class Midas3TreeItem;
 class Midas3FolderTreeItem;
 class Midas3ItemTreeItem;
+class Midas3BitstreamTreeItem;
 class IncompleteTransferWidget;
 
 class MidasTreeViewBase;
@@ -199,6 +200,7 @@ public slots:
   void updateInfoPanel(const MidasBitstreamTreeItem* bitstreamTreeItem);
   void updateInfoPanel(const Midas3FolderTreeItem* folderTreeItem);
   void updateInfoPanel(const Midas3ItemTreeItem* itemTreeItem);
+  void updateInfoPanel(const Midas3BitstreamTreeItem* bitstreamTreeItem);
   void clearInfoPanel();
   void editInfo();
 
