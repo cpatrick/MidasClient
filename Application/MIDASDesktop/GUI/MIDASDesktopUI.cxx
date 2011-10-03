@@ -558,6 +558,7 @@ void MIDASDesktopUI::activateActions(bool value, ActivateActions activateAction)
   if(activateAction & ACTION_CLIENT_RESOURCE3)
     {
     this->actionDelete_Resource->setEnabled(value);
+    this->actionView_Directory->setEnabled(value);
     }
 }
 
@@ -694,6 +695,10 @@ void MIDASDesktopUI::updateActionStateClient(const Midas3TreeItem* item)
   else if(item->getType() == midas3ResourceType::ITEM)
     {
     this->activateActions(true, ACTION_CLIENT_ITEM3);
+    }
+  else if(item->getType() == midas3ResourceType::BITSTREAM)
+    {
+    this->activateActions(true, ACTION_CLIENT_BITSTREAM3);
     }
 }
 
@@ -1618,14 +1623,32 @@ void MIDASDesktopUI::addBitstreamsProgress(int current, int total,
 
 void MIDASDesktopUI::viewDirectory()
 {
-  MidasTreeItem* resource = const_cast<MidasTreeItem*>(
-    dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
-  mds::DatabaseAPI db;
-  midasResourceRecord record = db.GetRecordByUuid(resource->getUuid());
+  std::string path;
+  if(DB_IS_MIDAS3)
+    {
+    Midas3TreeItem* resource = const_cast<Midas3TreeItem*>(
+      dynamic_cast<Midas3TreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
+    if(resource->getType() == midas3ResourceType::BITSTREAM)
+      {
+      QFileInfo fileInfo(resource->getPath().c_str());
+      path = fileInfo.dir().path().toStdString();
+      }
+    else
+      {
+      path = resource->getPath();
+      }
+    }
+  else
+    {
+    MidasTreeItem* resource = const_cast<MidasTreeItem*>(
+      dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
+    mds::DatabaseAPI db;
+    midasResourceRecord record = db.GetRecordByUuid(resource->getUuid());
 
-  QFileInfo fileInfo(record.Path.c_str());
-  std::string path = record.Type == midasResourceType::BITSTREAM ?
-    fileInfo.dir().path().toStdString() : record.Path;
+    QFileInfo fileInfo(record.Path.c_str());
+    path = record.Type == midasResourceType::BITSTREAM ?
+      fileInfo.dir().path().toStdString() : record.Path;
+    }
 
   path = "file:" + path;
   QUrl url(path.c_str());
