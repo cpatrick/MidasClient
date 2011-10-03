@@ -225,7 +225,9 @@ public slots:
   void addSubfolder();
   void addItem3();
   void addBitstreams(const MidasItemTreeItem* parentItem,
-                     const QStringList & files);
+                     const QStringList& files);
+  void addBitstreams(const Midas3ItemTreeItem* parentItem,
+                     const QStringList& files);
   void addBitstreamsProgress(int current, int total, const QString& message);
   void pullRecursive(int type, int id);
   void dragNDropPush(int type, int id);
@@ -264,6 +266,9 @@ private:
   void infoPanel(MidasCollectionTreeItem* node, bool editable);
   void infoPanel(MidasItemTreeItem* node, bool editable);
   void infoPanel(MidasBitstreamTreeItem* node, bool editable);
+
+  /** Common code for adding bitstreams to the client tree */
+  bool addBitstreamsCommon(const QStringList& files);
 
   // ------------- UI Dialogs -------------
   CreateMidasResourceUI*      dlg_createMidasResourceUI;

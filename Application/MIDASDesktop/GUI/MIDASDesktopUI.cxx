@@ -269,6 +269,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(actionAdd_collection,   SIGNAL(triggered()), this, SLOT(addCollection()));
   connect(actionAdd_item,         SIGNAL(triggered()), this, SLOT(addItem()));
   connect(actionAdd_bitstream,    SIGNAL(triggered()), this, SLOT(addBitstream()));
+  connect(actionAdd_bitstream3,   SIGNAL(triggered()), this, SLOT(addBitstream()));
   connect(actionAdd_community3,   SIGNAL(triggered()), this, SLOT(addCommunity3()));
   connect(actionAdd_Top_Level_Folder, SIGNAL(triggered()), this, SLOT(addTopLevelFolder()));
   connect(actionAdd_Subfolder,    SIGNAL(triggered()), this, SLOT(addSubfolder()));
@@ -277,10 +278,10 @@ MIDASDesktopUI::MIDASDesktopUI()
   connect(actionDelete_server,    SIGNAL(triggered()), dlg_deleteServerResourceUI, SLOT(exec()));
   connect(actionView_Directory,   SIGNAL(triggered()), this, SLOT(viewDirectory()));
 
-  connect(searchItemsListWidget, SIGNAL(midasListWidgetItemClicked(QListWidgetItemMidasItem *)),
-    this, SLOT(searchItemClicked(QListWidgetItemMidasItem *)));
-  connect(searchItemsListWidget, SIGNAL(midasListWidgetContextMenu(QContextMenuEvent *)),
-    this, SLOT(searchItemContextMenu(QContextMenuEvent *)));
+  connect(searchItemsListWidget, SIGNAL(midasListWidgetItemClicked(QListWidgetItemMidasItem*)),
+    this, SLOT(searchItemClicked(QListWidgetItemMidasItem*)));
+  connect(searchItemsListWidget, SIGNAL(midasListWidgetContextMenu(QContextMenuEvent*)),
+    this, SLOT(searchItemContextMenu(QContextMenuEvent*)));
 
   connect(push_Button,    SIGNAL(released()), this, SLOT(pushResources()));
   connect(pull_Button,    SIGNAL(released()), dlg_pullUI, SLOT(exec()));
@@ -1534,25 +1535,61 @@ void MIDASDesktopUI::addBitstream()
 
   if(files.size())
     {
-    addBitstreams(reinterpret_cast<MidasItemTreeItem*>(
-      const_cast<MidasTreeItem*>(
-      dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem())), files);
+    if(DB_IS_MIDAS3)
+      {
+      addBitstreams(reinterpret_cast<Midas3ItemTreeItem*>(
+        const_cast<Midas3TreeItem*>(dynamic_cast<Midas3TreeViewClient*>(
+        treeViewClient)->getSelectedMidasTreeItem())), files);
+      }
+    else
+      {
+      addBitstreams(reinterpret_cast<MidasItemTreeItem*>(
+        const_cast<MidasTreeItem*>(
+        dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem())), files);
+      }
     }
 }
 
 void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
-                                   const QStringList & files)
+                                   const QStringList& files)
+{
+  if(!this->addBitstreamsCommon(files))
+    {
+    return;
+    }
+
+  m_AddBitstreamsThread->SetParentItem(
+    const_cast<MidasItemTreeItem*>(parentItem));
+  m_AddBitstreamsThread->start();
+}
+
+void MIDASDesktopUI::addBitstreams(const Midas3ItemTreeItem* parentItem,
+                                   const QStringList& files)
+{
+  if(!this->addBitstreamsCommon(files))
+    {
+    return;
+    }
+
+  m_AddBitstreamsThread->SetParentItem(
+    const_cast<Midas3ItemTreeItem*>(parentItem));
+  m_AddBitstreamsThread->start();
+}
+
+/**
+ * Extracted the common code between MIDAS 2 and MIDAS 3 for adding
+ * bitstreams to the client tree into this helper method
+ */
+bool MIDASDesktopUI::addBitstreamsCommon(const QStringList& files)
 {
   if(m_AddBitstreamsThread && m_AddBitstreamsThread->isRunning())
     {
-    return; //already busy adding bitstreams
+    return false; //already busy adding bitstreams
     }
   m_PollFilesystemThread->Pause();
   delete m_AddBitstreamsThread;
   m_AddBitstreamsThread = new AddBitstreamsThread;
   m_AddBitstreamsThread->SetFiles(files);
-  m_AddBitstreamsThread->SetParentItem(
-    const_cast<MidasItemTreeItem*>(parentItem));
   
   connect(m_AddBitstreamsThread, SIGNAL(finished()),
           m_PollFilesystemThread, SLOT(Resume()));
@@ -1565,7 +1602,7 @@ void MIDASDesktopUI::addBitstreams(const MidasItemTreeItem* parentItem,
   m_progress->ResetProgress();
   m_progress->ResetOverall();
   m_progress->SetUnit(" files");
-  m_AddBitstreamsThread->start();
+  return true;
 }
 
 void MIDASDesktopUI::addBitstreamsProgress(int current, int total,
@@ -1892,6 +1929,8 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
         this, SLOT(updateInfoPanel(const Midas3ItemTreeItem*)));
       connect(treeViewClient, SIGNAL(midasTreeItemSelected(const Midas3TreeItem*)),
         this, SLOT(updateActionStateClient(const Midas3TreeItem*)));
+      connect(treeViewClient, SIGNAL(bitstreamsDropped(const Midas3ItemTreeItem*, const QStringList&)),
+        this, SLOT(addBitstreams(const Midas3ItemTreeItem*, const QStringList&)));
       }
     else
       {
