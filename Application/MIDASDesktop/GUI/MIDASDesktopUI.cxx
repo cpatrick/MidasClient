@@ -1640,20 +1640,30 @@ void MIDASDesktopUI::viewDirectory()
 
 void MIDASDesktopUI::openBitstream()
 {
-  MidasTreeItem* resource = const_cast<MidasTreeItem*>(
-    dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
-  mds::DatabaseAPI db;
-  std::string path = db.GetRecordByUuid(resource->getUuid()).Path;
-
-  path = "file:" + path;
-  QUrl url(path.c_str());
-  if(!QDesktopServices::openUrl(url))
+  std::string path;
+  if(DB_IS_MIDAS3)
     {
-    std::stringstream text;
-    text << "The operating system does not know how to open "
-      << path << std::endl;
-    GetLog()->Error(text.str());
+    path = dynamic_cast<Midas3BitstreamTreeItem*>(const_cast<Midas3TreeItem*>(
+      dynamic_cast<Midas3TreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem()))
+      ->getBitstream()->GetPath();
     }
+  else
+    {
+    MidasTreeItem* resource = const_cast<MidasTreeItem*>(
+      dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem());
+    mds::DatabaseAPI db;
+    path = db.GetRecordByUuid(resource->getUuid()).Path;
+    }
+
+    path = "file:" + path;
+    QUrl url(path.c_str());
+    if(!QDesktopServices::openUrl(url))
+      {
+      std::stringstream text;
+      text << "The operating system does not know how to open "
+        << path << std::endl;
+      GetLog()->Error(text.str());
+      }
 }
 
 void MIDASDesktopUI::viewInBrowser()
@@ -1933,6 +1943,7 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
         this, SLOT(updateActionStateClient(const Midas3TreeItem*)));
       connect(treeViewClient, SIGNAL(bitstreamsDropped(const Midas3ItemTreeItem*, const QStringList&)),
         this, SLOT(addBitstreams(const Midas3ItemTreeItem*, const QStringList&)));
+      connect(treeViewClient, SIGNAL(bitstreamOpenRequest()), this, SLOT(openBitstream()));
       }
     else
       {
