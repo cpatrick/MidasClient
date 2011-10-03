@@ -1927,6 +1927,8 @@ void MIDASDesktopUI::setLocalDatabase(std::string file)
         this, SLOT(updateInfoPanel(const Midas3FolderTreeItem*)));
       connect(treeViewClient, SIGNAL(midas3ItemTreeItemSelected(const Midas3ItemTreeItem*)),
         this, SLOT(updateInfoPanel(const Midas3ItemTreeItem*)));
+      connect(treeViewClient, SIGNAL(midas3BitstreamTreeItemSelected(const Midas3BitstreamTreeItem*)),
+        this, SLOT(updateInfoPanel(const Midas3BitstreamTreeItem*)));
       connect(treeViewClient, SIGNAL(midasTreeItemSelected(const Midas3TreeItem*)),
         this, SLOT(updateActionStateClient(const Midas3TreeItem*)));
       connect(treeViewClient, SIGNAL(bitstreamsDropped(const Midas3ItemTreeItem*, const QStringList&)),
