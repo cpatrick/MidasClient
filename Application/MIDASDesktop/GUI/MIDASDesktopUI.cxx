@@ -320,6 +320,7 @@ MIDASDesktopUI::MIDASDesktopUI()
   mws::WebAPI::Instance()->SetLog(this->Log);
   mws::WebAPI::Instance()->SetAuthenticator(m_synch->GetAuthenticator());
   mws::WebAPI::Instance()->SetMirrorHandler(m_mirrorHandler);
+  this->m_synch->SetAgreementHandler(this->m_agreementHandler);
   this->m_synch->SetOverwriteHandler(this->m_overwriteHandler);
   this->m_synch->SetProgressReporter(m_progress);
   this->m_signIn = false;
