@@ -2081,9 +2081,18 @@ void MIDASDesktopUI::pushResources()
   this->displayStatus(tr("Pushing locally added resources..."));
   this->setProgressIndeterminate();
 
-  const MidasTreeItem* resource =
-    dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem();
-  dlg_pushUI->setObject(resource ? resource->getObject() : NULL);
+  if(DB_IS_MIDAS3)
+    {
+    const Midas3TreeItem* resource =
+      dynamic_cast<Midas3TreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem();
+    dlg_pushUI->setObject(resource ? resource->getObject() : NULL);
+    }
+  else
+    {
+    const MidasTreeItem* resource =
+      dynamic_cast<MidasTreeViewClient*>(treeViewClient)->getSelectedMidasTreeItem();
+    dlg_pushUI->setObject(resource ? resource->getObject() : NULL);
+    }
   dlg_pushUI->exec();
 }
 
