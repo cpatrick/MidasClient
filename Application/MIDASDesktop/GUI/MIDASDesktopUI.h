@@ -50,7 +50,17 @@ class DeleteThread;
 
 class QContextMenuEvent;
 class MidasTreeItem;
+class MidasCommunityTreeItem;
+class MidasCollectionTreeItem;
+class MidasItemTreeItem;
+class MidasBitstreamTreeItem;
+class Midas3TreeItem;
+class Midas3FolderTreeItem;
+class Midas3ItemTreeItem;
+class Midas3BitstreamTreeItem;
 class IncompleteTransferWidget;
+
+class MidasTreeViewBase;
 
 namespace mdo {
   class Object;
@@ -92,7 +102,16 @@ public:
     ACTION_CLIENT_ITEM           = 0x200,
     ACTION_CLIENT_BITSTREAM      = 0x400,
     ACTION_CLIENT_RESOURCE       = 0x780, //0x80 + 0x100 + 0x200 + 0x400 (any client side resource)
-    ACTION_LOCAL_DATABASE        = 0x800
+    ACTION_LOCAL_DATABASE        = 0x800,
+
+    ACTION_COMMUNITY3            = 0x01000,
+    ACTION_FOLDER3               = 0x02000,
+    ACTION_ITEM3                 = 0x04000,
+    ACTION_CLIENT_COMMUNITY3     = 0x08000,
+    ACTION_CLIENT_FOLDER3        = 0x10000,
+    ACTION_CLIENT_ITEM3          = 0x20000,
+    ACTION_CLIENT_BITSTREAM3     = 0x40000,
+    ACTION_CLIENT_RESOURCE3      = 0x78000
     }; 
   Q_DECLARE_FLAGS(ActivateActions, ActivateAction)
      
@@ -101,8 +120,8 @@ public:
 
   void activateActions(bool value, ActivateActions activateAction); 
 
-  MidasTreeViewServer * getTreeViewServer() { return treeViewServer; }
-  MidasTreeViewClient * getTreeViewClient() { return treeViewClient; }
+  MidasTreeViewBase* getTreeViewServer() { return treeViewServer; }
+  MidasTreeViewBase* getTreeViewClient() { return treeViewClient; }
   midasSynchronizer* getSynchronizer() { return m_synch; }
   midasProgressReporter* getProgress() { return m_progress; }
   PollFilesystemThread* getPollFilesystemThread() { return m_PollFilesystemThread; }
@@ -136,9 +155,9 @@ public slots:
   void signInOrOut();
   void signIn(bool ok);
   void signOut();
-  void createProfile(std::string name, std::string email,
-                     std::string apiName, std::string apiKey,
-                     std::string rootDir, std::string url);
+  void createProfile(const std::string& name, const std::string& email,
+                     const std::string& apiName, const std::string& password,
+                     const std::string& rootDir, const std::string& url);
   void chooseLocalDatabase();
   void createLocalDatabase();
   void setLocalDatabase(std::string file);
@@ -176,15 +195,20 @@ public slots:
   // ------------- tray icon -------------
 
   // ------------- UI updates -------------
-  void updateInfoPanel( const MidasCommunityTreeItem* communityTreeItem );
-  void updateInfoPanel( const MidasCollectionTreeItem* collectionTreeItem );
-  void updateInfoPanel( const MidasItemTreeItem* itemTreeItem );
-  void updateInfoPanel( const MidasBitstreamTreeItem* bitstreamTreeItem );
+  void updateInfoPanel(const MidasCommunityTreeItem* communityTreeItem);
+  void updateInfoPanel(const MidasCollectionTreeItem* collectionTreeItem);
+  void updateInfoPanel(const MidasItemTreeItem* itemTreeItem);
+  void updateInfoPanel(const MidasBitstreamTreeItem* bitstreamTreeItem);
+  void updateInfoPanel(const Midas3FolderTreeItem* folderTreeItem);
+  void updateInfoPanel(const Midas3ItemTreeItem* itemTreeItem);
+  void updateInfoPanel(const Midas3BitstreamTreeItem* bitstreamTreeItem);
   void clearInfoPanel();
   void editInfo();
 
   void updateActionState(const MidasTreeItem* item);
+  void updateActionState(const Midas3TreeItem* item);
   void updateActionStateClient(const MidasTreeItem* item);
+  void updateActionStateClient(const Midas3TreeItem* item);
 
   void displayServerResourceContextMenu(QContextMenuEvent* e);
   void displayClientResourceContextMenu(QContextMenuEvent* e);
@@ -197,8 +221,14 @@ public slots:
   void addCollection();
   void addItem();
   void addBitstream();
+  void addCommunity3();
+  void addTopLevelFolder();
+  void addSubfolder();
+  void addItem3();
   void addBitstreams(const MidasItemTreeItem* parentItem,
-                     const QStringList & files);
+                     const QStringList& files);
+  void addBitstreams(const Midas3ItemTreeItem* parentItem,
+                     const QStringList& files);
   void addBitstreamsProgress(int current, int total, const QString& message);
   void pullRecursive(int type, int id);
   void dragNDropPush(int type, int id);
@@ -237,6 +267,9 @@ private:
   void infoPanel(MidasCollectionTreeItem* node, bool editable);
   void infoPanel(MidasItemTreeItem* node, bool editable);
   void infoPanel(MidasBitstreamTreeItem* node, bool editable);
+
+  /** Common code for adding bitstreams to the client tree */
+  bool addBitstreamsCommon(const QStringList& files);
 
   // ------------- UI Dialogs -------------
   CreateMidasResourceUI*      dlg_createMidasResourceUI;
@@ -302,8 +335,11 @@ private:
   DeleteThread*               m_DeleteThread;
   QFutureWatcher<bool>        m_CreateDBWatcher;
   // ----------- threads -----------------
+
+  MidasTreeViewBase*          treeViewServer;
+  MidasTreeViewBase*          treeViewClient;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( MIDASDesktopUI::ActivateActions )
+Q_DECLARE_OPERATORS_FOR_FLAGS(MIDASDesktopUI::ActivateActions)
 
 #endif //__MIDASDesktopUI_H

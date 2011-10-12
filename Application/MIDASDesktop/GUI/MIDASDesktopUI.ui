@@ -206,23 +206,7 @@
                </item>
               </layout>
              </item>
-             <item row="1" column="0">
-              <widget class="MidasTreeViewServer" name="treeViewServer">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="acceptDrops">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
+             <item row="2" column="1">
               <layout class="QVBoxLayout" name="verticalLayout_4">
                <property name="spacing">
                 <number>3</number>
@@ -289,20 +273,54 @@
                </item>
               </layout>
              </item>
-             <item row="1" column="2">
-              <widget class="MidasTreeViewClient" name="treeViewClient">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="acceptDrops">
-                <bool>true</bool>
-               </property>
+             <item row="1" column="0" rowspan="2">
+              <widget class="QWidget" name="serverTreeViewContainer" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_3">
+                <property name="margin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QTreeView" name="treeViewServerPlaceholder">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="acceptDrops">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="1" column="2" rowspan="2">
+              <widget class="QWidget" name="clientTreeViewContainer" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_5">
+                <property name="margin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QTreeView" name="treeViewClientPlaceholder">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="acceptDrops">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
@@ -729,7 +747,7 @@
     <addaction name="actionCreate_Profile"/>
     <addaction name="actionPreferences"/>
    </widget>
-   <widget class="QMenu" name="menuCommunity">
+   <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
@@ -758,17 +776,40 @@
       <iconset resource="../MIDASDesktopIcons.qrc">
        <normaloff>:/icons/workstation_network.png</normaloff>:/icons/workstation_network.png</iconset>
      </property>
-     <addaction name="actionAdd_community"/>
-     <addaction name="separator"/>
-     <addaction name="actionAdd_subcommunity"/>
-     <addaction name="actionAdd_collection"/>
-     <addaction name="separator"/>
-     <addaction name="actionAdd_item"/>
-     <addaction name="separator"/>
-     <addaction name="actionAdd_bitstream"/>
+     <widget class="QMenu" name="menuMIDAS_2">
+      <property name="title">
+       <string>MIDAS 2</string>
+      </property>
+      <addaction name="actionAdd_community"/>
+      <addaction name="separator"/>
+      <addaction name="actionAdd_subcommunity"/>
+      <addaction name="actionAdd_collection"/>
+      <addaction name="separator"/>
+      <addaction name="actionAdd_item"/>
+      <addaction name="actionAdd_bitstream"/>
+      <addaction name="separator"/>
+      <addaction name="actionSwap_with_MD5_reference"/>
+     </widget>
+     <widget class="QMenu" name="menuMIDAS_3">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="title">
+       <string>MIDAS 3</string>
+      </property>
+      <addaction name="actionAdd_community3"/>
+      <addaction name="actionAdd_Top_Level_Folder"/>
+      <addaction name="separator"/>
+      <addaction name="actionAdd_Subfolder"/>
+      <addaction name="separator"/>
+      <addaction name="actionAdd_item3"/>
+      <addaction name="separator"/>
+      <addaction name="actionAdd_bitstream3"/>
+     </widget>
+     <addaction name="menuMIDAS_2"/>
+     <addaction name="menuMIDAS_3"/>
      <addaction name="separator"/>
      <addaction name="actionPush_Resource"/>
-     <addaction name="actionSwap_with_MD5_reference"/>
      <addaction name="actionDelete_Resource"/>
      <addaction name="separator"/>
      <addaction name="actionView_Directory"/>
@@ -777,7 +818,7 @@
     <addaction name="menuServer"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuCommunity"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -1112,13 +1153,68 @@
     <string>Upgrade Database</string>
    </property>
   </action>
+  <action name="actionAdd_community3">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/user_group.png</normaloff>:/icons/user_group.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Community</string>
+   </property>
+  </action>
+  <action name="actionAdd_Top_Level_Folder">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/gpl_folder_add.png</normaloff>:/icons/gpl_folder_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Top Level Folder</string>
+   </property>
+  </action>
+  <action name="actionAdd_Subfolder">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/gpl_folder_add.png</normaloff>:/icons/gpl_folder_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Subfolder</string>
+   </property>
+  </action>
+  <action name="actionAdd_item3">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/document_add.png</normaloff>:/icons/document_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Item</string>
+   </property>
+  </action>
+  <action name="actionAdd_bitstream3">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../MIDASDesktopIcons.qrc">
+     <normaloff>:/icons/page.png</normaloff>:/icons/page.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Bitstreams</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>MidasTreeViewServer</class>
-   <extends>QTreeView</extends>
-   <header>MidasTreeViewServer.h</header>
-  </customwidget>
   <customwidget>
    <class>MidasSearchResultList</class>
    <extends>QListWidget</extends>
@@ -1129,18 +1225,11 @@
    <extends>QTableWidget</extends>
    <header>MidasResourceDescTable.h</header>
   </customwidget>
-  <customwidget>
-   <class>MidasTreeViewClient</class>
-   <extends>QTreeView</extends>
-   <header>MidasTreeViewClient.h</header>
-  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>refreshButton</tabstop>
-  <tabstop>treeViewServer</tabstop>
   <tabstop>pull_Button</tabstop>
   <tabstop>push_Button</tabstop>
-  <tabstop>treeViewClient</tabstop>
   <tabstop>refreshClientButton</tabstop>
   <tabstop>clientExpandAllButton</tabstop>
   <tabstop>clientCollapseAllButton</tabstop>
@@ -1172,40 +1261,13 @@
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
+  <include location="../MIDASDesktopIcons.qrc"/>
  </resources>
  <connections>
-  <connection>
-   <sender>clientExpandAllButton</sender>
-   <signal>clicked()</signal>
-   <receiver>treeViewClient</receiver>
-   <slot>expandAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>583</x>
-     <y>51</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>581</x>
-     <y>85</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>clientCollapseAllButton</sender>
-   <signal>clicked()</signal>
-   <receiver>treeViewClient</receiver>
-   <slot>collapseAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>611</x>
-     <y>51</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>612</x>
-     <y>187</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>clearLogButton</sender>
    <signal>clicked()</signal>

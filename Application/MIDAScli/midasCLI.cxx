@@ -241,7 +241,7 @@ int midasCLI::RunSynchronizer()
 
     if(!this->Synchronizer->GetAuthenticator()->AddAuthProfile(
       this->TempProfile->User, this->TempProfile->AppName,
-      this->TempProfile->ApiKey, this->TempProfile->RootDir, tempName))
+      this->TempProfile->ApiKey, this->TempProfile->RootDir, tempName, true))
       {
       std::cout << "Ad hoc authentication failed." << std::endl;
       return -1;
@@ -344,7 +344,7 @@ int midasCLI::PerformCreateProfile(std::vector<std::string> args)
 
   std::cout << "Adding authentication profile '" << name << "'" << std::endl;
   bool ok = this->Synchronizer->GetAuthenticator()->AddAuthProfile(
-    user, appName, apiKey, rootDir, name);
+    user, appName, apiKey, rootDir, name, true);
 
   if(ok)
     {
