@@ -13,32 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
-
-
-#ifndef __GUIUpgradeHandler_H
-#define __GUIUpgradeHandler_H
-
-#include "mdsUpgradeHandler.h"
-#include <QObject>
-
-class UpgradeUI;
-
-class GUIUpgradeHandler : public QObject, public mds::UpgradeHandler
-{
-  Q_OBJECT
-public:
-  GUIUpgradeHandler(UpgradeUI* dialog);
-  ~GUIUpgradeHandler();
-
-  bool Upgrade(const std::string& path, mdo::Version dbVersion, mdo::Version productVersion);
-
-signals:
-  void displayDialog();
-
-  void errorMessage(const QString &);
-
-private:
-  UpgradeUI* m_Dialog;
-};
-
-#endif
