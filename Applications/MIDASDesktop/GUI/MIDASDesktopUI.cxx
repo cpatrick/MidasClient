@@ -331,16 +331,16 @@ MIDASDesktopUI::MIDASDesktopUI()
 
   // ------------- Progress bar ------------------------
   connect(dynamic_cast<GUIProgress *>(m_Progress), SIGNAL(ProgressMessage(const QString &) ), this,
-          SLOT(currentFileMessage(const QString &) ) );
+          SLOT(CurrentFileMessage(const QString &) ) );
   connect(dynamic_cast<GUIProgress *>(m_Progress),
           SIGNAL(OverallProgressCount(int, int) ), this, SLOT(OverallProgressUpdate(int, int) ) );
   connect(dynamic_cast<GUIProgress *>(m_Progress),
           SIGNAL(CurrentProgress(double, double) ), this, SLOT(CurrentProgressUpdate(double, double) ) );
-  connect(dynamic_cast<GUIProgress *>(m_Progress), SIGNAL(Speed(double) ), this, SLOT(progressSpeedUpdate(double) ) );
+  connect(dynamic_cast<GUIProgress *>(m_Progress), SIGNAL(Speed(double) ), this, SLOT(ProgressSpeedUpdate(double) ) );
   connect(dynamic_cast<GUIProgress *>(m_Progress), SIGNAL(EstimatedTime(double) ), this,
           SLOT(EstimatedTimeUpdate(double) ) );
   connect(dynamic_cast<GUIProgress *>(m_Progress),
-          SIGNAL(OverallProgressTotal(double, double) ), this, SLOT(totalProgressUpdate(double, double) ) );
+          SIGNAL(OverallProgressTotal(double, double) ), this, SLOT(TotalProgressUpdate(double, double) ) );
   connect(dynamic_cast<GUIProgress *>(m_Progress), SIGNAL(UpdateProgressMin(int) ), m_ProgressBarCurrent,
           SLOT(setMinimum(int) ) );
   connect(dynamic_cast<GUIProgress *>(m_Progress), SIGNAL(UpdateProgressMax(int) ), m_ProgressBarCurrent,
@@ -723,8 +723,8 @@ void MIDASDesktopUI::UpdateClientTreeView()
 
   m_ReadDatabaseThread = new UpdateTreeViewThread(m_TreeViewClient);
 
-  connect(m_ReadDatabaseThread, SIGNAL(finished() ), this, SLOT(resetStatus() ) );
-  connect(m_ReadDatabaseThread, SIGNAL(enableActions(bool) ), this, SLOT(enableClientActions(bool) ) );
+  connect(m_ReadDatabaseThread, SIGNAL(finished() ), this, SLOT(ResetStatus() ) );
+  connect(m_ReadDatabaseThread, SIGNAL(enableActions(bool) ), this, SLOT(EnableClientActions(bool) ) );
 
   this->DisplayStatus("Reading local database...");
   this->SetProgressIndeterminate();
@@ -2209,7 +2209,7 @@ void MIDASDesktopUI::SetLocalDatabase(std::string file)
               this, SLOT(UpdateActionStateClient(const Midas3TreeItem *) ) );
       connect(m_TreeViewClient, SIGNAL(bitstreamsDropped(const Midas3ItemTreeItem *, const QStringList &) ),
               this, SLOT(AddBitstreams(const Midas3ItemTreeItem *, const QStringList &) ) );
-      connect(m_TreeViewClient, SIGNAL(bitstreamOpenRequest() ), this, SLOT(openBitstream() ) );
+      connect(m_TreeViewClient, SIGNAL(bitstreamOpenRequest() ), this, SLOT(OpenBitstream() ) );
       }
     else
       {
