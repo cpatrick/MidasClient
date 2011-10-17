@@ -15,7 +15,10 @@ PollFilesystemThread::~PollFilesystemThread()
 void PollFilesystemThread::Pause()
 {
   m_Run = false;
-  while(m_DatabaseLocked) {}
+  while( m_DatabaseLocked )
+    {
+    }
+
   emit paused();
 }
 
@@ -31,13 +34,13 @@ void PollFilesystemThread::Terminate()
 
 void PollFilesystemThread::run()
 {
-  while(!m_Terminate)
+  while( !m_Terminate )
     {
-    if(m_Run)
+    if( m_Run )
       {
       m_DatabaseLocked = true;
       mds::DatabaseAPI db;
-      if(m_Run && db.CheckModifiedBitstreams())
+      if( m_Run && db.CheckModifiedBitstreams() )
         {
         emit needToRefresh();
         }

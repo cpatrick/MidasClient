@@ -29,8 +29,10 @@ public:
 
 signals:
   void displayDialog();
+
   void checkingAgreement();
-  void errorMessage(const QString&);
+
+  void errorMessage(const QString &);
 
 protected:
   bool checkUserHasAgreed(midasSynchronizer* synch);

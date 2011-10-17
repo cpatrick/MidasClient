@@ -14,6 +14,7 @@ public:
   ~UpgradeUI();
 
   void SetProductVersion(const std::string& version);
+
   void SetDbVersion(const std::string& version);
 
 public slots:
@@ -22,7 +23,7 @@ public slots:
 
 signals:
 
-  void errorMessage(const QString&);
+  void errorMessage(const QString &);
 
 protected:
   std::string m_ProductVersion;

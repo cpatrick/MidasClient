@@ -16,21 +16,17 @@ class ExpandTreeThread : public QThread
 {
   Q_OBJECT
 public:
-  ExpandTreeThread(MidasTreeViewServer* view,
-                   MidasTreeModelServer* model,
-                   std::string uuid,
-                   bool select);
-  ExpandTreeThread(Midas3TreeViewServer* view,
-                   Midas3TreeModelServer* model,
-                   std::string uuid,
-                   bool select);
+  ExpandTreeThread(MidasTreeViewServer* view, MidasTreeModelServer* model, std::string uuid, bool select);
+  ExpandTreeThread(Midas3TreeViewServer* view, Midas3TreeModelServer* model, std::string uuid, bool select);
   ~ExpandTreeThread();
 
   virtual void run();
 
 signals:
   void expand(const QModelIndex& index);
+
   void select(const QModelIndex& index);
+
   void enableActions(bool val);
 
 private:

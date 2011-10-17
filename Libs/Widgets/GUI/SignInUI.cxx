@@ -10,7 +10,7 @@
 
 /** Constructor */
 SignInUI::SignInUI(QWidget* parent, midasSynchronizer* synch)
-: QDialog(parent), m_Synch(synch)
+  : QDialog(parent), m_Synch(synch)
 {
   setupUi(this);
   m_SignInThread = NULL;
@@ -27,19 +27,18 @@ void SignInUI::init()
 {
   profileComboBox->clear();
 
-  mds::DatabaseAPI db;
+  mds::DatabaseAPI         db;
   std::vector<std::string> profiles = db.GetAuthProfiles();
-  
-  for(std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i)
+  for( std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i )
     {
-    profileComboBox->addItem(i->c_str());
+    profileComboBox->addItem(i->c_str() );
     }
 }
 
 /** */
 int SignInUI::exec()
 {
-  if(mds::DatabaseInfo::Instance()->GetPath() != "")
+  if( mds::DatabaseInfo::Instance()->GetPath() != "" )
     {
     this->init();
     return QDialog::exec();
@@ -54,19 +53,19 @@ int SignInUI::exec()
 /** */
 void SignInUI::accept()
 {
-  if(this->profileComboBox->currentText().toStdString() == "")
+  if( this->profileComboBox->currentText().toStdString() == "" )
     {
     QMessageBox::critical(this, "Error", "Please select a profile or create a new one");
     return;
     }
 
-  if(m_SignInThread)
+  if( m_SignInThread )
     {
     disconnect(m_SignInThread);
     }
   delete m_SignInThread;
   m_SignInThread = new SignInThread(m_Synch);
-  m_SignInThread->SetProfile(profileComboBox->currentText());
+  m_SignInThread->SetProfile(profileComboBox->currentText() );
 
   connect(m_SignInThread, SIGNAL( initialized(bool) ), this, SLOT( signIn(bool) ) );
 
@@ -84,7 +83,7 @@ void SignInUI::signIn(bool ok)
 void SignInUI::profileCreated(std::string name)
 {
   init();
-  profileComboBox->setCurrentIndex(profileComboBox->findText(name.c_str()));
+  profileComboBox->setCurrentIndex(profileComboBox->findText(name.c_str() ) );
 }
 
 void SignInUI::showCreateProfileDialog()
@@ -97,3 +96,4 @@ void SignInUI::removeProfile(std::string name)
   (void)name;
   init();
 }
+

@@ -24,9 +24,8 @@ class GUIMirrorHandler : public QObject, public mws::MirrorHandler
 public:
   GUIMirrorHandler(MirrorPickerUI* dialog);
   ~GUIMirrorHandler();
-
 public slots:
-  mdo::Assetstore* HandleMirroredBitstream(mdo::Bitstream* bitstream);
+  mdo::Assetstore * HandleMirroredBitstream(mdo::Bitstream* bitstream);
 
 signals:
   void prompt(mdo::Bitstream* bitstream);

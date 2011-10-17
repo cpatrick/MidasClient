@@ -22,7 +22,7 @@
 #include "mdoObject.h"
 
 MidasTreeModelClient::MidasTreeModelClient(QObject *parent)
-: MidasTreeModel(parent)
+  : MidasTreeModel(parent)
 {
   this->AlterList = true;
 }
@@ -35,13 +35,14 @@ MidasTreeModelClient::~MidasTreeModelClient()
 void MidasTreeModelClient::Populate()
 {
   mds::DatabaseAPI db;
-  std::vector<mdo::Community*> topLevelCommunities =
+
+  std::vector<mdo::Community *> topLevelCommunities =
     db.GetTopLevelCommunities(false);
 
-  this->beginInsertRows(QModelIndex(), 0, topLevelCommunities.size());
+  this->beginInsertRows(QModelIndex(), 0, topLevelCommunities.size() );
   int row = 0;
-  for(std::vector<mdo::Community*>::iterator i = topLevelCommunities.begin();
-      i != topLevelCommunities.end(); ++i)
+  for( std::vector<mdo::Community *>::iterator i = topLevelCommunities.begin();
+       i != topLevelCommunities.end(); ++i )
     {
     QList<QVariant> columnData;
     columnData << (*i)->GetName().c_str();
@@ -54,11 +55,11 @@ void MidasTreeModelClient::Populate()
     m_TopLevelCommunities.append(communityItem);
 
     QModelIndex index = this->index(row, 0);
-    registerResource((*i)->GetUuid(), index);
+    registerResource( (*i)->GetUuid(), index);
 
     communityItem->Populate(index);
     communityItem->SetTopLevelCommunities(&m_TopLevelCommunities);
-    if((*i)->IsDirty())
+    if( (*i)->IsDirty() )
       {
       communityItem->SetDecorationRole(MidasTreeItem::Dirty);
       }
@@ -70,23 +71,23 @@ void MidasTreeModelClient::Populate()
 
 void MidasTreeModelClient::addResource(mdo::Object* object)
 {
-  mdo::Community* comm = NULL;
+  mdo::Community*  comm = NULL;
   mdo::Collection* coll = NULL;
-  mdo::Item* item = NULL;
-  mdo::Bitstream* bitstream = NULL;
+  mdo::Item*       item = NULL;
+  mdo::Bitstream*  bitstream = NULL;
 
-  if((comm = dynamic_cast<mdo::Community*>(object)) != NULL)
+  if( (comm = dynamic_cast<mdo::Community *>(object) ) != NULL )
     {
     QList<QVariant> columnData;
     columnData << comm->GetName().c_str();
     MidasCommunityTreeItem* communityItem;
 
     QModelIndex index;
-    if(comm->GetParentCommunity() == NULL)
+    if( comm->GetParentCommunity() == NULL )
       {
       communityItem = new MidasCommunityTreeItem(columnData, this, NULL);
       communityItem->SetTopLevelCommunities(&m_TopLevelCommunities);
-      int rows = this->rowCount(QModelIndex());
+      int rows = this->rowCount(QModelIndex() );
       this->beginInsertRows(QModelIndex(), rows, rows);
       m_TopLevelCommunities.append(communityItem);
       this->endInsertRows();
@@ -94,14 +95,15 @@ void MidasTreeModelClient::addResource(mdo::Object* object)
       }
     else
       {
-      QModelIndex parentIndex = this->getIndexByUuid(comm->GetParentCommunity()->GetUuid());
-      if(!parentIndex.isValid())
+      QModelIndex parentIndex = this->getIndexByUuid(comm->GetParentCommunity()->GetUuid() );
+      if( !parentIndex.isValid() )
         {
         return;
         }
-      MidasCommunityTreeItem* parent = dynamic_cast<MidasCommunityTreeItem*>(const_cast<MidasTreeItem*>(this->midasTreeItem(parentIndex)));
+      MidasCommunityTreeItem* parent =
+        dynamic_cast<MidasCommunityTreeItem *>(const_cast<MidasTreeItem *>(this->midasTreeItem(parentIndex) ) );
       communityItem = new MidasCommunityTreeItem(columnData, this, parent);
-      this->beginInsertRows(parentIndex, parent->ChildCount(), parent->ChildCount());
+      this->beginInsertRows(parentIndex, parent->ChildCount(), parent->ChildCount() );
       parent->AppendChild(communityItem);
       this->endInsertRows();
 
@@ -111,19 +113,20 @@ void MidasTreeModelClient::addResource(mdo::Object* object)
     communityItem->SetCommunity(comm);
     this->registerResource(object->GetUuid(), index);
     }
-  else if((coll = dynamic_cast<mdo::Collection*>(object)) != NULL)
+  else if( (coll = dynamic_cast<mdo::Collection *>(object) ) != NULL )
     {
     QList<QVariant> columnData;
     columnData << coll->GetName().c_str();
-    
-    QModelIndex parentIndex = this->getIndexByUuid(coll->GetParentCommunity()->GetUuid());
-    if(!parentIndex.isValid())
+
+    QModelIndex parentIndex = this->getIndexByUuid(coll->GetParentCommunity()->GetUuid() );
+    if( !parentIndex.isValid() )
       {
       return;
       }
-    MidasCommunityTreeItem* parent = dynamic_cast<MidasCommunityTreeItem*>(const_cast<MidasTreeItem*>(this->midasTreeItem(parentIndex)));
+    MidasCommunityTreeItem* parent =
+      dynamic_cast<MidasCommunityTreeItem *>(const_cast<MidasTreeItem *>(this->midasTreeItem(parentIndex) ) );
     MidasCollectionTreeItem* collectionItem = new MidasCollectionTreeItem(columnData, this, parent);
-    this->beginInsertRows(parentIndex, parent->ChildCount(), parent->ChildCount());
+    this->beginInsertRows(parentIndex, parent->ChildCount(), parent->ChildCount() );
     parent->AppendChild(collectionItem);
     this->endInsertRows();
     QModelIndex index = this->index(parent->ChildCount() - 1, 0, parentIndex);
@@ -132,19 +135,20 @@ void MidasTreeModelClient::addResource(mdo::Object* object)
     collectionItem->SetCollection(coll);
     this->registerResource(object->GetUuid(), index);
     }
-  else if((item = dynamic_cast<mdo::Item*>(object)) != NULL)
+  else if( (item = dynamic_cast<mdo::Item *>(object) ) != NULL )
     {
     QList<QVariant> columnData;
     columnData << item->GetTitle().c_str();
 
-    QModelIndex parentIndex = this->getIndexByUuid(item->GetParentCollection()->GetUuid());
-    if(!parentIndex.isValid())
+    QModelIndex parentIndex = this->getIndexByUuid(item->GetParentCollection()->GetUuid() );
+    if( !parentIndex.isValid() )
       {
       return;
       }
-    MidasCollectionTreeItem* parent = dynamic_cast<MidasCollectionTreeItem*>(const_cast<MidasTreeItem*>(this->midasTreeItem(parentIndex)));
+    MidasCollectionTreeItem* parent =
+      dynamic_cast<MidasCollectionTreeItem *>(const_cast<MidasTreeItem *>(this->midasTreeItem(parentIndex) ) );
     MidasItemTreeItem* itemTreeItem = new MidasItemTreeItem(columnData, this, parent);
-    this->beginInsertRows(parentIndex, parent->ChildCount(), parent->ChildCount());
+    this->beginInsertRows(parentIndex, parent->ChildCount(), parent->ChildCount() );
     parent->AppendChild(itemTreeItem);
     this->endInsertRows();
     QModelIndex index = this->index(parent->ChildCount() - 1, 0, parentIndex);
@@ -153,37 +157,41 @@ void MidasTreeModelClient::addResource(mdo::Object* object)
     itemTreeItem->SetItem(item);
     this->registerResource(object->GetUuid(), index);
     }
-  else if((bitstream = dynamic_cast<mdo::Bitstream*>(object)) != NULL)
+  else if( (bitstream = dynamic_cast<mdo::Bitstream *>(object) ) != NULL )
     {
     QList<QVariant> columnData;
     columnData << bitstream->GetName().c_str();
 
-    QModelIndex parentIndex = this->getIndexByUuid(bitstream->GetParentItem()->GetUuid());
-    if(!parentIndex.isValid())
+    QModelIndex parentIndex = this->getIndexByUuid(bitstream->GetParentItem()->GetUuid() );
+    if( !parentIndex.isValid() )
       {
       return;
       }
-    MidasItemTreeItem* parent = dynamic_cast<MidasItemTreeItem*>(const_cast<MidasTreeItem*>(this->midasTreeItem(parentIndex)));
+    MidasItemTreeItem* parent =
+      dynamic_cast<MidasItemTreeItem *>(const_cast<MidasTreeItem *>(this->midasTreeItem(parentIndex) ) );
     MidasBitstreamTreeItem* bitstreamItem = new MidasBitstreamTreeItem(columnData, this, parent);
     bitstreamItem->SetClientResource(true);
     bitstreamItem->SetBitstream(bitstream);
     bitstreamItem->SetDecorationRole(MidasTreeItem::Dirty);
 
-    this->beginInsertRows(parentIndex, parent->ChildCount(), parent->ChildCount());
+    this->beginInsertRows(parentIndex, parent->ChildCount(), parent->ChildCount() );
     parent->AppendChild(bitstreamItem);
     this->endInsertRows();
     QModelIndex index = this->index(parent->ChildCount() - 1, 0, parentIndex);
 
     this->registerResource(object->GetUuid(), index);
     }
-  else return;
+  else
+    {
+    return;
+    }
 
   emit layoutChanged();
 }
 
 void MidasTreeModelClient::updateResource(mdo::Object* object)
 {
-  //TODO
+  // TODO
   (void)object;
 }
 
@@ -198,24 +206,25 @@ void MidasTreeModelClient::deleteResource(mdo::Object* object)
 
 void MidasTreeModelClient::fetchMore(const QModelIndex& parent)
 {
-  if (!parent.isValid() || !this->canFetchMore(parent))
+  if( !parent.isValid() || !this->canFetchMore(parent) )
     {
     return;
     }
-  MidasTreeItem* item = const_cast<MidasTreeItem *>(midasTreeItem(parent));
-  MidasCommunityTreeItem* communityTreeItem = NULL;
+  MidasTreeItem*           item = const_cast<MidasTreeItem *>(midasTreeItem(parent) );
+  MidasCommunityTreeItem*  communityTreeItem = NULL;
   MidasCollectionTreeItem* collectionTreeItem = NULL;
-  MidasItemTreeItem* itemTreeItem = NULL;
+  MidasItemTreeItem*       itemTreeItem = NULL;
 
-  if ((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  if( (communityTreeItem = dynamic_cast<MidasCommunityTreeItem *>( const_cast<MidasTreeItem *>( item ) ) ) != NULL )
     {
     this->fetchCommunity(communityTreeItem);
     }
-  else if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  else if( (collectionTreeItem = dynamic_cast<MidasCollectionTreeItem *>( const_cast<MidasTreeItem *>( item ) ) ) !=
+           NULL )
     {
     this->fetchCollection(collectionTreeItem);
     }
-  else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  else if( (itemTreeItem = dynamic_cast<MidasItemTreeItem *>( const_cast<MidasTreeItem *>( item ) ) ) != NULL )
     {
     this->fetchItem(itemTreeItem);
     }
@@ -223,23 +232,24 @@ void MidasTreeModelClient::fetchMore(const QModelIndex& parent)
   emit layoutChanged();
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void MidasTreeModelClient::fetchCommunity(MidasCommunityTreeItem* parent)
 {
-  mds::Community mdsCommunity;
+  mds::Community  mdsCommunity;
   mdo::Community* community = parent->GetCommunity();
+
   mdsCommunity.SetObject(community);
   mdsCommunity.SetRecursive(false);
 
-  if(!mdsCommunity.FetchTree())
+  if( !mdsCommunity.FetchTree() )
     {
-    //emit fetchError();
+    // emit fetchError();
     return;
     }
 
   int row = 0;
-  for(std::vector<mdo::Community*>::const_iterator i = community->GetCommunities().begin();
-      i != community->GetCommunities().end(); ++i)
+  for( std::vector<mdo::Community *>::const_iterator i = community->GetCommunities().begin();
+       i != community->GetCommunities().end(); ++i )
     {
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
@@ -247,19 +257,19 @@ void MidasTreeModelClient::fetchCommunity(MidasCommunityTreeItem* parent)
     item->SetCommunity(*i);
     item->SetDynamicFetch(true);
     item->SetFetchedChildren(false);
-    if((*i)->IsDirty())
+    if( (*i)->IsDirty() )
       {
       item->SetDecorationRole(MidasTreeItem::Dirty);
       }
     parent->AppendChild(item);
 
-    QModelIndex index = this->index(row, 0, getIndexByUuid(parent->GetUuid()));
-    this->registerResource((*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, getIndexByUuid(parent->GetUuid() ) );
+    this->registerResource( (*i)->GetUuid(), index);
     row++;
 
     }
-  for(std::vector<mdo::Collection*>::const_iterator i = community->GetCollections().begin();
-      i != community->GetCollections().end(); ++i)
+  for( std::vector<mdo::Collection *>::const_iterator i = community->GetCollections().begin();
+       i != community->GetCollections().end(); ++i )
     {
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
@@ -267,36 +277,37 @@ void MidasTreeModelClient::fetchCommunity(MidasCommunityTreeItem* parent)
     item->SetCollection(*i);
     item->SetDynamicFetch(true);
     item->SetFetchedChildren(false);
-    if((*i)->IsDirty())
+    if( (*i)->IsDirty() )
       {
       item->SetDecorationRole(MidasTreeItem::Dirty);
       }
     parent->AppendChild(item);
 
-    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid()));
-    this->registerResource((*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid() ) );
+    this->registerResource( (*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void MidasTreeModelClient::fetchCollection(MidasCollectionTreeItem* parent)
 {
-  mds::Collection mdsCollection;
+  mds::Collection  mdsCollection;
   mdo::Collection* collection = parent->GetCollection();
+
   mdsCollection.SetObject(collection);
   mdsCollection.SetRecursive(false);
 
-  if(!mdsCollection.FetchTree())
+  if( !mdsCollection.FetchTree() )
     {
-    //emit fetchError();
+    // emit fetchError();
     return;
     }
 
   int row = 0;
-  for(std::vector<mdo::Item*>::const_iterator i = collection->GetItems().begin();
-      i != collection->GetItems().end(); ++i)
+  for( std::vector<mdo::Item *>::const_iterator i = collection->GetItems().begin();
+       i != collection->GetItems().end(); ++i )
     {
     QList<QVariant> name;
     name << (*i)->GetTitle().c_str();
@@ -304,35 +315,36 @@ void MidasTreeModelClient::fetchCollection(MidasCollectionTreeItem* parent)
     item->SetItem(*i);
     item->SetDynamicFetch(true);
     item->SetFetchedChildren(false);
-    if((*i)->IsDirty())
+    if( (*i)->IsDirty() )
       {
       item->SetDecorationRole(MidasTreeItem::Dirty);
       }
     parent->AppendChild(item);
 
-    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid()));
-    this->registerResource((*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid() ) );
+    this->registerResource( (*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void MidasTreeModelClient::fetchItem(MidasItemTreeItem* parent)
 {
-  mds::Item mdsItem;
+  mds::Item  mdsItem;
   mdo::Item* item = parent->GetItem();
+
   mdsItem.SetObject(item);
 
-  if(!mdsItem.FetchTree())
+  if( !mdsItem.FetchTree() )
     {
-    //emit fetchError();
+    // emit fetchError();
     return;
     }
 
   int row = 0;
-  for(std::vector<mdo::Bitstream*>::const_iterator i = item->GetBitstreams().begin();
-      i != item->GetBitstreams().end(); ++i)
+  for( std::vector<mdo::Bitstream *>::const_iterator i = item->GetBitstreams().begin();
+       i != item->GetBitstreams().end(); ++i )
     {
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
@@ -340,15 +352,16 @@ void MidasTreeModelClient::fetchItem(MidasItemTreeItem* parent)
     item->SetBitstream(*i);
     item->SetDynamicFetch(false);
     item->SetFetchedChildren(true);
-    if((*i)->IsDirty())
+    if( (*i)->IsDirty() )
       {
       item->SetDecorationRole(MidasTreeItem::Dirty);
       }
     parent->AppendChild(item);
 
-    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid()));
-    this->registerResource((*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid() ) );
+    this->registerResource( (*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
 }
+

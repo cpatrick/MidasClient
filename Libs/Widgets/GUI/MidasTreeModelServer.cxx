@@ -21,7 +21,7 @@
 #include "midasSynchronizer.h"
 
 MidasTreeModelServer::MidasTreeModelServer(QObject *parent)
-: MidasTreeModel(parent)
+  : MidasTreeModel(parent)
 {
 }
 
@@ -32,27 +32,28 @@ MidasTreeModelServer::~MidasTreeModelServer()
 /** Populate the tree */
 void MidasTreeModelServer::Populate()
 {
-  mws::Community remote;
+  mws::Community  remote;
   mdo::Community* community = new mdo::Community;
+
   community->SetId(0);
-  remote.SetAuthenticator(m_Synch->GetAuthenticator());
+  remote.SetAuthenticator(m_Synch->GetAuthenticator() );
   remote.SetObject(community);
 
-  if(!remote.FetchTree())
+  if( !remote.FetchTree() )
     {
     return;
     }
 
-  std::vector<mdo::Community*> communities = community->GetCommunities();
+  std::vector<mdo::Community *> communities = community->GetCommunities();
 
   int row = 0;
-  for(std::vector<mdo::Community*>::const_iterator itCom = communities.begin();
-      itCom != communities.end(); ++itCom)
+  for( std::vector<mdo::Community *>::const_iterator itCom = communities.begin();
+       itCom != communities.end(); ++itCom )
     {
     // Set the name of the community
     QList<QVariant> columnData;
     columnData << (*itCom)->GetName().c_str();
-    
+
     // Add the community
     MidasCommunityTreeItem* communityItem = new MidasCommunityTreeItem(columnData, this, NULL);
     communityItem->SetCommunity(*itCom);
@@ -60,11 +61,11 @@ void MidasTreeModelServer::Populate()
     m_TopLevelCommunities.append(communityItem);
 
     QModelIndex index = this->index(row, 0);
-    this->registerResource((*itCom)->GetUuid(), index);
+    this->registerResource( (*itCom)->GetUuid(), index);
 
     communityItem->Populate(index);
     communityItem->SetTopLevelCommunities(&m_TopLevelCommunities);
-    
+
     row++;
     }
   emit layoutChanged();
@@ -72,21 +73,21 @@ void MidasTreeModelServer::Populate()
 }
 
 /** Fetch more data */
-void MidasTreeModelServer::fetchMore ( const QModelIndex & parent )
+void MidasTreeModelServer::fetchMore( const QModelIndex & parent )
 {
-  if (!parent.isValid() || !canFetchMore(parent))
+  if( !parent.isValid() || !canFetchMore(parent) )
     {
     return;
     }
-  MidasTreeItem * item = const_cast<MidasTreeItem *>(midasTreeItem(parent)); 
+  MidasTreeItem *           item = const_cast<MidasTreeItem *>(midasTreeItem(parent) );
   MidasCollectionTreeItem * collectionTreeItem = NULL;
-  MidasItemTreeItem * itemTreeItem = NULL;
+  MidasItemTreeItem *       itemTreeItem = NULL;
 
-  if ((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  if( (collectionTreeItem = dynamic_cast<MidasCollectionTreeItem *>( const_cast<MidasTreeItem *>( item ) ) ) != NULL )
     {
     this->fetchCollection(collectionTreeItem);
     }
-  else if ((itemTreeItem = dynamic_cast<MidasItemTreeItem*>( const_cast<MidasTreeItem*>( item ) ) ) != NULL )
+  else if( (itemTreeItem = dynamic_cast<MidasItemTreeItem *>( const_cast<MidasTreeItem *>( item ) ) ) != NULL )
     {
     this->fetchItem(itemTreeItem);
     }
@@ -95,23 +96,24 @@ void MidasTreeModelServer::fetchMore ( const QModelIndex & parent )
   emit fetchedMore();
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
 {
-  mws::Collection remote;
+  mws::Collection  remote;
   mdo::Collection* collection = parent->GetCollection();
-  remote.SetAuthenticator(m_Synch->GetAuthenticator());
+
+  remote.SetAuthenticator(m_Synch->GetAuthenticator() );
   remote.SetObject(collection);
 
-  if(!remote.Fetch())
+  if( !remote.Fetch() )
     {
-    //emit fetchError();
+    // emit fetchError();
     return;
     }
 
   int row = 0;
-  for(std::vector<mdo::Item*>::const_iterator i = collection->GetItems().begin();
-      i != collection->GetItems().end(); ++i)
+  for( std::vector<mdo::Item *>::const_iterator i = collection->GetItems().begin();
+       i != collection->GetItems().end(); ++i )
     {
     QList<QVariant> name;
     name << (*i)->GetTitle().c_str();
@@ -121,51 +123,54 @@ void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
     item->SetFetchedChildren(false);
     parent->AppendChild(item);
 
-    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid()));
-    this->registerResource((*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid() ) );
+    this->registerResource( (*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
 {
-  mws::Item remote;
+  mws::Item  remote;
   mdo::Item* item = parent->GetItem();
-  remote.SetAuthenticator(m_Synch->GetAuthenticator());
+
+  remote.SetAuthenticator(m_Synch->GetAuthenticator() );
   remote.SetObject(item);
 
-  if(!remote.Fetch())
+  if( !remote.Fetch() )
     {
-    //emit fetchError();
+    // emit fetchError();
     return;
     }
 
   int row = 0;
-  for(std::vector<mdo::Bitstream*>::const_iterator i = item->GetBitstreams().begin();
-      i != item->GetBitstreams().end(); ++i)
+  for( std::vector<mdo::Bitstream *>::const_iterator i = item->GetBitstreams().begin();
+       i != item->GetBitstreams().end(); ++i )
     {
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
     MidasBitstreamTreeItem* bitstream = new MidasBitstreamTreeItem(name, this, parent);
     bitstream->SetBitstream(*i);
     parent->AppendChild(bitstream);
-    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid()));
-    this->registerResource((*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid() ) );
+    this->registerResource( (*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
 }
 
-//-------------------------------------------------------------------------
-void MidasTreeModelServer::itemExpanded ( const QModelIndex & index )
+// -------------------------------------------------------------------------
+void MidasTreeModelServer::itemExpanded( const QModelIndex & index )
 {
-  MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
+  MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index) );
+
   item->SetDecorationRole(MidasTreeItem::Expanded);
 
-  if(this->AlterList && item->GetType() == midasResourceType::COMMUNITY)
+  if( this->AlterList && item->GetType() == midasResourceType::COMMUNITY )
     {
-    m_ExpandedList.insert(item->GetUuid());
+    m_ExpandedList.insert(item->GetUuid() );
     }
 }
+

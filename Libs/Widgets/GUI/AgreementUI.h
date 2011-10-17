@@ -5,7 +5,7 @@
 #include <QDialog>
 #include <QString>
 
-class AgreementUI : public QDialog,private Ui::AgreementDialog
+class AgreementUI : public QDialog, private Ui::AgreementDialog
 {
   Q_OBJECT
 public:
@@ -13,20 +13,22 @@ public:
   ~AgreementUI();
 
   void SetUrl(const QString& url);
+
   bool WasCanceled();
 
 signals:
-  void errorMessage(const QString&);
+  void errorMessage(const QString &);
 
 public slots:
   void reject();
 
   void exec();
+
   void openBrowser();
 
 private:
-  QString         m_Url;
-  bool            m_Canceled;
+  QString m_Url;
+  bool    m_Canceled;
 };
 
 #endif

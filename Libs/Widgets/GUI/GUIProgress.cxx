@@ -22,12 +22,12 @@ GUIProgress::GUIProgress(QProgressBar* progressBar)
   this->StartTime = 0;
   this->StartAmount = 0;
 
-  connect(this, SIGNAL(UpdateProgressMin(int)),
-    m_progressBar, SLOT( setMinimum(int) ) );
-  connect(this, SIGNAL(UpdateProgressMax(int)),
-    m_progressBar, SLOT( setMaximum(int) ) );
-  connect(this, SIGNAL(UpdateProgressValue(int)),
-    m_progressBar, SLOT( setValue(int) ) );
+  connect(this, SIGNAL(UpdateProgressMin(int) ),
+          m_progressBar, SLOT( setMinimum(int) ) );
+  connect(this, SIGNAL(UpdateProgressMax(int) ),
+          m_progressBar, SLOT( setMaximum(int) ) );
+  connect(this, SIGNAL(UpdateProgressValue(int) ),
+          m_progressBar, SLOT( setValue(int) ) );
 }
 
 GUIProgress::~GUIProgress()
@@ -36,12 +36,12 @@ GUIProgress::~GUIProgress()
 
 void GUIProgress::UpdateProgress(double current, double max)
 {
-  m_Total += (current - this->LastAmount); //record difference
+  m_Total += (current - this->LastAmount); // record difference
   this->LastAmount = current;
   emit CurrentProgress(current, max);
   emit OverallProgressTotal(m_Total, m_MaxTotal);
 
-  if(current == max)
+  if( current == max )
     {
     this->LastAmount = 0;
     this->StartTime = 0;
@@ -49,18 +49,18 @@ void GUIProgress::UpdateProgress(double current, double max)
     }
 
   double currentTime = midasUtils::CurrentTime();
-  if(this->StartTime == 0)
+  if( this->StartTime == 0 )
     {
     this->StartTime = currentTime;
     this->StartAmount = current;
     }
-  else if(currentTime - this->StartTime > SPEED_CALC_INTERVAL)
+  else if( currentTime - this->StartTime > SPEED_CALC_INTERVAL )
     {
     double speed = (current - this->StartAmount) / (currentTime - this->StartTime);
-    emit Speed(speed);
+    emit   Speed(speed);
 
     double estimatedTimeLeft = (m_MaxTotal - m_Total) / speed;
-    emit EstimatedTime(estimatedTimeLeft);
+    emit   EstimatedTime(estimatedTimeLeft);
 
     this->StartTime = currentTime;
     this->StartAmount = current;
@@ -80,7 +80,7 @@ void GUIProgress::UpdateTotalProgress(double value)
 
 void GUIProgress::SetMessage(std::string message)
 {
-  emit ProgressMessage(message.c_str());
+  emit ProgressMessage(message.c_str() );
 }
 
 void GUIProgress::SetIndeterminate()
@@ -105,3 +105,4 @@ void GUIProgress::ResetOverall()
   m_MaxTotal = 0;
   emit OverallProgressTotal(0, 0);
 }
+

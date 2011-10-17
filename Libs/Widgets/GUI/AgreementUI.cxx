@@ -5,12 +5,12 @@
 #include <QDesktopServices>
 
 AgreementUI::AgreementUI(QWidget* parent)
-: QDialog(parent), m_Canceled(false)
+  : QDialog(parent), m_Canceled(false)
 {
   setupUi(this);
   this->setModal(true);
-  connect(openBrowserButton, SIGNAL(released()),
-          this, SLOT(openBrowser()));
+  connect(openBrowserButton, SIGNAL(released() ),
+          this, SLOT(openBrowser() ) );
 
   m_Url = "";
 }
@@ -48,11 +48,12 @@ void AgreementUI::exec()
 void AgreementUI::openBrowser()
 {
   QUrl qurl(m_Url);
-  if(!QDesktopServices::openUrl(qurl))
+
+  if( !QDesktopServices::openUrl(qurl) )
     {
     std::stringstream text;
     text << "Error: could not open " << m_Url.toStdString() << " in the browser.";
-    emit errorMessage(text.str().c_str());
+    emit errorMessage(text.str().c_str() );
     }
 }
 
@@ -61,3 +62,4 @@ void AgreementUI::reject()
   m_Canceled = true;
   QDialog::reject();
 }
+

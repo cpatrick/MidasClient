@@ -6,11 +6,14 @@
 
 class ButtonEditUI : public QDialog
 {
-Q_OBJECT
+  Q_OBJECT
 public:
-  ButtonEditUI(QWidget* parent) : QDialog(parent) {}
+  ButtonEditUI(QWidget* parent) : QDialog(parent)
+  {
+  }
 signals:
   void text(const QString& text);
+
 };
 
 #endif

@@ -32,9 +32,9 @@ void ButtonDelegate::setEditUI(ButtonEditUI* editUI)
   m_EditUI = editUI;
 }
 
-QWidget* ButtonDelegate::createEditor(QWidget* parent,
-                                      const QStyleOptionViewItem& option,
-                                      const QModelIndex& index) const
+QWidget * ButtonDelegate::createEditor(QWidget* parent,
+                                       const QStyleOptionViewItem& option,
+                                       const QModelIndex& index) const
 {
   (void)option;
   (void)index;
@@ -44,25 +44,26 @@ QWidget* ButtonDelegate::createEditor(QWidget* parent,
 void ButtonDelegate::setEditorData(QWidget* editor,
                                    const QModelIndex& index) const
 {
-  ButtonLineEdit* edit = static_cast<ButtonLineEdit*>(editor);
-  std::string value = index.model()->data(
-    index, Qt::DisplayRole).toString().toStdString();
-  
-  edit->setData(value.c_str());
+  ButtonLineEdit* edit = static_cast<ButtonLineEdit *>(editor);
+  std::string     value = index.model()->data(
+      index, Qt::DisplayRole).toString().toStdString();
+
+  edit->setData(value.c_str() );
 }
 
 void ButtonDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
                                   const QModelIndex& index) const
 {
   (void)index;
-  ButtonLineEdit* edit = static_cast<ButtonLineEdit*>(editor);
+  ButtonLineEdit* edit = static_cast<ButtonLineEdit *>(editor);
   model->setData(index, edit->getData(), Qt::EditRole);
 }
 
 void ButtonDelegate::updateEditorGeometry(QWidget* editor,
-                                          const QStyleOptionViewItem &option,
+                                          const QStyleOptionViewItem & option,
                                           const QModelIndex& index) const
 {
   (void)index;
   editor->setGeometry(option.rect);
 }
+

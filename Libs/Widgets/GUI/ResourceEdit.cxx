@@ -21,27 +21,28 @@ ResourceEdit::~ResourceEdit()
 
 void ResourceEdit::Save(QTableWidgetItem* row)
 {
-  QTableWidgetMidasCommunityDescItem* commRow = NULL;
+  QTableWidgetMidasCommunityDescItem*  commRow = NULL;
   QTableWidgetMidasCollectionDescItem* collRow = NULL;
-  QTableWidgetMidasItemDescItem* itemRow = NULL;
-  QTableWidgetMidasBitstreamDescItem* bitstreamRow = NULL;
+  QTableWidgetMidasItemDescItem*       itemRow = NULL;
+  QTableWidgetMidasBitstreamDescItem*  bitstreamRow = NULL;
 
   std::string data = row->data(Qt::DisplayRole).toString().toStdString();
+
   midasUtils::StringTrim(data);
 
-  if((commRow = dynamic_cast<QTableWidgetMidasCommunityDescItem*>(row)) != NULL)
+  if( (commRow = dynamic_cast<QTableWidgetMidasCommunityDescItem *>(row) ) != NULL )
     {
     this->SaveCommunity(commRow->getModelData(), commRow->getField(), data);
     }
-  else if((collRow = dynamic_cast<QTableWidgetMidasCollectionDescItem*>(row)) != NULL)
+  else if( (collRow = dynamic_cast<QTableWidgetMidasCollectionDescItem *>(row) ) != NULL )
     {
     this->SaveCollection(collRow->getModelData(), collRow->getField(), data);
     }
-  else if((itemRow = dynamic_cast<QTableWidgetMidasItemDescItem*>(row)) != NULL)
+  else if( (itemRow = dynamic_cast<QTableWidgetMidasItemDescItem *>(row) ) != NULL )
     {
     this->SaveItem(itemRow->getModelData(), itemRow->getField(), data);
     }
-  else if((bitstreamRow = dynamic_cast<QTableWidgetMidasBitstreamDescItem*>(row)) != NULL)
+  else if( (bitstreamRow = dynamic_cast<QTableWidgetMidasBitstreamDescItem *>(row) ) != NULL )
     {
     this->SaveBitstream(bitstreamRow->getModelData(), itemRow->getField(), data);
     }
@@ -51,40 +52,41 @@ void ResourceEdit::SaveCommunity(mdo::Community* comm, MIDASFields field,
                                  std::string data)
 {
   bool changed = false;
-  switch(field)
+
+  switch( field )
     {
     case COMMUNITY_NAME:
-      if(comm->GetName() != data)
+      if( comm->GetName() != data )
         {
-        comm->SetName(data.c_str());
+        comm->SetName(data.c_str() );
         changed = true;
         }
       break;
     case COMMUNITY_DESCRIPTION:
-      if(comm->GetDescription() != data)
+      if( comm->GetDescription() != data )
         {
-        comm->SetDescription(data.c_str());
+        comm->SetDescription(data.c_str() );
         changed = true;
         }
       break;
     case COMMUNITY_INTRODUCTORY:
-      if(comm->GetIntroductoryText() != data)
+      if( comm->GetIntroductoryText() != data )
         {
-        comm->SetIntroductoryText(data.c_str());
+        comm->SetIntroductoryText(data.c_str() );
         changed = true;
         }
       break;
     case COMMUNITY_COPYRIGHT:
-      if(comm->GetCopyright() != data)
+      if( comm->GetCopyright() != data )
         {
-        comm->SetCopyright(data.c_str());
+        comm->SetCopyright(data.c_str() );
         changed = true;
         }
       break;
     case COMMUNITY_LINKS:
-      if(comm->GetLinks() != data)
+      if( comm->GetLinks() != data )
         {
-        comm->SetLinks(data.c_str());
+        comm->SetLinks(data.c_str() );
         changed = true;
         }
       break;
@@ -92,7 +94,7 @@ void ResourceEdit::SaveCommunity(mdo::Community* comm, MIDASFields field,
       return;
     }
 
-  if(changed)
+  if( changed )
     {
     mds::Community mdsComm;
     mdsComm.SetObject(comm);
@@ -102,41 +104,42 @@ void ResourceEdit::SaveCommunity(mdo::Community* comm, MIDASFields field,
     this->Log->Status("Community saved successfully");
     this->Log->Message("Community saved successfully");
 
-    emit DataModified(comm->GetUuid());
+    emit DataModified(comm->GetUuid() );
     }
 }
 
 void ResourceEdit::SaveCollection(mdo::Collection* coll, MIDASFields field,
-                                 std::string data)
+                                  std::string data)
 {
   bool changed = false;
-  switch(field)
+
+  switch( field )
     {
     case COLLECTION_NAME:
-      if(coll->GetName() != data)
+      if( coll->GetName() != data )
         {
-        coll->SetName(data.c_str());
+        coll->SetName(data.c_str() );
         changed = true;
         }
       break;
     case COLLECTION_DESCRIPTION:
-      if(coll->GetDescription() != data)
+      if( coll->GetDescription() != data )
         {
-        coll->SetDescription(data.c_str());
+        coll->SetDescription(data.c_str() );
         changed = true;
         }
       break;
     case COLLECTION_COPYRIGHT:
-      if(coll->GetCopyright() != data)
+      if( coll->GetCopyright() != data )
         {
-        coll->SetCopyright(data.c_str());
+        coll->SetCopyright(data.c_str() );
         changed = true;
         }
       break;
     case COLLECTION_INTRODUCTORY:
-      if(coll->GetIntroductoryText() != data)
+      if( coll->GetIntroductoryText() != data )
         {
-        coll->SetIntroductoryText(data.c_str());
+        coll->SetIntroductoryText(data.c_str() );
         changed = true;
         }
       break;
@@ -144,7 +147,7 @@ void ResourceEdit::SaveCollection(mdo::Collection* coll, MIDASFields field,
       return;
     }
 
-  if(changed)
+  if( changed )
     {
     mds::Collection mdsColl;
     mdsColl.SetObject(coll);
@@ -154,7 +157,7 @@ void ResourceEdit::SaveCollection(mdo::Collection* coll, MIDASFields field,
     this->Log->Status("Collection saved successfully");
     this->Log->Message("Collection saved successfully");
 
-    emit DataModified(coll->GetUuid());
+    emit DataModified(coll->GetUuid() );
     }
 }
 
@@ -162,28 +165,29 @@ void ResourceEdit::SaveItem(mdo::Item* item, MIDASFields field,
                             std::string data)
 {
   bool changed = false;
+
   std::vector<std::string> tokens;
 
-  switch(field)
+  switch( field )
     {
     case ITEM_TITLE:
-      if(item->GetTitle() != data)
+      if( item->GetTitle() != data )
         {
-        item->SetTitle(data.c_str());
+        item->SetTitle(data.c_str() );
         changed = true;
         }
       break;
     case ITEM_ABSTRACT:
-      if(item->GetAbstract() != data)
+      if( item->GetAbstract() != data )
         {
-        item->SetAbstract(data.c_str());
+        item->SetAbstract(data.c_str() );
         changed = true;
         }
       break;
     case ITEM_DESCRIPTION:
-      if(item->GetDescription() != data)
+      if( item->GetDescription() != data )
         {
-        item->SetDescription(data.c_str());
+        item->SetDescription(data.c_str() );
         changed = true;
         }
       break;
@@ -201,7 +205,7 @@ void ResourceEdit::SaveItem(mdo::Item* item, MIDASFields field,
       return;
     }
 
-  if(changed)
+  if( changed )
     {
     mds::Item mdsItem;
     mdsItem.SetObject(item);
@@ -211,7 +215,7 @@ void ResourceEdit::SaveItem(mdo::Item* item, MIDASFields field,
     this->Log->Status("Item saved successfully");
     this->Log->Message("Item saved successfully");
 
-    emit DataModified(item->GetUuid());
+    emit DataModified(item->GetUuid() );
     }
 }
 
@@ -221,5 +225,6 @@ void ResourceEdit::SaveBitstream(mdo::Bitstream* bitstream, MIDASFields field,
   (void)bitstream;
   (void)field;
   (void)data;
-  //nothing to do at this time
+  // nothing to do at this time
 }
+

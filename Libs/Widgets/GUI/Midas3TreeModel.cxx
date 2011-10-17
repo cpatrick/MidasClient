@@ -6,7 +6,7 @@
 #include <QPixmap>
 
 Midas3TreeModel::Midas3TreeModel(QObject* parent)
-: QAbstractItemModel(parent), m_Synch(NULL)
+  : QAbstractItemModel(parent), m_Synch(NULL)
 {
   this->AlterList = true;
 }
@@ -20,12 +20,12 @@ void Midas3TreeModel::SetSynchronizer(midasSynchronizer* synch)
   m_Synch = synch;
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void Midas3TreeModel::clear()
 {
   this->beginResetModel();
-  for(QList<Midas3FolderTreeItem*>::iterator i = m_TopLevelFolders.begin();
-      i != m_TopLevelFolders.end(); ++i)
+  for( QList<Midas3FolderTreeItem *>::iterator i = m_TopLevelFolders.begin();
+       i != m_TopLevelFolders.end(); ++i )
     {
     delete (*i)->GetFolder();
     delete *i;
@@ -36,7 +36,7 @@ void Midas3TreeModel::clear()
   this->endResetModel();
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void Midas3TreeModel::registerResource(std::string uuid, QModelIndex index)
 {
   m_IndexMap[uuid] = index;
@@ -47,10 +47,10 @@ void Midas3TreeModel::unregisterResource(std::string uuid)
   m_IndexMap.erase(uuid);
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 QModelIndex Midas3TreeModel::getIndexByUuid(std::string uuid)
 {
-  if(m_IndexMap.find(uuid) != m_IndexMap.end())
+  if( m_IndexMap.find(uuid) != m_IndexMap.end() )
     {
     return m_IndexMap[uuid];
     }
@@ -60,24 +60,24 @@ QModelIndex Midas3TreeModel::getIndexByUuid(std::string uuid)
     }
 }
 
-//-------------------------------------------------------------------------
-QModelIndex Midas3TreeModel::index(int row, 
-                                  int column, const 
-                                  QModelIndex &parent) const
+// -------------------------------------------------------------------------
+QModelIndex Midas3TreeModel::index(int row,
+                                   int column, const
+                                   QModelIndex & parent) const
 {
-  if (!hasIndex(row, column, parent))
+  if( !hasIndex(row, column, parent) )
     {
     return QModelIndex();
     }
 
-  if (!parent.isValid())
+  if( !parent.isValid() )
     {
     return createIndex(row, column, m_TopLevelFolders[row]);
     }
-    
-  Midas3TreeItem* parentItem = static_cast<Midas3TreeItem*>(parent.internalPointer());
+
+  Midas3TreeItem* parentItem = static_cast<Midas3TreeItem *>(parent.internalPointer() );
   Midas3TreeItem* childItem = parentItem->GetChild(row);
-  if (childItem)
+  if( childItem )
     {
     return this->createIndex(row, column, childItem);
     }
@@ -87,9 +87,9 @@ QModelIndex Midas3TreeModel::index(int row,
     }
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void Midas3TreeModel::restoreExpandedState()
-{/* don't do this for now
+{ /* don't do this for now
   //copy list so we can remove while iterating
   std::set<std::string> copy = m_ExpandedList;
   for(std::set<std::string>::iterator i = copy.begin();
@@ -111,59 +111,60 @@ void Midas3TreeModel::restoreExpandedState()
     }*/
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 int Midas3TreeModel::rowCount(const QModelIndex& parent) const
 {
   Midas3TreeItem* parentItem;
-  if(parent.column() > 0)
+
+  if( parent.column() > 0 )
     {
     return 0;
     }
-    
-  if(!parent.isValid())
+
+  if( !parent.isValid() )
     {
     return m_TopLevelFolders.size();
     }
-  parentItem = static_cast<Midas3TreeItem*>(parent.internalPointer());
+  parentItem = static_cast<Midas3TreeItem *>(parent.internalPointer() );
   return parentItem->ChildCount();
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 int Midas3TreeModel::columnCount(const QModelIndex& parent) const
 {
-  if(parent.isValid())
+  if( parent.isValid() )
     {
-    return static_cast<Midas3TreeItem*>(parent.internalPointer())->ColumnCount();
+    return static_cast<Midas3TreeItem *>(parent.internalPointer() )->ColumnCount();
     }
   return 1;
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 QVariant Midas3TreeModel::data(const QModelIndex& index, int role) const
 {
-  if (!index.isValid())
+  if( !index.isValid() )
     {
     return QVariant();
     }
-  Midas3TreeItem* item = static_cast<Midas3TreeItem*>(index.internalPointer());
-  if(role == Qt::DisplayRole)
+  Midas3TreeItem* item = static_cast<Midas3TreeItem *>(index.internalPointer() );
+  if( role == Qt::DisplayRole )
     {
-    return item->GetData(index.column());
+    return item->GetData(index.column() );
     }
-  else if(role == Qt::DecorationRole)
+  else if( role == Qt::DecorationRole )
     {
     return item->GetDecoration();
     }
-  else 
+  else
     {
     return QVariant();
     }
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 Qt::ItemFlags Midas3TreeModel::flags(const QModelIndex& index) const
 {
-  if(!index.isValid())
+  if( !index.isValid() )
     {
     return 0;
     }
@@ -171,18 +172,18 @@ Qt::ItemFlags Midas3TreeModel::flags(const QModelIndex& index) const
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 QModelIndex Midas3TreeModel::parent(const QModelIndex& index) const
 {
-  if (!index.isValid())
+  if( !index.isValid() )
     {
     return QModelIndex();
     }
 
-  Midas3TreeItem* childItem = static_cast<Midas3TreeItem*>(index.internalPointer());
+  Midas3TreeItem* childItem = static_cast<Midas3TreeItem *>(index.internalPointer() );
   Midas3TreeItem* parentItem = childItem->GetParent();
 
-  if (parentItem == NULL)
+  if( parentItem == NULL )
     {
     return QModelIndex();
     }
@@ -191,12 +192,12 @@ QModelIndex Midas3TreeModel::parent(const QModelIndex& index) const
 
 bool Midas3TreeModel::hasChildren(const QModelIndex& parent) const
 {
-  if(!parent.isValid())
+  if( !parent.isValid() )
     {
     return true;
     }
   const Midas3TreeItem* item = this->midasTreeItem(parent);
-  if(item->IsFetchedChildren())
+  if( item->IsFetchedChildren() )
     {
     return item->ChildCount() > 0;
     }
@@ -206,10 +207,10 @@ bool Midas3TreeModel::hasChildren(const QModelIndex& parent) const
     }
 }
 
-//-------------------------------------------------------------------------
-QVariant Midas3TreeModel::headerData(int section, 
-                                    Qt::Orientation orientation,
-                                    int role) const
+// -------------------------------------------------------------------------
+QVariant Midas3TreeModel::headerData(int section,
+                                     Qt::Orientation orientation,
+                                     int role) const
 {
   (void)section;
   (void)role;
@@ -222,77 +223,79 @@ QVariant Midas3TreeModel::headerData(int section,
   return QVariant();
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 bool Midas3TreeModel::canFetchMore(const QModelIndex& parent) const
 {
-  if(!parent.isValid())
+  if( !parent.isValid() )
     {
     return false;
     }
-  const Midas3TreeItem* item = this->midasTreeItem(parent); 
-  return !item->IsFetchedChildren(); 
+  const Midas3TreeItem* item = this->midasTreeItem(parent);
+  return !item->IsFetchedChildren();
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void Midas3TreeModel::fetchMore(const QModelIndex& parent)
 {
   (void)parent;
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void Midas3TreeModel::clearExpandedList()
 {
   m_ExpandedList.clear();
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void Midas3TreeModel::expandAllResources()
 {
   m_ExpandedList.clear();
-  
-  for(std::map<std::string, QModelIndex>::iterator i = m_IndexMap.begin();
-      i != m_IndexMap.end(); ++i)
+  for( std::map<std::string, QModelIndex>::iterator i = m_IndexMap.begin();
+       i != m_IndexMap.end(); ++i )
     {
     m_ExpandedList.insert(i->first);
     }
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void Midas3TreeModel::itemExpanded(const QModelIndex& index)
 {
-  Midas3TreeItem* item = const_cast<Midas3TreeItem*>(this->midasTreeItem(index));
+  Midas3TreeItem* item = const_cast<Midas3TreeItem *>(this->midasTreeItem(index) );
+
   item->SetDecorationRole(Midas3TreeItem::Expanded);
 
-  if(this->AlterList)
+  if( this->AlterList )
     {
-    m_ExpandedList.insert(item->GetUuid());
+    m_ExpandedList.insert(item->GetUuid() );
     }
 }
 
-//-------------------------------------------------------------------------
-void Midas3TreeModel::itemCollapsed (const QModelIndex& index)
+// -------------------------------------------------------------------------
+void Midas3TreeModel::itemCollapsed(const QModelIndex& index)
 {
-  Midas3TreeItem* item = const_cast<Midas3TreeItem*>(this->midasTreeItem(index));
+  Midas3TreeItem* item = const_cast<Midas3TreeItem *>(this->midasTreeItem(index) );
+
   item->SetDecorationRole(Midas3TreeItem::Collapsed);
 
-  m_ExpandedList.erase(item->GetUuid());
+  m_ExpandedList.erase(item->GetUuid() );
 }
 
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 void Midas3TreeModel::decorateByUuid(std::string uuid)
 {
   QModelIndex index = getIndexByUuid(uuid);
 
-  if(index.isValid())
+  if( index.isValid() )
     {
-    Midas3TreeItem* node = const_cast<Midas3TreeItem*>(
-      this->midasTreeItem(index));
+    Midas3TreeItem* node = const_cast<Midas3TreeItem *>(
+        this->midasTreeItem(index) );
     node->SetDecorationRole(Midas3TreeItem::Dirty);
-    
+
     Midas3TreeItem* item =
-      const_cast<Midas3TreeItem*>(this->midasTreeItem(index));
+      const_cast<Midas3TreeItem *>(this->midasTreeItem(index) );
     item->UpdateDisplayName();
 
     emit dataChanged(index, index);
     }
 }
+

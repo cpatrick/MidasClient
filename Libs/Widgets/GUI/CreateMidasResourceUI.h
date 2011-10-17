@@ -1,6 +1,6 @@
 #ifndef __CreateMidasResourceUI_H
 #define __CreateMidasResourceUI_H
- 
+
 #include "ui_CreateMidasResourceUI.h"
 
 #include <QFlags>
@@ -12,7 +12,6 @@ class Midas3TreeItem;
 class CreateMidasResourceUI : public QDialog, private Ui::CreateMidasResourceDialog
 {
   Q_OBJECT
- 
 public:
   enum Type
     {
@@ -25,36 +24,45 @@ public:
     SubFolder = 0x6,
     Item3 = 0x7
     };
-  Q_DECLARE_FLAGS(Types, Type)
-  
-  CreateMidasResourceUI(QWidget* parent, midasSynchronizer* synch);
+  Q_DECLARE_FLAGS(Types, Type) CreateMidasResourceUI(QWidget* parent, midasSynchronizer* synch);
   ~CreateMidasResourceUI();
 
   void SetParentResource(const MidasTreeItem* parent);
+
   void SetParentResource3(const Midas3TreeItem* parent);
+
   void AddCommunity(std::string path);
+
   void AddSubCommunity();
+
   void AddCollection();
+
   void AddItem();
 
   void AddCommunity3(std::string path);
+
   void AddFolder(std::string path);
+
   void AddSubFolder();
+
   void AddItem3();
 
   virtual bool ValidateName() const;
+
   virtual void SetType(Types type);
 
 signals:
-  void resourceCreated(); //emitted when a resource is added successfully
+  void resourceCreated(); // emitted when a resource is added successfully
 
 public slots:
-  void reset(); 
+  void reset();
+
   int exec();
-  virtual void accept(); 
+
+  virtual void accept();
 
 protected:
-  Types m_Type;
+  Types              m_Type;
   midasSynchronizer* m_Synch;
   MidasTreeItem*     m_ParentResource;
   Midas3TreeItem*    m_ParentResource3;

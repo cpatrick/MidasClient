@@ -23,13 +23,16 @@ public:
 public slots:
   // Stop filesystem polling and wait for current poll to finish
   void Pause();
+
   // Resume filesystem polling
   void Resume();
+
   // End this thread permanently
   void Terminate();
 
 signals:
   void needToRefresh();
+
   void paused();
 
 private:

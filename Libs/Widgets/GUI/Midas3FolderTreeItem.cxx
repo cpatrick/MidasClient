@@ -10,10 +10,9 @@
 #include <QStyle>
 #include <QModelIndex>
 
-Midas3FolderTreeItem::Midas3FolderTreeItem(const QList<QVariant> &itemData,
-                                           Midas3TreeModel* model,
+Midas3FolderTreeItem::Midas3FolderTreeItem(const QList<QVariant> & itemData, Midas3TreeModel* model,
                                            Midas3TreeItem* parent)
-: Midas3TreeItem(itemData, model, parent)
+  : Midas3TreeItem(itemData, model, parent)
 {
   m_Folder = NULL;
 }
@@ -29,7 +28,7 @@ void Midas3FolderTreeItem::SetFolder(m3do::Folder* folder)
 
 int Midas3FolderTreeItem::GetType() const
 {
-  if(m_Folder)
+  if( m_Folder )
     {
     return m_Folder->GetResourceType();
     }
@@ -53,16 +52,16 @@ std::string Midas3FolderTreeItem::GetPath() const
 
 void Midas3FolderTreeItem::Populate(QModelIndex parent)
 {
-  if(!m_Folder)
+  if( !m_Folder )
     {
     std::cerr << "Folder not set" << std::endl;
     return;
     }
-  
+
   // Add the subfolders
-  std::vector<m3do::Folder*>::const_iterator f = m_Folder->GetFolders().begin();
-  int row = 0;
-  while(f != m_Folder->GetFolders().end())
+  std::vector<m3do::Folder *>::const_iterator f = m_Folder->GetFolders().begin();
+  int                                         row = 0;
+  while( f != m_Folder->GetFolders().end() )
     {
     QList<QVariant> name;
     name << (*f)->GetName().c_str();
@@ -72,9 +71,9 @@ void Midas3FolderTreeItem::Populate(QModelIndex parent)
 
     this->AppendChild(folder);
     QModelIndex index = m_Model->index(row, 0, parent);
-    m_Model->registerResource((*f)->GetUuid(), index);
+    m_Model->registerResource( (*f)->GetUuid(), index);
 
-    if(this->IsDynamicFetch())
+    if( this->IsDynamicFetch() )
       {
       folder->SetFetchedChildren(false);
       folder->SetDynamicFetch(true);
@@ -84,7 +83,7 @@ void Midas3FolderTreeItem::Populate(QModelIndex parent)
       folder->Populate(index);
       }
 
-    if((*f)->IsDirty())
+    if( (*f)->IsDirty() )
       {
       folder->SetDecorationRole(Midas3TreeItem::Dirty);
       }
@@ -93,8 +92,8 @@ void Midas3FolderTreeItem::Populate(QModelIndex parent)
     }
 
   // Add the items
-  std::vector<m3do::Item*>::const_iterator i = m_Folder->GetItems().begin();
-  while(i != m_Folder->GetItems().end())
+  std::vector<m3do::Item *>::const_iterator i = m_Folder->GetItems().begin();
+  while( i != m_Folder->GetItems().end() )
     {
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
@@ -104,9 +103,9 @@ void Midas3FolderTreeItem::Populate(QModelIndex parent)
 
     this->AppendChild(item);
     QModelIndex index = m_Model->index(row, 0, parent);
-    m_Model->registerResource((*f)->GetUuid(), index);
+    m_Model->registerResource( (*f)->GetUuid(), index);
 
-    if(this->IsDynamicFetch())
+    if( this->IsDynamicFetch() )
       {
       item->SetFetchedChildren(false);
       item->SetDynamicFetch(true);
@@ -116,7 +115,7 @@ void Midas3FolderTreeItem::Populate(QModelIndex parent)
       item->Populate(index);
       }
 
-    if((*i)->IsDirty())
+    if( (*i)->IsDirty() )
       {
       item->SetDecorationRole(Midas3TreeItem::Dirty);
       }
@@ -124,7 +123,7 @@ void Midas3FolderTreeItem::Populate(QModelIndex parent)
     row++;
     }
 
-  if(!this->IsDynamicFetch())
+  if( !this->IsDynamicFetch() )
     {
     this->SetFetchedChildren(true);
     }
@@ -133,19 +132,20 @@ void Midas3FolderTreeItem::Populate(QModelIndex parent)
 void Midas3FolderTreeItem::UpdateDisplayName()
 {
   QVariant name = this->GetFolder()->GetName().c_str();
-  this->SetData(name,0);
+
+  this->SetData(name, 0);
 }
 
 void Midas3FolderTreeItem::RemoveFromTree()
 {
 }
 
-m3do::Folder* Midas3FolderTreeItem::GetFolder() const
+m3do::Folder * Midas3FolderTreeItem::GetFolder() const
 {
   return m_Folder;
 }
 
-mdo::Object* Midas3FolderTreeItem::GetObject() const
+mdo::Object * Midas3FolderTreeItem::GetObject() const
 {
   return m_Folder;
 }
@@ -158,7 +158,8 @@ bool Midas3FolderTreeItem::ResourceIsFetched() const
 QPixmap Midas3FolderTreeItem::GetDecoration()
 {
   std::string role;
-  if(m_Folder->GetResourceType() == midas3ResourceType::COMMUNITY)
+
+  if( m_Folder->GetResourceType() == midas3ResourceType::COMMUNITY )
     {
     role = ":icons/user_group";
     }
@@ -166,15 +167,16 @@ QPixmap Midas3FolderTreeItem::GetDecoration()
     {
     role = ":icons/gpl_folder";
 
-    if(m_DecorationRole & Expanded)
+    if( m_DecorationRole & Expanded )
       {
       role += "_open";
       }
-    if(m_DecorationRole & Dirty)
+    if( m_DecorationRole & Dirty )
       {
       role += "_red";
       }
     }
   role += ".png";
-  return QPixmap(role.c_str());
+  return QPixmap(role.c_str() );
 }
+

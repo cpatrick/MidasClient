@@ -41,56 +41,56 @@ void AddBitstreamsThread::SetParentItem(Midas3ItemTreeItem* parentItem)
 
 void AddBitstreamsThread::run()
 {
-  emit enableActions(false);
+  emit         enableActions(false);
   unsigned int millis = midasUtils::CurrentTime();
 
-  srand(millis); //seed RNG (must be done in each thread)
+  srand(millis); // seed RNG (must be done in each thread)
 
   mds::DatabaseAPI db;
-  //TODO copy them into the local tree!
-  //bool copyIntoTree = db.GetSettingBool(mds::DatabaseAPI::UNIFIED_TREE);
+  // TODO copy them into the local tree!
+  // bool copyIntoTree = db.GetSettingBool(mds::DatabaseAPI::UNIFIED_TREE);
 
   int current = 0;
   int total = m_Files.size();
-  for(QStringList::iterator i = m_Files.begin(); i != m_Files.end(); ++i)
+  for( QStringList::iterator i = m_Files.begin(); i != m_Files.end(); ++i )
     {
-    QFileInfo fileInfo(*i);
+    QFileInfo   fileInfo(*i);
     std::string path = fileInfo.absoluteFilePath().toStdString();
     std::string name = fileInfo.fileName().toStdString();
 
     std::stringstream size;
     size << fileInfo.size();
 
-    if(m_ParentItem3)
+    if( m_ParentItem3 )
       {
       // Don't delete this object - tree will delete it
       m3do::Bitstream* bitstream = new m3do::Bitstream;
-      bitstream->SetName(name.c_str());
-      bitstream->SetSize(size.str());
-      bitstream->SetLastModified(QFileInfo(path.c_str()).lastModified().toTime_t());
-      bitstream->SetChecksum(midasUtils::ComputeFileChecksum(path));
+      bitstream->SetName(name.c_str() );
+      bitstream->SetSize(size.str() );
+      bitstream->SetLastModified(QFileInfo(path.c_str() ).lastModified().toTime_t() );
+      bitstream->SetChecksum(midasUtils::ComputeFileChecksum(path) );
       bitstream->SetPath(path);
-      bitstream->SetParentId(m_ParentItem3->GetItem()->GetId());
-      bitstream->SetParentItem(m_ParentItem3->GetItem());
+      bitstream->SetParentId(m_ParentItem3->GetItem()->GetId() );
+      bitstream->SetParentItem(m_ParentItem3->GetItem() );
       m3ds::Bitstream mdsBitstream;
       mdsBitstream.SetObject(bitstream);
-      //TODO? mdsBitstream.MarkAsDirty();
+      // TODO? mdsBitstream.MarkAsDirty();
       mdsBitstream.Commit();
       }
     else
       {
       mdo::Item* item = new mdo::Item;
-      item->SetId(m_ParentItem->GetItem()->GetId());
-      item->SetUuid(m_ParentItem->GetItem()->GetUuid().c_str());
+      item->SetId(m_ParentItem->GetItem()->GetId() );
+      item->SetUuid(m_ParentItem->GetItem()->GetUuid().c_str() );
 
       // Don't delete this object - tree will delete it
       mdo::Bitstream* bitstream = new mdo::Bitstream;
-      bitstream->SetName(name.c_str());
-      bitstream->SetSize(size.str());
-      bitstream->SetLastModified(QFileInfo(path.c_str()).lastModified().toTime_t());
-      bitstream->SetUuid(midasUtils::GenerateUUID().c_str());
+      bitstream->SetName(name.c_str() );
+      bitstream->SetSize(size.str() );
+      bitstream->SetLastModified(QFileInfo(path.c_str() ).lastModified().toTime_t() );
+      bitstream->SetUuid(midasUtils::GenerateUUID().c_str() );
       bitstream->SetPath(path);
-      bitstream->SetParentId(m_ParentItem->GetItem()->GetId());
+      bitstream->SetParentId(m_ParentItem->GetItem()->GetId() );
       bitstream->SetParentItem(item);
       mds::Bitstream mdsBitstream;
       mdsBitstream.SetObject(bitstream);
@@ -99,7 +99,7 @@ void AddBitstreamsThread::run()
       }
 
     current++;
-    emit progress(current, total, name.c_str());
+    emit progress(current, total, name.c_str() );
     }
   emit enableActions(true);
 }

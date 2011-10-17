@@ -14,10 +14,11 @@ public:
   virtual void run();
 
   bool isCopy();
+
   void setCopy(bool val);
 
 private:
-  bool            m_Copy;
+  bool m_Copy;
 };
 
 #endif

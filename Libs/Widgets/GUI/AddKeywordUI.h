@@ -9,10 +9,11 @@ class AddKeywordUI : public ButtonEditUI, private Ui::AddKeywordDialog
   Q_OBJECT
 public:
   AddKeywordUI(QWidget* parent);
-
 public slots:
   void exec();
+
   void accept();
+
 };
 
 #endif

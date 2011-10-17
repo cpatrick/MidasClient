@@ -8,20 +8,20 @@
 #include <QFileDialog>
 
 CreateProfileUI::CreateProfileUI(QWidget* parent)
-: QDialog(parent)
+  : QDialog(parent)
 {
   setupUi(this);
 
-  connect(profileComboBox, SIGNAL(currentIndexChanged(const QString&)),
-    this, SLOT(fillData(const QString&)));
-  connect(anonymousCheckBox, SIGNAL(stateChanged(int)),
-    this, SLOT( anonymousChanged(int)));
-  connect(rootDirCheckbox, SIGNAL(stateChanged(int)),
-    this, SLOT(rootDirChecked(int)));
-  connect(deleteButton, SIGNAL(clicked()),
-    this, SLOT(deleteProfile()));
-  connect(browseButton, SIGNAL(clicked()),
-    this, SLOT(browseRootDir()));
+  connect(profileComboBox, SIGNAL(currentIndexChanged(const QString &) ),
+          this, SLOT(fillData(const QString &) ) );
+  connect(anonymousCheckBox, SIGNAL(stateChanged(int) ),
+          this, SLOT( anonymousChanged(int) ) );
+  connect(rootDirCheckbox, SIGNAL(stateChanged(int) ),
+          this, SLOT(rootDirChecked(int) ) );
+  connect(deleteButton, SIGNAL(clicked() ),
+          this, SLOT(deleteProfile() ) );
+  connect(browseButton, SIGNAL(clicked() ),
+          this, SLOT(browseRootDir() ) );
 }
 
 CreateProfileUI::~CreateProfileUI()
@@ -42,20 +42,19 @@ void CreateProfileUI::init()
   profileComboBox->addItem("New Profile");
 
   mds::DatabaseAPI db;
-  serverURLEdit->setText(db.GetSetting(mds::DatabaseAPI::LAST_URL).c_str());
+  serverURLEdit->setText(db.GetSetting(mds::DatabaseAPI::LAST_URL).c_str() );
 
   std::vector<std::string> profiles = db.GetAuthProfiles();
-
-  for(std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i)
+  for( std::vector<std::string>::iterator i = profiles.begin(); i != profiles.end(); ++i )
     {
-    profileComboBox->addItem(i->c_str());
+    profileComboBox->addItem(i->c_str() );
     }
 }
 
 void CreateProfileUI::fillData(const QString& name)
 {
   passwordEdit->setText("");
-  if(profileComboBox->currentIndex() == 0)
+  if( profileComboBox->currentIndex() == 0 )
     {
     profileNameEdit->setText("");
     emailEdit->setText("");
@@ -66,20 +65,20 @@ void CreateProfileUI::fillData(const QString& name)
     {
     mds::DatabaseAPI db;
     midasAuthProfile profile = db.GetAuthProfile(
-      name.toStdString());
+        name.toStdString() );
 
-    profileNameEdit->setText(profile.Name.c_str());
-    emailEdit->setText(profile.User.c_str());
-    serverURLEdit->setText(profile.Url.c_str());
-    rootDirEdit->setText(profile.RootDir.c_str());
+    profileNameEdit->setText(profile.Name.c_str() );
+    emailEdit->setText(profile.User.c_str() );
+    serverURLEdit->setText(profile.Url.c_str() );
+    rootDirEdit->setText(profile.RootDir.c_str() );
 
     rootDirCheckbox->setCheckState(
       profile.HasRootDir() ? Qt::Unchecked : Qt::Checked);
-    rootDirChecked(rootDirCheckbox->checkState());
-    
+    rootDirChecked(rootDirCheckbox->checkState() );
+
     anonymousCheckBox->setCheckState(
       profile.IsAnonymous() ? Qt::Checked : Qt::Unchecked);
-    anonymousChanged(anonymousCheckBox->checkState());
+    anonymousChanged(anonymousCheckBox->checkState() );
     deleteButton->setEnabled(true);
     }
 }
@@ -87,7 +86,8 @@ void CreateProfileUI::fillData(const QString& name)
 void CreateProfileUI::anonymousChanged(int state)
 {
   bool checked = state == Qt::Checked;
-  if(checked)
+
+  if( checked )
     {
     emailEdit->setText("");
     passwordEdit->setText("");
@@ -99,7 +99,8 @@ void CreateProfileUI::anonymousChanged(int state)
 void CreateProfileUI::rootDirChecked(int state)
 {
   bool checked = state == Qt::Checked;
-  if(!checked)
+
+  if( !checked )
     {
     rootDirEdit->setText("");
     }
@@ -109,7 +110,7 @@ void CreateProfileUI::rootDirChecked(int state)
 
 int CreateProfileUI::exec()
 {
-  if(mds::DatabaseInfo::Instance()->GetPath() != "")
+  if( mds::DatabaseInfo::Instance()->GetPath() != "" )
     {
     this->init();
     return QDialog::exec();
@@ -123,16 +124,16 @@ int CreateProfileUI::exec()
 
 void CreateProfileUI::accept()
 {
-  if(profileNameEdit->text().trimmed().isEmpty())
+  if( profileNameEdit->text().trimmed().isEmpty() )
     {
     QMessageBox::critical(this, "Error", "You must enter a profile name.");
     return;
     }
-  if(!anonymousCheckBox->isChecked() && emailEdit->text().trimmed().isEmpty())
+  if( !anonymousCheckBox->isChecked() && emailEdit->text().trimmed().isEmpty() )
     {
     QMessageBox::critical(this, "Error", "You must enter an email or choose anonymous access.");
     }
-  if(!anonymousCheckBox->isChecked() && passwordEdit->text().isEmpty())
+  if( !anonymousCheckBox->isChecked() && passwordEdit->text().isEmpty() )
     {
     QMessageBox::critical(this, "Error", "You must enter a password or choose anonymous access.");
     return;
@@ -143,7 +144,7 @@ void CreateProfileUI::accept()
   password = passwordEdit->text().toStdString();
   serverURL = serverURLEdit->text().trimmed().toStdString();
   rootDir = rootDirEdit->text() == "" ? "" :
-    QDir(rootDirEdit->text().trimmed()).path().toStdString();
+    QDir(rootDirEdit->text().trimmed() ).path().toStdString();
 
   QDialog::accept();
 
@@ -153,14 +154,15 @@ void CreateProfileUI::accept()
 void CreateProfileUI::deleteProfile()
 {
   std::string profileName = profileComboBox->currentText().toStdString();
-  profileComboBox->removeItem(profileComboBox->currentIndex());
+
+  profileComboBox->removeItem(profileComboBox->currentIndex() );
 
   mds::DatabaseAPI db;
   db.DeleteProfile(profileName);
 
   std::stringstream text;
   text << "Deleted profile " << profileName;
-  db.GetLog()->Message(text.str());
+  db.GetLog()->Message(text.str() );
 
   init();
 
@@ -171,16 +173,18 @@ void CreateProfileUI::deleteProfile()
 void CreateProfileUI::browseRootDir()
 {
   QString path = rootDirEdit->text().trimmed();
-  if(path == "")
+
+  if( path == "" )
     {
     path = QDir::currentPath();
     }
 
   QString dir = QFileDialog::getExistingDirectory(
-    this, tr("Choose Root Directory"), path, QFileDialog::ShowDirsOnly);
+      this, tr("Choose Root Directory"), path, QFileDialog::ShowDirsOnly);
 
-  if(dir != "")
+  if( dir != "" )
     {
     rootDirEdit->setText(dir);
     }
 }
+

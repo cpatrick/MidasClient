@@ -8,10 +8,8 @@
 #include <QStyle>
 #include <QModelIndex>
 
-Midas3ItemTreeItem::Midas3ItemTreeItem(const QList<QVariant> &itemData,
-                                           Midas3TreeModel* model,
-                                           Midas3TreeItem* parent)
-: Midas3TreeItem(itemData, model, parent)
+Midas3ItemTreeItem::Midas3ItemTreeItem(const QList<QVariant> & itemData, Midas3TreeModel* model, Midas3TreeItem* parent)
+  : Midas3TreeItem(itemData, model, parent)
 {
   m_Item = NULL;
 }
@@ -47,12 +45,12 @@ std::string Midas3ItemTreeItem::GetPath() const
 
 void Midas3ItemTreeItem::Populate(QModelIndex parent)
 {
-  if(!m_Item)
+  if( !m_Item )
     {
     std::cerr << "Item not set" << std::endl;
     return;
     }
-  
+
   (void)parent;
   // TODO Add the revisions
   /*std::vector<m3do::Item*>::const_iterator f = m_Item->GetItems().begin();
@@ -87,7 +85,7 @@ void Midas3ItemTreeItem::Populate(QModelIndex parent)
     row++;
     }
 */
-  //if(!this->isDynamicFetch())
+  // if(!this->isDynamicFetch())
     {
     this->SetFetchedChildren(false);
     }
@@ -96,19 +94,20 @@ void Midas3ItemTreeItem::Populate(QModelIndex parent)
 void Midas3ItemTreeItem::UpdateDisplayName()
 {
   QVariant name = m_Item->GetName().c_str();
-  this->SetData(name,0);
+
+  this->SetData(name, 0);
 }
 
 void Midas3ItemTreeItem::RemoveFromTree()
 {
 }
 
-m3do::Item* Midas3ItemTreeItem::GetItem() const
+m3do::Item * Midas3ItemTreeItem::GetItem() const
 {
   return m_Item;
 }
 
-mdo::Object* Midas3ItemTreeItem::GetObject() const
+mdo::Object * Midas3ItemTreeItem::GetObject() const
 {
   return m_Item;
 }
@@ -126,10 +125,11 @@ QPixmap Midas3ItemTreeItem::GetDecoration()
     {
     role += "_open";
     }*/
-  if(m_DecorationRole & Dirty)
+  if( m_DecorationRole & Dirty )
     {
     role += "_red";
     }
   role += ".png";
-  return QPixmap(role.c_str());
+  return QPixmap(role.c_str() );
 }
+

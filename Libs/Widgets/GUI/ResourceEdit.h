@@ -7,11 +7,12 @@
 
 class QTableWidgetItem;
 
-namespace mdo {
-  class Community;
-  class Collection;
-  class Item;
-  class Bitstream;
+namespace mdo
+{
+class Community;
+class Collection;
+class Item;
+class Bitstream;
 };
 
 class ResourceEdit : public QObject, public midasLogAware
@@ -29,10 +30,10 @@ signals:
 
 protected:
 
-  void SaveCommunity(mdo::Community*, MIDASFields, std::string data);
-  void SaveCollection(mdo::Collection*, MIDASFields, std::string data);
-  void SaveItem(mdo::Item*, MIDASFields, std::string data);
-  void SaveBitstream(mdo::Bitstream*, MIDASFields, std::string data);
+  void SaveCommunity(mdo::Community *, MIDASFields, std::string data);
+  void SaveCollection(mdo::Collection *, MIDASFields, std::string data);
+  void SaveItem(mdo::Item *, MIDASFields, std::string data);
+  void SaveBitstream(mdo::Bitstream *, MIDASFields, std::string data);
 };
 
 #endif

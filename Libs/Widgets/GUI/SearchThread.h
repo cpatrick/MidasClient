@@ -4,8 +4,9 @@
 #include <QThread>
 #include "midasStandardIncludes.h"
 
-namespace mdo {
-  class Object;
+namespace mdo
+{
+class Object;
 }
 
 class SearchThread : public QThread
@@ -16,13 +17,14 @@ public:
   ~SearchThread();
 
   void SetWords(std::vector<std::string> words);
-  void SetResults(std::vector<mdo::Object*>* results);
+
+  void SetResults(std::vector<mdo::Object *>* results);
 
   virtual void run();
 
 private:
-  std::vector<std::string> m_Words;
-  std::vector<mdo::Object*>* m_Results;
+  std::vector<std::string>    m_Words;
+  std::vector<mdo::Object *>* m_Results;
 };
 
 #endif

@@ -4,8 +4,9 @@
 #include <QString>
 #include <QThread>
 
-namespace mdo {
-  class Object;
+namespace mdo
+{
+class Object;
 }
 
 class MidasTreeItem;
@@ -20,17 +21,21 @@ class DeleteThread : public QThread
 public:
   DeleteThread();
   ~DeleteThread();
-                     
+
   void SetResource(MidasTreeItem* resource);
+
   void SetResource3(Midas3TreeItem* resource);
+
   void SetDeleteOnDisk(bool val);
 
   virtual void run();
 
 signals:
-  void deletedResource(mdo::Object*);
+  void deletedResource(mdo::Object *);
+
   void enableActions(bool);
-  void errorMessage(const QString&);
+
+  void errorMessage(const QString &);
 
 private:
   MidasTreeItem*  m_Resource;

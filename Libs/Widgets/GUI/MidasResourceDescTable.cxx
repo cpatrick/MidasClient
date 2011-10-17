@@ -2,23 +2,22 @@
 #include "midasUtils.h"
 
 /** Constructor */
-QTableWidgetDescriptionItem::QTableWidgetDescriptionItem(const char* text, 
-  QTableWidgetDescriptionItem::Options options)
+QTableWidgetDescriptionItem::QTableWidgetDescriptionItem(const char* text, QTableWidgetDescriptionItem::Options options)
 {
   /*if ( options & Tooltip )
     {
-    this->setToolTip( text ); 
+    this->setToolTip( text );
     }*/
   this->setText(text);
-  if (options & Bold)
+  if( options & Bold )
     {
     QFont boldfont;
     boldfont.setBold(true);
-    this->setFont(boldfont); 
+    this->setFont(boldfont);
     }
-  if (!(options & Editable))
+  if( !(options & Editable) )
     {
-    this->setFlags(~Qt::ItemFlags(Qt::ItemIsEditable));
+    this->setFlags(~ Qt::ItemFlags(Qt::ItemIsEditable) );
     }
   /*if ( options & AlignLeft )
     {
@@ -34,3 +33,4 @@ void MidasResourceDescTable::contextMenuEvent(QContextMenuEvent* e)
 {
   emit midasTableWidgetContextMenu(e);
 }
+

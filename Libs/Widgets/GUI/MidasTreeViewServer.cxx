@@ -30,29 +30,29 @@
 #include <iostream>
 
 MidasTreeViewServer::MidasTreeViewServer(QWidget* parent)
-: MidasTreeView(parent)
+  : MidasTreeView(parent)
 {
   m_Model = new MidasTreeModelServer;
   this->setModel(m_Model);
 
   this->setSelectionMode( QTreeView::SingleSelection );
 
-  connect (this, SIGNAL( collapsed(const QModelIndex&)),
-    this->model(), SLOT(itemCollapsed(const QModelIndex&)) );
-  connect (this, SIGNAL( expanded(const QModelIndex&)),
-    this->model(), SLOT(itemExpanded (const QModelIndex&)) );
-  connect (m_Model, SIGNAL( expand(const QModelIndex&) ),
-    this, SLOT( expand(const QModelIndex&) ) );
-  connect (this->model(), SIGNAL( fetchedMore() ),
-    this, SLOT( alertFetchedMore() ) );
+  connect(this, SIGNAL( collapsed(const QModelIndex &) ),
+          this->model(), SLOT(itemCollapsed(const QModelIndex &) ) );
+  connect(this, SIGNAL( expanded(const QModelIndex &) ),
+          this->model(), SLOT(itemExpanded(const QModelIndex &) ) );
+  connect(m_Model, SIGNAL( expand(const QModelIndex &) ),
+          this, SLOT( expand(const QModelIndex &) ) );
+  connect(this->model(), SIGNAL( fetchedMore() ),
+          this, SLOT( alertFetchedMore() ) );
 
   m_ExpandTreeThread = NULL;
 
   // define action to be triggered when tree item is selected
-  QItemSelectionModel * itemSelectionModel = this->selectionModel(); 
+  QItemSelectionModel * itemSelectionModel = this->selectionModel();
   connect(itemSelectionModel,
-     SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-     this, SLOT(updateSelection(const QItemSelection&, const QItemSelection& )));
+          SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &) ),
+          this, SLOT(updateSelection(const QItemSelection &, const QItemSelection & ) ) );
 
   m_MimeType = "MIDAS/server_resource";
   m_AcceptMimeType = "MIDAS/client_resource";
@@ -71,21 +71,21 @@ void MidasTreeViewServer::alertFetchedMore()
 
 void MidasTreeViewServer::selectByUuid(std::string uuid, bool select)
 {
-  if(m_ExpandTreeThread)
+  if( m_ExpandTreeThread )
     {
     disconnect(m_ExpandTreeThread);
     }
   delete m_ExpandTreeThread;
 
   m_ExpandTreeThread = new ExpandTreeThread(this,
-    reinterpret_cast<MidasTreeModelServer*>(m_Model), uuid, select);
+                                            reinterpret_cast<MidasTreeModelServer *>(m_Model), uuid, select);
 
   connect(m_ExpandTreeThread, SIGNAL( finished() ),
-    this, SLOT(expansionDone()));
-  connect(m_ExpandTreeThread, SIGNAL(expand(const QModelIndex&)),
-    this, SLOT(expand(const QModelIndex&)));
-  connect(m_ExpandTreeThread, SIGNAL(select(const QModelIndex&)),
-    this, SLOT(selectByIndex(const QModelIndex&)));
+          this, SLOT(expansionDone() ) );
+  connect(m_ExpandTreeThread, SIGNAL(expand(const QModelIndex &) ),
+          this, SLOT(expand(const QModelIndex &) ) );
+  connect(m_ExpandTreeThread, SIGNAL(select(const QModelIndex &) ),
+          this, SLOT(selectByIndex(const QModelIndex &) ) );
 
   m_ExpandTreeThread->start();
   emit startedExpandingTree();
@@ -100,53 +100,53 @@ void MidasTreeViewServer::expansionDone()
 void MidasTreeViewServer::selectByIndex(const QModelIndex& index)
 {
   selectionModel()->select(index,
-    QItemSelectionModel::Select | QItemSelectionModel::Clear);
+                           QItemSelectionModel::Select | QItemSelectionModel::Clear);
   scrollTo(index);
 }
 
 void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
 {
-  MidasCommunityTreeItem* communityTreeItem = NULL;
+  MidasCommunityTreeItem*  communityTreeItem = NULL;
   MidasCollectionTreeItem* collectionTreeItem = NULL;
-  MidasItemTreeItem* itemTreeItem = NULL;
-  MidasBitstreamTreeItem* bitstreamTreeItem = NULL;
+  MidasItemTreeItem*       itemTreeItem = NULL;
+  MidasBitstreamTreeItem*  bitstreamTreeItem = NULL;
 
-  if((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
+  if( (communityTreeItem = dynamic_cast<MidasCommunityTreeItem *>(item) ) != NULL )
     {
     mdo::Community* community = communityTreeItem->GetCommunity();
-    mws::Community remote;
+    mws::Community  remote;
     remote.SetObject(community);
-    remote.SetAuthenticator(m_Synch->GetAuthenticator());
+    remote.SetAuthenticator(m_Synch->GetAuthenticator() );
     remote.Fetch();
 
     emit midasCommunityTreeItemSelected(communityTreeItem);
     }
-  else if((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
+  else if( (collectionTreeItem = dynamic_cast<MidasCollectionTreeItem *>(item) ) != NULL )
     {
     mdo::Collection* collection = collectionTreeItem->GetCollection();
-    mws::Collection remote;
+    mws::Collection  remote;
     remote.SetObject(collection);
-    remote.SetAuthenticator(m_Synch->GetAuthenticator());
+    remote.SetAuthenticator(m_Synch->GetAuthenticator() );
     remote.Fetch();
 
     emit midasCollectionTreeItemSelected(collectionTreeItem);
     }
-  else if((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
+  else if( (itemTreeItem = dynamic_cast<MidasItemTreeItem *>(item) ) != NULL )
     {
     mdo::Item* item = itemTreeItem->GetItem();
-    mws::Item remote;
+    mws::Item  remote;
     remote.SetObject(item);
-    remote.SetAuthenticator(m_Synch->GetAuthenticator());
+    remote.SetAuthenticator(m_Synch->GetAuthenticator() );
     remote.Fetch();
 
     emit midasItemTreeItemSelected(itemTreeItem);
     }
-  else if((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
+  else if( (bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem *>(item) ) != NULL )
     {
     mdo::Bitstream* bitstream = bitstreamTreeItem->GetBitstream();
-    mws::Bitstream remote;
+    mws::Bitstream  remote;
     remote.SetObject(bitstream);
-    remote.SetAuthenticator(m_Synch->GetAuthenticator());
+    remote.SetAuthenticator(m_Synch->GetAuthenticator() );
     remote.Fetch();
 
     emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
@@ -156,31 +156,32 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
 void MidasTreeViewServer::dragMoveEvent(QDragMoveEvent* event)
 {
   selectionModel()->clearSelection();
-  selectionModel()->select(this->indexAt(event->pos()), QItemSelectionModel::Select | QItemSelectionModel::Rows);
+  selectionModel()->select(this->indexAt(event->pos() ), QItemSelectionModel::Select | QItemSelectionModel::Rows);
 
-  if(event->mimeData()->hasFormat("MIDAS/client_resource"))
+  if( event->mimeData()->hasFormat("MIDAS/client_resource") )
     {
-    event->setAccepted(!indexAt(event->pos()).isValid());
+    event->setAccepted(!indexAt(event->pos() ).isValid() );
     }
 }
 
 void MidasTreeViewServer::dropEvent( QDropEvent * event )
 {
-  if (!event || !event->mimeData())
+  if( !event || !event->mimeData() )
     {
     event->setAccepted(false);
     return;
     }
   const QMimeData* md = event->mimeData();
-  if(md->hasFormat("MIDAS/client_resource"))
+  if( md->hasFormat("MIDAS/client_resource") )
     {
-    QString data = QString(md->data("MIDAS/client_resource"));
+    QString                  data = QString(md->data("MIDAS/client_resource") );
     std::vector<std::string> tokens;
     midasUtils::Tokenize(data.toStdString(), tokens);
 
-    int type = atoi( tokens[0].c_str() );
-    int id   = atoi( tokens[1].c_str() );
+    int  type = atoi( tokens[0].c_str() );
+    int  id   = atoi( tokens[1].c_str() );
     emit resourceDropped(type, id);
     event->acceptProposedAction();
     }
 }
+

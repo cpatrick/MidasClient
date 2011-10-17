@@ -15,16 +15,19 @@ class AddBitstreamsThread : public QThread
 public:
   AddBitstreamsThread();
   ~AddBitstreamsThread();
-                     
+
   void SetFiles(const QStringList& files);
+
   void SetParentItem(MidasItemTreeItem* parentItem);
+
   void SetParentItem(Midas3ItemTreeItem* parentItem);
 
   virtual void run();
 
 signals:
   void enableActions(bool);
-  void progress(int, int, const QString&);
+
+  void progress(int, int, const QString &);
 
 private:
   MidasItemTreeItem*  m_ParentItem;

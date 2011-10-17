@@ -6,33 +6,38 @@
 
 class MidasBitstreamTreeItem : public MidasTreeItem
 {
-Q_OBJECT
-
+  Q_OBJECT
 public:
-  MidasBitstreamTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent = 0); 
+  MidasBitstreamTreeItem(const QList<QVariant> & itemData, MidasTreeModel* model, MidasTreeItem *parent = 0);
   virtual ~MidasBitstreamTreeItem();
-  
+
   virtual QPixmap GetDecoration();
 
   int GetType() const;
+
   int GetId() const;
+
   std::string GetUuid() const;
+
   void UpdateDisplayName();
+
   void RemoveFromTree();
 
   void SetBitstream(mdo::Bitstream* bitstream);
-  mdo::Bitstream* GetBitstream() const;
-  mdo::Object* GetObject() const;
+
+  mdo::Bitstream * GetBitstream() const;
+
+  mdo::Object * GetObject() const;
 
   virtual void Populate(QModelIndex parent);
 
   /** Whether the underlying resource info has been fetched */
   bool ResourceIsFetched() const;
-  
+
 private:
 
   mdo::Bitstream* m_Bitstream;
-  
-}; 
 
-#endif //__MidasBitstreamTreeItem_H
+};
+
+#endif // __MidasBitstreamTreeItem_H

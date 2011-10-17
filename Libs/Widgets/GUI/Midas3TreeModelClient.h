@@ -15,7 +15,6 @@ class Midas3ItemTreeItem;
 class Midas3TreeModelClient : public Midas3TreeModel
 {
   Q_OBJECT
-
 public:
 
   Midas3TreeModelClient(QObject *parent = 0);
@@ -23,12 +22,18 @@ public:
 
   void Populate();
 
-  void addResource(mdo::Object*);
-  void updateResource(mdo::Object*);
-  void deleteResource(mdo::Object*);
+  void addResource(mdo::Object *);
+
+  void updateResource(mdo::Object *);
+
+  void deleteResource(mdo::Object *);
+
   void fetchMore(const QModelIndex& parent);
+
   void fetchFolder(Midas3FolderTreeItem* parent);
+
   void fetchItem(Midas3ItemTreeItem* parent);
+
 };
 
-#endif //__Midas3TreeModelClient_H
+#endif // __Midas3TreeModelClient_H

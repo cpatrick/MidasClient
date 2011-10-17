@@ -6,7 +6,7 @@
 
 /** Constructor */
 PullUI::PullUI(QWidget* parent, midasSynchronizer* synch)
-: QDialog(parent), m_Synch(synch)
+  : QDialog(parent), m_Synch(synch)
 {
   setupUi(this);
   resetState();
@@ -14,13 +14,13 @@ PullUI::PullUI(QWidget* parent, midasSynchronizer* synch)
   m_SynchronizerThread = NULL;
   m_TypeName = "Resource";
 
-  connect(cloneRadioButton, SIGNAL(released()), this, SLOT(radioButtonChanged()));
-  connect(pullRadioButton, SIGNAL(released()), this, SLOT(radioButtonChanged()));
+  connect(cloneRadioButton, SIGNAL(released() ), this, SLOT(radioButtonChanged() ) );
+  connect(pullRadioButton, SIGNAL(released() ), this, SLOT(radioButtonChanged() ) );
 }
 
 PullUI::~PullUI()
 {
-  if(m_SynchronizerThread && m_SynchronizerThread->isRunning())
+  if( m_SynchronizerThread && m_SynchronizerThread->isRunning() )
     {
     m_SynchronizerThread->Cancel();
     m_SynchronizerThread->wait();
@@ -28,7 +28,7 @@ PullUI::~PullUI()
   delete m_SynchronizerThread;
 }
 
-SynchronizerThread* PullUI::getSynchronizerThread()
+SynchronizerThread * PullUI::getSynchronizerThread()
 {
   return m_SynchronizerThread;
 }
@@ -61,6 +61,7 @@ void PullUI::setRecursive(bool value)
 void PullUI::radioButtonChanged()
 {
   bool val = pullRadioButton->isChecked();
+
   recursiveCheckBox->setEnabled(val);
 }
 
@@ -81,7 +82,7 @@ void PullUI::setResourceName(std::string name)
 
 void PullUI::init()
 {
-  if(m_PullId)
+  if( m_PullId )
     {
     pullRadioButton->setChecked(true);
     }
@@ -100,7 +101,7 @@ int PullUI::exec()
 
 void PullUI::accept()
 {
-  if(m_SynchronizerThread)
+  if( m_SynchronizerThread )
     {
     disconnect(m_SynchronizerThread);
     }
@@ -109,20 +110,20 @@ void PullUI::accept()
   m_SynchronizerThread = new SynchronizerThread;
   m_SynchronizerThread->SetSynchronizer(m_Synch);
 
-  if(cloneRadioButton->isChecked())
+  if( cloneRadioButton->isChecked() )
     {
     m_Synch->SetOperation(midasSynchronizer::OPERATION_CLONE);
     m_Synch->SetRecursive(true);
     m_Synch->GetLog()->Message("Cloning the server repository");
     m_Synch->GetLog()->Status("Cloning the server repository");
 
-    connect(m_SynchronizerThread, SIGNAL(performReturned(int)), this, SLOT(cloned(int)));
+    connect(m_SynchronizerThread, SIGNAL(performReturned(int) ), this, SLOT(cloned(int) ) );
     }
-  else //pull
+  else // pull
     {
-    if(SERVER_IS_MIDAS3)
+    if( SERVER_IS_MIDAS3 )
       {
-      switch(m_ResourceType)
+      switch( m_ResourceType )
         {
         case midas3ResourceType::COMMUNITY:
           m_Synch->SetResourceType3(midas3ResourceType::COMMUNITY);
@@ -146,7 +147,7 @@ void PullUI::accept()
       }
     else
       {
-      switch(m_ResourceType)
+      switch( m_ResourceType )
         {
         case midasResourceType::COMMUNITY:
           m_Synch->SetResourceType(midasResourceType::COMMUNITY);
@@ -170,10 +171,10 @@ void PullUI::accept()
       }
     std::stringstream idStr;
     idStr << m_PullId;
-    m_Synch->SetServerHandle(idStr.str());
+    m_Synch->SetServerHandle(idStr.str() );
     m_Synch->SetOperation(midasSynchronizer::OPERATION_PULL);
-    m_Synch->SetRecursive(recursiveCheckBox->isChecked());
-    connect(m_SynchronizerThread, SIGNAL(enableActions(bool)), this, SIGNAL(enableActions(bool)));
+    m_Synch->SetRecursive(recursiveCheckBox->isChecked() );
+    connect(m_SynchronizerThread, SIGNAL(enableActions(bool) ), this, SIGNAL(enableActions(bool) ) );
     }
 
   emit startingSynchronizer();
@@ -185,25 +186,26 @@ void PullUI::accept()
 void PullUI::pulled(int rc)
 {
   std::stringstream text;
-  if(rc == MIDAS_OK)
+
+  if( rc == MIDAS_OK )
     {
     text << "Successfully pulled " << m_TypeName << ": " << m_Name;
-    m_Synch->GetLog()->Message(text.str());
+    m_Synch->GetLog()->Message(text.str() );
     }
-  else if(rc == MIDAS_CANCELED)
+  else if( rc == MIDAS_CANCELED )
     {
     text << "Pull canceled by user";
-    m_Synch->GetLog()->Message(text.str());
+    m_Synch->GetLog()->Message(text.str() );
     }
   else
     {
     text << "Failed to pull " << m_TypeName << ": " << m_Name;
-    m_Synch->GetLog()->Error(text.str());
+    m_Synch->GetLog()->Error(text.str() );
     }
   emit pulledResources();
 
-  m_Synch->GetLog()->Status(text.str());
-  if(m_Synch->GetProgressReporter())
+  m_Synch->GetLog()->Status(text.str() );
+  if( m_Synch->GetProgressReporter() )
     {
     m_Synch->GetProgressReporter()->ResetProgress();
     }
@@ -212,12 +214,13 @@ void PullUI::pulled(int rc)
 void PullUI::cloned(int rc)
 {
   std::string text;
-  if(rc == MIDAS_OK)
+
+  if( rc == MIDAS_OK )
     {
     text = "Successfully cloned the MIDAS repository.";
     m_Synch->GetLog()->Message(text);
     }
-  else if(rc == MIDAS_CANCELED)
+  else if( rc == MIDAS_CANCELED )
     {
     text = "Clone canceled by user";
     m_Synch->GetLog()->Message(text);
@@ -230,8 +233,9 @@ void PullUI::cloned(int rc)
   emit pulledResources();
 
   m_Synch->GetLog()->Status(text);
-  if(m_Synch->GetProgressReporter())
+  if( m_Synch->GetProgressReporter() )
     {
     m_Synch->GetProgressReporter()->ResetProgress();
     }
 }
+

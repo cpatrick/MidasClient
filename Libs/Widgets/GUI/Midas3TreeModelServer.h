@@ -8,16 +8,19 @@
 #include <string>
 #include <vector>
 
-namespace mws {
-  class WebAPI;
+namespace mws
+{
+class WebAPI;
 }
 
-namespace m3ws {
-  class Folder;
+namespace m3ws
+{
+class Folder;
 }
 
-namespace m3do {
-  class Folder;
+namespace m3do
+{
+class Folder;
 }
 
 class Midas3TreeItem;
@@ -28,7 +31,6 @@ class midasSynchronizer;
 class Midas3TreeModelServer : public Midas3TreeModel
 {
   Q_OBJECT
-
 public:
 
   Midas3TreeModelServer(QObject* parent = 0);
@@ -37,17 +39,24 @@ public:
   void Populate();
 
   void fetchMore(const QModelIndex& parent);
+
   void fetchFolder(Midas3FolderTreeItem* folder);
+
   void fetchItem(Midas3ItemTreeItem* parent);
 
 signals:
   void serverPolled();
+
   void fetchedMore();
 
 public slots:
 
   void itemExpanded(const QModelIndex& index);
-  void emitLayoutChanged() { emit layoutChanged(); }
+
+  void emitLayoutChanged()
+  {
+    emit layoutChanged();
+  }
 };
 
-#endif //__MidasTreeModelServer_H
+#endif // __MidasTreeModelServer_H

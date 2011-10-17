@@ -8,12 +8,11 @@
 #include <QPixmap>
 #include <QStyle>
 
-Midas3BitstreamTreeItem::Midas3BitstreamTreeItem(
-  const QList<QVariant>& itemData, Midas3TreeModel* model,
-  Midas3TreeItem* parent)
-: Midas3TreeItem(itemData, model, parent)
+Midas3BitstreamTreeItem::Midas3BitstreamTreeItem(const QList<QVariant>& itemData, Midas3TreeModel* model,
+                                                 Midas3TreeItem* parent)
+  : Midas3TreeItem(itemData, model, parent)
 {
-  //this->fetchedChildren = true; 
+  // this->fetchedChildren = true;
 }
 
 Midas3BitstreamTreeItem::~Midas3BitstreamTreeItem()
@@ -33,6 +32,7 @@ int Midas3BitstreamTreeItem::GetId() const
 std::string Midas3BitstreamTreeItem::GetUuid() const
 {
   std::stringstream uuid;
+
   uuid << m_Bitstream->GetChecksum() << m_Bitstream->GetId();
   return uuid.str();
 }
@@ -50,30 +50,32 @@ void Midas3BitstreamTreeItem::Populate(QModelIndex parent)
 QPixmap Midas3BitstreamTreeItem::GetDecoration()
 {
   std::string role = ":icons/page";
-  if(m_DecorationRole & Dirty)
+
+  if( m_DecorationRole & Dirty )
     {
     role += "_red";
     }
   role += ".png";
-  return QPixmap(role.c_str());
+  return QPixmap(role.c_str() );
 }
 
 void Midas3BitstreamTreeItem::UpdateDisplayName()
 {
   QVariant name = this->GetBitstream()->GetName().c_str();
-  this->SetData(name,0);
+
+  this->SetData(name, 0);
 }
 
 void Midas3BitstreamTreeItem::RemoveFromTree()
 {
 }
 
-mdo::Object* Midas3BitstreamTreeItem::GetObject() const
+mdo::Object * Midas3BitstreamTreeItem::GetObject() const
 {
   return m_Bitstream;
 }
 
-m3do::Bitstream* Midas3BitstreamTreeItem::GetBitstream() const
+m3do::Bitstream * Midas3BitstreamTreeItem::GetBitstream() const
 {
   return m_Bitstream;
 }
@@ -87,5 +89,4 @@ bool Midas3BitstreamTreeItem::ResourceIsFetched() const
 {
   return true;
 }
-
 

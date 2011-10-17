@@ -6,11 +6,10 @@
 #include <QPixmap>
 #include <QStyle>
 
-MidasItemTreeItem::MidasItemTreeItem(const QList<QVariant> &itemData,
-                                     MidasTreeModel* model, MidasTreeItem *parent)
-: MidasTreeItem(itemData, model, parent)
+MidasItemTreeItem::MidasItemTreeItem(const QList<QVariant> & itemData, MidasTreeModel* model, MidasTreeItem *parent)
+  : MidasTreeItem(itemData, model, parent)
 {
-  //this->fetchedChildren = true; 
+  // this->fetchedChildren = true;
 }
 
 MidasItemTreeItem::~MidasItemTreeItem()
@@ -34,16 +33,16 @@ std::string MidasItemTreeItem::GetUuid() const
 
 void MidasItemTreeItem::Populate(QModelIndex parent)
 {
-  if(!m_Item)
+  if( !m_Item )
     {
-    //error
+    // error
     return;
     }
 
   // Add the bitstreams for the item
-  int row = 0;
-  std::vector<mdo::Bitstream*>::const_iterator i = m_Item->GetBitstreams().begin();
-  while(i != m_Item->GetBitstreams().end())
+  int                                           row = 0;
+  std::vector<mdo::Bitstream *>::const_iterator i = m_Item->GetBitstreams().begin();
+  while( i != m_Item->GetBitstreams().end() )
     {
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
@@ -52,9 +51,9 @@ void MidasItemTreeItem::Populate(QModelIndex parent)
     bitstream->SetBitstream(*i);
     this->AppendChild(bitstream);
     QModelIndex index = m_Model->index(row, 0, parent);
-    m_Model->registerResource((*i)->GetUuid(), index);
+    m_Model->registerResource( (*i)->GetUuid(), index);
 
-    if((*i)->IsDirty())
+    if( (*i)->IsDirty() )
       {
       bitstream->SetDecorationRole(MidasTreeItem::Dirty);
       }
@@ -62,13 +61,15 @@ void MidasItemTreeItem::Populate(QModelIndex parent)
     i++;
     row++;
     }
+
   this->SetFetchedChildren( true );
 }
 
 void MidasItemTreeItem::UpdateDisplayName()
 {
   QVariant name = this->GetItem()->GetTitle().c_str();
-  this->SetData(name,0);
+
+  this->SetData(name, 0);
 }
 
 void MidasItemTreeItem::RemoveFromTree()
@@ -80,12 +81,12 @@ void MidasItemTreeItem::SetItem(mdo::Item* item)
   m_Item = item;
 }
 
-mdo::Item* MidasItemTreeItem::GetItem() const
+mdo::Item * MidasItemTreeItem::GetItem() const
 {
   return m_Item;
 }
 
-mdo::Object* MidasItemTreeItem::GetObject() const
+mdo::Object * MidasItemTreeItem::GetObject() const
 {
   return m_Item;
 }
@@ -94,3 +95,4 @@ bool MidasItemTreeItem::ResourceIsFetched() const
 {
   return m_Item->IsFetched();
 }
+

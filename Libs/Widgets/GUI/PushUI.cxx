@@ -5,7 +5,7 @@
 
 /** Constructor */
 PushUI::PushUI(QWidget* parent, midasSynchronizer* synch)
-: QDialog(parent), m_Delete(false), m_Object(NULL), m_Synch(synch), m_SynchThread(NULL)
+  : QDialog(parent), m_Delete(false), m_Object(NULL), m_Synch(synch), m_SynchThread(NULL)
 {
   setupUi(this);
   resetState();
@@ -19,7 +19,7 @@ PushUI::~PushUI()
   delete m_SynchThread;
 }
 
-SynchronizerThread* PushUI::getSynchronizerThread()
+SynchronizerThread * PushUI::getSynchronizerThread()
 {
   return m_SynchThread;
 }
@@ -43,12 +43,13 @@ void PushUI::resetState()
 void PushUI::radioButtonChanged()
 {
   bool val = selectedRadioButton->isChecked();
+
   recursiveCheckbox->setEnabled(val);
 }
 
 void PushUI::init()
 {
-  if(m_Object)
+  if( m_Object )
     {
     selectedRadioButton->setChecked(true);
     }
@@ -73,16 +74,16 @@ void PushUI::accept()
 
   m_Synch->SetOperation(midasSynchronizer::OPERATION_PUSH);
 
-  if(m_Object && this->selectedRadioButton->isChecked())
+  if( m_Object && this->selectedRadioButton->isChecked() )
     {
     std::stringstream text;
     text << m_Object->GetId();
 
-    m_Synch->SetClientHandle(text.str());
-    m_Synch->SetServerHandle(m_Object->GetUuid());
-    m_Synch->SetResourceType(m_Object->GetResourceType());
-    m_Synch->SetResourceType3(m_Object->GetResourceType());
-    m_Synch->SetRecursive(recursiveCheckbox->isChecked());
+    m_Synch->SetClientHandle(text.str() );
+    m_Synch->SetServerHandle(m_Object->GetUuid() );
+    m_Synch->SetResourceType(m_Object->GetResourceType() );
+    m_Synch->SetResourceType3(m_Object->GetResourceType() );
+    m_Synch->SetRecursive(recursiveCheckbox->isChecked() );
     }
   else
     {
@@ -95,7 +96,7 @@ void PushUI::accept()
   connect(m_SynchThread, SIGNAL( enableActions(bool) ),
           this, SIGNAL( enableActions(bool) ) );
 
-  if(m_Delete)
+  if( m_Delete )
     {
     connect(m_SynchThread, SIGNAL( finished() ),
             this, SLOT( deleteObject() ) );
@@ -109,7 +110,7 @@ void PushUI::accept()
 
 void PushUI::reject()
 {
-  if(m_Delete)
+  if( m_Delete )
     {
     this->deleteObject();
     }
@@ -122,3 +123,4 @@ void PushUI::deleteObject()
 {
   delete m_Object;
 }
+

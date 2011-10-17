@@ -16,13 +16,13 @@ bool GUIUpgradeHandler::Upgrade(const std::string& path,
                                 mdo::Version dbVersion,
                                 mdo::Version productVersion)
 {
-  m_Dialog->SetDbVersion(dbVersion.VersionString());
-  m_Dialog->SetProductVersion(productVersion.VersionString());
+  m_Dialog->SetDbVersion(dbVersion.VersionString() );
+  m_Dialog->SetProductVersion(productVersion.VersionString() );
 
-  if(m_Dialog->exec() == QDialog::Accepted)
+  if( m_Dialog->exec() == QDialog::Accepted )
     {
-    Log->Message("Upgrading database schema to version " + productVersion.VersionString());
-    if(mds::Upgrade::UpgradeDatabase(path, dbVersion))
+    Log->Message("Upgrading database schema to version " + productVersion.VersionString() );
+    if( mds::Upgrade::UpgradeDatabase(path, dbVersion) )
       {
       Log->Message("Database upgrade successful");
       return true;
@@ -35,3 +35,4 @@ bool GUIUpgradeHandler::Upgrade(const std::string& path,
     }
   return false;
 }
+

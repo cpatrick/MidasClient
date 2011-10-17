@@ -24,7 +24,8 @@ bool UnifyTreeThread::isCopy()
 void UnifyTreeThread::run()
 {
   mds::DatabaseAPI db;
-  if(db.UnifyTree(m_Copy))
+
+  if( db.UnifyTree(m_Copy) )
     {
     db.GetLog()->Message("Finished relocating resources");
     }
@@ -33,3 +34,4 @@ void UnifyTreeThread::run()
     db.GetLog()->Error("Errors occurred while relocating resources");
     }
 }
+

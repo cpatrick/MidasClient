@@ -6,8 +6,9 @@
 #include <QPixmap>
 #include <QStyle>
 
-MidasCollectionTreeItem::MidasCollectionTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent): 
-MidasTreeItem(itemData, model, parent)
+MidasCollectionTreeItem::MidasCollectionTreeItem(const QList<QVariant> & itemData, MidasTreeModel* model,
+                                                 MidasTreeItem *parent) :
+  MidasTreeItem(itemData, model, parent)
 {
 }
 
@@ -32,16 +33,16 @@ std::string MidasCollectionTreeItem::GetUuid() const
 
 void MidasCollectionTreeItem::Populate(QModelIndex parent)
 {
-  if(!m_Collection)
+  if( !m_Collection )
     {
-    //error
+    // error
     return;
     }
 
   // Add the items for the collection
-  int row = 0;
-  std::vector<mdo::Item*>::const_iterator i = m_Collection->GetItems().begin();
-  while(i != m_Collection->GetItems().end())
+  int                                      row = 0;
+  std::vector<mdo::Item *>::const_iterator i = m_Collection->GetItems().begin();
+  while( i != m_Collection->GetItems().end() )
     {
     QList<QVariant> name;
     name << (*i)->GetTitle().c_str();
@@ -51,11 +52,11 @@ void MidasCollectionTreeItem::Populate(QModelIndex parent)
     this->AppendChild(item);
 
     QModelIndex index = m_Model->index(row, 0, parent);
-    m_Model->registerResource((*i)->GetUuid(), index);
+    m_Model->registerResource( (*i)->GetUuid(), index);
 
     item->Populate(index);
 
-    if((*i)->IsDirty())
+    if( (*i)->IsDirty() )
       {
       item->SetDecorationRole(MidasTreeItem::Dirty);
       }
@@ -67,7 +68,8 @@ void MidasCollectionTreeItem::Populate(QModelIndex parent)
 void MidasCollectionTreeItem::UpdateDisplayName()
 {
   QVariant name = this->GetCollection()->GetName().c_str();
-  this->SetData(name,0);
+
+  this->SetData(name, 0);
 }
 
 void MidasCollectionTreeItem::RemoveFromTree()
@@ -80,12 +82,12 @@ void MidasCollectionTreeItem::SetCollection(mdo::Collection* collection)
   m_Collection = collection;
 }
 
-mdo::Collection* MidasCollectionTreeItem::GetCollection() const
+mdo::Collection * MidasCollectionTreeItem::GetCollection() const
 {
   return m_Collection;
 }
 
-mdo::Object* MidasCollectionTreeItem::GetObject() const
+mdo::Object * MidasCollectionTreeItem::GetObject() const
 {
   return m_Collection;
 }
@@ -94,3 +96,4 @@ bool MidasCollectionTreeItem::ResourceIsFetched() const
 {
   return m_Collection->IsFetched();
 }
+

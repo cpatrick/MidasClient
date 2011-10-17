@@ -17,9 +17,8 @@
 
 #include "SynchronizerThread.h"
 
-IncompleteTransferWidget::IncompleteTransferWidget(QWidget* parent,
-                                                   midasSynchronizer* synch)
-: QWidget(parent), m_Synch(synch), m_SynchThread(NULL)
+IncompleteTransferWidget::IncompleteTransferWidget(QWidget* parent, midasSynchronizer* synch)
+  : QWidget(parent), m_Synch(synch), m_SynchThread(NULL)
 {
   m_Table = new QTableWidget(this);
   m_Table->setColumnCount(3);
@@ -31,18 +30,18 @@ IncompleteTransferWidget::IncompleteTransferWidget(QWidget* parent,
 
   m_RemoveAllButton = new QPushButton();
   m_RemoveAllButton->setText("Remove All");
-  m_RemoveAllButton->setIcon(QPixmap(":icons/delete.png"));
+  m_RemoveAllButton->setIcon(QPixmap(":icons/delete.png") );
 
   connect(m_RemoveAllButton, SIGNAL( released() ),
           this, SLOT( RemoveAllPartials() ) );
 
-  QWidget* bottom = new QWidget(this);
+  QWidget*     bottom = new QWidget(this);
   QHBoxLayout* bottomLayout = new QHBoxLayout(this);
   bottomLayout->addStretch();
   bottomLayout->addWidget(m_RemoveAllButton);
   bottom->setLayout(bottomLayout);
 
-  this->setLayout(new QVBoxLayout(this));
+  this->setLayout(new QVBoxLayout(this) );
   this->layout()->setAlignment(Qt::AlignRight);
   this->layout()->addWidget(m_Table);
   this->layout()->addWidget(bottom);
@@ -67,54 +66,54 @@ void IncompleteTransferWidget::Populate()
   this->Clear();
   mds::PartialDownload::FetchAll(m_Downloads);
   mds::PartialUpload::FetchAll(m_Uploads);
-  m_Table->setRowCount(m_Downloads.size() + m_Uploads.size());
+  m_Table->setRowCount(m_Downloads.size() + m_Uploads.size() );
 
   int row = 0;
-  for(std::vector<mds::PartialDownload*>::iterator i = m_Downloads.begin();
-      i != m_Downloads.end(); ++i)
+  for( std::vector<mds::PartialDownload *>::iterator i = m_Downloads.begin();
+       i != m_Downloads.end(); ++i )
     {
     QPushButton* resumeButton = new QPushButton();
-    resumeButton->setIcon(QPixmap(":icons/control_play_blue.png"));
+    resumeButton->setIcon(QPixmap(":icons/control_play_blue.png") );
     resumeButton->setEnabled(m_Enable);
     m_ResumeDownloadButtons.push_back(resumeButton);
     connect(resumeButton, SIGNAL( released() ),
             this, SLOT( ResumeDownloadPressed() ) );
 
-    QFileInfo fileInfo((*i)->GetPath().c_str());
+    QFileInfo fileInfo( (*i)->GetPath().c_str() );
 
     QLabel* typeLabel = new QLabel(this);
-    typeLabel->setPixmap(QPixmap(":icons/arrow_down.png"));
+    typeLabel->setPixmap(QPixmap(":icons/arrow_down.png") );
     m_Table->setCellWidget(row, 0, typeLabel);
-    m_Table->setCellWidget(row, 1, new QLabel(fileInfo.fileName(), this));
+    m_Table->setCellWidget(row, 1, new QLabel(fileInfo.fileName(), this) );
     m_Table->setCellWidget(row, 2, resumeButton);
-    
+
     row++;
     }
-  for(std::vector<mds::PartialUpload*>::iterator i = m_Uploads.begin();
-      i != m_Uploads.end(); ++i)
+  for( std::vector<mds::PartialUpload *>::iterator i = m_Uploads.begin();
+       i != m_Uploads.end(); ++i )
     {
     QPushButton* resumeButton = new QPushButton();
-    resumeButton->setIcon(QPixmap(":icons/control_play_blue.png"));
+    resumeButton->setIcon(QPixmap(":icons/control_play_blue.png") );
     resumeButton->setEnabled(m_Enable);
     m_ResumeUploadButtons.push_back(resumeButton);
     connect(resumeButton, SIGNAL( released() ),
             this, SLOT( ResumeUploadPressed() ) );
 
     mdo::Bitstream bitstream;
-    bitstream.SetId((*i)->GetBitstreamId());
+    bitstream.SetId( (*i)->GetBitstreamId() );
 
     mds::Bitstream mdsBitstream;
     mdsBitstream.SetObject(&bitstream);
     mdsBitstream.Fetch();
 
-    QFileInfo fileInfo(bitstream.GetPath().c_str());
+    QFileInfo fileInfo(bitstream.GetPath().c_str() );
 
     QLabel* typeLabel = new QLabel(this);
-    typeLabel->setPixmap(QPixmap(":icons/arrow_up.png"));
+    typeLabel->setPixmap(QPixmap(":icons/arrow_up.png") );
     m_Table->setCellWidget(row, 0, typeLabel);
-    m_Table->setCellWidget(row, 1, new QLabel(fileInfo.fileName(), this));
+    m_Table->setCellWidget(row, 1, new QLabel(fileInfo.fileName(), this) );
     m_Table->setCellWidget(row, 2, resumeButton);
-    
+
     row++;
     }
   m_Table->resizeColumnsToContents();
@@ -122,23 +121,23 @@ void IncompleteTransferWidget::Populate()
 
 void IncompleteTransferWidget::Clear()
 {
-  for(std::vector<mds::PartialDownload*>::iterator i = m_Downloads.begin();
-      i != m_Downloads.end(); ++i)
+  for( std::vector<mds::PartialDownload *>::iterator i = m_Downloads.begin();
+       i != m_Downloads.end(); ++i )
     {
     delete *i;
     }
-  for(std::vector<QPushButton*>::iterator i = m_ResumeDownloadButtons.begin();
-      i != m_ResumeDownloadButtons.end(); ++i)
+  for( std::vector<QPushButton *>::iterator i = m_ResumeDownloadButtons.begin();
+       i != m_ResumeDownloadButtons.end(); ++i )
     {
     delete *i;
     }
-  for(std::vector<mds::PartialUpload*>::iterator i = m_Uploads.begin();
-      i != m_Uploads.end(); ++i)
+  for( std::vector<mds::PartialUpload *>::iterator i = m_Uploads.begin();
+       i != m_Uploads.end(); ++i )
     {
     delete *i;
     }
-  for(std::vector<QPushButton*>::iterator i = m_ResumeUploadButtons.begin();
-      i != m_ResumeUploadButtons.end(); ++i)
+  for( std::vector<QPushButton *>::iterator i = m_ResumeUploadButtons.begin();
+       i != m_ResumeUploadButtons.end(); ++i )
     {
     delete *i;
     }
@@ -154,11 +153,11 @@ void IncompleteTransferWidget::ResumeDownloadPressed()
 {
   // Find which button sent the resume signal
   QObject* sender = QObject::sender();
-  int index = 0;
-  for(std::vector<QPushButton*>::iterator i = m_ResumeDownloadButtons.begin();
-      i != m_ResumeDownloadButtons.end(); ++i)
+  int      index = 0;
+  for( std::vector<QPushButton *>::iterator i = m_ResumeDownloadButtons.begin();
+       i != m_ResumeDownloadButtons.end(); ++i )
     {
-    if(*i == sender)
+    if( *i == sender )
       {
       break;
       }
@@ -166,7 +165,7 @@ void IncompleteTransferWidget::ResumeDownloadPressed()
     }
   delete m_CurrentDownload;
   m_CurrentDownload = new mds::PartialDownload();
-  *m_CurrentDownload = *(m_Downloads[index]); //save persistent copy
+  *m_CurrentDownload = *(m_Downloads[index]); // save persistent copy
   m_Synch->SetObject(m_CurrentDownload);
   m_Synch->SetOperation(midasSynchronizer::OPERATION_RESUME_DOWNLOAD);
 
@@ -187,11 +186,11 @@ void IncompleteTransferWidget::ResumeUploadPressed()
 {
   // Find which button sent the resume signal
   QObject* sender = QObject::sender();
-  int index = 0;
-  for(std::vector<QPushButton*>::iterator i = m_ResumeUploadButtons.begin();
-      i != m_ResumeUploadButtons.end(); ++i)
+  int      index = 0;
+  for( std::vector<QPushButton *>::iterator i = m_ResumeUploadButtons.begin();
+       i != m_ResumeUploadButtons.end(); ++i )
     {
-    if(*i == sender)
+    if( *i == sender )
       {
       break;
       }
@@ -199,7 +198,7 @@ void IncompleteTransferWidget::ResumeUploadPressed()
     }
   delete m_CurrentUpload;
   m_CurrentUpload = new mds::PartialUpload();
-  *m_CurrentUpload = *(m_Uploads[index]); //save persistent copy
+  *m_CurrentUpload = *(m_Uploads[index]); // save persistent copy
   m_Synch->SetObject(m_CurrentUpload);
   m_Synch->SetOperation(midasSynchronizer::OPERATION_RESUME_UPLOAD);
 
@@ -225,13 +224,13 @@ void IncompleteTransferWidget::RemoveAllPartials()
 
 void IncompleteTransferWidget::SetEnabled(bool value)
 {
-  for(std::vector<QPushButton*>::iterator i = m_ResumeDownloadButtons.begin();
-      i != m_ResumeDownloadButtons.end(); ++i)
+  for( std::vector<QPushButton *>::iterator i = m_ResumeDownloadButtons.begin();
+       i != m_ResumeDownloadButtons.end(); ++i )
     {
     (*i)->setEnabled(value);
     }
-  for(std::vector<QPushButton*>::iterator i = m_ResumeUploadButtons.begin();
-      i != m_ResumeUploadButtons.end(); ++i)
+  for( std::vector<QPushButton *>::iterator i = m_ResumeUploadButtons.begin();
+       i != m_ResumeUploadButtons.end(); ++i )
     {
     (*i)->setEnabled(value);
     }
@@ -241,7 +240,8 @@ void IncompleteTransferWidget::SetEnabled(bool value)
 void IncompleteTransferWidget::ResumeDownloadCompleted(int rc)
 {
   emit ActivateActions(true);
-  if(rc == 0) //success
+
+  if( rc == 0 ) // success
     {
     this->Populate();
     emit DownloadComplete();
@@ -251,9 +251,11 @@ void IncompleteTransferWidget::ResumeDownloadCompleted(int rc)
 void IncompleteTransferWidget::ResumeUploadCompleted(int rc)
 {
   emit ActivateActions(true);
-  if(rc == 0) //success
+
+  if( rc == 0 ) // success
     {
     this->Populate();
     emit UploadComplete();
     }
 }
+

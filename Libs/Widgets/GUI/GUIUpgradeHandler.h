@@ -24,12 +24,12 @@ public:
   GUIUpgradeHandler(UpgradeUI* dialog);
   ~GUIUpgradeHandler();
 
-  bool Upgrade(const std::string& path,
-               mdo::Version dbVersion, mdo::Version productVersion);
+  bool Upgrade(const std::string& path, mdo::Version dbVersion, mdo::Version productVersion);
 
 signals:
   void displayDialog();
-  void errorMessage(const QString&);
+
+  void errorMessage(const QString &);
 
 private:
   UpgradeUI* m_Dialog;

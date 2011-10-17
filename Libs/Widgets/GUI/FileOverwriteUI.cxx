@@ -2,7 +2,7 @@
 #include "GUIFileOverwriteHandler.h"
 
 FileOverwriteUI::FileOverwriteUI(QWidget* parent)
-: QDialog(parent), m_Overwrite(true)
+  : QDialog(parent), m_Overwrite(true)
 {
   setupUi(this);
   this->setModal(true);
@@ -45,8 +45,10 @@ void FileOverwriteUI::useExisting()
 void FileOverwriteUI::exec()
 {
   QString text = "<b>";
-  text.append(m_Path.c_str());
+
+  text.append(m_Path.c_str() );
   text.append("</b>");
   pathLabel->setText(text);
   QDialog::exec();
 }
+
