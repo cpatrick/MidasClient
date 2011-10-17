@@ -145,4 +145,120 @@ bool Community::SetValue(std::string key, std::string value, bool append)
   return false;
 }
 
+// Set/Get ID
+void Community::SetId(int id)
+{
+  this->m_Id = id;
+}
+int Community::GetId()
+{
+  return this->m_Id;
+}
+
+
+// Set/Get the uuid
+void Community::SetUuid(const char* uuid)
+{
+  m_Uuid = uuid;
+}
+std::string & Community::GetUuid()
+{
+  return m_Uuid;
+}
+
+// Set/Get name
+void Community::SetName(const char* name)
+{
+  m_Name = name;
+}
+std::string & Community::GetName()
+{
+  return m_Name;
+}
+
+// Set/Get description
+void Community::SetDescription(const char* description)
+{
+  m_Description = description;
+}
+std::string & Community::GetDescription()
+{
+  return m_Description;
+}
+
+// Set/Get introductory text
+void Community::SetIntroductoryText(const char* text)
+{
+  m_IntroductoryText = text;
+}
+std::string & Community::GetIntroductoryText()
+{
+  return m_IntroductoryText;
+}
+
+// Set/Get copyright
+void Community::SetCopyright(const char* copyright)
+{
+  m_Copyright = copyright;
+}
+
+std::string & Community::GetCopyright()
+{
+  return m_Copyright;
+}
+
+// Set/Get links
+void Community::SetLinks(const char* links)
+{
+  m_Links = links;
+}
+
+std::string & Community::GetLinks()
+{
+  return m_Links;
+}
+
+// Get the list of sub-communities
+std::vector<Community *> & Community::GetCommunities()
+{
+  return m_Communities;
+}
+
+// Get the list of collection
+std::vector<Collection *> & Community::GetCollections()
+{
+  return m_Collections;
+}
+
+// Set the parent
+void Community::SetParentCommunity(Community* comm)
+{
+  m_ParentCommunity = comm;
+}
+
+Community * Community::GetParentCommunity()
+{
+  return m_ParentCommunity;
+}
+
+std::string Community::GetTypeName()
+{
+  return "Community";
+}
+
+int Community::GetResourceType()
+{
+  return midasResourceType::COMMUNITY;
+}
+
+void Community::SetBitstreamCount(unsigned int count)
+{
+  m_BitstreamCount = count;
+}
+
+unsigned int Community::GetBitstreamCount()
+{
+  return m_BitstreamCount;
+}
+
 } // end namespace

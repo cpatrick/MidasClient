@@ -32,63 +32,24 @@ public:
   void Clear();
 
   // Set/Get the name of bitstream
-  void SetName(const char* name)
-  {
-    m_Name = name;
-  }
-  std::string & GetName()
-  {
-    return m_Name;
-  }
+  void SetName(const char* name);
+  std::string & GetName();
 
-  void SetLastModified(unsigned int time)
-  {
-    m_LastModified = time;
-  }
-  long int GetLastModified()
-  {
-    return m_LastModified;
-  }
+  void SetLastModified(unsigned int time);
+  long int GetLastModified();
 
-  void SetPath(std::string path)
-  {
-    m_Path = path;
-  }
-  std::string GetPath()
-  {
-    return m_Path;
-  }
+  void SetPath(std::string path);
+  std::string GetPath();
 
-  std::string GetTypeName()
-  {
-    return "Bitstream";
-  }
-  int GetResourceType()
-  {
-    return midasResourceType::BITSTREAM;
-  }
+  std::string GetTypeName();
+  int GetResourceType();
 
-  void AddLocation(Assetstore* location)
-  {
-    m_Locations.push_back(location);
-  }
-  void SetLocations(std::vector<Assetstore *> locations)
-  {
-    m_Locations = locations;
-  }
-  std::vector<Assetstore *> & GetLocations()
-  {
-    return m_Locations;
-  }
+  void AddLocation(Assetstore* location);
+  void SetLocations(std::vector<Assetstore *> locations);
+  std::vector<Assetstore *> & GetLocations();
 
-  Item * GetParentItem()
-  {
-    return m_ParentItem;
-  }
-  void SetParentItem(Item* item)
-  {
-    m_ParentItem = item;
-  }
+  Item * GetParentItem();
+  void SetParentItem(Item* item);
 protected:
 
   std::string               m_Name;

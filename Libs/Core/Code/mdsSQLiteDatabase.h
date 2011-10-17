@@ -64,10 +64,8 @@ public:
   const char * GetValueAsString(unsigned int column);
 
   /** Get the error message */
-  const char * GetErrorMessage()
-  {
-    return m_ErrorMessage.c_str();
-  }
+  const char * GetErrorMessage();
+
 protected:
 
   sqlite3*      m_Database;

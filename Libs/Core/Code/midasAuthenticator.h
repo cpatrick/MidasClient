@@ -22,9 +22,9 @@ public:
   midasAuthenticator();
   ~midasAuthenticator();
 
-  bool AddAuthProfile(const std::string& user, const std::string& appName, const std::string& password,
-                      const std::string& rootDir, const std::string& profileName,
-                      bool isKey = false);
+  bool AddAuthProfile(const std::string& user, const std::string& appName,
+                      const std::string& password, const std::string& rootDir,
+                      const std::string& profileName, bool isKey = false);
 
   void ClearToken();
 

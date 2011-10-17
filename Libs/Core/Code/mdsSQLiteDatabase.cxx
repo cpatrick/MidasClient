@@ -330,4 +330,10 @@ const char * SQLiteDatabase::GetValueAsString(unsigned int column)
   return NULL;
 }
 
+/** Get the error message */
+const char * SQLiteDatabase::GetErrorMessage()
+{
+  return m_ErrorMessage.c_str();
+}
+
 } // end namespace

@@ -56,7 +56,8 @@ public:
    * Upload @filename to @url using HTTP PUT.
    * Supports files over 4GB.
    */
-  bool Upload(const std::string& filename, const std::string& url, RestResponseParser* parser, int64 offset = 0);
+  bool Upload(const std::string& filename, const std::string& url,
+              RestResponseParser* parser, int64 offset = 0);
 
   void SetProgressReporter(midasProgressReporter* progress);
 

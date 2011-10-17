@@ -106,4 +106,33 @@ bool NewResources::Commit()
   return true;
 }
 
+void NewResources::ResolveParents()
+{
+}
+
+std::vector<std::string> NewResources::GetUuids()
+{
+  return m_Uuids;
+}
+
+void NewResources::AddUuid(std::string uuid)
+{
+  m_Uuids.push_back(uuid);
+}
+
+std::string NewResources::GetSince()
+{
+  return m_Since;
+}
+
+void NewResources::SetSince(std::string since)
+{
+  m_Since = since;
+}
+
+std::string & NewResources::GetTimestamp()
+{
+  return m_Timestamp;
+}
+
 } // end namespace

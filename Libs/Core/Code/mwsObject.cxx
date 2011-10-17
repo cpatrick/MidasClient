@@ -9,33 +9,23 @@
 
 =========================================================================*/
 
-#ifndef __mdsObject_h_
-#define __mdsObject_h_
+#include "mwsObject.h"
 
-#include <string>
-#include <vector>
-
-#include "mdoProxyInterface.h"
-#include "mdsDatabaseAPI.h"
-
-namespace mds
+namespace mws
 {
 
-/** This class represent an object in the local database */
-class Object : public mdo::ProxyInterface
+Object::Object()
 {
-public:
+  m_Auth = NULL;
+}
 
-  Object();
-  ~Object();
+Object::~Object()
+{
+}
 
-  void MarkAsDirty();
+void Object::SetAuthenticator(midasAuthenticator* auth)
+{
+  m_Auth = auth;
+}
 
-protected:
-  bool m_MarkDirty;
-
-};
-
-} // end namespace
-
-#endif // _mdsObject_h_
+}

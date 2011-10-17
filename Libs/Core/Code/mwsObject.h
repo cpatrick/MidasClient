@@ -28,19 +28,10 @@ class Object : public mdo::ProxyInterface
 {
 public:
 
-  Object()
-  {
-    m_Auth = NULL;
-  }
+  Object();
+  ~Object();
 
-  ~Object()
-  {
-  };
-
-  void SetAuthenticator(midasAuthenticator* auth)
-  {
-    m_Auth = auth;
-  }
+  void SetAuthenticator(midasAuthenticator* auth);
 
 protected:
   midasAuthenticator* m_Auth;

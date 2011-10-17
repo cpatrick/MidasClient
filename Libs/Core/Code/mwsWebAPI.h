@@ -69,7 +69,8 @@ public:
 
   bool CountBitstreams(int type, int id, std::string& count, std::string& size);
 
-  bool GetIdFromPath(const std::string& path, std::string& type, std::string& id, std::string& uuid);
+  bool GetIdFromPath(const std::string& path, std::string& type,
+                     std::string& id, std::string& uuid);
 
   bool DeleteResource(const std::string& typeName, int id);
 
@@ -77,7 +78,8 @@ public:
 
   bool GetUploadOffset(const std::string& token, int64& offset);
 
-  bool GetDefaultAPIKey(const std::string& email, const std::string& password, std::string& apiKey);
+  bool GetDefaultAPIKey(const std::string& email, const std::string& password,
+                        std::string& apiKey);
 
   // Set the REST API URL
   void SetServerUrl(const char* baseurl);

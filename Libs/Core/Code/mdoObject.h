@@ -28,120 +28,49 @@ class Object
 {
 public:
 
-  Object()
-  {
-    m_Proxy = new Proxy();
-    m_Proxy->SetObject(this);
-    m_Dirty = false;
-    m_Fetched = false;
-    m_HasAgreement = "";
-    m_Size = "";
-  }
-
-  virtual ~Object()
-  {
-    delete m_Proxy;
-  };
+  Object();
+  virtual ~Object();
 
   // Set/Get ID
-  void SetId(int id)
-  {
-    m_Id = id;
-  }
-  int GetId()
-  {
-    return m_Id;
-  }
+  void SetId(int id);
+  int GetId();
 
   // Set/Get the ID of the parent
-  void SetParentId(std::string id)
-  {
-    m_Parent = id;
-  }
-  void SetParentId(int id)
-  {
-    std::stringstream str;
+  void SetParentId(std::string id);
+  void SetParentId(int id);
 
-    str << id;
-    m_Parent = str.str();
-  }
-
-  std::string & GetParentStr()
-  {
-    return m_Parent;
-  }
-  int GetParentId()
-  {
-    return atoi(m_Parent.c_str() );
-  }
+  std::string & GetParentStr();
+  int GetParentId();
 
   // Set/Get the uuid
-  void SetUuid(const char* uuid)
-  {
-    m_Uuid = uuid;
-  }
-  std::string & GetUuid()
-  {
-    return m_Uuid;
-  }
+  void SetUuid(const char* uuid);
+  std::string & GetUuid();
 
   /** Get the default proxy */
-  Proxy * GetProxy()
-  {
-    return m_Proxy;
-  }
-  virtual bool IsDirty()
-  {
-    return m_Dirty;
-  }
-  virtual void SetDirty(bool dirty)
-  {
-    m_Dirty = dirty;
-  }
-  virtual void Clear() = 0;
+  Proxy * GetProxy();
+  virtual bool IsDirty();
+  virtual void SetDirty(bool dirty);
 
+  virtual void Clear() = 0;
   virtual std::string & GetName() = 0;
 
   virtual int GetResourceType() = 0;
 
   virtual std::string GetTypeName() = 0;
 
-  virtual std::string & RefAgreement()
-  {
-    return m_HasAgreement;
-  }
-  virtual bool HasAgreement()
-  {
-    return m_HasAgreement == "1";
-  }
+  virtual std::string & RefAgreement();
+  virtual bool HasAgreement();
 
   virtual bool SetValue(std::string key,
                         std::string value,
-                        bool append = false)
-  {
-    (void)key;
-    (void)value;
-    (void)append;
-    return false;
-  }
+                        bool append = false);
 
-  virtual void SetSize(std::string size)
-  {
-    m_Size = size;
-  }
-  virtual std::string & GetSize()
-  {
-    return m_Size;
-  }
+  virtual void SetSize(std::string size);
+  virtual std::string & GetSize();
 
-  virtual bool IsFetched()
-  {
-    return m_Fetched;
-  }
-  virtual void SetFetched(bool val)
-  {
-    m_Fetched = val;
-  }
+  virtual bool IsFetched();
+  virtual void SetFetched(bool val);
+
 protected:
 
   Proxy*      m_Proxy;

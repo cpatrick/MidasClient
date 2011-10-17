@@ -163,4 +163,111 @@ bool Item::SetValue(std::string key, std::string value, bool append)
   return false;
 }
 
+void Item::SetTitle(const char* title)
+{
+  m_Title = title;
+}
+
+std::string & Item::GetTitle()
+{
+  return m_Title;
+}
+
+std::string & Item::GetName()
+{
+  return m_Title;
+}
+
+void Item::SetDescription(const char* desc)
+{
+  m_Description = desc;
+}
+std::string & Item::GetDescription()
+{
+  return m_Description;
+}
+
+// Set/Get the abstract of the item
+void Item::SetAbstract(const char* abstract)
+{
+  m_Abstract = abstract;
+}
+
+std::string & Item::GetAbstract()
+{
+  return m_Abstract;
+}
+
+void Item::SetAuthors(std::vector<std::string> authors)
+{
+  m_Authors = authors;
+}
+
+void Item::AddAuthor(std::string author)
+{
+  m_Authors.push_back(author);
+}
+
+std::vector<std::string> & Item::GetAuthors()
+{
+  return m_Authors;
+}
+
+void Item::SetKeywords(std::vector<std::string> keywords)
+{
+  m_Keywords = keywords;
+}
+
+void Item::AddKeyword(std::string keyword)
+{
+  m_Keywords.push_back(keyword);
+}
+
+std::vector<std::string> & Item::GetKeywords()
+{
+  return m_Keywords;
+}
+
+// Get the list of bitstreams
+const std::vector<Bitstream *> & Item::GetBitstreams()
+{
+  return m_Bitstreams;
+}
+
+// Add a bitstream to the list
+void Item::AddBitstream(Bitstream* bitstream)
+{
+  m_Bitstreams.push_back(bitstream);
+}
+
+void Item::SetBitstreamCount(unsigned int count)
+{
+  m_BitstreamCount = count;
+}
+
+unsigned int Item::GetBitstreamCount()
+{
+  return m_BitstreamCount;
+}
+
+std::string Item::GetTypeName()
+{
+  return "Item";
+}
+
+int Item::GetResourceType()
+{
+  return midasResourceType::ITEM;
+}
+
+Collection * Item::GetParentCollection()
+{
+  return m_ParentCollection;
+}
+
+void Item::SetParentCollection(Collection* coll)
+{
+  m_ParentCollection = coll;
+}
+
 } // end namespace

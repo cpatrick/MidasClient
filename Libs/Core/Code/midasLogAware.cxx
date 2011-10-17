@@ -9,33 +9,23 @@
 
 =========================================================================*/
 
-#ifndef __mdsObject_h_
-#define __mdsObject_h_
+#include "midasLogAware.h"
 
-#include <string>
-#include <vector>
-
-#include "mdoProxyInterface.h"
-#include "mdsDatabaseAPI.h"
-
-namespace mds
+midasLogAware::midasLogAware()
 {
+  Log = NULL;
+}
 
-/** This class represent an object in the local database */
-class Object : public mdo::ProxyInterface
+midasLogAware::~midasLogAware()
 {
-public:
+}
 
-  Object();
-  ~Object();
+midasLog * midasLogAware::GetLog()
+{
+  return Log;
+}
 
-  void MarkAsDirty();
-
-protected:
-  bool m_MarkDirty;
-
-};
-
-} // end namespace
-
-#endif // _mdsObject_h_
+void midasLogAware::SetLog(midasLog* log)
+{
+  Log = log;
+}

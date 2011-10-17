@@ -35,78 +35,29 @@ public:
 
   bool LoadTree();
 
-  // Set/Get name
-  void SetName(const char* name)
-  {
-    m_Name = name;
-  }
-
-  std::string & GetName()
-  {
-    return m_Name;
-  }
+  /// Set/Get name
+  void SetName(const char* name);
+  std::string & GetName();
 
   void Clear();
 
-  std::string GetTypeName()
-  {
-    return "Bitstream";
-  }
+  std::string GetTypeName();
+  int GetResourceType();
 
-  int GetResourceType()
-  {
-    return midas3ResourceType::BITSTREAM;
-  }
+  void SetParentItem(Item* item);
+  Item * GetParentItem();
 
-  void SetParentItem(Item* item)
-  {
-    m_ParentItem = item;
-  }
+  void SetPath(const std::string& path);
+  std::string & GetPath();
 
-  Item * GetParentItem()
-  {
-    return m_ParentItem;
-  }
+  void SetChecksum(const std::string& checksum);
+  std::string & GetChecksum();
 
-  void SetPath(const std::string& path)
-  {
-    m_Path = path;
-  }
+  void SetLastModified(unsigned int stamp);
+  unsigned int & GetLastModified();
 
-  std::string & GetPath()
-  {
-    return m_Path;
-  }
-
-  void SetChecksum(const std::string& checksum)
-  {
-    m_Checksum = checksum;
-  }
-
-  std::string & GetChecksum()
-  {
-    return m_Checksum;
-  }
-
-  void SetLastModified(unsigned int stamp)
-  {
-    m_LastModified = stamp;
-  }
-
-  unsigned int & GetLastModified()
-  {
-    return m_LastModified;
-  }
-
-  void SetCreationDate(const std::string& date)
-  {
-    m_CreationDate = date;
-  }
-
-  std::string & GetCreationDate()
-  {
-    return m_CreationDate;
-  }
+  void SetCreationDate(const std::string& date);
+  std::string & GetCreationDate();
 
 protected:
 

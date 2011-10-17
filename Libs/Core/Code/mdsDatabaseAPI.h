@@ -154,10 +154,12 @@ public:
    * corresponding parent/child entry, iff it doesn't exist.
    * If it does exist, returns its id.
    */
-  int AddResource(int type, std::string uuid, std::string path, std::string name, int parentType, int parentId,
+  int AddResource(int type, std::string uuid, std::string path,
+                  std::string name, int parentType, int parentId,
                   int serverParent);
 
-  int AddResource(int type, std::string uuid, std::string path, std::string name, std::string parentUuid,
+  int AddResource(int type, std::string uuid, std::string path,
+                  std::string name, std::string parentUuid,
                   int serverParent);
 
   /**
@@ -165,9 +167,9 @@ public:
    */
   bool DeleteResource(std::string uuid, bool deleteFiles = false);
 
-  bool AddAuthProfile(std::string user, std::string appName, std::string apiKey, std::string profileName,
-                      std::string rootDir,
-                      std::string url);
+  bool AddAuthProfile(std::string user, std::string appName,
+                      std::string apiKey, std::string profileName,
+                      std::string rootDir, std::string url);
 
   midasAuthProfile GetAuthProfile(std::string name);
 
