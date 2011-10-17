@@ -1,0 +1,38 @@
+=== Bugs Fixed in version 1.2 ===
+
+0008835 Need a way to delete a user profile
+0008832 When an error appears in the log, show an indication
+0008834 Application icon
+0008810 Right clicking on server resource tree sometimes shows disabled context menu items
+0008818 Pressing return after a search text is enter should trigger search
+0008814 Pulling a community that has parent communities does not pull down the parent communities
+0008812 Progress bar during search
+0008809 Status messages from synchronizer
+0008761 When trying to pull several bitstreams were missed
+0008798 Still receiving many "Cannot parse XML" notifications on pull
+0008763 MIDASDeskop detects changes pushed from client
+0008799 Creating sub-resources expands everything in the QTreeView
+0008762 Method for deleting things in the tree views
+0008802 duplicates in the server tree view after update
+0008796 Bitstreams show up as folder and then pages when selected
+0008797 Delete fails in the client tree
+0008800 After failed push because of anonymous login, the progress bar keeps bouncing.
+0008795 Warning from moc when building the project
+0008738 The dashboard config options should only appear if build_testing is on
+0008737 Need anonymous access in the GUI
+0008735 No Documentation for MIDASDesktop
+0008734 Build failure on Linux
+0008729 Progress bar
+0008764 Add Resource failure for Item
+0008759 Sometimes warnings are thrown when logging in (on the command line)
+0008731 API name should be MIDASDesktop by default
+0008787 Bitstream description area
+0008782 Don't display blank metadata in description area
+0008766 MIDASDesktop blocks on upload and download
+0008765 Search returns strange results on bitstream name search
+0008739 Need smaller icons in the tree
+0008732 Show MIDASDesktop always on top
+0008767 After an update on the server and a pull from the client, hitting refresh on the server crashes the application
+0008760 Sometimes login fails
+0008758 MIDASDeskop crashes on login... sometimes
+0008730 Wrong tree and crash on bitstream upload

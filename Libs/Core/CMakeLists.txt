@@ -1,0 +1,141 @@
+project(CTKDataManagementMIDASClientCore)
+
+#-----------------------------------------------------------------------------
+# MIDASClient version number.  An even minor number corresponds to releases.
+set(MIDASClient_VERSION_MAJOR "3")
+set(MIDASClient_VERSION_MINOR "0")
+set(MIDASClient_VERSION_PATCH "1")
+
+set(MIDASClient_VERSION_STRING "${MIDASClient_VERSION_MAJOR}.${MIDASClient_VERSION_MINOR}.${MIDASClient_VERSION_PATCH}")
+
+# Version info
+configure_file(
+  "${CTKDataManagementMIDASClientCore_SOURCE_DIR}/Code/MIDASConfig.h.in"
+  "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/MIDASConfig.h"
+  @ONLY
+)
+
+# --------------------------------------------------------------------------
+# Sources
+set(MIDASClientCore_SRCS
+  Code/mdoBitstream.cxx
+  Code/mdoCollection.cxx
+  Code/mdoCommunity.cxx
+  Code/mdoItem.cxx
+  Code/mdoVersion.cxx
+  Code/mdoProxy.cxx
+  Code/mdoProxyInterface.cxx
+
+  Code/mwsBitstream.cxx
+  Code/mwsCollection.cxx
+  Code/mwsCommunity.cxx
+  Code/mwsNewResources.cxx
+  Code/mwsTreePath.cxx
+  Code/mwsItem.cxx
+  Code/mwsSearch.cxx
+  Code/mwsRestAPI.cxx
+  Code/mwsRestResponseParser.cxx
+  Code/mwsWebAPI.cxx
+
+  Code/mdsSQLiteDatabase.cxx
+  Code/mdsDatabaseAPI.cxx
+  Code/mdsDatabaseInfo.cxx
+  Code/mdsCommunity.cxx
+  Code/mdsCollection.cxx
+  Code/mdsItem.cxx
+  Code/mdsBitstream.cxx
+  Code/mdsVersion.cxx
+  Code/mdsUpgrade.cxx
+  Code/mdsPartialDownload.cxx
+  Code/mdsPartialUpload.cxx
+
+  Code/midasAuthenticator.cxx
+  Code/midasDotProgressReporter.cxx
+  Code/midasStatus.cxx
+  Code/midasStdOutLog.cxx
+  Code/midasSynchronizer.cxx
+  Code/midasUtils.cxx
+
+  Code/m3doCommunity.cxx
+  Code/m3doFolder.cxx
+  Code/m3doItem.cxx
+  Code/m3doBitstream.cxx
+
+  Code/m3wsFolder.cxx
+  Code/m3wsItem.cxx
+  Code/m3wsBitstream.cxx
+
+  Code/m3dsFolder.cxx
+  Code/m3dsItem.cxx
+  Code/m3dsBitstream.cxx
+)
+
+set(MIDASClientCore_MOC_SRCS
+  Code/mwsRestAPI.h
+)
+QT4_WRAP_CPP(MIDASClientCore_SRCS ${MIDASClientCore_MOC_SRCS})
+
+set(midas_db "${CTKDataManagementMIDASClientCore_BINARY_DIR}/midas.db")
+
+# Configure in the source and binary directory variables so we can call using scripting mode
+configure_file("${CTKDataManagementMIDASClientCore_SOURCE_DIR}/CMake/MIDASClientDatabaseConfigure.cmake.in"
+               "${CTKDataManagementMIDASClientCore_BINARY_DIR}/MIDASClientDatabaseConfigure.cmake"
+               @ONLY)
+# Configure in the source and binary directory variables so we can call using scripting mode
+configure_file("${CTKDataManagementMIDASClientCore_SOURCE_DIR}/CMake/MIDAS3ClientDatabaseConfigure.cmake.in"
+               "${CTKDataManagementMIDASClientCore_BINARY_DIR}/MIDAS3ClientDatabaseConfigure.cmake"
+               @ONLY)
+
+if(NOT EXISTS "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/mdsTableDefs.h")
+  include("${CTKDataManagementMIDASClientCore_BINARY_DIR}/MIDASClientDatabaseConfigure.cmake")
+endif()
+
+if(NOT EXISTS "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h")
+  include("${CTKDataManagementMIDASClientCore_BINARY_DIR}/MIDAS3ClientDatabaseConfigure.cmake")
+endif()
+
+include_directories(
+  "${CTKDataManagementMIDASClientCore_SOURCE_DIR}/Code"
+  "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code"
+  ${QT_QTSCRIPT_INCLUDE_DIR}
+  ${QT_QTNETWORK_INCLUDE_DIR}
+)
+
+# Must reconfigure table def header when we change the SQL definitions
+add_custom_command (
+  OUTPUT "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/mdsTableDefs.h"
+  DEPENDS "${CTKDataManagementMIDASClientCore_SOURCE_DIR}/Code/sql/MIDAS_SQLite.sql"
+  COMMAND "${CMAKE_COMMAND}" -P "${CTKDataManagementMIDASClientCore_BINARY_DIR}/MIDASClientDatabaseConfigure.cmake"
+  WORKING_DIRECTORY "${CTKDataManagementMIDASClientCore_BINARY_DIR}"
+)
+add_custom_target (
+  reconfigure_tabledefs ALL
+  DEPENDS "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/mdsTableDefs.h"
+)
+
+# Must reconfigure table def header when we change the SQL definitions
+add_custom_command (
+  OUTPUT "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h"
+  DEPENDS "${CTKDataManagementMIDASClientCore_SOURCE_DIR}/Code/sql/MIDAS3_SQLite.sql"
+  COMMAND "${CMAKE_COMMAND}" -P "${CTKDataManagementMIDASClientCore_BINARY_DIR}/MIDAS3ClientDatabaseConfigure.cmake"
+  WORKING_DIRECTORY "${CTKDataManagementMIDASClientCore_BINARY_DIR}"
+)
+add_custom_target (
+  reconfigure_tabledefs3 ALL
+  DEPENDS "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h"
+)
+
+include("${sqlite_USE_FILE}")
+
+add_library(CTKDataManagementMIDASClientCore ${MIDASClientCore_SRCS})
+
+target_link_libraries(CTKDataManagementMIDASClientCore
+  ${sqlite_LIBRARIES}
+  ${QT_QTCORE_LIBRARY}
+  ${QT_QTGUI_LIBRARY}
+  ${QT_QTSCRIPT_LIBRARY}
+  ${QT_QTNETWORK_LIBRARY}
+)
+add_dependencies(CTKDataManagementMIDASClientCore reconfigure_tabledefs)
+
+include(GenerateConfig.cmake)

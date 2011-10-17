@@ -1,0 +1,7 @@
+IF(NOT CTKDataManagementMIDASClientCore_USE_FILE_INCLUDED)
+  SET(CTKDataManagementMIDASClientCore_USE_FILE_INCLUDED 1)
+
+  # Add include directories needed to use CTKDataManagementMIDASClientCore.
+  INCLUDE_DIRECTORIES(${CTKDataManagementMIDASClientCore_INCLUDE_DIRS})
+
+ENDIF()

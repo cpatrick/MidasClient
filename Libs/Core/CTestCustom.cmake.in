@@ -1,0 +1,10 @@
+SET(CTEST_CUSTOM_COVERAGE_EXCLUDE
+  ${CTEST_CUSTOM_COVERAGE_EXCLUDE}
+  )
+
+SET(CTEST_CUSTOM_WARNING_EXCEPTION
+  ${CTEST_CUSTOM_WARNING_EXCEPTION}
+  "warning: \".*printf\" redefined"                          #from curl code
+  "warning: this is the location of the previous definition" #from curl code
+  "warning: cast from pointer to integer of different size"  #from sqlite code
+  )
