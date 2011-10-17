@@ -1,6 +1,5 @@
 #include "MidasSearchResultList.h"
 
-#include "MidasClientGlobal.h"
 #include "MidasItemTreeItem.h"
 #include "mdoObject.h"
 #include "mdoBitstream.h"

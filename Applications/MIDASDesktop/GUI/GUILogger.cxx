@@ -28,13 +28,13 @@ inline void removeNewLines(std::string& text)
 GUILogger::GUILogger(MIDASDesktopUI* parent) : m_Parent(parent)
 {
   connect(this, SIGNAL(ChangeTextColor(const QColor &) ),
-          m_Parent->getLogTextEdit(), SLOT( setTextColor(const QColor &) ) );
+          m_Parent->GetLogTextEdit(), SLOT( setTextColor(const QColor &) ) );
   connect(this, SIGNAL(Text(const QString &) ),
-          m_Parent->getLogTextEdit(), SLOT( append(const QString &) ) );
+          m_Parent->GetLogTextEdit(), SLOT( append(const QString &) ) );
   connect(this, SIGNAL(Status(const QString &) ),
-          m_Parent, SLOT( displayStatus(const QString &) ) );
+          m_Parent, SLOT( DisplayStatus(const QString &) ) );
   connect(this, SIGNAL(ErrorOccurred() ),
-          m_Parent, SLOT( alertErrorInLog() ) );
+          m_Parent, SLOT( AlertErrorInLog() ) );
 }
 
 GUILogger::~GUILogger()

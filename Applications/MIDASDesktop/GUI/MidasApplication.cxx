@@ -3,7 +3,7 @@
 #include <QMessageBox>
 
 #include "MIDASDesktopUI.h"
-#include "MidasClientGlobal.h"
+#include "MIDASConfig.h"
 
 MidasApplication * MidasApplication::m_instance = NULL;
 
@@ -11,10 +11,8 @@ MidasApplication * MidasApplication::instance()
 {
   if( MidasApplication::m_instance == NULL )
     {
-    assert(qApp != NULL);
     MidasApplication::m_instance = dynamic_cast<MidasApplication *>(qApp);
     }
-  assert(MidasApplication::m_instance != NULL);
   return MidasApplication::m_instance;
 }
 
@@ -52,4 +50,3 @@ bool MidasApplication::notify(QObject* receiver, QEvent* event)
     }
   return false;
 }
-

@@ -1,5 +1,4 @@
 #include "SignInUI.h"
-#include "MidasClientGlobal.h"
 #include "SignInThread.h"
 
 #include "mwsWebAPI.h"

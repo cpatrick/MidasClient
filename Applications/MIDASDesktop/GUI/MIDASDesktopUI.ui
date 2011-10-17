@@ -78,7 +78,7 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QPushButton" name="refreshButton">
+                <widget class="QPushButton" name="m_RefreshButton">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -95,7 +95,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="showNewResourcesButton">
+                <widget class="QPushButton" name="m_ShowNewResourcesButton">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -139,7 +139,7 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QPushButton" name="refreshClientButton">
+                <widget class="QPushButton" name="m_RefreshClientButton">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -156,7 +156,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="clientExpandAllButton">
+                <widget class="QPushButton" name="m_ClientExpandAllButton">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -173,7 +173,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="clientCollapseAllButton">
+                <widget class="QPushButton" name="m_ClientCollapseAllButton">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -225,7 +225,7 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QPushButton" name="pull_Button">
+                <widget class="QPushButton" name="m_PullButton">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -242,7 +242,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="push_Button">
+                <widget class="QPushButton" name="m_PushButton">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -274,13 +274,13 @@
               </layout>
              </item>
              <item row="1" column="0" rowspan="2">
-              <widget class="QWidget" name="serverTreeViewContainer" native="true">
+              <widget class="QWidget" name="m_ServerTreeViewContainer" native="true">
                <layout class="QVBoxLayout" name="verticalLayout_3">
                 <property name="margin">
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QTreeView" name="treeViewServerPlaceholder">
+                 <widget class="QTreeView" name="m_TreeViewServerPlaceholder">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -299,13 +299,13 @@
               </widget>
              </item>
              <item row="1" column="2" rowspan="2">
-              <widget class="QWidget" name="clientTreeViewContainer" native="true">
+              <widget class="QWidget" name="m_ClientTreeViewContainer" native="true">
                <layout class="QVBoxLayout" name="verticalLayout_5">
                 <property name="margin">
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QTreeView" name="treeViewClientPlaceholder">
+                 <widget class="QTreeView" name="m_TreeViewClientPlaceholder">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -331,7 +331,7 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QGroupBox" name="midasTreeItemInfoGroupBox">
+          <widget class="QGroupBox" name="m_MidasTreeItemInfoGroupBox">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -367,7 +367,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="editInfoButton">
+               <widget class="QPushButton" name="m_EditInfoButton">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -389,7 +389,7 @@
              </layout>
             </item>
             <item row="0" column="0">
-             <widget class="MidasResourceDescTable" name="midasTreeItemInfoTable">
+             <widget class="MidasResourceDescTable" name="m_MidasTreeItemInfoTable">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -444,22 +444,13 @@
               <attribute name="verticalHeaderStretchLastSection">
                <bool>false</bool>
               </attribute>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderCascadingSectionResizes">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderStretchLastSection">
-               <bool>false</bool>
-              </attribute>
               <column/>
               <column/>
              </widget>
             </item>
            </layout>
           </widget>
-          <widget class="QTabWidget" name="logAndSearchTabContainer">
+          <widget class="QTabWidget" name="m_LogAndSearchTabContainer">
            <property name="tabPosition">
             <enum>QTabWidget::South</enum>
            </property>
@@ -467,9 +458,9 @@
             <enum>QTabWidget::Rounded</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
-           <widget class="QWidget" name="searchTab">
+           <widget class="QWidget" name="m_SearchTab">
             <attribute name="title">
              <string>Search</string>
             </attribute>
@@ -502,7 +493,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="searchQueryEdit">
+                <widget class="QLineEdit" name="m_SearchQueryEdit">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -515,7 +506,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="searchButton">
+                <widget class="QPushButton" name="m_SearchButton">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -540,7 +531,7 @@
               </layout>
              </item>
              <item row="1" column="0">
-              <widget class="MidasSearchResultList" name="searchItemsListWidget">
+              <widget class="MidasSearchResultList" name="m_SearchItemsListWidget">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -560,13 +551,13 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="progressTab">
+           <widget class="QWidget" name="m_ProgressTab">
             <attribute name="title">
              <string>Progress</string>
             </attribute>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QLabel" name="progressTabTitle">
+              <widget class="QLabel" name="m_ProgressTabTitle">
                <property name="text">
                 <string>&lt;b&gt;Progress&lt;/b&gt;</string>
                </property>
@@ -580,21 +571,21 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="fileCountLabel">
+              <widget class="QLabel" name="m_FileCountLabel">
                <property name="text">
                 <string>File Count:</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="overallProgressLabel">
+              <widget class="QLabel" name="m_OverallProgressLabel">
                <property name="text">
                 <string>Overall Progress:</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QProgressBar" name="progressBar_overall">
+              <widget class="QProgressBar" name="m_ProgressBarOverall">
                <property name="value">
                 <number>0</number>
                </property>
@@ -604,7 +595,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="currentFilenameLabel">
+              <widget class="QLabel" name="m_CurrentFilenameLabel">
                <property name="text">
                 <string>Current File:</string>
                </property>
@@ -614,14 +605,14 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="currentProgressLabel">
+              <widget class="QLabel" name="m_CurrentProgressLabel">
                <property name="text">
                 <string>Progress:</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QProgressBar" name="progressBar_current">
+              <widget class="QProgressBar" name="m_ProgressBarCurrent">
                <property name="value">
                 <number>0</number>
                </property>
@@ -631,14 +622,14 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="speedLabel">
+              <widget class="QLabel" name="m_SpeedLabel">
                <property name="text">
                 <string>Speed:</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="estimatedTimeLabel">
+              <widget class="QLabel" name="m_EstimatedTimeLabel">
                <property name="text">
                 <string>Estimated Time Remaining:</string>
                </property>
@@ -659,13 +650,13 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="logTab">
+           <widget class="QWidget" name="m_LogTab">
             <attribute name="title">
              <string>Log</string>
             </attribute>
             <layout class="QGridLayout" name="gridLayout_8">
              <item row="0" column="0" colspan="2">
-              <widget class="QTextEdit" name="log">
+              <widget class="QTextEdit" name="m_Log">
                <property name="toolTip">
                 <string/>
                </property>
@@ -688,7 +679,7 @@
               </spacer>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="clearLogButton">
+              <widget class="QPushButton" name="m_ClearLogButton">
                <property name="text">
                 <string>Clear Log</string>
                </property>
@@ -700,7 +691,7 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="incompleteTransfersTab">
+           <widget class="QWidget" name="m_IncompleteTransfersTab">
             <attribute name="title">
              <string>Incomplete Transfers</string>
             </attribute>
@@ -728,24 +719,24 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionAbout"/>
+    <addaction name="m_ActionAbout"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSign_In"/>
+    <addaction name="m_ActionSignIn"/>
     <addaction name="separator"/>
-    <addaction name="actionQuit"/>
+    <addaction name="m_ActionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuSettings">
+   <widget class="QMenu" name="m_MenuSettings">
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionNew_Local_Database"/>
-    <addaction name="actionChoose_Local_Database"/>
-    <addaction name="actionCreate_Profile"/>
-    <addaction name="actionPreferences"/>
+    <addaction name="m_ActionNewLocalDatabase"/>
+    <addaction name="m_ActionChooseLocalDatabase"/>
+    <addaction name="m_ActionCreateProfile"/>
+    <addaction name="m_ActionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -759,16 +750,16 @@
       <iconset resource="../MIDASDesktopIcons.qrc">
        <normaloff>:/icons/earth_network.png</normaloff>:/icons/earth_network.png</iconset>
      </property>
-     <addaction name="actionPull_Resource"/>
-     <addaction name="actionOpenURL"/>
-     <addaction name="actionDelete_server"/>
+     <addaction name="m_ActionPullResource"/>
+     <addaction name="m_ActionOpenUrl"/>
+     <addaction name="m_ActionDeleteServer"/>
      <addaction name="separator"/>
-     <addaction name="actionDownload_key_files_zip"/>
-     <addaction name="actionDownload_key_files_tgz"/>
+     <addaction name="m_ActionDownloadKeyFilesZip"/>
+     <addaction name="m_ActionDownloadKeyFilesTgz"/>
      <addaction name="separator"/>
-     <addaction name="actionDownload_key_file"/>
+     <addaction name="m_ActionDownloadKeyFile"/>
     </widget>
-    <widget class="QMenu" name="menuClient">
+    <widget class="QMenu" name="m_MenuClient">
      <property name="title">
       <string>Client</string>
      </property>
@@ -776,54 +767,54 @@
       <iconset resource="../MIDASDesktopIcons.qrc">
        <normaloff>:/icons/workstation_network.png</normaloff>:/icons/workstation_network.png</iconset>
      </property>
-     <widget class="QMenu" name="menuMIDAS_2">
+     <widget class="QMenu" name="m_MenuMIDAS2">
       <property name="title">
        <string>MIDAS 2</string>
       </property>
-      <addaction name="actionAdd_community"/>
+      <addaction name="m_ActionAddCommunity"/>
       <addaction name="separator"/>
-      <addaction name="actionAdd_subcommunity"/>
-      <addaction name="actionAdd_collection"/>
+      <addaction name="m_ActionAddSubcommunity"/>
+      <addaction name="m_ActionAddCollection"/>
       <addaction name="separator"/>
-      <addaction name="actionAdd_item"/>
-      <addaction name="actionAdd_bitstream"/>
+      <addaction name="m_ActionAddItem"/>
+      <addaction name="m_ActionAddBitstream"/>
       <addaction name="separator"/>
-      <addaction name="actionSwap_with_MD5_reference"/>
+      <addaction name="m_ActionSwapWithMD5Reference"/>
      </widget>
-     <widget class="QMenu" name="menuMIDAS_3">
+     <widget class="QMenu" name="m_MenuMIDAS3">
       <property name="enabled">
        <bool>true</bool>
       </property>
       <property name="title">
        <string>MIDAS 3</string>
       </property>
-      <addaction name="actionAdd_community3"/>
-      <addaction name="actionAdd_Top_Level_Folder"/>
+      <addaction name="m_ActionAddCommunity3"/>
+      <addaction name="m_ActionAddTopLevelFolder"/>
       <addaction name="separator"/>
-      <addaction name="actionAdd_Subfolder"/>
+      <addaction name="m_ActionAddSubfolder"/>
       <addaction name="separator"/>
-      <addaction name="actionAdd_item3"/>
+      <addaction name="m_ActionAddItem3"/>
       <addaction name="separator"/>
-      <addaction name="actionAdd_bitstream3"/>
+      <addaction name="m_ActionAddBitstream3"/>
      </widget>
-     <addaction name="menuMIDAS_2"/>
-     <addaction name="menuMIDAS_3"/>
+     <addaction name="m_MenuMIDAS2"/>
+     <addaction name="m_MenuMIDAS3"/>
      <addaction name="separator"/>
-     <addaction name="actionPush_Resource"/>
-     <addaction name="actionDelete_Resource"/>
+     <addaction name="m_ActionPushResource"/>
+     <addaction name="m_ActionDeleteResource"/>
      <addaction name="separator"/>
-     <addaction name="actionView_Directory"/>
+     <addaction name="m_ActionViewDirectory"/>
     </widget>
-    <addaction name="menuClient"/>
+    <addaction name="m_MenuClient"/>
     <addaction name="menuServer"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuSettings"/>
+   <addaction name="m_MenuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionSign_In">
+  <widget class="QStatusBar" name="m_StatusBar"/>
+  <action name="m_ActionSignIn">
    <property name="icon">
     <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/earth_connection.png</normaloff>:/icons/earth_connection.png</iconset>
@@ -835,7 +826,7 @@
     <string>Connect to database.</string>
    </property>
   </action>
-  <action name="actionQuit">
+  <action name="m_ActionQuit">
    <property name="text">
     <string>Quit</string>
    </property>
@@ -855,7 +846,7 @@
     <string>Set search parameters.</string>
    </property>
   </action>
-  <action name="actionAbout">
+  <action name="m_ActionAbout">
    <property name="icon">
     <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/MIDAS_Desktop_Icon.png</normaloff>:/icons/MIDAS_Desktop_Icon.png</iconset>
@@ -867,7 +858,7 @@
     <string>About MIDASDesktop.</string>
    </property>
   </action>
-  <action name="actionCreate_Profile">
+  <action name="m_ActionCreateProfile">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -882,7 +873,7 @@
     <string>Create a user profile</string>
    </property>
   </action>
-  <action name="actionChoose_Local_Database">
+  <action name="m_ActionChooseLocalDatabase">
    <property name="icon">
     <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/workstation_network.png</normaloff>:/icons/workstation_network.png</iconset>
@@ -894,7 +885,7 @@
     <string>Select the location of the sqlite database</string>
    </property>
   </action>
-  <action name="actionAdd_community">
+  <action name="m_ActionAddCommunity">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -909,7 +900,7 @@
     <string>Add a new community</string>
    </property>
   </action>
-  <action name="actionAdd_subcommunity">
+  <action name="m_ActionAddSubcommunity">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -924,7 +915,7 @@
     <string>Add a new community under the selected one</string>
    </property>
   </action>
-  <action name="actionAdd_collection">
+  <action name="m_ActionAddCollection">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -939,7 +930,7 @@
     <string>Add a new collection under the selected community</string>
    </property>
   </action>
-  <action name="actionAdd_item">
+  <action name="m_ActionAddItem">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -954,7 +945,7 @@
     <string>Add a new item under the selected collection</string>
    </property>
   </action>
-  <action name="actionAdd_bitstream">
+  <action name="m_ActionAddBitstream">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -969,7 +960,7 @@
     <string>Add a new bitstream under the current item</string>
    </property>
   </action>
-  <action name="actionPush_Resource">
+  <action name="m_ActionPushResource">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -984,7 +975,7 @@
     <string>Push resource(s) to the server</string>
    </property>
   </action>
-  <action name="actionPull_Resource">
+  <action name="m_ActionPullResource">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -996,7 +987,7 @@
     <string>Pull Resource...</string>
    </property>
   </action>
-  <action name="actionOpenURL">
+  <action name="m_ActionOpenUrl">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1008,7 +999,7 @@
     <string>View In Browser</string>
    </property>
   </action>
-  <action name="actionPreferences">
+  <action name="m_ActionPreferences">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1023,7 +1014,7 @@
     <string>Change auto-refresh settings</string>
    </property>
   </action>
-  <action name="actionDelete_Resource">
+  <action name="m_ActionDeleteResource">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1046,7 +1037,7 @@
     <string>Generate a new empty SQLite database</string>
    </property>
   </action>
-  <action name="actionView_Directory">
+  <action name="m_ActionViewDirectory">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1080,7 +1071,7 @@
     <string>Preferences...</string>
    </property>
   </action>
-  <action name="actionDelete_server">
+  <action name="m_ActionDeleteServer">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1092,7 +1083,7 @@
     <string>Delete Resource</string>
    </property>
   </action>
-  <action name="actionNew_Local_Database">
+  <action name="m_ActionNewLocalDatabase">
    <property name="icon">
     <iconset resource="../MIDASDesktopIcons.qrc">
      <normaloff>:/icons/document_add.png</normaloff>:/icons/document_add.png</iconset>
@@ -1104,7 +1095,7 @@
     <string>Create a new empty SQLite database file</string>
    </property>
   </action>
-  <action name="actionSwap_with_MD5_reference">
+  <action name="m_ActionSwapWithMD5Reference">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1112,7 +1103,7 @@
     <string>Swap with MD5 reference</string>
    </property>
   </action>
-  <action name="actionDownload_key_files_zip">
+  <action name="m_ActionDownloadKeyFilesZip">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1124,7 +1115,7 @@
     <string>Download key files (zip)</string>
    </property>
   </action>
-  <action name="actionDownload_key_files_tgz">
+  <action name="m_ActionDownloadKeyFilesTgz">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1136,7 +1127,7 @@
     <string>Download key files (tgz)</string>
    </property>
   </action>
-  <action name="actionDownload_key_file">
+  <action name="m_ActionDownloadKeyFile">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1153,7 +1144,7 @@
     <string>Upgrade Database</string>
    </property>
   </action>
-  <action name="actionAdd_community3">
+  <action name="m_ActionAddCommunity3">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1165,7 +1156,7 @@
     <string>Add Community</string>
    </property>
   </action>
-  <action name="actionAdd_Top_Level_Folder">
+  <action name="m_ActionAddTopLevelFolder">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1177,7 +1168,7 @@
     <string>Add Top Level Folder</string>
    </property>
   </action>
-  <action name="actionAdd_Subfolder">
+  <action name="m_ActionAddSubfolder">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1189,7 +1180,7 @@
     <string>Add Subfolder</string>
    </property>
   </action>
-  <action name="actionAdd_item3">
+  <action name="m_ActionAddItem3">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1201,7 +1192,7 @@
     <string>Add Item</string>
    </property>
   </action>
-  <action name="actionAdd_bitstream3">
+  <action name="m_ActionAddBitstream3">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1227,22 +1218,23 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>refreshButton</tabstop>
-  <tabstop>pull_Button</tabstop>
-  <tabstop>push_Button</tabstop>
-  <tabstop>refreshClientButton</tabstop>
-  <tabstop>clientExpandAllButton</tabstop>
-  <tabstop>clientCollapseAllButton</tabstop>
-  <tabstop>midasTreeItemInfoTable</tabstop>
-  <tabstop>editInfoButton</tabstop>
-  <tabstop>logAndSearchTabContainer</tabstop>
-  <tabstop>searchQueryEdit</tabstop>
-  <tabstop>searchButton</tabstop>
-  <tabstop>searchItemsListWidget</tabstop>
-  <tabstop>clearLogButton</tabstop>
-  <tabstop>log</tabstop>
+  <tabstop>m_RefreshButton</tabstop>
+  <tabstop>m_PullButton</tabstop>
+  <tabstop>m_PushButton</tabstop>
+  <tabstop>m_RefreshClientButton</tabstop>
+  <tabstop>m_ClientExpandAllButton</tabstop>
+  <tabstop>m_ClientCollapseAllButton</tabstop>
+  <tabstop>m_MidasTreeItemInfoTable</tabstop>
+  <tabstop>m_EditInfoButton</tabstop>
+  <tabstop>m_LogAndSearchTabContainer</tabstop>
+  <tabstop>m_SearchQueryEdit</tabstop>
+  <tabstop>m_SearchButton</tabstop>
+  <tabstop>m_SearchItemsListWidget</tabstop>
+  <tabstop>m_ClearLogButton</tabstop>
+  <tabstop>m_Log</tabstop>
  </tabstops>
  <resources>
+  <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
   <include location="../MIDASDesktopIcons.qrc"/>
@@ -1269,9 +1261,9 @@
  </resources>
  <connections>
   <connection>
-   <sender>clearLogButton</sender>
+   <sender>m_ClearLogButton</sender>
    <signal>clicked()</signal>
-   <receiver>log</receiver>
+   <receiver>m_Log</receiver>
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1285,9 +1277,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>searchQueryEdit</sender>
+   <sender>m_SearchQueryEdit</sender>
    <signal>returnPressed()</signal>
-   <receiver>searchButton</receiver>
+   <receiver>m_SearchButton</receiver>
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">

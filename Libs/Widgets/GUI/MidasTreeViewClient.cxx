@@ -11,7 +11,6 @@
 #include "MidasCollectionTreeItem.h"
 #include "MidasItemTreeItem.h"
 #include "MidasBitstreamTreeItem.h"
-#include "MidasClientGlobal.h"
 #include "mdoCommunity.h"
 #include "mdsCommunity.h"
 #include "mdsCollection.h"

@@ -1,6 +1,5 @@
 #include "MidasBitstreamTreeItem.h"
 #include "MidasItemTreeItem.h"
-#include "MidasClientGlobal.h"
 #include "MidasTreeModel.h"
 #include "mdoBitstream.h"
 #include "midasStandardIncludes.h"

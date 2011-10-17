@@ -1,6 +1,6 @@
 #include "AboutUI.h"
 
-#include "MidasClientGlobal.h"
+#include "MIDASConfig.h"
 
 AboutUI::AboutUI(QWidget* parent):
 QDialog(parent)
@@ -14,7 +14,7 @@ AboutUI::~AboutUI()
 
 void AboutUI::reset()
 {
-  this->releaseLabel->setText( STR2QSTR(MIDAS_CLIENT_VERSION_STR) ); 
+  this->releaseLabel->setText( QString("MIDAS Desktop ") + MIDAS_CLIENT_VERSION ); 
 }
 
 int AboutUI::exec()

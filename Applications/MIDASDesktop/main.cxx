@@ -8,13 +8,13 @@
 
 =========================================================================*/
 #include "MidasApplication.h"
-#include "MidasClientGlobal.h"
+#include "MIDASConfig.h"
 
 #include <iostream>
 
 int main(int argc, char **argv)
 {
   MidasApplication app(argc, argv);
-  std::cout << MIDAS_CLIENT_VERSION_STR << std::endl;
+  std::cout << "MIDAS Desktop " << MIDAS_CLIENT_VERSION << std::endl;
   return app.exec();
 }

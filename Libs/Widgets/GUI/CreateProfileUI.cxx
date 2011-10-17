@@ -1,5 +1,4 @@
 #include "CreateProfileUI.h"
-#include "MidasClientGlobal.h"
 #include "mwsWebAPI.h"
 #include "midasAuthenticator.h"
 #include "mdsDatabaseAPI.h"

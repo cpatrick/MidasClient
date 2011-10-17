@@ -4,7 +4,6 @@
 #include <QUrl>
 #include <QFileInfo>
 
-#include "MidasClientGlobal.h"
 #include "Logger.h"
 
 QTableWidgetBitstreamItem::QTableWidgetBitstreamItem(STRUCT_BITSTREAM * modeldata, 

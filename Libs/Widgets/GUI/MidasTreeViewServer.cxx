@@ -13,7 +13,6 @@
 #include "MidasCollectionTreeItem.h"
 #include "MidasItemTreeItem.h"
 #include "MidasBitstreamTreeItem.h"
-#include "MidasClientGlobal.h"
 #include "ExpandTreeThread.h"
 
 #include "mwsWebAPI.h"

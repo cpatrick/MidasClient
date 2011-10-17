@@ -23,6 +23,8 @@ if(BUILD_TESTING)
   set(dashboard_midas_app_name test CACHE STRING "The MIDAS API name for test dashboard")
   set(dashboard_midas_email admin@localhost CACHE STRING "The MIDAS login email for test dashboard")
   site_name(dashboard_top_level_community_name)
+
+  add_subdirectory(Testing)
 endif(BUILD_TESTING)
 
 set(minimum_required_qt_version "4.6")
@@ -41,7 +43,6 @@ else(QT4_FOUND)
   message(FATAL_ERROR "error: Qt4 was not found on your system. You probably need to set the QT_QMAKE_EXECUTABLE variable")
 endif(QT4_FOUND)
 
-add_subdirectory(Testing)
 add_subdirectory(Libs)
 add_subdirectory(Applications)
 

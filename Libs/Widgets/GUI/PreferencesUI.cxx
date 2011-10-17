@@ -1,6 +1,5 @@
 #include "PreferencesUI.h"
 
-#include "MidasClientGlobal.h"
 #include "mdsDatabaseAPI.h"
 #include "UnifyTreeThread.h"
 #include "PollFilesystemThread.h"

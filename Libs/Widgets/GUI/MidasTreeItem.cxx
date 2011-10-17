@@ -1,6 +1,5 @@
 #include "MidasTreeItem.h"
 #include "MidasCommunityTreeItem.h"
-#include "MidasClientGlobal.h"
 
 #include <QStringList>
 #include <QPixmap>
