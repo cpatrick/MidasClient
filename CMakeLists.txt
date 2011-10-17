@@ -43,7 +43,7 @@ endif(QT4_FOUND)
 
 add_subdirectory(Testing)
 add_subdirectory(Libs)
-#add_subdirectory(Applications)
+add_subdirectory(Applications)
 
 # CPack package specifications
 include("${MIDASClient_SOURCE_DIR}/MIDASCPack.cmake")

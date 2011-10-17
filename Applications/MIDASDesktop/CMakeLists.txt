@@ -1,21 +1,19 @@
 project(MIDASDesktop)
 cmake_minimum_required(VERSION 2.6)
 
-include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Core/CTKDataManagementMIDASClientCoreConfig.cmake)
-include(${MIDASClient_BINARY_DIR}/../CTK-build/CTK-build/Libs/DataManagement/MIDASClient/Widgets/CTKDataManagementMIDASClientWidgetsConfig.cmake)
+include(${MIDASClient_BINARY_DIR}/Libs/Core/MIDASClientCoreConfig.cmake)
+include(${MIDASClient_BINARY_DIR}/Libs/Widgets/MIDASClientWidgetsConfig.cmake)
 
 include_directories(
   ${MIDASDesktop_SOURCE_DIR}
   ${MIDASDesktop_SOURCE_DIR}/GUI
   ${MIDASDesktop_BINARY_DIR}
-  ${CTKDataManagementMIDASClientCore_INCLUDE_DIRS}
-  ${CTKDataManagementMIDASClientWidgets_INCLUDE_DIRS})
+  ${MIDASClientCore_INCLUDE_DIRS}
+  ${MIDASClientWidgets_INCLUDE_DIRS})
 link_directories(
-  ${CTKDataManagementMIDASClientCore_LIBRARY_DIRS}
-  ${CTKDataManagementMIDASClientWidgets_LIBRARY_DIRS}
+  ${MIDASClientCore_LIBRARY_DIRS}
+  ${MIDASClientWidgets_LIBRARY_DIRS}
 )
-
-find_package(Qt4 REQUIRED)
 
 set(MIDASDesktopUI_SRCS
   GUI/MidasApplication.cxx
@@ -55,8 +53,8 @@ else()
 endif()
 
 target_link_libraries(MIDASDesktop
-  ${CTKDataManagementMIDASClientWidgets_LIBRARIES}
-  ${CTKDataManagementMIDASClientCore_LIBRARIES}
+  ${MIDASClientWidgets_LIBRARIES}
+  ${MIDASClientCore_LIBRARIES}
   ${QT_QTMAIN_LIBRARY}
 )
 
@@ -123,9 +121,9 @@ endif(UNIX)
 
 if(APPLE)
   # Link with frameworks required for static Qt
-  find_library ( CARBON_LIBRARY Carbon )
-  find_library ( APLICATIONSERVICES_LIBRARY ApplicationServices )
-  find_library ( APPKIT_LIBRARY AppKit )
+  find_library(CARBON_LIBRARY Carbon)
+  find_library(APLICATIONSERVICES_LIBRARY ApplicationServices)
+  find_library(APPKIT_LIBRARY AppKit)
   target_link_libraries(MIDASDesktop
     ${APPKIT_LIBRARY}
     ${CARBON_LIBRARY}
