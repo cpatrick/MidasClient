@@ -224,4 +224,4 @@ target_link_libraries(MIDASClientWidgets
   ${QT_QTMAIN_LIBRARY}
 )
 
-include(GenerateConfig.cmake)
+#include(GenerateConfig.cmake)

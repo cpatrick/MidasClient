@@ -133,4 +133,4 @@ target_link_libraries(MIDASClientCore
 )
 add_dependencies(MIDASClientCore reconfigure_tabledefs)
 
-include(GenerateConfig.cmake)
+#include(GenerateConfig.cmake)
