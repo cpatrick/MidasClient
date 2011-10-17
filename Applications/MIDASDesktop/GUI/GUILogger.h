@@ -26,16 +26,20 @@ class GUILogger : public QObject, public midasLog
 public:
   GUILogger(MIDASDesktopUI* parent);
   ~GUILogger();
-
 public slots:
   void Error(std::string text);
+
   void Message(std::string text);
+
   void Status(std::string text);
 
 signals:
   void Status(const QString& text);
+
   void Text(const QString& text);
+
   void ChangeTextColor(const QColor& text);
+
   void ErrorOccurred();
 
 private:

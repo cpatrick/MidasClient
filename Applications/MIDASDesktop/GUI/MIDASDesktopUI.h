@@ -19,7 +19,7 @@
 #include "ui_MIDASDesktopUI.h"
 #include "midasLogAware.h"
 
-class CreateMidasResourceUI; 
+class CreateMidasResourceUI;
 class SignInUI;
 class PullUI;
 class PushUI;
@@ -62,27 +62,30 @@ class IncompleteTransferWidget;
 
 class MidasTreeViewBase;
 
-namespace mdo {
-  class Object;
+namespace mdo
+{
+class Object;
 }
 
-namespace mds {
-  class ResourceUpdateHandler;
-  class UpgradeHandler;
+namespace mds
+{
+class ResourceUpdateHandler;
+class UpgradeHandler;
 }
 
-namespace mws {
-  class MirrorHandler;
+namespace mws
+{
+class MirrorHandler;
 }
 
 extern "C" {
-  static int progress_transfer_callback(void* data, double dltotal, double dlnow, double ultotal, double ulnow); 
+static int progress_transfer_callback(void* data, double dltotal, double dlnow, double ultotal, double ulnow);
+
 }
 
 class MIDASDesktopUI :  public QMainWindow, public midasLogAware, private Ui::MIDASDesktopWindow
 {
   Q_OBJECT
-
 public:
 
   enum ActivateAction
@@ -101,7 +104,8 @@ public:
     ACTION_CLIENT_COLLECTION     = 0x100,
     ACTION_CLIENT_ITEM           = 0x200,
     ACTION_CLIENT_BITSTREAM      = 0x400,
-    ACTION_CLIENT_RESOURCE       = 0x780, //0x80 + 0x100 + 0x200 + 0x400 (any client side resource)
+    ACTION_CLIENT_RESOURCE       = 0x780, // 0x80 + 0x100 + 0x200 + 0x400 (any
+                                          // client side resource)
     ACTION_LOCAL_DATABASE        = 0x800,
 
     ACTION_COMMUNITY3            = 0x01000,
@@ -112,204 +116,302 @@ public:
     ACTION_CLIENT_ITEM3          = 0x20000,
     ACTION_CLIENT_BITSTREAM3     = 0x40000,
     ACTION_CLIENT_RESOURCE3      = 0x78000
-    }; 
-  Q_DECLARE_FLAGS(ActivateActions, ActivateAction)
-     
-  MIDASDesktopUI();
+    };
+  Q_DECLARE_FLAGS(ActivateActions, ActivateAction) MIDASDesktopUI();
   ~MIDASDesktopUI();
 
-  void activateActions(bool value, ActivateActions activateAction); 
+  void activateActions(bool value, ActivateActions activateAction);
 
-  MidasTreeViewBase* getTreeViewServer() { return treeViewServer; }
-  MidasTreeViewBase* getTreeViewClient() { return treeViewClient; }
-  midasSynchronizer* getSynchronizer() { return m_synch; }
-  midasProgressReporter* getProgress() { return m_progress; }
-  PollFilesystemThread* getPollFilesystemThread() { return m_PollFilesystemThread; }
-  midasAgreementHandler* getAgreementHandler() { return m_agreementHandler; }
-  midasFileOverwriteHandler* getFileOverwriteHandler() { return m_overwriteHandler; }
-  QTextEdit* getLogTextEdit() { return log; }
-
+  MidasTreeViewBase * getTreeViewServer()
+  {
+    return treeViewServer;
+  }
+  MidasTreeViewBase * getTreeViewClient()
+  {
+    return treeViewClient;
+  }
+  midasSynchronizer * getSynchronizer()
+  {
+    return m_synch;
+  }
+  midasProgressReporter * getProgress()
+  {
+    return m_progress;
+  }
+  PollFilesystemThread * getPollFilesystemThread()
+  {
+    return m_PollFilesystemThread;
+  }
+  midasAgreementHandler * getAgreementHandler()
+  {
+    return m_agreementHandler;
+  }
+  midasFileOverwriteHandler * getFileOverwriteHandler()
+  {
+    return m_overwriteHandler;
+  }
+  QTextEdit * getLogTextEdit()
+  {
+    return log;
+  }
 protected:
   void closeEvent(QCloseEvent *event);
 
 public slots:
   void showNormal();
+
   void cancel();
 
   void resourceEdited(QTableWidgetItem* item);
 
   // ------------- status bar -------------
   void displayStatus(const QString& message);
+
   void resetStatus();
+
   // ------------- status bar -------------
 
-  //-------------- progress tab -----------
+  // -------------- progress tab -----------
   void currentFileMessage(const QString& message);
+
   void overallProgressUpdate(int current, int max);
+
   void totalProgressUpdate(double current, double max);
+
   void currentProgressUpdate(double current, double max);
+
   void progressSpeedUpdate(double bytesPerSec);
+
   void estimatedTimeUpdate(double seconds);
-  //-------------- progress tab -----------
+
+  // -------------- progress tab -----------
   void signingIn();
+
   void signInOrOut();
+
   void signIn(bool ok);
+
   void signOut();
-  void createProfile(const std::string& name, const std::string& email,
-                     const std::string& apiName, const std::string& password,
-                     const std::string& rootDir, const std::string& url);
+
+  void createProfile(const std::string& name, const std::string& email, const std::string& apiName,
+                     const std::string& password, const std::string& rootDir,
+                     const std::string& url);
+
   void chooseLocalDatabase();
+
   void createLocalDatabase();
+
   void setLocalDatabase(std::string file);
+
   void deleteLocalResource(bool deleteFiles);
+
   void deleteServerResource(bool val);
+
   void updateClientTreeView();
+
   void updateServerTreeView();
+
   void decorateServerTree();
+
   void decorateCallback();
 
   void startedExpandingTree();
+
   void finishedExpandingTree();
 
   void enableActions(bool val);
+
   void enableClientActions(bool val);
 
   void enableResourceEditing(bool val);
 
   // ------------- settings -------------
   void setTimerInterval();
+
   void adjustTimerSettings();
+
   void unifyingTree();
+
   void treeUnified();
+
   // ------------- settings -------------
 
   // -------------- progress bar ----------
   void setProgressIndeterminate();
+
   void setProgressEmpty();
+
   void showProgressTab();
+
   // -------------- progress bar ----------
 
   // ------------- tray icon -------------
   void iconActivated(QSystemTrayIcon::ActivationReason reason);
+
   void alertNewResources();
+
   // ------------- tray icon -------------
 
   // ------------- UI updates -------------
   void updateInfoPanel(const MidasCommunityTreeItem* communityTreeItem);
+
   void updateInfoPanel(const MidasCollectionTreeItem* collectionTreeItem);
+
   void updateInfoPanel(const MidasItemTreeItem* itemTreeItem);
+
   void updateInfoPanel(const MidasBitstreamTreeItem* bitstreamTreeItem);
+
   void updateInfoPanel(const Midas3FolderTreeItem* folderTreeItem);
+
   void updateInfoPanel(const Midas3ItemTreeItem* itemTreeItem);
+
   void updateInfoPanel(const Midas3BitstreamTreeItem* bitstreamTreeItem);
+
   void clearInfoPanel();
+
   void editInfo();
 
   void updateActionState(const MidasTreeItem* item);
+
   void updateActionState(const Midas3TreeItem* item);
+
   void updateActionStateClient(const MidasTreeItem* item);
+
   void updateActionStateClient(const Midas3TreeItem* item);
 
   void displayServerResourceContextMenu(QContextMenuEvent* e);
+
   void displayClientResourceContextMenu(QContextMenuEvent* e);
+
   // ------------- UI updates -------------
 
   // ------------- resource manipulation -------------
 
   void addCommunity();
+
   void addSubcommunity();
+
   void addCollection();
+
   void addItem();
+
   void addBitstream();
+
   void addCommunity3();
+
   void addTopLevelFolder();
+
   void addSubfolder();
+
   void addItem3();
-  void addBitstreams(const MidasItemTreeItem* parentItem,
-                     const QStringList& files);
-  void addBitstreams(const Midas3ItemTreeItem* parentItem,
-                     const QStringList& files);
+
+  void addBitstreams(const MidasItemTreeItem* parentItem, const QStringList& files);
+
+  void addBitstreams(const Midas3ItemTreeItem* parentItem, const QStringList& files);
+
   void addBitstreamsProgress(int current, int total, const QString& message);
+
   void pullRecursive(int type, int id);
+
   void dragNDropPush(int type, int id);
+
   void viewInBrowser();
+
   void viewDirectory();
+
   void openBitstream();
+
   void storeLastPollTime();
+
   // ------------- resource manipulation -------------
 
   // ------------- synchronizer ----------------------
   void pushResources();
+
   void pushReturned(int rc);
+
   // ------------- synchronizer ----------------------
 
   // ------------- search -------------
   void search();
+
   void showSearchResults();
+
   void searchItemClicked(QListWidgetItemMidasItem * item);
+
   void searchItemContextMenu(QContextMenuEvent * e);
+
   // ------------- search -------------
 
   // ------------- log ----------------
   void showLogTab();
+
   void logError(const QString& text);
+
   void logMessage(const QString& text);
+
   void alertErrorInLog();
+
   void tabChanged(int index);
+
   // ------------- log ----------------
 
   void newDBFinished();
 
-  mds::ResourceUpdateHandler* getResourceUpdateHandler();
+  mds::ResourceUpdateHandler * getResourceUpdateHandler();
+
 private:
-  
+
   void infoPanel(MidasCommunityTreeItem* node, bool editable);
+
   void infoPanel(MidasCollectionTreeItem* node, bool editable);
+
   void infoPanel(MidasItemTreeItem* node, bool editable);
+
   void infoPanel(MidasBitstreamTreeItem* node, bool editable);
 
   /** Common code for adding bitstreams to the client tree */
   bool addBitstreamsCommon(const QStringList& files);
 
   // ------------- UI Dialogs -------------
-  CreateMidasResourceUI*      dlg_createMidasResourceUI;
-  CreateProfileUI*            dlg_createProfileUI;
-  SignInUI*                   dlg_signInUI;
-  AboutUI*                    dlg_aboutUI;
-  PreferencesUI*              dlg_preferencesUI;
-  PullUI*                     dlg_pullUI;
-  PushUI*                     dlg_pushUI;
-  DeleteResourceUI*           dlg_deleteClientResourceUI;
-  DeleteResourceUI*           dlg_deleteServerResourceUI;
-  AddAuthorUI*                dlg_addAuthorUI;
-  AddKeywordUI*               dlg_addKeywordUI;
-  AgreementUI*                dlg_agreementUI;
-  UpgradeUI*                  dlg_upgradeUI;
-  FileOverwriteUI*            dlg_overwriteUI;
-  MirrorPickerUI*             dlg_mirrorPickerUI;
+  CreateMidasResourceUI* dlg_createMidasResourceUI;
+  CreateProfileUI*       dlg_createProfileUI;
+  SignInUI*              dlg_signInUI;
+  AboutUI*               dlg_aboutUI;
+  PreferencesUI*         dlg_preferencesUI;
+  PullUI*                dlg_pullUI;
+  PushUI*                dlg_pushUI;
+  DeleteResourceUI*      dlg_deleteClientResourceUI;
+  DeleteResourceUI*      dlg_deleteServerResourceUI;
+  AddAuthorUI*           dlg_addAuthorUI;
+  AddKeywordUI*          dlg_addKeywordUI;
+  AgreementUI*           dlg_agreementUI;
+  UpgradeUI*             dlg_upgradeUI;
+  FileOverwriteUI*       dlg_overwriteUI;
+  MirrorPickerUI*        dlg_mirrorPickerUI;
   // ------------- UI Dialogs -------------
 
-  IncompleteTransferWidget*   transferWidget;
+  IncompleteTransferWidget* transferWidget;
 
   // ------------- status bar -------------
-  QLabel*                     stateLabel;
-  QLabel*                     connectLabel;
-  QProgressBar*               progressBar;
-  QPushButton*                cancelButton;
+  QLabel*       stateLabel;
+  QLabel*       connectLabel;
+  QProgressBar* progressBar;
+  QPushButton*  cancelButton;
   // ------------- status bar -------------
 
-  ButtonDelegate*             authorsEditor;
-  ButtonDelegate*             keywordsEditor;
-  TextEditDelegate*           textMetadataEditor;
+  ButtonDelegate*   authorsEditor;
+  ButtonDelegate*   keywordsEditor;
+  TextEditDelegate* textMetadataEditor;
 
   // ------------- tray ----------------
-  QAction*                    showAction;
-  QSystemTrayIcon*            trayIcon;
-  QMenu*                      trayIconMenu;
+  QAction*         showAction;
+  QSystemTrayIcon* trayIcon;
+  QMenu*           trayIconMenu;
   // ------------- tray ----------------
 
   // ------------- auto-refresh -----------
-  QTimer*                     refreshTimer;
+  QTimer* refreshTimer;
   // ------------- auto-refresh -----------
 
   bool                        m_signIn;
@@ -320,26 +422,26 @@ private:
   midasAgreementHandler*      m_agreementHandler;
   midasFileOverwriteHandler*  m_overwriteHandler;
   std::vector<std::string>    m_dirtyUuids;
-  std::vector<mdo::Object*>   m_SearchResults;
+  std::vector<mdo::Object *>  m_SearchResults;
   mds::ResourceUpdateHandler* m_resourceUpdateHandler;
   mds::UpgradeHandler*        m_dbUpgradeHandler;
   mws::MirrorHandler*         m_mirrorHandler;
 
   // ----------- threads -----------------
-  SynchronizerThread*         m_SynchronizerThread;
-  SearchThread*               m_SearchThread;
-  UpdateTreeViewThread*       m_ReadDatabaseThread;
-  UpdateTreeViewThread*       m_RefreshThread;
-  PollFilesystemThread*       m_PollFilesystemThread;
-  AddBitstreamsThread*        m_AddBitstreamsThread;
-  DeleteThread*               m_DeleteThread;
-  QFutureWatcher<bool>        m_CreateDBWatcher;
+  SynchronizerThread*   m_SynchronizerThread;
+  SearchThread*         m_SearchThread;
+  UpdateTreeViewThread* m_ReadDatabaseThread;
+  UpdateTreeViewThread* m_RefreshThread;
+  PollFilesystemThread* m_PollFilesystemThread;
+  AddBitstreamsThread*  m_AddBitstreamsThread;
+  DeleteThread*         m_DeleteThread;
+  QFutureWatcher<bool>  m_CreateDBWatcher;
   // ----------- threads -----------------
 
-  MidasTreeViewBase*          treeViewServer;
-  MidasTreeViewBase*          treeViewClient;
+  MidasTreeViewBase* treeViewServer;
+  MidasTreeViewBase* treeViewClient;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(MIDASDesktopUI::ActivateActions)
 
-#endif //__MIDASDesktopUI_H
+#endif // __MIDASDesktopUI_H

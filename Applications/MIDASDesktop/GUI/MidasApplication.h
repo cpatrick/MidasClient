@@ -3,23 +3,23 @@
 
 #include <QApplication>
 
-class MIDASDesktopUI; 
+class MIDASDesktopUI;
 
-class MidasApplication: public QApplication
+class MidasApplication : public QApplication
 {
   Q_OBJECT
-
 public:
-  MidasApplication ( int & argc, char ** argv);
-  int exec(); 
-  bool notify ( QObject * receiver, QEvent * event ); 
+  MidasApplication( int & argc, char * * argv);
+  int exec();
 
-  static MidasApplication * instance(); 
+  bool notify( QObject * receiver, QEvent * event );
+
+  static MidasApplication * instance();
 
 private:
-  static MidasApplication* m_instance; 
+  static MidasApplication* m_instance;
 
-  MIDASDesktopUI * MIDASDesktop; 
+  MIDASDesktopUI * MIDASDesktop;
 };
 
-#endif //__MidasApplication_H
+#endif // __MidasApplication_H
