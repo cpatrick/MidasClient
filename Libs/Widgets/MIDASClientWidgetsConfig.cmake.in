@@ -1,0 +1,8 @@
+SET(MIDASClientWidgets_LIBRARY_DIRS "@MIDASClientWidgets_LIBRARY_DIRS_CONFIG@")
+
+SET(MIDASClientWidgets_LIBRARIES MIDASClientWidgets)
+
+SET(MIDASClientWidgets_INCLUDE_DIRS "@MIDASClientWidgets_INCLUDE_DIRS_CONFIG@")
+
+# The location of the UseMIDASClientWidgets.cmake file.
+set(MIDASClientWidgets_USE_FILE "@MIDASClientWidgets_USE_FILE_CONFIG@")

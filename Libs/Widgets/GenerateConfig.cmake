@@ -1,21 +1,21 @@
 CONFIGURE_FILE(
-  ${CTKDataManagementMIDASClientWidgets_SOURCE_DIR}/UseCTKDataManagementMIDASClientWidgets.cmake.in
-  ${CTKDataManagementMIDASClientWidgets_BINARY_DIR}/UseCTKDataManagementMIDASClientWidgets.cmake COPYONLY)
+  ${CMAKE_CURRENT_SOURCE_DIR}/UseMIDASClientWidgets.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/UseMIDASClientWidgets.cmake COPYONLY)
 
 # Library directory
-SET(CTKDataManagementMIDASClientWidgets_LIBRARY_DIRS_CONFIG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+SET(MIDASClientWidgets_LIBRARY_DIRS_CONFIG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 # Include directories
-SET(CTKDataManagementMIDASClientWidgets_INCLUDE_DIRS_CONFIG 
-  ${CTKDataManagementMIDASClientWidgets_SOURCE_DIR}
-  ${CTKDataManagementMIDASClientWidgets_SOURCE_DIR}/GUI
-  ${CTKDataManagementMIDASClientWidgets_BINARY_DIR}
+SET(MIDASClientWidgets_INCLUDE_DIRS_CONFIG 
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/GUI
+  ${CMAKE_CURRENT_BINARY_DIR}
   )
 
 # Use file
-SET(CTKDataManagementMIDASClientWidgets_USE_FILE_CONFIG ${CTKDataManagementMIDASClientWidgets_BINARY_DIR}/UseCTKDataManagementMIDASClientWidgets.cmake)
+SET(MIDASClientWidgets_USE_FILE_CONFIG ${CMAKE_CURRENT_BINARY_DIR}/UseMIDASClientWidgets.cmake)
 
 # Configure config file
 CONFIGURE_FILE(
-  ${CTKDataManagementMIDASClientWidgets_SOURCE_DIR}/CTKDataManagementMIDASClientWidgetsConfig.cmake.in
-  ${CTKDataManagementMIDASClientWidgets_BINARY_DIR}/CTKDataManagementMIDASClientWidgetsConfig.cmake @ONLY)
+  ${CMAKE_CURRENT_SOURCE_DIR}/MIDASClientWidgetsConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/MIDASClientWidgetsConfig.cmake @ONLY)

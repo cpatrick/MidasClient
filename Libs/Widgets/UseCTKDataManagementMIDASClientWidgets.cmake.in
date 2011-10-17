@@ -1,7 +1,0 @@
-IF(NOT CTKDataManagementMIDASClientWidgets_USE_FILE_INCLUDED)
-  SET(CTKDataManagementMIDASClientWidgets_USE_FILE_INCLUDED 1)
-
-  # Add include directories needed to use CTKDataManagementMIDASClientWidgets.
-  INCLUDE_DIRECTORIES(${CTKDataManagementMIDASClientWidgets_INCLUDE_DIRS})
-
-ENDIF()

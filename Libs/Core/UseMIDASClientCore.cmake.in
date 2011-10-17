@@ -1,0 +1,7 @@
+IF(NOT MIDASClientCore_USE_FILE_INCLUDED)
+  SET(MIDASClientCore_USE_FILE_INCLUDED 1)
+
+  # Add include directories needed to use MIDASClientCore.
+  INCLUDE_DIRECTORIES(${MIDASClientCore_INCLUDE_DIRS})
+
+ENDIF()

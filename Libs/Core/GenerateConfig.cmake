@@ -1,25 +1,25 @@
 CONFIGURE_FILE(
-  ${CTKDataManagementMIDASClientCore_SOURCE_DIR}/UseCTKDataManagementMIDASClientCore.cmake.in
-  ${CTKDataManagementMIDASClientCore_BINARY_DIR}/UseCTKDataManagementMIDASClientCore.cmake COPYONLY)
+  ${CMAKE_CURRENT_SOURCE_DIR}/UseMIDASClientCore.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/UseMIDASClientCore.cmake COPYONLY)
 
 # Library directory
-SET(CTKDataManagementMIDASClientCore_LIBRARY_DIRS_CONFIG
+SET(MIDASClientCore_LIBRARY_DIRS_CONFIG
   ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-  ${sqlite_LIBRARY_DIRS}
+  #${sqlite_LIBRARY_DIRS}
 )
 
 # Include directories
-SET(CTKDataManagementMIDASClientCore_INCLUDE_DIRS_CONFIG 
-  ${CTKDataManagementMIDASClientCore_SOURCE_DIR}/Code
-  ${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code
+SET(MIDASClientCore_INCLUDE_DIRS_CONFIG
+  ${CMAKE_CURRENT_SOURCE_DIR}/Code
+  ${CMAKE_CURRENT_BINARY_DIR}/Code
   ${QT_INCLUDES}
-  ${sqlite_INCLUDE_DIRS}
+  ${MIDASClient_SOURCE_DIR}/Libs/External/sqlite
   )
 
 # Libraries
-SET(CTKDataManagementMIDASClientCore_LIBRARIES_CONFIG
-  CTKDataManagementMIDASClientCore
-  ${sqlite_LIBRARIES}
+SET(MIDASClientCore_LIBRARIES_CONFIG
+  MIDASClientCore
+  sqlite
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTSCRIPT_LIBRARY}
@@ -27,10 +27,9 @@ SET(CTKDataManagementMIDASClientCore_LIBRARIES_CONFIG
 )
 
 # Use file
-SET(CTKDataManagementMIDASClientCore_USE_FILE_CONFIG ${CTKDataManagementMIDASClientCore_BINARY_DIR}/UseCTKDataManagementMIDASClientCore.cmake)
+SET(MIDASClientCore_USE_FILE_CONFIG ${CMAKE_CURRENT_BINARY_DIR}/UseMIDASClientCore.cmake)
 
 # Configure config file
 CONFIGURE_FILE(
-  ${CTKDataManagementMIDASClientCore_SOURCE_DIR}/CTKDataManagementMIDASClientCoreConfig.cmake.in
-  ${CTKDataManagementMIDASClientCore_BINARY_DIR}/CTKDataManagementMIDASClientCoreConfig.cmake @ONLY)
-  
+  ${CMAKE_CURRENT_SOURCE_DIR}/MIDASClientCoreConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/MIDASClientCoreConfig.cmake @ONLY)

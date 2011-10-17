@@ -1,9 +1,3 @@
-#-----------------------------------------------------------------------------
-# MIDASClient version number.  An even minor number corresponds to releases.
-set(MIDASClient_VERSION_MAJOR "3")
-set(MIDASClient_VERSION_MINOR "0")
-set(MIDASClient_VERSION_PATCH "1")
-
 set(MIDASClient_VERSION_STRING "${MIDASClient_VERSION_MAJOR}.${MIDASClient_VERSION_MINOR}.${MIDASClient_VERSION_PATCH}")
 
 # Version info
@@ -133,4 +127,4 @@ target_link_libraries(MIDASClientCore
 )
 add_dependencies(MIDASClientCore reconfigure_tabledefs)
 
-#include(GenerateConfig.cmake)
+include(GenerateConfig.cmake)

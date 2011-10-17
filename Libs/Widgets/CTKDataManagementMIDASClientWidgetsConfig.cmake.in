@@ -1,8 +1,0 @@
-SET(CTKDataManagementMIDASClientWidgets_LIBRARY_DIRS "@CTKDataManagementMIDASClientWidgets_LIBRARY_DIRS_CONFIG@")
-
-SET(CTKDataManagementMIDASClientWidgets_LIBRARIES CTKDataManagementMIDASClientWidgets)
-
-SET(CTKDataManagementMIDASClientWidgets_INCLUDE_DIRS "@CTKDataManagementMIDASClientWidgets_INCLUDE_DIRS_CONFIG@")
-
-# The location of the UseCTKDataManagementMIDASClientWidgets.cmake file.
-set(CTKDataManagementMIDASClientWidgets_USE_FILE "@CTKDataManagementMIDASClientWidgets_USE_FILE_CONFIG@")

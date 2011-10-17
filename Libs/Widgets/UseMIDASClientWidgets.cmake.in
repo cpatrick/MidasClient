@@ -1,0 +1,7 @@
+IF(NOT MIDASClientWidgets_USE_FILE_INCLUDED)
+  SET(MIDASClientWidgets_USE_FILE_INCLUDED 1)
+
+  # Add include directories needed to use MIDASClientWidgets.
+  INCLUDE_DIRECTORIES(${MIDASClientWidgets_INCLUDE_DIRS})
+
+ENDIF()
