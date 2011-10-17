@@ -25,31 +25,42 @@ public:
   ~midasCLI();
 
   int Perform(std::vector<std::string> args);
+
 protected:
   void PrintUsage();
+
   void PrintCommandHelp(std::string command);
 
   bool ParseAdd(std::vector<std::string> args);
+
   bool ParseClean(std::vector<std::string> args);
+
   bool ParseClone(std::vector<std::string> args);
+
   bool ParsePull(std::vector<std::string> args);
+
   bool ParsePush(std::vector<std::string> args);
+
   bool ParseStatus(std::vector<std::string> args);
+
   bool ParseUpload(std::vector<std::string> args);
-  
+
   int SetRootDir(std::vector<std::string> args);
+
   int PerformCreateProfile(std::vector<std::string> args);
+
   int PerformSetMetadata(std::vector<std::string> args);
+
   int PerformDelete(std::vector<std::string> args);
 
   int RunSynchronizer();
 
   std::string GetServerUrl();
 
-  std::string RootDir;
-  std::string Database;
-  bool UseTempProfile;
-  midasAuthProfile* TempProfile;
+  std::string        RootDir;
+  std::string        Database;
+  bool               UseTempProfile;
+  midasAuthProfile*  TempProfile;
   midasSynchronizer* Synchronizer;
 };
 

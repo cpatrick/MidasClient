@@ -1,10 +1,10 @@
 #include "midasCLIApplication.h"
 #include "midasCLI.h"
 
-midasCLIApplication::midasCLIApplication ( int & argc, char ** argv):
-QCoreApplication(argc, argv)
+midasCLIApplication::midasCLIApplication( int & argc, char * * argv) :
+  QCoreApplication(argc, argv)
 {
-  for(int i = 1; i < argc; i++)
+  for( int i = 1; i < argc; i++ )
     {
     this->m_Args.push_back(argv[i]);
     }
@@ -26,12 +26,12 @@ bool midasCLIApplication::notify(QObject* receiver, QEvent* event)
 {
   try
     {
-    return QCoreApplication::notify(receiver, event); 
+    return QCoreApplication::notify(receiver, event);
     }
-  catch (const std::exception& e)
+  catch( const std::exception& e )
     {
-    std::cerr << "Caught exception during notify to object " <<
-      receiver->objectName().toStdString() << ". Message: " << e.what();
+    std::cerr << "Caught exception during notify to object "
+              << receiver->objectName().toStdString() << ". Message: " << e.what();
     }
   return false;
 }
