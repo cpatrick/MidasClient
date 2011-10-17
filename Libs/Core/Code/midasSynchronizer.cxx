@@ -2710,5 +2710,14 @@ void midasSynchronizer::CountBitstreams()
     this->Progress->UpdateOverallCount(0);
     this->Progress->SetMaxTotal(midasUtils::StringToDouble(item.GetSize() ) );
     }
+
 }
 
+void midasSynchronizer::SetPathMode(bool val)
+{
+  this->PathMode = val;
+}
+bool midasSynchronizer::IsPathMode()
+{
+  return this->PathMode;
+}

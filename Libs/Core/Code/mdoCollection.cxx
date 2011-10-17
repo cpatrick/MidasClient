@@ -117,4 +117,99 @@ bool Collection::SetValue(std::string key, std::string value, bool append)
   return false;
 }
 
+// Set/Get the uuid
+void Collection::SetUuid(const char* uuid)
+{
+  m_Uuid = uuid;
+}
+
+std::string & Collection::GetUuid()
+{
+  return m_Uuid;
+}
+
+// Set/Get the name of the collection
+void Collection::SetName(const char* name)
+{
+  m_Name = name;
+}
+
+std::string & Collection::GetName()
+{
+  return m_Name;
+}
+
+// Set/Get the description of the collection
+void Collection::SetDescription(const char* description)
+{
+  m_Description = description;
+}
+std::string & Collection::GetDescription()
+{
+  return m_Description;
+}
+
+// Set/Get introductory text
+void Collection::SetIntroductoryText(const char* text)
+{
+  m_IntroductoryText = text;
+}
+std::string & Collection::GetIntroductoryText()
+{
+  return m_IntroductoryText;
+}
+
+// Set/Get copyright
+void Collection::SetCopyright(const char* copyright)
+{
+  m_Copyright = copyright;
+}
+
+std::string & Collection::GetCopyright()
+{
+  return m_Copyright;
+}
+
+// Return the list of items
+std::vector<Item *> & Collection::GetItems()
+{
+  return m_Items;
+}
+
+// Add an item
+void Collection::AddItem(Item* item)
+{
+  m_Items.push_back(item);
+}
+
+std::string Collection::GetTypeName()
+{
+  return "Collection";
+}
+
+int Collection::GetResourceType()
+{
+  return midasResourceType::COLLECTION;
+}
+
+Community * Collection::GetParentCommunity()
+{
+  return m_ParentCommunity;
+}
+
+void Collection::SetParentCommunity(Community* comm)
+{
+  m_ParentCommunity = comm;
+}
+
+void Collection::SetBitstreamCount(unsigned int count)
+{
+  m_BitstreamCount = count;
+}
+
+unsigned int Collection::GetBitstreamCount()
+{
+  return m_BitstreamCount;
+}
+
 } // end namespace

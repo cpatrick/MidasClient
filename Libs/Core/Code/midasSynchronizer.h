@@ -86,14 +86,8 @@ public:
 
   int GetParentId();
 
-  void SetPathMode(bool val)
-  {
-    this->PathMode = val;
-  }
-  bool IsPathMode()
-  {
-    return this->PathMode;
-  }
+  void SetPathMode(bool val);
+  bool IsPathMode();
 
   void SetOperation(SynchOperation op);
 

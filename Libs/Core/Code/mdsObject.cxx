@@ -9,33 +9,23 @@
 
 =========================================================================*/
 
-#ifndef __mdsObject_h_
-#define __mdsObject_h_
-
-#include <string>
-#include <vector>
-
-#include "mdoProxyInterface.h"
-#include "mdsDatabaseAPI.h"
+#include "mdsObject.h"
 
 namespace mds
 {
 
-/** This class represent an object in the local database */
-class Object : public mdo::ProxyInterface
+Object::Object()
+: m_MarkDirty(false)
 {
-public:
+}
 
-  Object();
-  ~Object();
+Object::~Object()
+{
+}
 
-  void MarkAsDirty();
+void Object::MarkAsDirty()
+{
+  m_MarkDirty = true;
+}
 
-protected:
-  bool m_MarkDirty;
-
-};
-
-} // end namespace
-
-#endif // _mdsObject_h_
+} // end namespace mds

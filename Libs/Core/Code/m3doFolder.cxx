@@ -76,6 +76,78 @@ void Folder::Clear()
   this->m_Size = "";
 }
 
+void Folder::SetName(const char* name)
+{
+  m_Name = name;
+}
+
+std::string & Folder::GetName()
+{
+  return m_Name;
+}
+
+// Set/Get description
+void Folder::SetDescription(const char* description)
+{
+  m_Description = description;
+}
+
+std::string & Folder::GetDescription()
+{
+  return m_Description;
+}
+
+// Get the list of child folders
+std::vector<Folder *> & Folder::GetFolders()
+{
+  return m_Folders;
+}
+
+std::vector<Item *> & Folder::GetItems()
+{
+  return m_Items;
+}
+
+std::string Folder::GetTypeName()
+{
+  return "Folder";
+}
+
+int Folder::GetResourceType()
+{
+  return midas3ResourceType::FOLDER;
+}
+
+void Folder::SetBitstreamCount(unsigned int count)
+{
+  m_BitstreamCount = count;
+}
+
+unsigned int Folder::GetBitstreamCount()
+{
+  return m_BitstreamCount;
+}
+
+void Folder::SetParentFolder(Folder* folder)
+{
+  m_ParentFolder = folder;
+}
+
+Folder * Folder::GetParentFolder()
+{
+  return m_ParentFolder;
+}
+
+void Folder::SetPath(const std::string& path)
+{
+  m_Path = path;
+}
+
+std::string & Folder::GetPath()
+{
+  return m_Path;
+}
+
 /** Load */
 bool Folder::Load()
 {

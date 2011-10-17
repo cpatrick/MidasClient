@@ -53,4 +53,9 @@ bool ProxyInterface::GetIsCache()
   return m_IsCache;
 }
 
+const char * ProxyInterface::GetName()
+{
+  return m_Name.c_str();
+}
+
 } // end namespace

@@ -50,10 +50,8 @@ public:
   void SetName(const char* name);
 
   /** Get the name of the interface */
-  const char * GetName()
-  {
-    return m_Name.c_str();
-  }
+  const char * GetName();
+
 protected:
 
   bool        m_IsCache; // Does this interface acts as a default cache

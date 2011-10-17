@@ -37,36 +37,18 @@ public:
   virtual bool LoadTree();
 
   // Set/Get name
-  virtual void SetName(const char* name)
-  {
-    m_Name = name;
-  }
-  virtual std::string & GetName()
-  {
-    return m_Name;
-  }
+  virtual void SetName(const char* name);
+  virtual std::string & GetName();
 
   // Set/Get description
-  virtual void SetDescription(const char* description)
-  {
-    m_Description = description;
-  }
-  virtual std::string & GetDescription()
-  {
-    return m_Description;
-  }
+  virtual void SetDescription(const char* description);
+  virtual std::string & GetDescription();
 
   // Get the list of child folders
-  virtual std::vector<Folder *> & GetFolders()
-  {
-    return m_Folders;
-  }
+  virtual std::vector<Folder *> & GetFolders();
 
   // Get the list of child items
-  virtual std::vector<Item *> & GetItems()
-  {
-    return m_Items;
-  }
+  virtual std::vector<Item *> & GetItems();
 
   // Set a metadata value by key
   virtual bool SetValue(std::string key, std::string value, bool append = false);
@@ -79,41 +61,18 @@ public:
 
   virtual void Clear();
 
-  virtual std::string GetTypeName()
-  {
-    return "Folder";
-  }
-  virtual int GetResourceType()
-  {
-    return midas3ResourceType::FOLDER;
-  }
+  virtual std::string GetTypeName();
+  virtual int GetResourceType();
 
-  virtual void SetBitstreamCount(unsigned int count)
-  {
-    m_BitstreamCount = count;
-  }
-  virtual unsigned int GetBitstreamCount()
-  {
-    return m_BitstreamCount;
-  }
+  virtual void SetBitstreamCount(unsigned int count);
+  virtual unsigned int GetBitstreamCount();
 
-  virtual void SetParentFolder(Folder* folder)
-  {
-    m_ParentFolder = folder;
-  }
-  virtual Folder * GetParentFolder()
-  {
-    return m_ParentFolder;
-  }
+  virtual void SetParentFolder(Folder* folder);
+  virtual Folder * GetParentFolder();
 
-  virtual void SetPath(const std::string& path)
-  {
-    m_Path = path;
-  }
-  virtual std::string & GetPath()
-  {
-    return m_Path;
-  }
+  virtual void SetPath(const std::string& path);
+  virtual std::string & GetPath();
+
 protected:
 
   std::string  m_Name;

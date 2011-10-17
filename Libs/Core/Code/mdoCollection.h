@@ -38,95 +38,42 @@ public:
   void Clear();
 
   // Set/Get the uuid
-  void SetUuid(const char* uuid)
-  {
-    m_Uuid = uuid;
-  }
-  std::string & GetUuid()
-  {
-    return m_Uuid;
-  }
+  void SetUuid(const char* uuid);
+  std::string & GetUuid();
 
   // Set/Get the name of the collection
-  void SetName(const char* name)
-  {
-    m_Name = name;
-  }
-  std::string & GetName()
-  {
-    return m_Name;
-  }
+  void SetName(const char* name);
+  std::string & GetName();
 
   // Set/Get the description of the collection
-  void SetDescription(const char* description)
-  {
-    m_Description = description;
-  }
-  std::string & GetDescription()
-  {
-    return m_Description;
-  }
+  void SetDescription(const char* description);
+  std::string & GetDescription();
 
   // Set/Get introductory text
-  void SetIntroductoryText(const char* text)
-  {
-    m_IntroductoryText = text;
-  }
-  std::string & GetIntroductoryText()
-  {
-    return m_IntroductoryText;
-  }
+  void SetIntroductoryText(const char* text);
+  std::string & GetIntroductoryText();
 
   // Set/Get copyright
-  void SetCopyright(const char* copyright)
-  {
-    m_Copyright = copyright;
-  }
-  std::string & GetCopyright()
-  {
-    return m_Copyright;
-  }
+  void SetCopyright(const char* copyright);
+  std::string & GetCopyright();
 
   // Return the list of items
-  std::vector<Item *> & GetItems()
-  {
-    return m_Items;
-  }
+  std::vector<Item *> & GetItems();
 
   // Add an item
-  void AddItem(Item* item)
-  {
-    m_Items.push_back(item);
-  }
+  void AddItem(Item* item);
 
-  std::string GetTypeName()
-  {
-    return "Collection";
-  }
-  int GetResourceType()
-  {
-    return midasResourceType::COLLECTION;
-  }
+  std::string GetTypeName();
+  int GetResourceType();
 
-  Community * GetParentCommunity()
-  {
-    return m_ParentCommunity;
-  }
-  void SetParentCommunity(Community* comm)
-  {
-    m_ParentCommunity = comm;
-  }
+  Community * GetParentCommunity();
+  void SetParentCommunity(Community* comm);
 
   bool SetValue(std::string key, std::string value, bool append = false);
 
-  void SetBitstreamCount(unsigned int count)
-  {
-    m_BitstreamCount = count;
-  }
-  unsigned int GetBitstreamCount()
-  {
-    return m_BitstreamCount;
-  }
+  void SetBitstreamCount(unsigned int count);
+  unsigned int GetBitstreamCount();
+
 protected:
 
   friend class CollectionXMLParser;

@@ -42,32 +42,16 @@ public:
 
   bool Commit();
 
-  void ResolveParents()
-  {
-  }                        // do nothing (no parents)
+  void ResolveParents();
 
-  std::vector<std::string> GetUuids()
-  {
-    return m_Uuids;
-  }
-  void AddUuid(std::string uuid)
-  {
-    m_Uuids.push_back(uuid);
-  }
+  std::vector<std::string> GetUuids();
+  void AddUuid(std::string uuid);
 
-  std::string GetSince()
-  {
-    return m_Since;
-  }
-  void SetSince(std::string since)
-  {
-    m_Since = since;
-  }
+  std::string GetSince();
+  void SetSince(std::string since);
 
-  std::string & GetTimestamp()
-  {
-    return m_Timestamp;
-  }
+  std::string & GetTimestamp();
+
 protected:
 
   friend class NewResourcesXMLParser;

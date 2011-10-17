@@ -36,96 +36,42 @@ public:
   bool LoadTree();
 
   // Set/Get ID
-  void SetId(int id)
-  {
-    this->m_Id = id;
-  }
-  int GetId()
-  {
-    return this->m_Id;
-  }
+  void SetId(int id);
+  int GetId();
 
   // Set/Get the uuid
-  void SetUuid(const char* uuid)
-  {
-    m_Uuid = uuid;
-  }
-  std::string & GetUuid()
-  {
-    return m_Uuid;
-  }
+  void SetUuid(const char* uuid);
+  std::string & GetUuid();
 
   // Set/Get name
-  void SetName(const char* name)
-  {
-    m_Name = name;
-  }
-  std::string & GetName()
-  {
-    return m_Name;
-  }
+  void SetName(const char* name);
+  std::string & GetName();
 
   // Set/Get description
-  void SetDescription(const char* description)
-  {
-    m_Description = description;
-  }
-  std::string & GetDescription()
-  {
-    return m_Description;
-  }
+  void SetDescription(const char* description);
+  std::string & GetDescription();
 
   // Set/Get introductory text
-  void SetIntroductoryText(const char* text)
-  {
-    m_IntroductoryText = text;
-  }
-  std::string & GetIntroductoryText()
-  {
-    return m_IntroductoryText;
-  }
+  void SetIntroductoryText(const char* text);
+  std::string & GetIntroductoryText();
 
   // Set/Get copyright
-  void SetCopyright(const char* copyright)
-  {
-    m_Copyright = copyright;
-  }
-  std::string & GetCopyright()
-  {
-    return m_Copyright;
-  }
+  void SetCopyright(const char* copyright);
+  std::string & GetCopyright();
 
   // Set/Get links
-  void SetLinks(const char* links)
-  {
-    m_Links = links;
-  }
-  std::string & GetLinks()
-  {
-    return m_Links;
-  }
+  void SetLinks(const char* links);
+  std::string & GetLinks();
 
   // Get the list of sub-communities
-  std::vector<Community *> & GetCommunities()
-  {
-    return m_Communities;
-  }
+  std::vector<Community *> & GetCommunities();
 
   // Get the list of collection
-  std::vector<Collection *> & GetCollections()
-  {
-    return m_Collections;
-  }
+  std::vector<Collection *> & GetCollections();
 
   // Set the parent
-  void SetParentCommunity(Community* comm)
-  {
-    m_ParentCommunity = comm;
-  }
-  Community * GetParentCommunity()
-  {
-    return m_ParentCommunity;
-  }
+  void SetParentCommunity(Community* comm);
+  Community * GetParentCommunity();
 
   // Add a sub community
   void AddCommunity(Community* community);
@@ -135,25 +81,14 @@ public:
 
   void Clear();
 
-  std::string GetTypeName()
-  {
-    return "Community";
-  }
-  int GetResourceType()
-  {
-    return midasResourceType::COMMUNITY;
-  }
+  std::string GetTypeName();
+  int GetResourceType();
 
   bool SetValue(std::string key, std::string value, bool append = false);
 
-  void SetBitstreamCount(unsigned int count)
-  {
-    m_BitstreamCount = count;
-  }
-  unsigned int GetBitstreamCount()
-  {
-    return m_BitstreamCount;
-  }
+  void SetBitstreamCount(unsigned int count);
+  unsigned int GetBitstreamCount();
+
 protected:
 
   friend class CommunityXMLParser;

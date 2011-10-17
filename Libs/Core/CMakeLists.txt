@@ -10,10 +10,12 @@ configure_file(
 # --------------------------------------------------------------------------
 # Sources
 set(MIDASClientCore_SRCS
+  Code/mdoAssetstore.cxx
   Code/mdoBitstream.cxx
   Code/mdoCollection.cxx
   Code/mdoCommunity.cxx
   Code/mdoItem.cxx
+  Code/mdoObject.cxx
   Code/mdoVersion.cxx
   Code/mdoProxy.cxx
   Code/mdoProxyInterface.cxx
@@ -24,6 +26,7 @@ set(MIDASClientCore_SRCS
   Code/mwsNewResources.cxx
   Code/mwsTreePath.cxx
   Code/mwsItem.cxx
+  Code/mwsObject.cxx
   Code/mwsSearch.cxx
   Code/mwsRestAPI.cxx
   Code/mwsRestResponseParser.cxx
@@ -35,11 +38,13 @@ set(MIDASClientCore_SRCS
   Code/mdsCommunity.cxx
   Code/mdsCollection.cxx
   Code/mdsItem.cxx
+  Code/mdsObject.cxx
   Code/mdsBitstream.cxx
   Code/mdsVersion.cxx
   Code/mdsUpgrade.cxx
   Code/mdsPartialDownload.cxx
   Code/mdsPartialUpload.cxx
+  Code/mdsSQLiteDatabase.cxx
 
   Code/midasAuthenticator.cxx
   Code/midasDotProgressReporter.cxx
@@ -47,6 +52,8 @@ set(MIDASClientCore_SRCS
   Code/midasStdOutLog.cxx
   Code/midasSynchronizer.cxx
   Code/midasUtils.cxx
+  Code/midasLogAware.cxx
+  Code/midasProgressReporter.cxx
 
   Code/m3doCommunity.cxx
   Code/m3doFolder.cxx
