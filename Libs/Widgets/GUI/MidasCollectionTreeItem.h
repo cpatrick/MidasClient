@@ -11,20 +11,20 @@ class MidasCollectionTreeItem : public MidasTreeItem
 public:
   MidasCollectionTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent = 0);
   ~MidasCollectionTreeItem();
-  virtual void populate(QModelIndex index);
+  virtual void Populate(QModelIndex index);
 
-  int getType() const;
-  int getId() const;
-  std::string getUuid() const;
-  void updateDisplayName();
-  void removeFromTree();
+  int GetType() const;
+  int GetId() const;
+  std::string GetUuid() const;
+  void UpdateDisplayName();
+  void RemoveFromTree();
 
-  void setCollection(mdo::Collection* collection) {m_Collection = collection;}
-  mdo::Collection* getCollection() const {return m_Collection;}
-  mdo::Object* getObject() const { return m_Collection; }
+  void SetCollection(mdo::Collection* collection);
+  mdo::Collection* GetCollection() const;
+  mdo::Object* GetObject() const;
 
   /** Whether the underlying resource info has been fetched */
-  bool resourceIsFetched() const { return m_Collection->IsFetched(); }
+  bool ResourceIsFetched() const;
 
 private:
 

@@ -31,64 +31,64 @@ public:
   Midas3TreeItem(const QList<QVariant> &itemData, Midas3TreeModel* model, Midas3TreeItem *parent = 0);
   virtual ~Midas3TreeItem();
 
-  virtual void populate(QModelIndex parent) = 0;
+  virtual void Populate(QModelIndex parent) = 0;
 
   bool operator==(const Midas3TreeItem* other) const;
 
-  void appendChild(Midas3TreeItem *child);
-  void removeChild(Midas3TreeItem *item); 
-  void removeAllChild(); 
+  void AppendChild(Midas3TreeItem *child);
+  void RemoveChild(Midas3TreeItem *item); 
+  void RemoveAllChildren(); 
 
-  Midas3TreeItem* child(int row);
-  QList<Midas3TreeItem*> getChildren() { return childItems; }
+  Midas3TreeItem* GetChild(int row);
+  QList<Midas3TreeItem*> GetChildren();
 
-  bool isFetchedChildren() const;
-  void setFetchedChildren(bool value);
-  bool isDynamicFetch() const;
-  void setDynamicFetch(bool value);
+  bool IsFetchedChildren() const;
+  void SetFetchedChildren(bool value);
+  bool IsDynamicFetch() const;
+  void SetDynamicFetch(bool value);
 
-  int columnCount() const;
-  void setData(const QVariant& value, int column = 0);
-  QVariant data(int column) const;
-  int row() const;
-  Midas3TreeItem* parent();
-  const Midas3TreeItem* parent() const;
-  bool isValid() const;
+  int ColumnCount() const;
+  void SetData(const QVariant& value, int column = 0);
+  QVariant GetData(int column) const;
+  int GetRow() const;
+  Midas3TreeItem* GetParent();
+  const Midas3TreeItem* GetParent() const;
+  bool IsValid() const;
 
-  bool isClientResource() const { return m_ClientResource; }
-  void setClientResource(bool val) { m_ClientResource = val; }
+  bool IsClientResource() const;
+  void SetClientResource(bool val);
 
   /** Whether the underlying resource info has been fetched */
-  virtual bool resourceIsFetched() const = 0;
+  virtual bool ResourceIsFetched() const = 0;
 
-  virtual int getId() const = 0;
-  virtual int getType() const = 0;
-  virtual std::string getUuid() const = 0;
-  virtual std::string getPath() const = 0;
-  virtual int childCount() const;
+  virtual int GetId() const = 0;
+  virtual int GetType() const = 0;
+  virtual std::string GetUuid() const = 0;
+  virtual std::string GetPath() const = 0;
+  virtual int ChildCount() const;
 
   /** Reset the name based on the underlying resource name */
-  virtual void updateDisplayName() = 0;
-  virtual void removeFromTree() = 0;
+  virtual void UpdateDisplayName() = 0;
+  virtual void RemoveFromTree() = 0;
 
-  virtual mdo::Object* getObject() const = 0;
+  virtual mdo::Object* GetObject() const = 0;
 
-  virtual QPixmap getDecoration();
-  void setDecorationRole(DecorationRoles role);
+  virtual QPixmap GetDecoration();
+  void SetDecorationRole(DecorationRoles role);
 
-  void setTopLevelFolders(QList<Midas3FolderTreeItem*>* tlc) { m_TopLevelFolders = tlc; }
+  void SetTopLevelFolders(QList<Midas3FolderTreeItem*>* tlf);
 
 protected:
-  DecorationRoles decorationRole;
+  DecorationRoles m_DecorationRole;
   Midas3TreeModel* m_Model;
-  QList<Midas3TreeItem*> childItems;
-  QList<QVariant> itemData;
-  Midas3TreeItem* parentItem;
+  QList<Midas3TreeItem*> m_ChildItems;
+  QList<QVariant> m_ItemData;
+  Midas3TreeItem* m_ParentItem;
   QList<Midas3FolderTreeItem*>* m_TopLevelFolders;
-  uint timestamp;
-  uint lifespan;
-  bool fetchedChildren;
-  bool dynamicFetch;
+  uint m_Timestamp;
+  uint m_Lifespan;
+  bool m_FetchedChildren;
+  bool m_DynamicFetch;
   bool m_ClientResource;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS( Midas3TreeItem::DecorationRoles )

@@ -12,22 +12,22 @@ public:
   MidasBitstreamTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent = 0); 
   virtual ~MidasBitstreamTreeItem();
   
-  virtual QPixmap getDecoration();
+  virtual QPixmap GetDecoration();
 
-  int getType() const;
-  int getId() const;
-  std::string getUuid() const;
-  void updateDisplayName();
-  void removeFromTree();
+  int GetType() const;
+  int GetId() const;
+  std::string GetUuid() const;
+  void UpdateDisplayName();
+  void RemoveFromTree();
 
-  void setBitstream(mdo::Bitstream* bitstream) {m_Bitstream = bitstream;}
-  mdo::Bitstream* getBitstream() const {return m_Bitstream;}
-  mdo::Object* getObject() const { return m_Bitstream; }
+  void SetBitstream(mdo::Bitstream* bitstream);
+  mdo::Bitstream* GetBitstream() const;
+  mdo::Object* GetObject() const;
 
-  virtual void populate(QModelIndex parent);
+  virtual void Populate(QModelIndex parent);
 
   /** Whether the underlying resource info has been fetched */
-  bool resourceIsFetched() const { return m_Bitstream->IsFetched(); }
+  bool ResourceIsFetched() const;
   
 private:
 

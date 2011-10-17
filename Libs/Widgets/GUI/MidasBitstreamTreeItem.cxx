@@ -7,8 +7,9 @@
 #include <QPixmap>
 #include <QStyle>
 
-MidasBitstreamTreeItem::MidasBitstreamTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent):
-MidasTreeItem(itemData, model, parent)
+MidasBitstreamTreeItem::MidasBitstreamTreeItem(const QList<QVariant> &itemData,
+                                               MidasTreeModel* model, MidasTreeItem *parent)
+: MidasTreeItem(itemData, model, parent)
 {
   //this->fetchedChildren = true; 
 }
@@ -17,30 +18,30 @@ MidasBitstreamTreeItem::~MidasBitstreamTreeItem()
 {
 }
 
-int MidasBitstreamTreeItem::getType() const
+int MidasBitstreamTreeItem::GetType() const
 {
   return midasResourceType::BITSTREAM;
 }
 
-int MidasBitstreamTreeItem::getId() const
+int MidasBitstreamTreeItem::GetId() const
 {
   return m_Bitstream->GetId();
 }
 
-std::string MidasBitstreamTreeItem::getUuid() const
+std::string MidasBitstreamTreeItem::GetUuid() const
 {
   return m_Bitstream->GetUuid();
 }
 
-void MidasBitstreamTreeItem::populate(QModelIndex parent)
+void MidasBitstreamTreeItem::Populate(QModelIndex parent)
 {
   (void)parent;
 }
 
-QPixmap MidasBitstreamTreeItem::getDecoration()
+QPixmap MidasBitstreamTreeItem::GetDecoration()
 {
   std::string role = ":icons/gpl_document";
-  if ( this->decorationRole & Dirty )
+  if ( m_DecorationRole & Dirty )
     {
     role += "_red";
     }
@@ -48,12 +49,32 @@ QPixmap MidasBitstreamTreeItem::getDecoration()
   return QPixmap(role.c_str());
 }
 
-void MidasBitstreamTreeItem::updateDisplayName()
+void MidasBitstreamTreeItem::UpdateDisplayName()
 {
-  QVariant name = this->getBitstream()->GetName().c_str();
-  this->setData(name,0);
+  QVariant name = this->GetBitstream()->GetName().c_str();
+  this->SetData(name, 0);
 }
 
-void MidasBitstreamTreeItem::removeFromTree()
+void MidasBitstreamTreeItem::RemoveFromTree()
 {
+}
+
+void MidasBitstreamTreeItem::SetBitstream(mdo::Bitstream* bitstream)
+{
+  m_Bitstream = bitstream;
+}
+
+mdo::Bitstream* MidasBitstreamTreeItem::GetBitstream() const
+{
+  return m_Bitstream;
+}
+
+mdo::Object* MidasBitstreamTreeItem::GetObject() const
+{
+  return m_Bitstream;
+}
+
+bool MidasBitstreamTreeItem::ResourceIsFetched() const
+{
+  return m_Bitstream->IsFetched();
 }

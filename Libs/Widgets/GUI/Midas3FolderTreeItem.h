@@ -17,23 +17,23 @@ public:
   Midas3FolderTreeItem(const QList<QVariant>& itemData,
                        Midas3TreeModel* model, Midas3TreeItem* parent = 0);
   ~Midas3FolderTreeItem();
-  virtual void populate(QModelIndex parent);
+  virtual void Populate(QModelIndex parent);
 
-  int getType() const;
-  int getId() const;
-  std::string getUuid() const;
-  std::string getPath() const;
-  void updateDisplayName();
-  void removeFromTree();
+  int GetType() const;
+  int GetId() const;
+  std::string GetUuid() const;
+  std::string GetPath() const;
+  void UpdateDisplayName();
+  void RemoveFromTree();
   
-  void setFolder(m3do::Folder* Folder);
-  m3do::Folder* getFolder() const;
-  mdo::Object* getObject() const;
+  void SetFolder(m3do::Folder* Folder);
+  m3do::Folder* GetFolder() const;
+  mdo::Object* GetObject() const;
 
   /** Whether the underlying resource info has been fetched */
-  bool resourceIsFetched() const;
+  bool ResourceIsFetched() const;
 
-  QPixmap getDecoration();
+  QPixmap GetDecoration();
 
 private:
   m3do::Folder* m_Folder;

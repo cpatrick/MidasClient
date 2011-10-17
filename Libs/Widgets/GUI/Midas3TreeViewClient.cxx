@@ -155,7 +155,7 @@ void Midas3TreeViewClient::fetchItemData(Midas3TreeItem* item)
   if((folderTreeItem = dynamic_cast<Midas3FolderTreeItem*>(item)) != NULL)
     {
     m3ds::Folder mdsFolder;
-    mdsFolder.SetObject(folderTreeItem->getFolder());
+    mdsFolder.SetObject(folderTreeItem->GetFolder());
     mdsFolder.Fetch();
 
     emit midas3FolderTreeItemSelected(folderTreeItem);
@@ -163,7 +163,7 @@ void Midas3TreeViewClient::fetchItemData(Midas3TreeItem* item)
   else if((itemTreeItem = dynamic_cast<Midas3ItemTreeItem*>(item)) != NULL)
     {
     m3ds::Item mdsItem;
-    mdsItem.SetObject(itemTreeItem->getItem());
+    mdsItem.SetObject(itemTreeItem->GetItem());
     mdsItem.Fetch();
 
     emit midas3ItemTreeItemSelected(itemTreeItem);
@@ -171,7 +171,7 @@ void Midas3TreeViewClient::fetchItemData(Midas3TreeItem* item)
   else if((bitstreamTreeItem = dynamic_cast<Midas3BitstreamTreeItem*>(item)) != NULL)
     {
     m3ds::Bitstream mdsBitstream;
-    mdsBitstream.SetObject(bitstreamTreeItem->getBitstream());
+    mdsBitstream.SetObject(bitstreamTreeItem->GetBitstream());
     mdsBitstream.Fetch();
 
     emit midas3BitstreamTreeItemSelected(bitstreamTreeItem);
@@ -180,7 +180,7 @@ void Midas3TreeViewClient::fetchItemData(Midas3TreeItem* item)
 
 void Midas3TreeViewClient::addResource(mdo::Object* object)
 {
-  this->m_Model->addResource(object);
+  m_Model->addResource(object);
 }
 
 void Midas3TreeViewClient::updateResource(mdo::Object*)
@@ -189,5 +189,5 @@ void Midas3TreeViewClient::updateResource(mdo::Object*)
 
 void Midas3TreeViewClient::deleteResource(mdo::Object* object)
 {
-  this->m_Model->deleteResource(object);
+  m_Model->deleteResource(object);
 }

@@ -55,15 +55,15 @@ void MidasTreeModelServer::Populate()
     
     // Add the community
     MidasCommunityTreeItem* communityItem = new MidasCommunityTreeItem(columnData, this, NULL);
-    communityItem->setCommunity(*itCom);
-    communityItem->setDynamicFetch(true);
+    communityItem->SetCommunity(*itCom);
+    communityItem->SetDynamicFetch(true);
     m_TopLevelCommunities.append(communityItem);
 
     QModelIndex index = this->index(row, 0);
-    registerResource((*itCom)->GetUuid(), index);
+    this->registerResource((*itCom)->GetUuid(), index);
 
-    communityItem->populate(index);
-    communityItem->setTopLevelCommunities(&m_TopLevelCommunities);
+    communityItem->Populate(index);
+    communityItem->SetTopLevelCommunities(&m_TopLevelCommunities);
     
     row++;
     }
@@ -90,7 +90,7 @@ void MidasTreeModelServer::fetchMore ( const QModelIndex & parent )
     {
     this->fetchItem(itemTreeItem);
     }
-  item->setFetchedChildren(true);
+  item->SetFetchedChildren(true);
   emit layoutChanged();
   emit fetchedMore();
 }
@@ -99,7 +99,7 @@ void MidasTreeModelServer::fetchMore ( const QModelIndex & parent )
 void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
 {
   mws::Collection remote;
-  mdo::Collection* collection = parent->getCollection();
+  mdo::Collection* collection = parent->GetCollection();
   remote.SetAuthenticator(m_Synch->GetAuthenticator());
   remote.SetObject(collection);
 
@@ -116,13 +116,13 @@ void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
     QList<QVariant> name;
     name << (*i)->GetTitle().c_str();
     MidasItemTreeItem* item = new MidasItemTreeItem(name, this, parent);
-    item->setItem(*i);
-    item->setDynamicFetch(true);
-    item->setFetchedChildren(false);
-    parent->appendChild(item);
+    item->SetItem(*i);
+    item->SetDynamicFetch(true);
+    item->SetFetchedChildren(false);
+    parent->AppendChild(item);
 
-    QModelIndex index = this->index(row, 0, getIndexByUuid(parent->getUuid()));
-    registerResource((*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid()));
+    this->registerResource((*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
@@ -132,7 +132,7 @@ void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
 void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
 {
   mws::Item remote;
-  mdo::Item* item = parent->getItem();
+  mdo::Item* item = parent->GetItem();
   remote.SetAuthenticator(m_Synch->GetAuthenticator());
   remote.SetObject(item);
 
@@ -149,10 +149,10 @@ void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
     MidasBitstreamTreeItem* bitstream = new MidasBitstreamTreeItem(name, this, parent);
-    bitstream->setBitstream(*i);
-    parent->appendChild(bitstream);
-    QModelIndex index = this->index(row, 0, getIndexByUuid(parent->getUuid()));
-    registerResource((*i)->GetUuid(), index);
+    bitstream->SetBitstream(*i);
+    parent->AppendChild(bitstream);
+    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid()));
+    this->registerResource((*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
@@ -162,10 +162,10 @@ void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
 void MidasTreeModelServer::itemExpanded ( const QModelIndex & index )
 {
   MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index));
-  item->setDecorationRole(MidasTreeItem::Expanded);
+  item->SetDecorationRole(MidasTreeItem::Expanded);
 
-  if(this->AlterList && item->getType() == midasResourceType::COMMUNITY)
+  if(this->AlterList && item->GetType() == midasResourceType::COMMUNITY)
     {
-    m_ExpandedList.insert(item->getUuid());
+    m_ExpandedList.insert(item->GetUuid());
     }
 }

@@ -6,125 +6,126 @@
 #include <QStyle>
 #include <QTime>
 
-MidasTreeItem::MidasTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent):
-  decorationRole(Collapsed), m_Model(model), itemData(itemData), parentItem(parent), lifespan(600)
+MidasTreeItem::MidasTreeItem(const QList<QVariant> &itemData,
+                             MidasTreeModel* model, MidasTreeItem *parent)
+: m_DecorationRole(Collapsed), m_Model(model), m_ItemData(itemData), m_ParentItem(parent), m_Lifespan(600)
 {
-  timestamp = QTime::currentTime().second();
-  this->fetchedChildren = true;
-  this->dynamicFetch = false;
+  m_Timestamp = QTime::currentTime().second();
+  m_FetchedChildren = true;
+  m_DynamicFetch = false;
   m_ClientResource = false;
 }
 
 MidasTreeItem::~MidasTreeItem()
 {
-  qDeleteAll(this->childItems);
+  qDeleteAll(m_ChildItems);
 }
 
-void MidasTreeItem::setDynamicFetch(bool value)
+void MidasTreeItem::SetDynamicFetch(bool value)
 {
-  this->dynamicFetch = value;
+  m_DynamicFetch = value;
 }
 
-bool MidasTreeItem::isDynamicFetch() const
+bool MidasTreeItem::IsDynamicFetch() const
 {
-  return this->dynamicFetch;
+  return m_DynamicFetch;
 }
 
 bool MidasTreeItem::operator==(const MidasTreeItem* other) const 
 {
-  return (this->getId() == other->getId());
+  return (this->GetId() == other->GetId());
 }
 
-bool MidasTreeItem::isValid() const
+bool MidasTreeItem::IsValid() const
 {
   uint current = QTime::currentTime().second();
-  return (this->timestamp + this->lifespan > current); 
+  return (m_Timestamp + m_Lifespan > current); 
 }
 
-void MidasTreeItem::appendChild(MidasTreeItem *item)
+void MidasTreeItem::AppendChild(MidasTreeItem *item)
 {
-  this->childItems.append(item);
+  m_ChildItems.append(item);
 }
 
-void MidasTreeItem::removeChild(MidasTreeItem *item)
+void MidasTreeItem::RemoveChild(MidasTreeItem *item)
 {
-  this->childItems.removeAt(this->childItems.indexOf(item));
+  m_ChildItems.removeAt(m_ChildItems.indexOf(item));
 }
 
-void MidasTreeItem::removeAllChild()
+void MidasTreeItem::RemoveAllChildren()
 {
-  MidasTreeItem * midasTreeItem = NULL; 
-  foreach(midasTreeItem, childItems)
+  MidasTreeItem* midasTreeItem = NULL; 
+  foreach(midasTreeItem, m_ChildItems)
     {
-    removeChild(midasTreeItem);
+    this->RemoveChild(midasTreeItem);
     }
 }
 
-MidasTreeItem *MidasTreeItem::child(int row)
+MidasTreeItem* MidasTreeItem::GetChild(int row)
 {
-  return this->childItems.value(row);
+  return m_ChildItems.value(row);
 }
 
-void MidasTreeItem::setFetchedChildren(bool value)
+void MidasTreeItem::SetFetchedChildren(bool value)
 {
-  this->fetchedChildren = value;
+  m_FetchedChildren = value;
 }
 
-bool MidasTreeItem::isFetchedChildren() const
+bool MidasTreeItem::IsFetchedChildren() const
 {
-  return this->fetchedChildren;
+  return m_FetchedChildren;
 }
 
-int MidasTreeItem::childCount() const
+int MidasTreeItem::ChildCount() const
 {
-  return this->childItems.count();
+  return m_ChildItems.count();
 }
 
-int MidasTreeItem::columnCount() const
+int MidasTreeItem::ColumnCount() const
 {
-  return this->itemData.count();
+  return m_ItemData.count();
 }
 
-void MidasTreeItem::setData(const QVariant& value, int column)
+void MidasTreeItem::SetData(const QVariant& value, int column)
 {
-  this->itemData.replace(column, value); 
+  m_ItemData.replace(column, value); 
 }
 
-QVariant MidasTreeItem::data(int column) const
+QVariant MidasTreeItem::GetData(int column) const
 {
-  return this->itemData.value(column);
+  return m_ItemData.value(column);
 }
 
-MidasTreeItem *MidasTreeItem::parent()
+MidasTreeItem* MidasTreeItem::GetParent()
 {
-  return this->parentItem;
+  return m_ParentItem;
 }
 
-const MidasTreeItem *MidasTreeItem::parent() const
+const MidasTreeItem* MidasTreeItem::GetParent() const
 {
-  return this->parentItem;
+  return m_ParentItem;
 }
 
-int MidasTreeItem::row() const
+int MidasTreeItem::GetRow() const
 {
-  if (this->parentItem)
+  if ( m_ParentItem )
     {
-    return this->parentItem->childItems.indexOf(
+    return m_ParentItem->m_ChildItems.indexOf(
       const_cast<MidasTreeItem*>(this));
     }
-  return this->m_TopLevelCommunities->indexOf(
+  return m_TopLevelCommunities->indexOf(
     reinterpret_cast<MidasCommunityTreeItem*>(
     const_cast<MidasTreeItem*>(this)));
 }
 
-QPixmap MidasTreeItem::getDecoration()
+QPixmap MidasTreeItem::GetDecoration()
 {
   std::string role = ":icons/gpl_folder";
-  if ( this->decorationRole & Expanded )
+  if ( m_DecorationRole & Expanded )
     {
     role += "_open";
     }
-  if ( this->decorationRole & Dirty )
+  if ( m_DecorationRole & Dirty )
     {
     role += "_red";
     }
@@ -132,14 +133,35 @@ QPixmap MidasTreeItem::getDecoration()
   return QPixmap(role.c_str());
 }
 
-void MidasTreeItem::setDecorationRole(DecorationRoles role)
+void MidasTreeItem::SetDecorationRole(DecorationRoles role)
 {
-  if(this->decorationRole & Dirty)
+  if(m_DecorationRole & Dirty)
     {
-    this->decorationRole = role | Dirty;
+    m_DecorationRole = role | Dirty;
     }
   else
     {
-    this->decorationRole = role; 
+    m_DecorationRole = role; 
     }
+}
+
+QList<MidasTreeItem*> MidasTreeItem::GetChildren()
+{
+  return m_ChildItems;
+}
+
+void MidasTreeItem::SetTopLevelCommunities(
+  QList<MidasCommunityTreeItem*>* tlc)
+{
+  m_TopLevelCommunities = tlc;
+}
+
+bool MidasTreeItem::IsClientResource() const
+{
+  return m_ClientResource;
+}
+
+void MidasTreeItem::SetClientResource(bool val)
+{
+  m_ClientResource = val;
 }

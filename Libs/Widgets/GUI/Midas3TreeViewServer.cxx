@@ -110,7 +110,7 @@ void Midas3TreeViewServer::fetchItemData(Midas3TreeItem* item)
 
   if((folderTreeItem = dynamic_cast<Midas3FolderTreeItem*>(item)) != NULL)
     {
-    m3do::Folder* folder = folderTreeItem->getFolder();
+    m3do::Folder* folder = folderTreeItem->GetFolder();
     m3ws::Folder remote;
     remote.SetObject(folder);
     remote.SetAuthenticator(m_Synch->GetAuthenticator());

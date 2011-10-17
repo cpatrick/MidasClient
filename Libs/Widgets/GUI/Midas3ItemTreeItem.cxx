@@ -20,32 +20,32 @@ Midas3ItemTreeItem::~Midas3ItemTreeItem()
 {
 }
 
-void Midas3ItemTreeItem::setItem(m3do::Item* item)
+void Midas3ItemTreeItem::SetItem(m3do::Item* item)
 {
   m_Item = item;
 }
 
-int Midas3ItemTreeItem::getType() const
+int Midas3ItemTreeItem::GetType() const
 {
   return midas3ResourceType::ITEM;
 }
 
-int Midas3ItemTreeItem::getId() const
+int Midas3ItemTreeItem::GetId() const
 {
-  return this->m_Item->GetId();
+  return m_Item->GetId();
 }
 
-std::string Midas3ItemTreeItem::getUuid() const
+std::string Midas3ItemTreeItem::GetUuid() const
 {
   return m_Item->GetUuid();
 }
 
-std::string Midas3ItemTreeItem::getPath() const
+std::string Midas3ItemTreeItem::GetPath() const
 {
   return m_Item->GetPath();
 }
 
-void Midas3ItemTreeItem::populate(QModelIndex parent)
+void Midas3ItemTreeItem::Populate(QModelIndex parent)
 {
   if(!m_Item)
     {
@@ -89,36 +89,36 @@ void Midas3ItemTreeItem::populate(QModelIndex parent)
 */
   //if(!this->isDynamicFetch())
     {
-    this->setFetchedChildren(false);
+    this->SetFetchedChildren(false);
     }
 }
 
-void Midas3ItemTreeItem::updateDisplayName()
+void Midas3ItemTreeItem::UpdateDisplayName()
 {
   QVariant name = m_Item->GetName().c_str();
-  this->setData(name,0);
+  this->SetData(name,0);
 }
 
-void Midas3ItemTreeItem::removeFromTree()
+void Midas3ItemTreeItem::RemoveFromTree()
 {
 }
 
-m3do::Item* Midas3ItemTreeItem::getItem() const
-{
-  return m_Item;
-}
-
-mdo::Object* Midas3ItemTreeItem::getObject() const
+m3do::Item* Midas3ItemTreeItem::GetItem() const
 {
   return m_Item;
 }
 
-bool Midas3ItemTreeItem::resourceIsFetched() const
+mdo::Object* Midas3ItemTreeItem::GetObject() const
+{
+  return m_Item;
+}
+
+bool Midas3ItemTreeItem::ResourceIsFetched() const
 {
   return m_Item->IsFetched();
 }
 
-QPixmap Midas3ItemTreeItem::getDecoration()
+QPixmap Midas3ItemTreeItem::GetDecoration()
 {
   std::string role = ":icons/gpl_document";
 
@@ -126,7 +126,7 @@ QPixmap Midas3ItemTreeItem::getDecoration()
     {
     role += "_open";
     }*/
-  if(this->decorationRole & Dirty)
+  if(m_DecorationRole & Dirty)
     {
     role += "_red";
     }

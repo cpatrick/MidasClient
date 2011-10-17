@@ -17,23 +17,23 @@ public:
   Midas3BitstreamTreeItem(const QList<QVariant>& bitstreamData,
                        Midas3TreeModel* model, Midas3TreeItem* parent = 0);
   ~Midas3BitstreamTreeItem();
-  virtual void populate(QModelIndex parent);
+  virtual void Populate(QModelIndex parent);
 
-  int getType() const;
-  int getId() const;
-  std::string getUuid() const;
-  std::string getPath() const;
-  void updateDisplayName();
-  void removeFromTree();
+  int GetType() const;
+  int GetId() const;
+  std::string GetUuid() const;
+  std::string GetPath() const;
+  void UpdateDisplayName();
+  void RemoveFromTree();
   
-  void setBitstream(m3do::Bitstream* bitstream);
-  m3do::Bitstream* getBitstream() const;
-  mdo::Object* getObject() const;
+  void SetBitstream(m3do::Bitstream* bitstream);
+  m3do::Bitstream* GetBitstream() const;
+  mdo::Object* GetObject() const;
 
   /** Whether the underlying resource info has been fetched */
-  bool resourceIsFetched() const;
+  bool ResourceIsFetched() const;
 
-  QPixmap getDecoration();
+  QPixmap GetDecoration();
 
 private:
   m3do::Bitstream* m_Bitstream;

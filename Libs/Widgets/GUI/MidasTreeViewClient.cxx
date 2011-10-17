@@ -160,7 +160,7 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
   if((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
     {
     mds::Community mdsComm;
-    mdsComm.SetObject(communityTreeItem->getCommunity());
+    mdsComm.SetObject(communityTreeItem->GetCommunity());
     mdsComm.Fetch();
 
     emit midasCommunityTreeItemSelected(communityTreeItem);
@@ -168,7 +168,7 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
   else if((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
     {
     mds::Collection mdsColl;
-    mdsColl.SetObject(collectionTreeItem->getCollection());
+    mdsColl.SetObject(collectionTreeItem->GetCollection());
     mdsColl.Fetch();
 
     emit midasCollectionTreeItemSelected(collectionTreeItem);
@@ -176,7 +176,7 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
   else if((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
     {
     mds::Item mdsItem;
-    mdsItem.SetObject(itemTreeItem->getItem());
+    mdsItem.SetObject(itemTreeItem->GetItem());
     mdsItem.Fetch();
 
     emit midasItemTreeItemSelected(itemTreeItem);
@@ -184,7 +184,7 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
   else if((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
     {
     mds::Bitstream mdsBitstream;
-    mdsBitstream.SetObject(bitstreamTreeItem->getBitstream());
+    mdsBitstream.SetObject(bitstreamTreeItem->GetBitstream());
     mdsBitstream.Fetch();
 
     emit midasBitstreamTreeItemSelected(bitstreamTreeItem);

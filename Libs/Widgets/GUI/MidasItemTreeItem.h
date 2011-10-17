@@ -11,20 +11,20 @@ Q_OBJECT
 public:
   MidasItemTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent = 0); 
   virtual ~MidasItemTreeItem();
-  virtual void populate(QModelIndex parent);
+  virtual void Populate(QModelIndex parent);
 
-  int getType() const;
-  int getId() const;
-  std::string getUuid() const;
-  void updateDisplayName();
-  void removeFromTree();
+  int GetType() const;
+  int GetId() const;
+  std::string GetUuid() const;
+  void UpdateDisplayName();
+  void RemoveFromTree();
 
-  void setItem(mdo::Item* item) {m_Item = item;}
-  mdo::Item* getItem() const {return m_Item;}
-  mdo::Object* getObject() const { return m_Item; }
+  void SetItem(mdo::Item* item);
+  mdo::Item* GetItem() const;
+  mdo::Object* GetObject() const;
 
   /** Whether the underlying resource info has been fetched */
-  bool resourceIsFetched() const { return m_Item->IsFetched(); }
+  bool ResourceIsFetched() const;
 
 private:
 

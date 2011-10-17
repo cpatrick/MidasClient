@@ -13,20 +13,20 @@ public:
   MidasCommunityTreeItem(const QList<QVariant>& itemData,
                          MidasTreeModel* model, MidasTreeItem* parent = 0);
   ~MidasCommunityTreeItem();
-  virtual void populate(QModelIndex parent);
+  virtual void Populate(QModelIndex parent);
 
-  int getType() const;
-  int getId() const;
-  std::string getUuid() const;
-  void updateDisplayName();
-  void removeFromTree();
+  int GetType() const;
+  int GetId() const;
+  std::string GetUuid() const;
+  void UpdateDisplayName();
+  void RemoveFromTree();
   
-  void setCommunity(mdo::Community* community);
-  mdo::Community* getCommunity() const {return m_Community;}
-  mdo::Object* getObject() const { return m_Community; }
+  void SetCommunity(mdo::Community* community);
+  mdo::Community* GetCommunity() const;
+  mdo::Object* GetObject() const;
 
   /** Whether the underlying resource info has been fetched */
-  bool resourceIsFetched() const { return m_Community->IsFetched(); }
+  bool ResourceIsFetched() const;
 
 private:
 

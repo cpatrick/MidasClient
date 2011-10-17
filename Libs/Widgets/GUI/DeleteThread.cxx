@@ -43,9 +43,9 @@ void DeleteThread::run()
   if(m_Resource)
     {
     mds::DatabaseAPI db;
-    if(!db.DeleteResource(m_Resource->getUuid(), m_DeleteOnDisk))
+    if(!db.DeleteResource(m_Resource->GetUuid(), m_DeleteOnDisk))
       {
-      emit errorMessage("Error deleting resource " + m_Resource->data(0).toString());
+      emit errorMessage("Error deleting resource " + m_Resource->GetData(0).toString());
       }
     }
   else if(m_Resource3)
@@ -56,19 +56,19 @@ void DeleteThread::run()
     if((folderTreeItem = dynamic_cast<Midas3FolderTreeItem*>(m_Resource3)) != NULL)
       {
       m3ds::Folder folder;
-      folder.SetObject(folderTreeItem->getFolder());
+      folder.SetObject(folderTreeItem->GetFolder());
       if(!folder.Delete(m_DeleteOnDisk))
         {
-        emit errorMessage("Error deleting folder " + QString(folderTreeItem->getFolder()->GetName().c_str()));
+        emit errorMessage("Error deleting folder " + QString(folderTreeItem->GetFolder()->GetName().c_str()));
         }
       }
     else if((itemTreeItem = dynamic_cast<Midas3ItemTreeItem*>(m_Resource3)) != NULL)
       {
       m3ds::Item item;
-      item.SetObject(itemTreeItem->getItem());
+      item.SetObject(itemTreeItem->GetItem());
       if(!item.Delete(m_DeleteOnDisk))
         {
-        emit errorMessage("Error deleting item " + QString(itemTreeItem->getItem()->GetName().c_str()));
+        emit errorMessage("Error deleting item " + QString(itemTreeItem->GetItem()->GetName().c_str()));
         }
       }
     }

@@ -209,7 +209,7 @@ void CreateMidasResourceUI::AddSubCommunity()
     }
 
   mds::DatabaseAPI db;
-  std::string path = db.GetRecordByUuid(parentComm->getUuid()).Path;
+  std::string path = db.GetRecordByUuid(parentComm->GetUuid()).Path;
 
   this->AddCommunity(path);
 }
@@ -226,7 +226,7 @@ void CreateMidasResourceUI::AddCollection()
     }
 
   mds::DatabaseAPI db;
-  std::string path = db.GetRecordByUuid(parentComm->getUuid()).Path;
+  std::string path = db.GetRecordByUuid(parentComm->GetUuid()).Path;
   QDir dir(path.c_str());
   dir.mkpath(nameEdit->text());
 
@@ -248,7 +248,7 @@ void CreateMidasResourceUI::AddItem()
     }
 
   mds::DatabaseAPI db;
-  std::string path = db.GetRecordByUuid(parentColl->getUuid()).Path;
+  std::string path = db.GetRecordByUuid(parentColl->GetUuid()).Path;
   
   QDir dir(path.c_str());
   dir.mkpath(nameEdit->text().trimmed());
@@ -294,13 +294,13 @@ void CreateMidasResourceUI::AddSubFolder()
     return;
     }
 
-  std::string path = parentFolder->getFolder()->GetPath();
+  std::string path = parentFolder->GetFolder()->GetPath();
   QDir dir(path.c_str());
   dir.mkpath(nameEdit->text());
 
   path += "/" + nameEdit->text().toStdString();
 
-  m_Synch->SetObject(parentFolder->getFolder());
+  m_Synch->SetObject(parentFolder->GetFolder());
   m_Synch->SetResourceType3(midas3ResourceType::FOLDER);
   m_Synch->SetClientHandle(path);
 }
@@ -316,13 +316,13 @@ void CreateMidasResourceUI::AddItem3()
     return;
     }
 
-  std::string path = parentFolder->getFolder()->GetPath();
+  std::string path = parentFolder->GetFolder()->GetPath();
   QDir dir(path.c_str());
   dir.mkpath(nameEdit->text().trimmed());
 
   path += "/" + nameEdit->text().trimmed().toStdString();
 
-  m_Synch->SetObject(parentFolder->getFolder());
+  m_Synch->SetObject(parentFolder->GetFolder());
   m_Synch->SetResourceType3(midas3ResourceType::ITEM);
   m_Synch->SetClientHandle(path);
 }

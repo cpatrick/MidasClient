@@ -20,37 +20,37 @@ Midas3BitstreamTreeItem::~Midas3BitstreamTreeItem()
 {
 }
 
-int Midas3BitstreamTreeItem::getType() const
+int Midas3BitstreamTreeItem::GetType() const
 {
   return midas3ResourceType::BITSTREAM;
 }
 
-int Midas3BitstreamTreeItem::getId() const
+int Midas3BitstreamTreeItem::GetId() const
 {
   return m_Bitstream->GetId();
 }
 
-std::string Midas3BitstreamTreeItem::getUuid() const
+std::string Midas3BitstreamTreeItem::GetUuid() const
 {
   std::stringstream uuid;
   uuid << m_Bitstream->GetChecksum() << m_Bitstream->GetId();
   return uuid.str();
 }
 
-std::string Midas3BitstreamTreeItem::getPath() const
+std::string Midas3BitstreamTreeItem::GetPath() const
 {
   return m_Bitstream->GetPath();
 }
 
-void Midas3BitstreamTreeItem::populate(QModelIndex parent)
+void Midas3BitstreamTreeItem::Populate(QModelIndex parent)
 {
   (void)parent;
 }
 
-QPixmap Midas3BitstreamTreeItem::getDecoration()
+QPixmap Midas3BitstreamTreeItem::GetDecoration()
 {
   std::string role = ":icons/page";
-  if(this->decorationRole & Dirty)
+  if(m_DecorationRole & Dirty)
     {
     role += "_red";
     }
@@ -58,32 +58,32 @@ QPixmap Midas3BitstreamTreeItem::getDecoration()
   return QPixmap(role.c_str());
 }
 
-void Midas3BitstreamTreeItem::updateDisplayName()
+void Midas3BitstreamTreeItem::UpdateDisplayName()
 {
-  QVariant name = this->getBitstream()->GetName().c_str();
-  this->setData(name,0);
+  QVariant name = this->GetBitstream()->GetName().c_str();
+  this->SetData(name,0);
 }
 
-void Midas3BitstreamTreeItem::removeFromTree()
+void Midas3BitstreamTreeItem::RemoveFromTree()
 {
 }
 
-mdo::Object* Midas3BitstreamTreeItem::getObject() const
-{
-  return m_Bitstream;
-}
-
-m3do::Bitstream* Midas3BitstreamTreeItem::getBitstream() const
+mdo::Object* Midas3BitstreamTreeItem::GetObject() const
 {
   return m_Bitstream;
 }
 
-void Midas3BitstreamTreeItem::setBitstream(m3do::Bitstream* bitstream)
+m3do::Bitstream* Midas3BitstreamTreeItem::GetBitstream() const
+{
+  return m_Bitstream;
+}
+
+void Midas3BitstreamTreeItem::SetBitstream(m3do::Bitstream* bitstream)
 {
   m_Bitstream = bitstream;
 }
 
-bool Midas3BitstreamTreeItem::resourceIsFetched() const
+bool Midas3BitstreamTreeItem::ResourceIsFetched() const
 {
   return true;
 }

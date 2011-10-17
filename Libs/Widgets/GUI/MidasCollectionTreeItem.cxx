@@ -15,22 +15,22 @@ MidasCollectionTreeItem::~MidasCollectionTreeItem()
 {
 }
 
-int MidasCollectionTreeItem::getType() const
+int MidasCollectionTreeItem::GetType() const
 {
   return midasResourceType::COLLECTION;
 }
 
-int MidasCollectionTreeItem::getId() const
+int MidasCollectionTreeItem::GetId() const
 {
   return m_Collection->GetId();
 }
 
-std::string MidasCollectionTreeItem::getUuid() const
+std::string MidasCollectionTreeItem::GetUuid() const
 {
   return m_Collection->GetUuid();
 }
 
-void MidasCollectionTreeItem::populate(QModelIndex parent)
+void MidasCollectionTreeItem::Populate(QModelIndex parent)
 {
   if(!m_Collection)
     {
@@ -46,31 +46,51 @@ void MidasCollectionTreeItem::populate(QModelIndex parent)
     QList<QVariant> name;
     name << (*i)->GetTitle().c_str();
     MidasItemTreeItem* item = new MidasItemTreeItem(name, m_Model, this);
-    item->setClientResource(m_ClientResource);
-    item->setItem(*i);
-    this->appendChild(item);
+    item->SetClientResource(m_ClientResource);
+    item->SetItem(*i);
+    this->AppendChild(item);
 
     QModelIndex index = m_Model->index(row, 0, parent);
     m_Model->registerResource((*i)->GetUuid(), index);
 
-    item->populate(index);
+    item->Populate(index);
 
     if((*i)->IsDirty())
       {
-      item->setDecorationRole(MidasTreeItem::Dirty);
+      item->SetDecorationRole(MidasTreeItem::Dirty);
       }
     i++;
     row++;
     }
 }
 
-void MidasCollectionTreeItem::updateDisplayName()
+void MidasCollectionTreeItem::UpdateDisplayName()
 {
-  QVariant name = this->getCollection()->GetName().c_str();
-  this->setData(name,0);
+  QVariant name = this->GetCollection()->GetName().c_str();
+  this->SetData(name,0);
 }
 
-void MidasCollectionTreeItem::removeFromTree()
+void MidasCollectionTreeItem::RemoveFromTree()
 {
 
+}
+
+void MidasCollectionTreeItem::SetCollection(mdo::Collection* collection)
+{
+  m_Collection = collection;
+}
+
+mdo::Collection* MidasCollectionTreeItem::GetCollection() const
+{
+  return m_Collection;
+}
+
+mdo::Object* MidasCollectionTreeItem::GetObject() const
+{
+  return m_Collection;
+}
+
+bool MidasCollectionTreeItem::ResourceIsFetched() const
+{
+  return m_Collection->IsFetched();
 }

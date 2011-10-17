@@ -615,23 +615,23 @@ void MIDASDesktopUI::IconActivated(QSystemTrayIcon::ActivationReason reason)
 void MIDASDesktopUI::UpdateActionState(const MidasTreeItem* item)
 {
   this->ActivateActions(false, ACTION_ALL_CONNECTED);
-  m_PullUI->setPullId(item->getId() );
-  m_PullUI->setResourceType(item->getType() );
-  m_PullUI->setResourceName(item->data(0).toString().toStdString() );
+  m_PullUI->setPullId(item->GetId() );
+  m_PullUI->setResourceType(item->GetType() );
+  m_PullUI->setResourceName(item->GetData(0).toString().toStdString() );
 
-  if( item->getType() == midasResourceType::COMMUNITY )
+  if( item->GetType() == midasResourceType::COMMUNITY )
     {
     this->ActivateActions(true, ACTION_COMMUNITY);
     }
-  else if( item->getType() == midasResourceType::COLLECTION )
+  else if( item->GetType() == midasResourceType::COLLECTION )
     {
     this->ActivateActions(true, ACTION_COLLECTION);
     }
-  else if( item->getType() == midasResourceType::ITEM )
+  else if( item->GetType() == midasResourceType::ITEM )
     {
     this->ActivateActions(true, ACTION_ITEM | ACTION_BITSTREAM);
     }
-  else if( item->getType() == midasResourceType::BITSTREAM )
+  else if( item->GetType() == midasResourceType::BITSTREAM )
     {
     this->ActivateActions(true, ACTION_BITSTREAM);
     }
@@ -640,19 +640,19 @@ void MIDASDesktopUI::UpdateActionState(const MidasTreeItem* item)
 void MIDASDesktopUI::UpdateActionState(const Midas3TreeItem* item)
 {
   this->ActivateActions(false, ACTION_ALL_CONNECTED);
-  m_PullUI->setPullId(item->getId() );
-  m_PullUI->setResourceType(item->getType() );
-  m_PullUI->setResourceName(item->data(0).toString().toStdString() );
+  m_PullUI->setPullId(item->GetId() );
+  m_PullUI->setResourceType(item->GetType() );
+  m_PullUI->setResourceName(item->GetData(0).toString().toStdString() );
 
-  if( item->getType() == midas3ResourceType::COMMUNITY )
+  if( item->GetType() == midas3ResourceType::COMMUNITY )
     {
     this->ActivateActions(true, ACTION_COMMUNITY3);
     }
-  else if( item->getType() == midas3ResourceType::FOLDER )
+  else if( item->GetType() == midas3ResourceType::FOLDER )
     {
     this->ActivateActions(true, ACTION_FOLDER3);
     }
-  else if( item->getType() == midas3ResourceType::ITEM )
+  else if( item->GetType() == midas3ResourceType::ITEM )
     {
     this->ActivateActions(true, ACTION_ITEM3);
     }
@@ -666,19 +666,19 @@ void MIDASDesktopUI::UpdateActionStateClient(const MidasTreeItem* item)
                         | ACTION_CLIENT_ITEM
                         | ACTION_CLIENT_BITSTREAM);
 
-  if( item->getType() == midasResourceType::COMMUNITY )
+  if( item->GetType() == midasResourceType::COMMUNITY )
     {
     this->ActivateActions(true, ACTION_CLIENT_COMMUNITY);
     }
-  else if( item->getType() == midasResourceType::COLLECTION )
+  else if( item->GetType() == midasResourceType::COLLECTION )
     {
     this->ActivateActions(true, ACTION_CLIENT_COLLECTION);
     }
-  else if( item->getType() == midasResourceType::ITEM )
+  else if( item->GetType() == midasResourceType::ITEM )
     {
     this->ActivateActions(true, ACTION_CLIENT_ITEM);
     }
-  else if( item->getType() == midasResourceType::BITSTREAM )
+  else if( item->GetType() == midasResourceType::BITSTREAM )
     {
     this->ActivateActions(true, ACTION_CLIENT_BITSTREAM);
     }
@@ -691,19 +691,19 @@ void MIDASDesktopUI::UpdateActionStateClient(const Midas3TreeItem* item)
                         | ACTION_CLIENT_FOLDER3
                         | ACTION_CLIENT_ITEM3);
 
-  if( item->getType() == midas3ResourceType::COMMUNITY )
+  if( item->GetType() == midas3ResourceType::COMMUNITY )
     {
     this->ActivateActions(true, ACTION_CLIENT_COMMUNITY3);
     }
-  else if( item->getType() == midas3ResourceType::FOLDER )
+  else if( item->GetType() == midas3ResourceType::FOLDER )
     {
     this->ActivateActions(true, ACTION_CLIENT_FOLDER3);
     }
-  else if( item->getType() == midas3ResourceType::ITEM )
+  else if( item->GetType() == midas3ResourceType::ITEM )
     {
     this->ActivateActions(true, ACTION_CLIENT_ITEM3);
     }
-  else if( item->getType() == midas3ResourceType::BITSTREAM )
+  else if( item->GetType() == midas3ResourceType::BITSTREAM )
     {
     this->ActivateActions(true, ACTION_CLIENT_BITSTREAM3);
     }
@@ -840,14 +840,14 @@ void MIDASDesktopUI::UpdateInfoPanel(const Midas3FolderTreeItem* folderTreeItem)
   m_EditMode = false;
   QTableWidgetDescriptionItem::Options options = QTableWidgetDescriptionItem::Tooltip
     | QTableWidgetDescriptionItem::AlignLeft;
-  bool isComm = folderTreeItem->getFolder()->GetResourceType() ==
+  bool isComm = folderTreeItem->GetFolder()->GetResourceType() ==
     midas3ResourceType::COMMUNITY;
 
   m_MidasTreeItemInfoGroupBox->setTitle(isComm ? "Community information" : "Folder information");
   m_MidasTreeItemInfoTable->setGridStyle(Qt::NoPen);
   m_MidasTreeItemInfoTable->clearSelection();
 
-  m3do::Folder* folder = folderTreeItem->getFolder();
+  m3do::Folder* folder = folderTreeItem->GetFolder();
 
   int i = 0;
 
@@ -907,7 +907,7 @@ void MIDASDesktopUI::UpdateInfoPanel(const Midas3ItemTreeItem* itemTreeItem)
   m_MidasTreeItemInfoTable->setGridStyle(Qt::NoPen);
   m_MidasTreeItemInfoTable->clearSelection();
 
-  m3do::Item* item = itemTreeItem->getItem();
+  m3do::Item* item = itemTreeItem->GetItem();
 
   int i = 0;
 
@@ -967,7 +967,7 @@ void MIDASDesktopUI::UpdateInfoPanel(const Midas3BitstreamTreeItem* bitstreamTre
   m_MidasTreeItemInfoTable->setGridStyle(Qt::NoPen);
   m_MidasTreeItemInfoTable->clearSelection();
 
-  m3do::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
+  m3do::Bitstream* bitstream = bitstreamTreeItem->GetBitstream();
 
   int i = 0;
 
@@ -1060,9 +1060,9 @@ void MIDASDesktopUI::InfoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
   m_MidasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
   m_MidasTreeItemInfoTable->clearSelection();
 
-  mdo::Community* community = communityTreeItem->getCommunity();
+  mdo::Community* community = communityTreeItem->GetCommunity();
 
-  this->EnableResourceEditing(communityTreeItem->isClientResource() && !edit);
+  this->EnableResourceEditing(communityTreeItem->IsClientResource() && !edit);
 
   int i = 0;
 
@@ -1086,7 +1086,7 @@ void MIDASDesktopUI::InfoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
     {
     i++;
     }
-  if( community->GetSize() != "" || communityTreeItem->isClientResource() )
+  if( community->GetSize() != "" || communityTreeItem->IsClientResource() )
     {
     i++;
     }
@@ -1177,7 +1177,7 @@ void MIDASDesktopUI::InfoPanel(MidasCommunityTreeItem* communityTreeItem, bool e
     m_MidasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
-  else if( communityTreeItem->isClientResource() )
+  else if( communityTreeItem->IsClientResource() )
     {
     mds::Community mdsComm;
     mdsComm.SetObject(community);
@@ -1213,13 +1213,13 @@ void MIDASDesktopUI::InfoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
     options |= QTableWidgetDescriptionItem::Editable;
     }
 
-  mdo::Collection* collection = collectionTreeItem->getCollection();
+  mdo::Collection* collection = collectionTreeItem->GetCollection();
 
   m_MidasTreeItemInfoGroupBox->setTitle(edit ? " Edit collection info " : " Collection description ");
   m_MidasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
   m_MidasTreeItemInfoTable->clearSelection();
 
-  this->EnableResourceEditing(collectionTreeItem->isClientResource() && !edit);
+  this->EnableResourceEditing(collectionTreeItem->IsClientResource() && !edit);
 
   int i = 0;
   if( collection->GetName() != "" || edit )
@@ -1238,7 +1238,7 @@ void MIDASDesktopUI::InfoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
     {
     i++;
     }
-  if( collection->GetSize() != "" || collectionTreeItem->isClientResource() )
+  if( collection->GetSize() != "" || collectionTreeItem->IsClientResource() )
     {
     i++;
     }
@@ -1319,7 +1319,7 @@ void MIDASDesktopUI::InfoPanel(MidasCollectionTreeItem* collectionTreeItem, bool
     m_MidasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
-  else if( collectionTreeItem->isClientResource() )
+  else if( collectionTreeItem->IsClientResource() )
     {
     mds::Collection mdsColl;
     mdsColl.SetObject(collection);
@@ -1355,13 +1355,13 @@ void MIDASDesktopUI::InfoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     options |= QTableWidgetDescriptionItem::Editable;
     }
 
-  mdo::Item* item = itemTreeItem->getItem();
+  mdo::Item* item = itemTreeItem->GetItem();
 
   m_MidasTreeItemInfoGroupBox->setTitle(edit ? " Edit item info " : " Item description ");
   m_MidasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
   m_MidasTreeItemInfoTable->clearSelection();
 
-  this->EnableResourceEditing(itemTreeItem->isClientResource() && !edit);
+  this->EnableResourceEditing(itemTreeItem->IsClientResource() && !edit);
 
   int i = 0;
 
@@ -1385,7 +1385,7 @@ void MIDASDesktopUI::InfoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     {
     i++;
     }
-  if( item->GetSize() != "" || itemTreeItem->isClientResource() )
+  if( item->GetSize() != "" || itemTreeItem->IsClientResource() )
     {
     i++;
     }
@@ -1469,7 +1469,7 @@ void MIDASDesktopUI::InfoPanel(MidasItemTreeItem* itemTreeItem, bool edit)
     m_MidasTreeItemInfoTable->setItemDelegateForRow(i, NULL);
     i++;
     }
-  else if( itemTreeItem->isClientResource() )
+  else if( itemTreeItem->IsClientResource() )
     {
     mds::Item mdsItem;
     mdsItem.SetObject(item);
@@ -1509,7 +1509,7 @@ void MIDASDesktopUI::InfoPanel(MidasBitstreamTreeItem* bitstreamTreeItem, bool e
   this->EnableResourceEditing(false); // false for now (nothing to edit about a
                                 // bitstream)
 
-  mdo::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
+  mdo::Bitstream* bitstream = bitstreamTreeItem->GetBitstream();
 
   m_MidasTreeItemInfoGroupBox->setTitle(tr(" Bitstream description ") );
   m_MidasTreeItemInfoTable->setGridStyle(edit ? Qt::DashDotLine : Qt::NoPen);
@@ -1677,7 +1677,7 @@ void MIDASDesktopUI::DisplayServerResourceContextMenu(QContextMenuEvent* e)
       {
       MidasTreeItem* item = const_cast<MidasTreeItem *>(treeView->getSelectedMidasTreeItem() );
 
-      if( !item->resourceIsFetched() )
+      if( !item->ResourceIsFetched() )
         {
         return;
         }
@@ -1866,14 +1866,14 @@ void MIDASDesktopUI::ViewDirectory()
     {
     Midas3TreeItem* resource = const_cast<Midas3TreeItem *>(
         dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
-    if( resource->getType() == midas3ResourceType::BITSTREAM )
+    if( resource->GetType() == midas3ResourceType::BITSTREAM )
       {
-      QFileInfo fileInfo(resource->getPath().c_str() );
+      QFileInfo fileInfo(resource->GetPath().c_str() );
       path = fileInfo.dir().path().toStdString();
       }
     else
       {
-      path = resource->getPath();
+      path = resource->GetPath();
       }
     }
   else
@@ -1881,7 +1881,7 @@ void MIDASDesktopUI::ViewDirectory()
     MidasTreeItem* resource = const_cast<MidasTreeItem *>(
         dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
     mds::DatabaseAPI    db;
-    midasResourceRecord record = db.GetRecordByUuid(resource->getUuid() );
+    midasResourceRecord record = db.GetRecordByUuid(resource->GetUuid() );
 
     QFileInfo fileInfo(record.Path.c_str() );
     path = record.Type == midasResourceType::BITSTREAM ?
@@ -1908,14 +1908,14 @@ void MIDASDesktopUI::OpenBitstream()
     path = dynamic_cast<Midas3BitstreamTreeItem *>(const_cast<Midas3TreeItem *>(
                                                      dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->
                                                      getSelectedMidasTreeItem() ) )
-      ->getBitstream()->GetPath();
+      ->GetBitstream()->GetPath();
     }
   else
     {
     MidasTreeItem* resource = const_cast<MidasTreeItem *>(
         dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
     mds::DatabaseAPI db;
-    path = db.GetRecordByUuid(resource->getUuid() ).Path;
+    path = db.GetRecordByUuid(resource->GetUuid() ).Path;
     }
 
   path = "file:" + path;
@@ -1953,15 +1953,15 @@ void MIDASDesktopUI::ViewInBrowser()
 
     if( (comm = dynamic_cast<MidasCommunityTreeItem *>(resource) ) != NULL )
       {
-      path << "/community/view/" << comm->getCommunity()->GetId();
+      path << "/community/view/" << comm->GetCommunity()->GetId();
       }
     else if( (coll = dynamic_cast<MidasCollectionTreeItem *>(resource) ) != NULL )
       {
-      path << "/collection/view/" << coll->getCollection()->GetId();
+      path << "/collection/view/" << coll->GetCollection()->GetId();
       }
     else if( (item = dynamic_cast<MidasItemTreeItem *>(resource) ) != NULL )
       {
-      path << "/item/view/" << item->getItem()->GetId();
+      path << "/item/view/" << item->GetItem()->GetId();
       }
 
     QUrl url(path.str().c_str() );
@@ -2328,13 +2328,13 @@ void MIDASDesktopUI::PushResources()
     {
     const Midas3TreeItem* resource =
       dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem();
-    m_PushUI->setObject(resource ? resource->getObject() : NULL);
+    m_PushUI->setObject(resource ? resource->GetObject() : NULL);
     }
   else
     {
     const MidasTreeItem* resource =
       dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem();
-    m_PushUI->setObject(resource ? resource->getObject() : NULL);
+    m_PushUI->setObject(resource ? resource->GetObject() : NULL);
     }
   m_PushUI->exec();
 }
@@ -2555,8 +2555,8 @@ void MIDASDesktopUI::DeleteServerResource(bool val)
   else
     {
     const MidasTreeItem* resource = dynamic_cast<MidasTreeViewServer *>(m_TreeViewServer)->getSelectedMidasTreeItem();
-    int                  id = resource->getId();
-    std::string          typeName = QString(midasUtils::GetTypeName(resource->getType() ).c_str() ).toStdString();
+    int                  id = resource->GetId();
+    std::string          typeName = QString(midasUtils::GetTypeName(resource->GetType() ).c_str() ).toStdString();
 
     std::stringstream text;
     if( mws::WebAPI::Instance()->DeleteResource(typeName, id) )

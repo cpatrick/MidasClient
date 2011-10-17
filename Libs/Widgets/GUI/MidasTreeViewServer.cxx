@@ -113,7 +113,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
 
   if((communityTreeItem = dynamic_cast<MidasCommunityTreeItem*>(item)) != NULL)
     {
-    mdo::Community* community = communityTreeItem->getCommunity();
+    mdo::Community* community = communityTreeItem->GetCommunity();
     mws::Community remote;
     remote.SetObject(community);
     remote.SetAuthenticator(m_Synch->GetAuthenticator());
@@ -123,7 +123,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     }
   else if((collectionTreeItem = dynamic_cast<MidasCollectionTreeItem*>(item)) != NULL)
     {
-    mdo::Collection* collection = collectionTreeItem->getCollection();
+    mdo::Collection* collection = collectionTreeItem->GetCollection();
     mws::Collection remote;
     remote.SetObject(collection);
     remote.SetAuthenticator(m_Synch->GetAuthenticator());
@@ -133,7 +133,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     }
   else if((itemTreeItem = dynamic_cast<MidasItemTreeItem*>(item)) != NULL)
     {
-    mdo::Item* item = itemTreeItem->getItem();
+    mdo::Item* item = itemTreeItem->GetItem();
     mws::Item remote;
     remote.SetObject(item);
     remote.SetAuthenticator(m_Synch->GetAuthenticator());
@@ -143,7 +143,7 @@ void MidasTreeViewServer::fetchItemData(MidasTreeItem* item)
     }
   else if((bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem*>(item)) != NULL)
     {
-    mdo::Bitstream* bitstream = bitstreamTreeItem->getBitstream();
+    mdo::Bitstream* bitstream = bitstreamTreeItem->GetBitstream();
     mws::Bitstream remote;
     remote.SetObject(bitstream);
     remote.SetAuthenticator(m_Synch->GetAuthenticator());

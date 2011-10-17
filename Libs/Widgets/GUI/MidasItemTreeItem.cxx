@@ -6,8 +6,9 @@
 #include <QPixmap>
 #include <QStyle>
 
-MidasItemTreeItem::MidasItemTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem *parent):
-MidasTreeItem(itemData, model, parent)
+MidasItemTreeItem::MidasItemTreeItem(const QList<QVariant> &itemData,
+                                     MidasTreeModel* model, MidasTreeItem *parent)
+: MidasTreeItem(itemData, model, parent)
 {
   //this->fetchedChildren = true; 
 }
@@ -16,22 +17,22 @@ MidasItemTreeItem::~MidasItemTreeItem()
 {
 }
 
-int MidasItemTreeItem::getType() const
+int MidasItemTreeItem::GetType() const
 {
   return midasResourceType::ITEM;
 }
 
-int MidasItemTreeItem::getId() const
+int MidasItemTreeItem::GetId() const
 {
   return m_Item->GetId();
 }
 
-std::string MidasItemTreeItem::getUuid() const
+std::string MidasItemTreeItem::GetUuid() const
 {
   return m_Item->GetUuid();
 }
 
-void MidasItemTreeItem::populate(QModelIndex parent)
+void MidasItemTreeItem::Populate(QModelIndex parent)
 {
   if(!m_Item)
     {
@@ -47,29 +48,49 @@ void MidasItemTreeItem::populate(QModelIndex parent)
     QList<QVariant> name;
     name << (*i)->GetName().c_str();
     MidasBitstreamTreeItem* bitstream = new MidasBitstreamTreeItem(name, m_Model, this);
-    bitstream->setClientResource(m_ClientResource);
-    bitstream->setBitstream(*i);
-    this->appendChild(bitstream);
+    bitstream->SetClientResource(m_ClientResource);
+    bitstream->SetBitstream(*i);
+    this->AppendChild(bitstream);
     QModelIndex index = m_Model->index(row, 0, parent);
     m_Model->registerResource((*i)->GetUuid(), index);
 
     if((*i)->IsDirty())
       {
-      bitstream->setDecorationRole(MidasTreeItem::Dirty);
+      bitstream->SetDecorationRole(MidasTreeItem::Dirty);
       }
-    bitstream->populate(index);
+    bitstream->Populate(index);
     i++;
     row++;
     }
-  this->setFetchedChildren( true );
+  this->SetFetchedChildren( true );
 }
 
-void MidasItemTreeItem::updateDisplayName()
+void MidasItemTreeItem::UpdateDisplayName()
 {
-  QVariant name = this->getItem()->GetTitle().c_str();
-  this->setData(name,0);
+  QVariant name = this->GetItem()->GetTitle().c_str();
+  this->SetData(name,0);
 }
 
-void MidasItemTreeItem::removeFromTree()
+void MidasItemTreeItem::RemoveFromTree()
 {
+}
+
+void MidasItemTreeItem::SetItem(mdo::Item* item)
+{
+  m_Item = item;
+}
+
+mdo::Item* MidasItemTreeItem::GetItem() const
+{
+  return m_Item;
+}
+
+mdo::Object* MidasItemTreeItem::GetObject() const
+{
+  return m_Item;
+}
+
+bool MidasItemTreeItem::ResourceIsFetched() const
+{
+  return m_Item->IsFetched();
 }

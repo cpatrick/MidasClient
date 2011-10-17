@@ -9,8 +9,9 @@
 #include <QStyle>
 #include <QModelIndex>
 
-MidasCommunityTreeItem::MidasCommunityTreeItem(const QList<QVariant> &itemData, MidasTreeModel* model, MidasTreeItem* parent):
-MidasTreeItem(itemData, model, parent)
+MidasCommunityTreeItem::MidasCommunityTreeItem(const QList<QVariant> &itemData,
+                                               MidasTreeModel* model, MidasTreeItem* parent)
+: MidasTreeItem(itemData, model, parent)
 {
   m_Community = NULL;
 }
@@ -19,28 +20,28 @@ MidasCommunityTreeItem::~MidasCommunityTreeItem()
 {
 }
 
-void MidasCommunityTreeItem::setCommunity(mdo::Community* community)
+void MidasCommunityTreeItem::SetCommunity(mdo::Community* community)
 {
   m_Community = community;
 }
 
-int MidasCommunityTreeItem::getType() const
+int MidasCommunityTreeItem::GetType() const
 {
   return midasResourceType::COMMUNITY;
 }
 
-int MidasCommunityTreeItem::getId() const
+int MidasCommunityTreeItem::GetId() const
 {
   return this->m_Community->GetId();
 }
 
-std::string MidasCommunityTreeItem::getUuid() const
+std::string MidasCommunityTreeItem::GetUuid() const
 {
   return m_Community->GetUuid();
 }
 
 
-void MidasCommunityTreeItem::populate(QModelIndex parent)
+void MidasCommunityTreeItem::Populate(QModelIndex parent)
 {
   if(!m_Community)
     {
@@ -56,26 +57,26 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
     QList<QVariant> name;
     name << (*itCol)->GetName().c_str();
     MidasCollectionTreeItem* collection = new MidasCollectionTreeItem(name, m_Model, this);
-    collection->setClientResource(m_ClientResource);
-    collection->setCollection(*itCol);
+    collection->SetClientResource(m_ClientResource);
+    collection->SetCollection(*itCol);
 
-    this->appendChild(collection);
+    this->AppendChild(collection);
     QModelIndex index = m_Model->index(row, 0, parent);
     m_Model->registerResource((*itCol)->GetUuid(), index);
 
-    if(this->isDynamicFetch())
+    if(this->IsDynamicFetch())
       {
-      collection->setFetchedChildren(false);
-      collection->setDynamicFetch(true);
+      collection->SetFetchedChildren(false);
+      collection->SetDynamicFetch(true);
       }
     else
       {
-      collection->populate(index);
+      collection->Populate(index);
       }
 
     if((*itCol)->IsDirty())
       {
-      collection->setDecorationRole(MidasTreeItem::Dirty);
+      collection->SetDecorationRole(MidasTreeItem::Dirty);
       }
     itCol++;
     row++;
@@ -88,40 +89,55 @@ void MidasCommunityTreeItem::populate(QModelIndex parent)
     QList<QVariant> name;
     name << (*itCom)->GetName().c_str();
     MidasCommunityTreeItem* community = new MidasCommunityTreeItem(name, m_Model, this);
-    community->setClientResource(m_ClientResource);
-    community->setCommunity(*itCom);
+    community->SetClientResource(m_ClientResource);
+    community->SetCommunity(*itCom);
 
-    this->appendChild(community);
+    this->AppendChild(community);
     QModelIndex index = m_Model->index(row, 0, parent);
     m_Model->registerResource((*itCom)->GetUuid(), index);
 
-    if(this->isDynamicFetch())
+    if(this->IsDynamicFetch())
       {
-      community->setDynamicFetch(true);
+      community->SetDynamicFetch(true);
       }
     if(!m_ClientResource) //server gives us subcommunities and collections; client only gives top level
       {
-      community->populate(index);
+      community->Populate(index);
       }
     if((*itCom)->IsDirty())
       {
-      community->setDecorationRole(MidasTreeItem::Dirty);
+      community->SetDecorationRole(MidasTreeItem::Dirty);
       }
     itCom++;
     row++;
     }
-  if(!this->isDynamicFetch())
+  if(!this->IsDynamicFetch())
     {
-    this->setFetchedChildren( true );
+    this->SetFetchedChildren( true );
     }
 }
 
-void MidasCommunityTreeItem::updateDisplayName()
+void MidasCommunityTreeItem::UpdateDisplayName()
 {
-  QVariant name = this->getCommunity()->GetName().c_str();
-  this->setData(name,0);
+  QVariant name = this->GetCommunity()->GetName().c_str();
+  this->SetData(name,0);
 }
 
-void MidasCommunityTreeItem::removeFromTree()
+void MidasCommunityTreeItem::RemoveFromTree()
 {
+}
+
+mdo::Community* MidasCommunityTreeItem::GetCommunity() const
+{
+  return m_Community;
+}
+
+mdo::Object* MidasCommunityTreeItem::GetObject() const
+{
+  return m_Community;
+}
+
+bool MidasCommunityTreeItem::ResourceIsFetched() const
+{
+  return m_Community->IsFetched();
 }

@@ -161,10 +161,10 @@ void MidasTreeView::mouseMoveEvent(QMouseEvent* event)
   QDrag* drag = new QDrag(this);
   QMimeData* mimeData = new QMimeData;
   std::stringstream data;
-  data << resource->getType() << " " << resource->getId();
+  data << resource->GetType() << " " << resource->GetId();
 
   mimeData->setData(m_MimeType, QString(data.str().c_str()).toAscii());
-  drag->setPixmap(resource->getDecoration());
+  drag->setPixmap(resource->GetDecoration());
   drag->setMimeData(mimeData);
   drag->start();
 }
