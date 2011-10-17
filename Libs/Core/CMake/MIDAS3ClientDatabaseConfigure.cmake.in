@@ -1,28 +1,27 @@
 # Creates the m3dsTableDefs.h for runtime creation of the SQLite database for MIDASClient 3
-# This file should be included.  If run as a script, pass it definitions for ${CTKDataManagementMIDASClientCore_BINARY_DIR} and ${CTKDataManagementMIDASClientCore_SOURCE_DIR}
 
 # NOTE: runtime database creation requires a re-configure and re-build to get the latest table defs
 message(STATUS "Configuring MIDAS 3 SQLite table definitions into C++...")
 
-set(CTKDataManagementMIDASClientCore_SOURCE_DIR "@CTKDataManagementMIDASClientCore_SOURCE_DIR@")
-set(CTKDataManagementMIDASClientCore_BINARY_DIR "@CTKDataManagementMIDASClientCore_BINARY_DIR@")
+set(MIDASClientCore_SOURCE_DIR "@MIDASClient_SOURCE_DIR@/Libs/Core")
+set(MIDASClientCore_BINARY_DIR "@MIDASClient_BINARY_DIR@/Libs/Core")
 set(MIDASClient_VERSION_MAJOR @MIDASClient_VERSION_MAJOR@)
 set(MIDASClient_VERSION_MINOR @MIDASClient_VERSION_MINOR@)
 set(MIDASClient_VERSION_PATCH @MIDASClient_VERSION_PATCH@)
 
-file(WRITE "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h" "namespace m3dsUpgrade {\nconst char* getTableDefs()\n{\n  return ")
-file(STRINGS "${CTKDataManagementMIDASClientCore_SOURCE_DIR}/Code/sql/MIDAS3_SQLite.sql" sql_defs)
+file(WRITE "${MIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h" "namespace m3dsUpgrade {\nconst char* getTableDefs()\n{\n  return ")
+file(STRINGS "${MIDASClientCore_SOURCE_DIR}/Code/sql/MIDAS3_SQLite.sql" sql_defs)
 
 foreach(sql_def ${sql_defs})
   string(STRIP "${sql_def}" sql_def)
   # Ignore comment lines
   if(NOT sql_def MATCHES "^--")
     string(REPLACE "\"" "\\\"" sql_def "${sql_def}")
-    file(APPEND "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h" "  \"${sql_def} \"\n")
+    file(APPEND "${MIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h" "  \"${sql_def} \"\n")
   endif()
 endforeach()
 
-file(APPEND "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h"
+file(APPEND "${MIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h"
      "\n  \"INSERT INTO version(name, major, minor, patch) VALUES ('MIDASClient', '${MIDASClient_VERSION_MAJOR}', '${MIDASClient_VERSION_MINOR}', '${MIDASClient_VERSION_PATCH}');\"")
-file(APPEND "${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h" ";\n}\n}\n")
+file(APPEND "${MIDASClientCore_BINARY_DIR}/Code/m3dsTableDefs.h" ";\n}\n}\n")
 message(STATUS "Finishing configuring MIDAS 3 SQLite table definitions")
