@@ -39,8 +39,9 @@ typedef qint64 int64;
 
 // For resource_uuid.resource_type_id
 struct midasResourceType
-{
-  enum ResourceType {
+  {
+  enum ResourceType
+    {
     BITSTREAM = 0,
     BUNDLE = 1,
     ITEM = 2,
@@ -49,12 +50,13 @@ struct midasResourceType
     PROJECT = 5,
     TYPE_ERROR = -1,
     NONE = -2
+    };
   };
-};
 
 struct midas3ResourceType
-{
-  enum ResourceType {
+  {
+  enum ResourceType
+    {
     BITSTREAM = 0,
     ITEM = 1,
     USER = 2,
@@ -64,17 +66,18 @@ struct midas3ResourceType
     COMMUNITY = 6,
     TYPE_ERROR = -1,
     NONE = -2
+    };
   };
-};
 
 // For marking local resources dirty
 struct midasDirtyAction
-{
-  enum Action {
+  {
+  enum Action
+    {
     MODIFIED = 1,
     ADDED = 2,
     REMOVED = 3
+    };
   };
-};
 
 #endif

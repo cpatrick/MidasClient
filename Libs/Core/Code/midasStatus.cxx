@@ -11,11 +11,10 @@
 
 #include "midasStatus.h"
 
-midasStatus::midasStatus(int id, std::string uuid, std::string name,
-                         midasDirtyAction::Action action,
+midasStatus::midasStatus(int id, std::string uuid, std::string name, midasDirtyAction::Action action,
                          midasResourceType::ResourceType type,
                          std::string path)
-: Id(id), Name(name), Uuid(uuid), Path(path), DirtyAction(action), Type(type)
+  : Id(id), Name(name), Uuid(uuid), Path(path), DirtyAction(action), Type(type)
 {
 }
 
@@ -28,7 +27,6 @@ int midasStatus::GetId()
   return this->Id;
 }
 
-
 std::string midasStatus::GetName()
 {
   return this->Name;
@@ -38,7 +36,7 @@ std::string midasStatus::GetUuid()
 {
   return this->Uuid;
 }
-    
+
 midasDirtyAction::Action midasStatus::GetDirtyAction()
 {
   return this->DirtyAction;
@@ -53,3 +51,4 @@ std::string midasStatus::GetPath()
 {
   return this->Path;
 }
+

@@ -21,12 +21,22 @@
 class midasLogAware
 {
 public:
-  midasLogAware() { Log = NULL; }
-  virtual ~midasLogAware() {}
+  midasLogAware()
+  {
+    Log = NULL;
+  }
+  virtual ~midasLogAware()
+  {
+  }
 
-  virtual midasLog* GetLog() { return Log; }
-  virtual void SetLog(midasLog* log) { Log = log; }
-
+  virtual midasLog * GetLog()
+  {
+    return Log;
+  }
+  virtual void SetLog(midasLog* log)
+  {
+    Log = log;
+  }
 protected:
   midasLog* Log;
 };

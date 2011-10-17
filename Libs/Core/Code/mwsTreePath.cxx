@@ -26,44 +26,44 @@ namespace mws
 class TreePathResponseParser : public RestResponseParser
 {
 public:
-   
+
   TreePathResponseParser()
-    {
+  {
     m_Results = NULL;
-    }
-    
-  ~TreePathResponseParser() 
-    {
-    }
+  }
+
+  ~TreePathResponseParser()
+  {
+  }
 
   virtual bool Parse(const QString& response)
-    {
-    if(!RestResponseParser::Parse(response))
+  {
+    if( !RestResponseParser::Parse(response) )
       {
       return false;
       }
 
     QScriptEngine engine;
-    QScriptValue data = engine.evaluate(response).property("data");
+    QScriptValue  data = engine.evaluate(response).property("data");
 
-    if(data.isArray())
+    if( data.isArray() )
       {
       QScriptValueIterator node(data);
-      while(node.hasNext())
+      while( node.hasNext() )
         {
         node.next();
-        m_Results->push_back(node.value().toString().toStdString());
+        m_Results->push_back(node.value().toString().toStdString() );
         }
       }
     return true;
-    }
-  
+  }
+
   /** Set the results object */
   void SetObject(std::vector<std::string>* results)
-    {
+  {
     m_Results = results;
-    }
-  
+  }
+
 protected:
   std::vector<std::string>* m_Results;
 };
@@ -81,9 +81,9 @@ std::vector<std::string> TreePath::PathFromRoot(std::string uuid)
 std::vector<std::string> TreePath::PathInternal(std::string uuid, std::string url)
 {
   std::vector<std::string> results;
-  TreePathResponseParser parser;
+  TreePathResponseParser   parser;
   parser.SetObject(&results);
-  
+
   std::stringstream fields;
   fields << url << "&uuid=" << uuid;
 
@@ -91,4 +91,4 @@ std::vector<std::string> TreePath::PathInternal(std::string uuid, std::string ur
   return results;
 }
 
-} //end namespace
+} // end namespace

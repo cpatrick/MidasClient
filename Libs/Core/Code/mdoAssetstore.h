@@ -14,14 +14,16 @@
 
 #include "mdoObject.h"
 
-namespace mdo{
+namespace mdo
+{
 
 /** This class represents an assetstore on the MIDAS server. */
 class Assetstore
 {
 public:
   // This must be kept in sync with the definitions on the server
-  enum AssetstoreType {
+  enum AssetstoreType
+    {
     ASSETSTORE_LOCAL = 0,
     ASSETSTORE_MOUNTED_DRIVE = 1,
     ASSETSTORE_HTTP = 2,
@@ -29,32 +31,71 @@ public:
     ASSETSTORE_BITTORRENT = 4,
     ASSETSTORE_REMOTE_MIDAS = 5
     };
-  Assetstore() : m_Type(ASSETSTORE_LOCAL) {}
-  ~Assetstore() {}
+  Assetstore() : m_Type(ASSETSTORE_LOCAL)
+  {
+  }
+  ~Assetstore()
+  {
+  }
 
-  void SetId(int id) { m_Id = id; }
-  int GetId() { return m_Id; }
+  void SetId(int id)
+  {
+    m_Id = id;
+  }
+  int GetId()
+  {
+    return m_Id;
+  }
 
-  void SetEnabled(bool val) { m_Enabled = val; }
-  bool IsEnabled() { return m_Enabled; }
+  void SetEnabled(bool val)
+  {
+    m_Enabled = val;
+  }
+  bool IsEnabled()
+  {
+    return m_Enabled;
+  }
 
   // Set/Get the name of the assetstore
-  void SetName(std::string name) { m_Name = name; }
-  std::string & GetName() {return m_Name;}
+  void SetName(std::string name)
+  {
+    m_Name = name;
+  }
+  std::string & GetName()
+  {
+    return m_Name;
+  }
 
   // Set/Get the path or URL of the assetstore
-  void SetPath(std::string path) { m_Path = path; }
-  std::string GetPath() { return m_Path; }
+  void SetPath(std::string path)
+  {
+    m_Path = path;
+  }
+  std::string GetPath()
+  {
+    return m_Path;
+  }
 
   // Set/Get the type of the assetstore
-  void SetType(AssetstoreType type) { m_Type = type; }
-  AssetstoreType GetType() { return m_Type; }
+  void SetType(AssetstoreType type)
+  {
+    m_Type = type;
+  }
+  AssetstoreType GetType()
+  {
+    return m_Type;
+  }
 
   // Set/Get the internal id of a bitstream in the assetstore
   // (used for bitstream location)
-  void SetInternalId(std::string str) { m_InternalId = str; }
-  std::string GetInternalId() { return m_InternalId; }
-
+  void SetInternalId(std::string str)
+  {
+    m_InternalId = str;
+  }
+  std::string GetInternalId()
+  {
+    return m_InternalId;
+  }
 protected:
   int            m_Id;
   bool           m_Enabled;
@@ -64,6 +105,6 @@ protected:
   std::string    m_InternalId;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mdoAssetstore_h_
+#endif // _mdoAssetstore_h_

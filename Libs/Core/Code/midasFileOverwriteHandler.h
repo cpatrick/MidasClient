@@ -21,15 +21,21 @@
 class midasFileOverwriteHandler
 {
 public:
-  midasFileOverwriteHandler() {}
-  virtual ~midasFileOverwriteHandler() {}
+  midasFileOverwriteHandler()
+  {
+  }
+  virtual ~midasFileOverwriteHandler()
+  {
+  }
 
-  enum Action {
+  enum Action
+    {
     UseExisting = 0,
     Overwrite = 1
-  };
+    };
 
   virtual Action HandleConflict(std::string path) = 0;
+
 };
 
 #endif

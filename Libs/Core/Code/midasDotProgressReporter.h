@@ -20,24 +20,31 @@
 
 class midasDotProgressReporter : midasProgressReporter
 {
-  public:
-    midasDotProgressReporter(int length = DEFAULT_LENGTH);
-    ~midasDotProgressReporter();
+public:
+  midasDotProgressReporter(int length = DEFAULT_LENGTH);
+  ~midasDotProgressReporter();
 
-    void UpdateProgress(double current, double max);
-    void UpdateOverallCount(int value);
-    void UpdateTotalProgress(double value);
-    void ResetProgress();
-    void SetMessage(std::string message);
-    void SetIndeterminate();
-    void SetMaxCount(int max);
-  protected:
-    void PrintBar();
+  void UpdateProgress(double current, double max);
 
-    bool Done;
-    int currLength;
-    int oldLength;
-    int maxLength;
+  void UpdateOverallCount(int value);
+
+  void UpdateTotalProgress(double value);
+
+  void ResetProgress();
+
+  void SetMessage(std::string message);
+
+  void SetIndeterminate();
+
+  void SetMaxCount(int max);
+
+protected:
+  void PrintBar();
+
+  bool Done;
+  int  currLength;
+  int  oldLength;
+  int  maxLength;
 };
 
 #endif

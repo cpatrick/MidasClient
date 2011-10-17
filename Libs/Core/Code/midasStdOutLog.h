@@ -24,8 +24,11 @@ public:
   ~midasStdOutLog();
 
   void Error(std::string text);
+
   void Message(std::string text);
+
   void Status(std::string text);
+
 };
 
 #endif

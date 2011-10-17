@@ -14,19 +14,22 @@
 #include <string>
 #include <vector>
 
-namespace mdo {
-  class Object;
+namespace mdo
+{
+class Object;
 }
 
-namespace mws {
+namespace mws
+{
 
 /** This class can be used to search */
 class Search
 {
 public:
-  static std::vector<mdo::Object*> SearchServer(std::vector<std::string> tokens);
+  static std::vector<mdo::Object *> SearchServer(std::vector<std::string> tokens);
+
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mwsSearch_h_
+#endif // _mwsSearch_h_

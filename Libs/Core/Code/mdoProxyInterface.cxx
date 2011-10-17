@@ -12,7 +12,8 @@
 #include <sstream>
 #include <iostream>
 
-namespace mdo{
+namespace mdo
+{
 
 /** Constructor */
 ProxyInterface::ProxyInterface()
@@ -20,7 +21,7 @@ ProxyInterface::ProxyInterface()
   m_IsCache = false;
   m_Name = "No Name";
 }
-  
+
 /** Destructor */
 ProxyInterface::~ProxyInterface()
 {
@@ -31,15 +32,15 @@ void ProxyInterface::SetName(const char* name)
 {
   m_Name = name;
 }
-  
+
 /** Fetch a tree */
 bool ProxyInterface::FetchTree()
 {
-  std::cerr << m_Name.c_str() 
+  std::cerr << m_Name.c_str()
             << " ProxyInterface::FetchTree(): Not implemented" << std::endl;
   return false;
 }
- 
+
 /** Set if this interface is acting as a cache */
 void ProxyInterface::SetIsCache(bool iscache)
 {

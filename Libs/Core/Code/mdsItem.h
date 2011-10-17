@@ -14,11 +14,13 @@
 
 #include "mdsObject.h"
 
-namespace mdo{
-  class Item;
+namespace mdo
+{
+class Item;
 }
 
-namespace mds{
+namespace mds
+{
 
 class Item : public Object
 {
@@ -28,22 +30,27 @@ public:
   ~Item();
 
   bool Fetch();
+
   bool Commit();
+
   bool FetchTree();
+
   bool FetchSize();
+
   bool Delete(bool deleteOnDisk);
 
   void ParentPathChanged(std::string parentPath);
-  
+
   // Add the object
   void SetObject(mdo::Object* object);
+
   void SetPath(std::string path);
 
 protected:
-  mdo::Item* m_Item;
+  mdo::Item*  m_Item;
   std::string m_Path;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //__mdsItem_h_
+#endif // __mdsItem_h_

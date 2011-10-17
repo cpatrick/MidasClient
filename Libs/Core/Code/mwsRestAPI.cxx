@@ -21,7 +21,8 @@
 #include <QNetworkReply>
 #include <QFile>
 
-namespace mws {
+namespace mws
+{
 
 RestAPI::RestAPI()
 {
@@ -38,27 +39,28 @@ void RestAPI::SetProgressReporter(midasProgressReporter* progress)
   m_Progress = progress;
 }
 
-const char* RestAPI::GetServerUrl()
+const char * RestAPI::GetServerUrl()
 {
   return m_ServerUrl.c_str();
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 void RestAPI::SetServerUrl(const char* baseurl)
 {
   std::string temp(baseurl);
+
   // start with 'http://' or 'https://' :
-  if(temp.substr(0, 7).compare("http://") != 0 &&
-     temp.substr(0, 8).compare("https://") != 0)
+  if( temp.substr(0, 7).compare("http://") != 0 &&
+      temp.substr(0, 8).compare("https://") != 0 )
     {
     temp.insert(0, "http://");
     }
-  if(temp.substr(temp.length() - 9).compare("/api/rest") != 0 &&
-     temp.substr(temp.length() - 8).compare("?method=") != 0)
+  if( temp.substr(temp.length() - 9).compare("/api/rest") != 0 &&
+      temp.substr(temp.length() - 8).compare("?method=") != 0 )
     {
     temp.append("/api/rest?method=");
     }
-  else if(temp.substr(temp.length() - 9).compare("/api/rest") == 0)
+  else if( temp.substr(temp.length() - 9).compare("/api/rest") == 0 )
     {
     temp.append("?method=");
     }
@@ -66,43 +68,44 @@ void RestAPI::SetServerUrl(const char* baseurl)
   m_ServerUrl = temp;
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool RestAPI::Execute(const char* urlstr, RestResponseParser* parser,
                       const char* post_data)
 {
   m_Cancel = false;
 
   std::string URL(urlstr);
-  if(!m_ServerUrl.empty())
+  if( !m_ServerUrl.empty() )
     {
     URL = m_ServerUrl + URL;
     }
 
   QNetworkRequest req;
-  QUrl url(URL.c_str());
+  QUrl            url(URL.c_str() );
   req.setUrl(url);
 
   QNetworkAccessManager network;
-  QNetworkReply* reply;
-  if(post_data == NULL)
+  QNetworkReply*        reply;
+  if( post_data == NULL )
     {
     reply = network.get(req);
     }
   else
     {
-    reply = network.post(req, QByteArray(post_data));
+    reply = network.post(req, QByteArray(post_data) );
     }
 
-  QString response("(");
+  QString    response("(");
   QEventLoop loop;
-  connect(reply, SIGNAL(readyRead()), &loop, SLOT(quit()));
-  connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+  connect(reply, SIGNAL(readyRead() ), &loop, SLOT(quit() ) );
+  connect(reply, SIGNAL(finished() ), &loop, SLOT(quit() ) );
 
-  while(reply->isRunning())
+  while( reply->isRunning() )
     {
-    loop.exec(); //wait for data from the reply
+    loop.exec(); // wait for data from the reply
     response += reply->readAll();
     }
+
   response += reply->readAll();
   response += ")";
 
@@ -110,108 +113,109 @@ bool RestAPI::Execute(const char* urlstr, RestResponseParser* parser,
   return parser->Parse(response);
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool RestAPI::Download(const std::string& filename, const std::string& urlstr,
                        int64 offset)
 {
   m_Cancel = false;
   std::string URL(urlstr);
-  if(!m_ServerUrl.empty())
+  if( !m_ServerUrl.empty() )
     {
-    URL = m_ServerUrl + URL; 
+    URL = m_ServerUrl + URL;
     }
 
   QFile file;
-  file.setFileName(filename.c_str());
+  file.setFileName(filename.c_str() );
   QIODevice::OpenMode mode = offset == 0 ?
     QIODevice::WriteOnly : QIODevice::Append;
-  if(!file.open(mode))
+  if( !file.open(mode) )
     {
     return false;
     }
 
   QNetworkRequest req;
-  QUrl url(URL.c_str());
+  QUrl            url(URL.c_str() );
   req.setUrl(url);
 
   QNetworkAccessManager network;
-  QNetworkReply* reply = network.get(req);
+  QNetworkReply*        reply = network.get(req);
 
   QEventLoop loop;
-  connect(reply, SIGNAL(readyRead()), &loop, SLOT(quit()));
-  connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-  connect(this, SIGNAL(Canceled()), &loop, SLOT(quit()));
+  connect(reply, SIGNAL(readyRead() ), &loop, SLOT(quit() ) );
+  connect(reply, SIGNAL(finished() ), &loop, SLOT(quit() ) );
+  connect(this, SIGNAL(Canceled() ), &loop, SLOT(quit() ) );
 
-  if(m_Progress)
+  if( m_Progress )
     {
-    connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
-            this, SLOT(TransferProgress(qint64, qint64)));
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64) ),
+            this, SLOT(TransferProgress(qint64, qint64) ) );
     }
 
-  while(reply->isRunning())
+  while( reply->isRunning() )
     {
-    loop.exec(); //wait for data from the reply
+    loop.exec(); // wait for data from the reply
 
-    if(m_Cancel)
+    if( m_Cancel )
       {
       reply->abort();
       reply->deleteLater();
       file.close();
       return false;
       }
-    file.write(reply->readAll());
+    file.write(reply->readAll() );
     }
-  file.write(reply->readAll());
+
+  file.write(reply->readAll() );
 
   reply->deleteLater();
   file.close();
   return true;
- }
+}
 
-//-------------------------------------------------------------------
-bool RestAPI::Upload(const std::string &filename, const std::string& urlstr,
+// -------------------------------------------------------------------
+bool RestAPI::Upload(const std::string & filename, const std::string& urlstr,
                      RestResponseParser* parser, int64 offset)
 {
   m_Cancel = false;
   std::string URL(urlstr);
-  if(!m_ServerUrl.empty())
+  if( !m_ServerUrl.empty() )
     {
     URL = m_ServerUrl + URL;
     }
 
   QFile file;
-  file.setFileName(filename.c_str());
-  if(!file.open(QIODevice::ReadOnly))
+  file.setFileName(filename.c_str() );
+  if( !file.open(QIODevice::ReadOnly) )
     {
     return false;
     }
-  if(offset > 0 && !file.seek(offset)) //seek to offset
+  if( offset > 0 && !file.seek(offset) ) // seek to offset
     {
     return false;
     }
 
   QNetworkRequest req;
-  QUrl url(URL.c_str());
+  QUrl            url(URL.c_str() );
   req.setUrl(url);
 
   QNetworkAccessManager network;
-  QNetworkReply* reply = network.put(req, &file);
+  QNetworkReply*        reply = network.put(req, &file);
 
   QEventLoop loop;
-  connect(reply, SIGNAL(uploadProgress(qint64, qint64)), &loop, SLOT(quit()));
-  connect(reply, SIGNAL(readyRead()), &loop, SLOT(quit()));
-  connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-  if(m_Progress)
+  connect(reply, SIGNAL(uploadProgress(qint64, qint64) ), &loop, SLOT(quit() ) );
+  connect(reply, SIGNAL(readyRead() ), &loop, SLOT(quit() ) );
+  connect(reply, SIGNAL(finished() ), &loop, SLOT(quit() ) );
+  if( m_Progress )
     {
-    connect(reply, SIGNAL(uploadProgress(qint64, qint64)),
-            this, SLOT(TransferProgress(qint64, qint64)));
+    connect(reply, SIGNAL(uploadProgress(qint64, qint64) ),
+            this, SLOT(TransferProgress(qint64, qint64) ) );
     }
 
   QString response("(");
-  while(reply->isRunning())
+  while( reply->isRunning() )
     {
-    loop.exec(); //wait for data from the reply
-    if(m_Cancel)
+    loop.exec(); // wait for data from the reply
+    if( m_Cancel )
       {
       reply->abort();
       reply->deleteLater();
@@ -220,6 +224,7 @@ bool RestAPI::Upload(const std::string &filename, const std::string& urlstr,
       }
     response += reply->readAll();
     }
+
   response += reply->readAll();
   response += ")";
 
@@ -228,26 +233,26 @@ bool RestAPI::Upload(const std::string &filename, const std::string& urlstr,
   return parser->Parse(response);
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 void RestAPI::Cancel()
 {
   m_Cancel = true;
   emit Canceled();
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool RestAPI::ShouldCancel()
 {
   return m_Cancel;
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 void RestAPI::TransferProgress(qint64 current, qint64 total)
 {
-  if(m_Progress && current > 0 && total > 0)
+  if( m_Progress && current > 0 && total > 0 )
     {
     m_Progress->UpdateProgress(
-      static_cast<double>(current), static_cast<double>(total));
+      static_cast<double>(current), static_cast<double>(total) );
     }
 }
 

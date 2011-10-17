@@ -13,7 +13,8 @@
 
 #include <QString>
 
-namespace mdo{
+namespace mdo
+{
 
 /** Constructor */
 Community::Community()
@@ -22,30 +23,32 @@ Community::Community()
   m_BitstreamCount = 0;
   m_ParentCommunity = NULL;
 }
-  
+
 /** Destructor */
 Community::~Community()
 {
   // Clean the arrays
-  std::vector<Community*>::iterator itCom = m_Communities.begin();
-  while(itCom != m_Communities.end())
+  std::vector<Community *>::iterator itCom = m_Communities.begin();
+  while( itCom != m_Communities.end() )
     {
     Community* com = *itCom;
     itCom++;
     delete com;
     }
-  m_Communities.clear();  
-  
-  std::vector<Collection*>::iterator itCol = m_Collections.begin();
-  while(itCol != m_Collections.end())
+
+  m_Communities.clear();
+
+  std::vector<Collection *>::iterator itCol = m_Collections.begin();
+  while( itCol != m_Collections.end() )
     {
     Collection* col = *itCol;
     itCol++;
     delete col;
     }
+
   m_Collections.clear();
 }
-   
+
 /** Add a sub community */
 void Community::AddCommunity(Community* community)
 {
@@ -73,8 +76,8 @@ void Community::Clear()
 
 /** Load */
 bool Community::Load()
-{  
-  return m_Proxy->Load();   
+{
+  return m_Proxy->Load();
 }
 
 /** Fill the full tree with community and collection */
@@ -86,12 +89,13 @@ bool Community::LoadTree()
 bool Community::SetValue(std::string key, std::string value, bool append)
 {
   QString keyStr = key.c_str();
+
   keyStr = keyStr.toUpper();
   key = keyStr.toStdString();
 
-  if(key == "NAME")
+  if( key == "NAME" )
     {
-    if(append)
+    if( append )
       {
       m_Name += value;
       }
@@ -101,9 +105,9 @@ bool Community::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "COPYRIGHT")
+  if( key == "COPYRIGHT" )
     {
-    if(append)
+    if( append )
       {
       m_Copyright += value;
       }
@@ -113,9 +117,9 @@ bool Community::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "DESCRIPTION")
+  if( key == "DESCRIPTION" )
     {
-    if(append)
+    if( append )
       {
       m_Description += value;
       }
@@ -125,9 +129,9 @@ bool Community::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "INTRODUCTORY" || key == "INTRODUCTORYTEXT")
+  if( key == "INTRODUCTORY" || key == "INTRODUCTORYTEXT" )
     {
-    if(append)
+    if( append )
       {
       m_IntroductoryText += value;
       }

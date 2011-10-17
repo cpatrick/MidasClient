@@ -19,7 +19,8 @@
 #include <sqlite3.h>
 #include <QMutex>
 
-namespace mds{
+namespace mds
+{
 
 /** This class is a wrapper to a SQLite database. */
 class SQLiteDatabase : public Database
@@ -31,34 +32,42 @@ public:
 
   /** Open a database connection */
   bool Open(const char* dbname);
+
   bool Close();
-  
+
   /** Set the query */
   bool SetQuery(const char* query);
 
   /** Execute */
   bool Execute();
-  
+
   /** Run Set query and execute in one command */
   bool ExecuteQuery(const char* query);
+
   int GetLastInsertId();
 
   /** Get number of columns */
   unsigned int GetNumberOfFields();
-  const char*  GetFieldName(unsigned int column);
-  
+
+  const char *  GetFieldName(unsigned int column);
+
   /** Fetch the next row */
   bool GetNextRow();
-  
+
   /** Get the column value */
   int GetValueAsInt(unsigned int column);
+
   sqlite_int64 GetValueAsInt64(unsigned int column);
+
   float GetValueAsFloat(unsigned int column);
-  const char* GetValueAsString(unsigned int column);
-  
+
+  const char * GetValueAsString(unsigned int column);
+
   /** Get the error message */
-  const char* GetErrorMessage() {return m_ErrorMessage.c_str();}
-  
+  const char * GetErrorMessage()
+  {
+    return m_ErrorMessage.c_str();
+  }
 protected:
 
   sqlite3*      m_Database;
@@ -71,6 +80,6 @@ protected:
   int           m_InitialFetchResult;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mdsObject_h_
+#endif // _mdsObject_h_

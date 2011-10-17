@@ -20,7 +20,8 @@
 
 class midasAuthenticator;
 
-namespace mws{
+namespace mws
+{
 
 /** This class represent an object on the MIDAS server. */
 class Object : public mdo::ProxyInterface
@@ -28,22 +29,24 @@ class Object : public mdo::ProxyInterface
 public:
 
   Object()
-    {
+  {
     m_Auth = NULL;
-    }
-    
-  ~Object(){};
+  }
+
+  ~Object()
+  {
+  };
 
   void SetAuthenticator(midasAuthenticator* auth)
-    {
+  {
     m_Auth = auth;
-    }
+  }
 
 protected:
   midasAuthenticator* m_Auth;
-  
+
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mwsObject_h_
+#endif // _mwsObject_h_

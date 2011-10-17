@@ -14,11 +14,13 @@
 
 #include "mdsObject.h"
 
-namespace m3do{
-  class Bitstream;
+namespace m3do
+{
+class Bitstream;
 }
 
-namespace m3ds{
+namespace m3ds
+{
 
 class Bitstream : public mds::Object
 {
@@ -28,8 +30,11 @@ public:
   ~Bitstream();
 
   bool Fetch();
+
   bool FetchTree();
+
   bool FetchParent();
+
   bool Commit();
 
   /**
@@ -44,6 +49,7 @@ public:
    * checksum as this bitstream, this will return true.
    */
   bool AlreadyExistsInItem();
+
   bool Delete(bool deleteOnDisk);
 
   void ParentPathChanged(std::string parentPath);
@@ -55,6 +61,6 @@ protected:
 
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mdsBitstream_h_
+#endif // _mdsBitstream_h_

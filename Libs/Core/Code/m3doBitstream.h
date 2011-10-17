@@ -17,7 +17,8 @@
 
 #include "mdoObject.h"
 
-namespace m3do{
+namespace m3do
+{
 
 class Item;
 
@@ -31,31 +32,81 @@ public:
   ~Bitstream();
 
   bool Load();
+
   bool LoadTree();
 
   // Set/Get name
-  void SetName(const char* name) { m_Name = name; }
-  std::string& GetName() { return m_Name; }
+  void SetName(const char* name)
+  {
+    m_Name = name;
+  }
+
+  std::string & GetName()
+  {
+    return m_Name;
+  }
 
   void Clear();
 
-  std::string GetTypeName() { return "Bitstream"; }
-  int GetResourceType() { return midas3ResourceType::BITSTREAM; }
+  std::string GetTypeName()
+  {
+    return "Bitstream";
+  }
 
-  void SetParentItem(Item* item) { m_ParentItem = item; }
-  Item* GetParentItem() { return m_ParentItem; }
+  int GetResourceType()
+  {
+    return midas3ResourceType::BITSTREAM;
+  }
 
-  void SetPath(const std::string& path) { m_Path = path; }
-  std::string& GetPath() { return m_Path; }
+  void SetParentItem(Item* item)
+  {
+    m_ParentItem = item;
+  }
 
-  void SetChecksum(const std::string& checksum) { m_Checksum = checksum; }
-  std::string& GetChecksum() { return m_Checksum; }
+  Item * GetParentItem()
+  {
+    return m_ParentItem;
+  }
 
-  void SetLastModified(unsigned int stamp) { m_LastModified = stamp; }
-  unsigned int& GetLastModified() { return m_LastModified; }
+  void SetPath(const std::string& path)
+  {
+    m_Path = path;
+  }
 
-  void SetCreationDate(const std::string& date) { m_CreationDate = date; }
-  std::string& GetCreationDate() { return m_CreationDate; }
+  std::string & GetPath()
+  {
+    return m_Path;
+  }
+
+  void SetChecksum(const std::string& checksum)
+  {
+    m_Checksum = checksum;
+  }
+
+  std::string & GetChecksum()
+  {
+    return m_Checksum;
+  }
+
+  void SetLastModified(unsigned int stamp)
+  {
+    m_LastModified = stamp;
+  }
+
+  unsigned int & GetLastModified()
+  {
+    return m_LastModified;
+  }
+
+  void SetCreationDate(const std::string& date)
+  {
+    m_CreationDate = date;
+  }
+
+  std::string & GetCreationDate()
+  {
+    return m_CreationDate;
+  }
 
 protected:
 
@@ -69,6 +120,6 @@ protected:
   Item* m_ParentItem;
 };
 
-} //end namespace
+} // end namespace
 
 #endif

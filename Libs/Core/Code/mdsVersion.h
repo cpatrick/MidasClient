@@ -4,7 +4,8 @@
 #include "midasStandardIncludes.h"
 #include "mdoVersion.h"
 
-namespace mds {
+namespace mds
+{
 
 class Version
 {
@@ -15,6 +16,7 @@ public:
   void SetObject(mdo::Version object);
 
   bool Commit();
+
   bool Fetch();
 
 protected:

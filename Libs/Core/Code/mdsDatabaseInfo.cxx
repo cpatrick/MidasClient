@@ -1,18 +1,19 @@
 #include "mdsDatabaseInfo.h"
 
-namespace mds {
+namespace mds
+{
 
 /** Singleton */
-DatabaseInfo* DatabaseInfo::m_Instance = NULL; 
+DatabaseInfo * DatabaseInfo::m_Instance = NULL;
 
 /** Return the instance as a singleton */
-DatabaseInfo* DatabaseInfo::Instance()
+DatabaseInfo * DatabaseInfo::Instance()
 {
-  if (m_Instance != NULL)
+  if( m_Instance != NULL )
     {
-    return m_Instance; 
+    return m_Instance;
     }
-  else 
+  else
     {
     m_Instance = new DatabaseInfo();
     return m_Instance;
@@ -46,9 +47,9 @@ void DatabaseInfo::SetResourceUpdateHandler(ResourceUpdateHandler* handler)
   this->m_ResourceUpdateHandler = handler;
 }
 
-ResourceUpdateHandler* DatabaseInfo::GetResourceUpdateHandler()
+ResourceUpdateHandler * DatabaseInfo::GetResourceUpdateHandler()
 {
   return this->m_ResourceUpdateHandler;
 }
 
-} //end namespace
+} // end namespace

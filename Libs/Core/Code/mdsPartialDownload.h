@@ -14,7 +14,8 @@
 
 #include "midasStandardIncludes.h"
 
-namespace mds {
+namespace mds
+{
 
 class PartialDownload
 {
@@ -24,36 +25,42 @@ public:
 
   // Create a partial download record for a file
   bool Commit();
+
   // Remove a partial download record for a file
   bool Remove();
 
   // Return a list of all incomplete downloads
-  static bool FetchAll(std::vector<mds::PartialDownload*>& list);
+  static bool FetchAll(std::vector<mds::PartialDownload *>& list);
 
   // Clear all incomplete downloads
   static bool RemoveAll();
 
   void SetId(int id);
+
   int GetId();
 
   void SetOffset(int64 offset);
+
   int64 GetOffset();
 
   void SetPath(const std::string& path);
+
   std::string GetPath();
 
   void SetParentItem(int parentItem);
+
   int GetParentItem();
 
   void SetUuid(const std::string& uuid);
+
   std::string GetUuid();
 
 protected:
-  int Id;
-  int ParentItem;
+  int         Id;
+  int         ParentItem;
   std::string Path;
   std::string Uuid;
-  int64 Offset;
+  int64       Offset;
 };
 
 } // end namespace mds

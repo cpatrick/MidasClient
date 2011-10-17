@@ -25,16 +25,19 @@ namespace mds
 class UpgradeHandler : public midasLogAware
 {
 public:
-  UpgradeHandler() {}
-  virtual ~UpgradeHandler() {}
+  UpgradeHandler()
+  {
+  }
+  virtual ~UpgradeHandler()
+  {
+  }
 
   /**
    * Returns true if the database at <path> was successfully upgraded
    * from <dbVersion> to <productVersion>
    */
-  virtual bool Upgrade(const std::string& path,
-                       mdo::Version dbVersion,
-                       mdo::Version productVersion) = 0;
+  virtual bool Upgrade(const std::string& path, mdo::Version dbVersion, mdo::Version productVersion) = 0;
+
 };
 
 } // end namespace

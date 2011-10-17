@@ -14,18 +14,22 @@
 #include <string>
 #include <vector>
 
-namespace mws {
+namespace mws
+{
 
 /** This  */
 class TreePath
 {
 public:
   static std::vector<std::string> PathToRoot(std::string uuid);
+
   static std::vector<std::string> PathFromRoot(std::string uuid);
+
 private:
   static std::vector<std::string> PathInternal(std::string uuid, std::string url);
+
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mwsTreePath_h_
+#endif // _mwsTreePath_h_

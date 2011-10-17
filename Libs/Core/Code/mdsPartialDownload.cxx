@@ -16,7 +16,7 @@ PartialDownload::~PartialDownload()
 
 bool PartialDownload::Commit()
 {
-  if(this->Path == "" || this->ParentItem <= 0 || this->Uuid == "")
+  if( this->Path == "" || this->ParentItem <= 0 || this->Uuid == "" )
     {
     return false;
     }
@@ -27,21 +27,21 @@ bool PartialDownload::Commit()
   std::stringstream query;
   query << "DELETE FROM partial_download WHERE path='" << this->Path << "'";
 
-  if(!db.Database->ExecuteQuery(query.str().c_str()))
+  if( !db.Database->ExecuteQuery(query.str().c_str() ) )
     {
     db.Database->ExecuteQuery("ROLLBACK");
     db.Close();
     return false;
     }
 
-  query.str(std::string());
-  
-  query << "INSERT INTO partial_download (path, uuid, item_id) VALUES ('"
-    << this->Path << "', '"
-    << this->Uuid << "', '"
-    << this->ParentItem << "')";
+  query.str(std::string() );
 
-  if(!db.Database->ExecuteQuery(query.str().c_str()))
+  query << "INSERT INTO partial_download (path, uuid, item_id) VALUES ('"
+        << this->Path << "', '"
+        << this->Uuid << "', '"
+        << this->ParentItem << "')";
+
+  if( !db.Database->ExecuteQuery(query.str().c_str() ) )
     {
     db.Database->ExecuteQuery("ROLLBACK");
     db.Close();
@@ -54,7 +54,7 @@ bool PartialDownload::Commit()
 
 bool PartialDownload::Remove()
 {
-  if(this->Path == "")
+  if( this->Path == "" )
     {
     return false;
     }
@@ -64,7 +64,7 @@ bool PartialDownload::Remove()
   std::stringstream query;
   query << "DELETE FROM partial_download WHERE path='" << this->Path << "'";
 
-  if(!db.Database->ExecuteQuery(query.str().c_str()))
+  if( !db.Database->ExecuteQuery(query.str().c_str() ) )
     {
     db.Close();
     return false;
@@ -73,23 +73,24 @@ bool PartialDownload::Remove()
   return true;
 }
 
-bool PartialDownload::FetchAll(std::vector<mds::PartialDownload*>& list)
+bool PartialDownload::FetchAll(std::vector<mds::PartialDownload *>& list)
 {
   mds::DatabaseAPI db;
+
   db.Open();
 
-  if(!db.Database->ExecuteQuery("SELECT path, uuid, item_id "
-                                "FROM partial_download"))
+  if( !db.Database->ExecuteQuery("SELECT path, uuid, item_id "
+                                 "FROM partial_download") )
     {
     db.Close();
     return false;
     }
-  while(db.Database->GetNextRow())
+  while( db.Database->GetNextRow() )
     {
     mds::PartialDownload* dl = new mds::PartialDownload;
-    dl->SetPath(db.Database->GetValueAsString(0));
-    dl->SetUuid(db.Database->GetValueAsString(1));
-    dl->SetParentItem(db.Database->GetValueAsInt(2));
+    dl->SetPath(db.Database->GetValueAsString(0) );
+    dl->SetUuid(db.Database->GetValueAsString(1) );
+    dl->SetParentItem(db.Database->GetValueAsInt(2) );
     list.push_back(dl);
     }
 
@@ -100,9 +101,10 @@ bool PartialDownload::FetchAll(std::vector<mds::PartialDownload*>& list)
 bool PartialDownload::RemoveAll()
 {
   mds::DatabaseAPI db;
+
   db.Open();
 
-  if(!db.Database->ExecuteQuery("DELETE FROM partial_download"))
+  if( !db.Database->ExecuteQuery("DELETE FROM partial_download") )
     {
     db.Close();
     return false;

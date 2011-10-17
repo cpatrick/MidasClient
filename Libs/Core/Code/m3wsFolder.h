@@ -16,11 +16,13 @@
 
 #include "mwsObject.h"
 
-namespace m3do{
-  class Folder;
+namespace m3do
+{
+class Folder;
 }
 
-namespace m3ws{
+namespace m3ws
+{
 
 /** This class represent a Folder on a MIDAS 3 server. */
 class Folder : public mws::Object
@@ -31,19 +33,24 @@ public:
   ~Folder();
 
   bool Fetch();
+
   bool FetchTree();
+
   bool FetchParent();
+
   bool Commit();
+
   bool Delete();
 
   void SetObject(mdo::Object* object);
+
   void ResolveParents();
-     
+
 protected:
 
   m3do::Folder* m_Folder;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_m3wsFolder_h_
+#endif // _m3wsFolder_h_

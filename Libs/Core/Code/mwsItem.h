@@ -18,13 +18,15 @@
 #include "mwsObject.h"
 #include "mwsBitstream.h"
 
-namespace mdo{
-  class Item;
+namespace mdo
+{
+class Item;
 }
 
-namespace mws{
+namespace mws
+{
 
-/** This class represent an item on the MIDAS server. 
+/** This class represent an item on the MIDAS server.
  *  An item has many bitstreams. */
 class Item : public Object
 {
@@ -34,12 +36,15 @@ public:
   ~Item();
 
   bool Fetch();
+
   bool FetchParent();
+
   bool Commit();
+
   bool Delete();
-  
+
   void SetObject(mdo::Object* object);
-   
+
 protected:
 
   friend class ItemXMLParser;
@@ -47,6 +52,6 @@ protected:
 
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mwsItem_h_
+#endif // _mwsItem_h_

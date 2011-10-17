@@ -17,13 +17,15 @@
 
 #include "mwsObject.h"
 
-namespace mdo{
-  class Collection;
+namespace mdo
+{
+class Collection;
 }
 
-namespace mws{
+namespace mws
+{
 
-/** This class represent an collection on the MIDAS server. 
+/** This class represent an collection on the MIDAS server.
  *  An collection has many bitstreams. */
 class Collection : public Object
 {
@@ -31,20 +33,24 @@ public:
 
   Collection();
   ~Collection();
-  
+
   // Fill the collection
   bool Fetch();
+
   bool FetchParent();
+
   bool Commit();
+
   bool Delete();
 
   void SetObject(mdo::Object* object);
+
 protected:
 
   friend class CollectionXMLParser;
   mdo::Collection* m_Collection;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mwsCollection_h_
+#endif // _mwsCollection_h_

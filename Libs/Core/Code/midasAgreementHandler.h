@@ -22,8 +22,12 @@ class midasSynchronizer;
 class midasAgreementHandler
 {
 public:
-  midasAgreementHandler() {}
-  virtual ~midasAgreementHandler() {}
+  midasAgreementHandler()
+  {
+  }
+  virtual ~midasAgreementHandler()
+  {
+  }
   virtual bool HandleAgreement(midasSynchronizer* synch) = 0;
 
 };

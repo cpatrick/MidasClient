@@ -33,6 +33,6 @@ void midasStdOutLog::Message(std::string text)
 void midasStdOutLog::Status(std::string text)
 {
   (void)text;
-  //no-op in the CLI view until we get a curses view :)
+  // no-op in the CLI view until we get a curses view :)
 }
 

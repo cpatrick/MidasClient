@@ -14,7 +14,8 @@
 #include <sstream>
 #include <iostream>
 
-namespace mds{
+namespace mds
+{
 
 /** Constructor */
 SQLiteDatabase::SQLiteDatabase()
@@ -25,10 +26,10 @@ SQLiteDatabase::SQLiteDatabase()
   m_ErrorMessage = "";
   m_InitialFetch = false;
   m_Active = false;
-  m_InitialFetchResult=SQLITE_DONE;
+  m_InitialFetchResult = SQLITE_DONE;
   m_Mutex = new QMutex();
 }
-  
+
 /** Destructor */
 SQLiteDatabase::~SQLiteDatabase()
 {
@@ -40,7 +41,7 @@ bool SQLiteDatabase::Open(const char* dbname)
 {
   this->m_Mutex->lock();
   int result = sqlite3_open(dbname, &m_Database);
-  if(result)
+  if( result )
     {
     m_ErrorMessage = sqlite3_errmsg(m_Database);
     sqlite3_close(m_Database);
@@ -55,92 +56,94 @@ bool SQLiteDatabase::Close()
   // Finalize any statements;
   sqlite3_finalize(m_Statement);
   m_Statement = NULL;
-      
+
   int result = sqlite3_close(m_Database);
-  if(result)
+  if( result )
     {
     m_ErrorMessage = sqlite3_errmsg(m_Database);
     this->m_Mutex->unlock();
     return false;
     }
   this->m_Mutex->unlock();
-  return true; 
+  return true;
 }
-  
+
 /** Set the query */
 bool SQLiteDatabase::SetQuery(const char* query)
 {
-  if(m_Statement)
+  if( m_Statement )
     {
     int finalizeStatus = sqlite3_finalize(m_Statement);
     m_Statement = NULL;
-    if (finalizeStatus != SQLITE_OK)
+    if( finalizeStatus != SQLITE_OK )
       {
       m_ErrorMessage = "SetQuery(): Finalize returned unexpected code ";
       return false;
       }
     }
-    
+
   const char *unused_statement;
-  int prepareStatus = sqlite3_prepare_v2(m_Database, 
-                                         query,
-                                         static_cast<int>(strlen(query)),
-                                         &m_Statement,
-                                         &unused_statement);
-    
-  if (prepareStatus != SQLITE_OK)
+  int         prepareStatus = sqlite3_prepare_v2(m_Database,
+                                                 query,
+                                                 static_cast<int>(strlen(query) ),
+                                                 &m_Statement,
+                                                 &unused_statement);
+
+  if( prepareStatus != SQLITE_OK )
     {
     m_ErrorMessage =  "Cannot prepare transaction";
     return false;
     }
-  m_ErrorMessage = "";  
+  m_ErrorMessage = "";
   return true;
 }
 
 /** Execute */
 bool SQLiteDatabase::Execute()
 {
-  if(m_Statement == NULL)
+  if( m_Statement == NULL )
     {
-    m_ErrorMessage =  "Execute(): Query is not null but prepared statement is.  There may have been an error during SetQuery().";
+    m_ErrorMessage =
+      "Execute(): Query is not null but prepared statement is.  There may have been an error during SetQuery().";
     return false;
     }
   else
     {
     sqlite3_reset(m_Statement);
     }
-    
+
   m_InitialFetch = true;
   m_Active = true;
-  
+
   int result = sqlite3_step(m_Statement);
   m_InitialFetchResult = result;
-  
-  if (result == SQLITE_DONE)
+
+  if( result == SQLITE_DONE )
     {
     m_ErrorMessage = "";
     }
-  else if (result != SQLITE_ROW)
+  else if( result != SQLITE_ROW )
     {
     m_Active = false;
     m_ErrorMessage = sqlite3_errmsg(m_Database);
     return false;
     }
-    
-  m_ErrorMessage = "";  
-  return true;  
+
+  m_ErrorMessage = "";
+  return true;
 }
 
 /** Run Set query and execute in one command */
 bool SQLiteDatabase::ExecuteQuery(const char* query)
 {
   bool success = this->SetQuery(query);
-  if(success)
+
+  if( success )
     {
     success = this->Execute();
     }
   return success;
-} 
+}
 
 /** Get the autoincremented id of the last insert */
 int SQLiteDatabase::GetLastInsertId()
@@ -148,53 +151,52 @@ int SQLiteDatabase::GetLastInsertId()
   this->ExecuteQuery("SELECT last_insert_rowid()");
   return this->GetNextRow() ? this->GetValueAsInt(0) : -1;
 }
-  
+
 /** Get number of columns */
-const char* SQLiteDatabase::GetFieldName(unsigned int column)
+const char * SQLiteDatabase::GetFieldName(unsigned int column)
 {
-  if(!m_Active)
+  if( !m_Active )
     {
     return NULL;
     }
-    
-  if (column >= this->GetNumberOfFields())
+
+  if( column >= this->GetNumberOfFields() )
     {
     m_ErrorMessage = "GetFieldName(): Illegal field index ";
     return NULL;
     }
-    
+
   return sqlite3_column_name(m_Statement, column);
 }
-
 
 /** Get number of columns */
 unsigned int SQLiteDatabase::GetNumberOfFields()
 {
-  if(!m_Active)
+  if( !m_Active )
     {
     return 0;
     }
-    
-  if(m_Statement)
+
+  if( m_Statement )
     {
     return sqlite3_column_count(m_Statement);
     }
-  return 0;  
+  return 0;
 }
-  
+
 /** Fetch the next row */
 bool SQLiteDatabase::GetNextRow()
 {
-  if(!m_Active)
+  if( !m_Active )
     {
     m_ErrorMessage = "Query is not active";
     return false;
     }
 
-  if(m_InitialFetch)
+  if( m_InitialFetch )
     {
     m_InitialFetch = false;
-    if(m_InitialFetchResult == SQLITE_DONE)
+    if( m_InitialFetchResult == SQLITE_DONE )
       {
       return false;
       }
@@ -206,11 +208,11 @@ bool SQLiteDatabase::GetNextRow()
   else
     {
     int result = sqlite3_step(m_Statement);
-    if (result == SQLITE_DONE)
+    if( result == SQLITE_DONE )
       {
       return false;
       }
-    else if (result == SQLITE_ROW)
+    else if( result == SQLITE_ROW )
       {
       return true;
       }
@@ -221,112 +223,111 @@ bool SQLiteDatabase::GetNextRow()
       return false;
       }
     }
-  return true;  
+  return true;
 }
-  
+
 /** Get the column value */
 int SQLiteDatabase::GetValueAsInt(unsigned int column)
 {
-  if(m_Active == false)
+  if( m_Active == false )
     {
     m_ErrorMessage = "Query is not active";
     return 0;
     }
-  else if (column >= this->GetNumberOfFields())
+  else if( column >= this->GetNumberOfFields() )
     {
     m_ErrorMessage = "DataValue() called with out-of-range column index ";
     return 0;
     }
   else
     {
-    switch (sqlite3_column_type(m_Statement, column))
+    switch( sqlite3_column_type(m_Statement, column) )
       {
       case SQLITE_INTEGER:
         return sqlite3_column_int(m_Statement, column);
       }
     }
-  
-  m_ErrorMessage = "Wrong column type";  
+
+  m_ErrorMessage = "Wrong column type";
   return 0;
 }
 
 /** Get the column value */
 sqlite_int64 SQLiteDatabase::GetValueAsInt64(unsigned int column)
 {
-  if(m_Active == false)
+  if( m_Active == false )
     {
     m_ErrorMessage = "Query is not active";
     return 0;
     }
-  else if (column >= this->GetNumberOfFields())
+  else if( column >= this->GetNumberOfFields() )
     {
     m_ErrorMessage = "DataValue() called with out-of-range column index ";
     return 0;
     }
   else
     {
-    switch (sqlite3_column_type(m_Statement, column))
+    switch( sqlite3_column_type(m_Statement, column) )
       {
       case SQLITE_INTEGER:
         return sqlite3_column_int64(m_Statement, column);
       }
     }
-  
-  m_ErrorMessage = "Wrong column type";  
+
+  m_ErrorMessage = "Wrong column type";
   return 0;
 }
 
 /** Get the column value */
 float SQLiteDatabase::GetValueAsFloat(unsigned int column)
 {
-  if(m_Active == false)
+  if( m_Active == false )
     {
     m_ErrorMessage = "Query is not active";
     return 0;
     }
-  else if (column >= this->GetNumberOfFields())
+  else if( column >= this->GetNumberOfFields() )
     {
     m_ErrorMessage = "DataValue() called with out-of-range column index ";
     return 0;
     }
   else
     {
-    switch (sqlite3_column_type(m_Statement, column))
+    switch( sqlite3_column_type(m_Statement, column) )
       {
       case SQLITE_FLOAT:
-        return static_cast<float>(sqlite3_column_double(m_Statement, column));
+        return static_cast<float>(sqlite3_column_double(m_Statement, column) );
       }
     }
-  m_ErrorMessage = "Wrong column type";  
+  m_ErrorMessage = "Wrong column type";
   return 0;
 }
 
-const char* SQLiteDatabase::GetValueAsString(unsigned int column)
+const char * SQLiteDatabase::GetValueAsString(unsigned int column)
 {
-  if(m_Active == false)
+  if( m_Active == false )
     {
     m_ErrorMessage = "Query is not active";
     return NULL;
     }
-  else if (column >= this->GetNumberOfFields())
+  else if( column >= this->GetNumberOfFields() )
     {
     m_ErrorMessage = "DataValue() called with out-of-range column index ";
     return NULL;
     }
   else
     {
-    switch (sqlite3_column_type(m_Statement, column))
+    switch( sqlite3_column_type(m_Statement, column) )
       {
       case SQLITE_TEXT:
-        return reinterpret_cast<const char*>(sqlite3_column_text(m_Statement, column));
+        return reinterpret_cast<const char *>(sqlite3_column_text(m_Statement, column) );
       case SQLITE_NULL:
         return "";
       }
     }
-  
-  m_ErrorMessage = "Wrong column type";  
+
+  m_ErrorMessage = "Wrong column type";
   return NULL;
 }
-
 
 } // end namespace

@@ -13,10 +13,11 @@
 
 #include <QString>
 
-namespace m3do{
+namespace m3do
+{
 
 Community::Community()
-: Folder(), m_FolderId(0)
+  : Folder(), m_FolderId(0)
 {
 }
 
@@ -33,7 +34,7 @@ Community::Community(Community* other)
 }
 
 Community::~Community()
-{  
+{
 }
 
 void Community::SetFolderId(int id)
@@ -41,7 +42,7 @@ void Community::SetFolderId(int id)
   m_FolderId = id;
 }
 
-int& Community::GetFolderId()
+int & Community::GetFolderId()
 {
   return m_FolderId;
 }

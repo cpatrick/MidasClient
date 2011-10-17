@@ -23,14 +23,17 @@ midasDotProgressReporter::~midasDotProgressReporter()
 
 void midasDotProgressReporter::UpdateProgress(double current, double max)
 {
-  if (max == 0 || this->Done) return;
+  if( max == 0 || this->Done )
+    {
+    return;
+    }
   double fraction = current / max;
 
   this->currLength = static_cast<int>(
-    fraction * static_cast<double>(maxLength));
-  
+      fraction * static_cast<double>(maxLength) );
+
   this->PrintBar();
-  if(current == max)
+  if( current == max )
     {
     this->Done = true;
     std::cout << " Done" << std::endl;
@@ -56,8 +59,7 @@ void midasDotProgressReporter::UpdateTotalProgress(double value)
 void midasDotProgressReporter::PrintBar()
 {
   int toWrite = this->currLength - this->oldLength;
-
-  for(int i = 0; i < toWrite; i++)
+  for( int i = 0; i < toWrite; i++ )
     {
     std::cout << ".";
     }
@@ -80,3 +82,4 @@ void midasDotProgressReporter::ResetProgress()
 void midasDotProgressReporter::SetIndeterminate()
 {
 }
+

@@ -18,25 +18,27 @@
 
 class midasAuthenticator : public midasLogAware
 {
-  public:
-    midasAuthenticator();
-    ~midasAuthenticator();
+public:
+  midasAuthenticator();
+  ~midasAuthenticator();
 
-    bool AddAuthProfile(const std::string& user, const std::string& appName,
-      const std::string& password, const std::string& rootDir,
-      const std::string& profileName, bool isKey = false);
-    
-    void ClearToken();
+  bool AddAuthProfile(const std::string& user, const std::string& appName, const std::string& password,
+                      const std::string& rootDir, const std::string& profileName,
+                      bool isKey = false);
 
-    void SetProfile(const std::string& profile);
-    std::string GetProfile();
+  void ClearToken();
 
-    bool Login();
+  void SetProfile(const std::string& profile);
 
-    bool IsAnonymous();
-  protected:
-    std::string Token;
-    std::string Profile;
+  std::string GetProfile();
+
+  bool Login();
+
+  bool IsAnonymous();
+
+protected:
+  std::string Token;
+  std::string Profile;
 };
 
 #endif

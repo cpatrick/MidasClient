@@ -14,11 +14,13 @@
 
 #include "mdsObject.h"
 
-namespace mdo{
-  class Community;
+namespace mdo
+{
+class Community;
 }
 
-namespace mds{
+namespace mds
+{
 
 class Community : public Object
 {
@@ -28,15 +30,21 @@ public:
   ~Community();
 
   bool Fetch();
+
   bool Commit();
+
   bool FetchTree();
+
   bool FetchSize();
+
   bool Delete(bool deleteOnDisk);
 
   void ParentPathChanged(std::string parentPath);
 
   void SetObject(mdo::Object* object);
+
   void SetRecursive(bool recurse);
+
   void SetPath(std::string path);
 
 protected:
@@ -46,6 +54,6 @@ protected:
 
 };
 
-} //end namespace
+} // end namespace
 
-#endif //__mdsCommunity_h_
+#endif // __mdsCommunity_h_

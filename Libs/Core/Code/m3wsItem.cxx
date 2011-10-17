@@ -18,77 +18,78 @@
 #include <QScriptEngine>
 #include <QScriptValueIterator>
 
-namespace m3ws{
+namespace m3ws
+{
 
 /** Custom Response parser for midas.item.get */
 class ItemResponseParser : public mws::RestResponseParser
 {
 public:
   ItemResponseParser()
-    {
-    m_Item = NULL; 
-    }
-    
-  ~ItemResponseParser() 
-    {
-    }
+  {
+    m_Item = NULL;
+  }
+
+  ~ItemResponseParser()
+  {
+  }
 
   virtual bool Parse(const QString& response)
-    {
-    if(!RestResponseParser::Parse(response))
+  {
+    if( !RestResponseParser::Parse(response) )
       {
       return false;
       }
 
     QScriptEngine engine;
-    QScriptValue revisions = engine.evaluate(response).property("data").property("revisions");
-    if(revisions.isArray())
+    QScriptValue  revisions = engine.evaluate(response).property("data").property("revisions");
+    if( revisions.isArray() )
       {
       QScriptValueIterator rev(revisions);
-      while(rev.hasNext())
+      while( rev.hasNext() )
         {
         rev.next();
         QScriptValue bitstreams = rev.value().property("bitstreams");
-        if(bitstreams.isArray())
+        if( bitstreams.isArray() )
           {
           QScriptValueIterator bitstream(bitstreams);
-          while(bitstream.hasNext())
+          while( bitstream.hasNext() )
             {
             bitstream.next();
-            if(bitstream.value().property("bitstream_id").toInt32() <= 0)
+            if( bitstream.value().property("bitstream_id").toInt32() <= 0 )
               {
               break;
               }
             m3do::Bitstream* b = new m3do::Bitstream();
-            b->SetId(bitstream.value().property("bitstream_id").toInt32());
-            b->SetName(bitstream.value().property("name").toString().toStdString().c_str());
-            b->SetSize(bitstream.value().property("sizebytes").toString().toStdString());
-            b->SetChecksum(bitstream.value().property("checksum").toString().toStdString());
+            b->SetId(bitstream.value().property("bitstream_id").toInt32() );
+            b->SetName(bitstream.value().property("name").toString().toStdString().c_str() );
+            b->SetSize(bitstream.value().property("sizebytes").toString().toStdString() );
+            b->SetChecksum(bitstream.value().property("checksum").toString().toStdString() );
             m_Item->AddBitstream(b);
             }
           }
         }
       }
     return true;
-    }
+  }
 
   /** Set the item object */
-  void SetItem(m3do::Item* item) 
-    {
+  void SetItem(m3do::Item* item)
+  {
     m_Item = item;
-    }
+  }
 
 protected:
   m3do::Item* m_Item;
 };
-//------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 /** Constructor */
 Item::Item()
 {
   m_Item = NULL;
 }
-  
+
 /** Destructor */
 Item::~Item()
 {
@@ -96,8 +97,8 @@ Item::~Item()
 
 // Set the object
 void Item::SetObject(mdo::Object* object)
-{  
-  m_Item = static_cast<m3do::Item*>(object);
+{
+  m_Item = static_cast<m3do::Item *>(object);
 }
 
 /** Fetch */
@@ -113,36 +114,36 @@ bool Item::Fetch()
   */
 bool Item::FetchTree()
 {
-  if(!m_Item)
+  if( !m_Item )
     {
     std::cerr << "Item::Fetch() : Item not set" << std::endl;
     return false;
     }
 
-  if(m_Item->IsFetched())
+  if( m_Item->IsFetched() )
     {
     return true;
     }
 
-  if(!m_Item->GetId())
+  if( !m_Item->GetId() )
     {
     std::cerr << "Item::Fetch() : Item id not set" << std::endl;
     return false;
-    } 
-    
+    }
+
   ItemResponseParser parser;
   parser.SetItem(m_Item);
   m_Item->Clear();
-  parser.AddTag("name", m_Item->GetName());
-  parser.AddTag("description", m_Item->GetDescription());
-  parser.AddTag("uuid", m_Item->GetUuid());
-  parser.AddTag("folder_id", m_Item->GetParentStr());
-  //parser.AddTag("hasAgreement", m_Folder->RefAgreement());
-  //parser.AddTag("size", m_Folder->GetSize());
-  
+  parser.AddTag("name", m_Item->GetName() );
+  parser.AddTag("description", m_Item->GetDescription() );
+  parser.AddTag("uuid", m_Item->GetUuid() );
+  parser.AddTag("folder_id", m_Item->GetParentStr() );
+  // parser.AddTag("hasAgreement", m_Folder->RefAgreement());
+  // parser.AddTag("size", m_Folder->GetSize());
+
   std::stringstream url;
   url << "midas.item.get&head&id=" << m_Item->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser))
+  if( !mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser) )
     {
     return false;
     }
@@ -153,7 +154,8 @@ bool Item::FetchTree()
 bool Item::FetchParent()
 {
   int id = m_Item->GetParentId();
-  if(id)
+
+  if( id )
     {
     m3do::Folder* parent = new m3do::Folder;
     m_Item->SetParentFolder(parent);
@@ -168,13 +170,13 @@ bool Item::FetchParent()
 
 bool Item::Delete()
 {
-  if(!m_Item)
+  if( !m_Item )
     {
     std::cerr << "Item::Delete() : Item not set" << std::endl;
     return false;
     }
 
-  if(!m_Item->GetId())
+  if( !m_Item->GetId() )
     {
     std::cerr << "Item::Delete() : Item id not set" << std::endl;
     return false;
@@ -182,7 +184,7 @@ bool Item::Delete()
 
   std::stringstream url;
   url << "midas.item.delete&id=" << m_Item->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
+  if( !mws::WebAPI::Instance()->Execute(url.str().c_str() ) )
     {
     return false;
     }
@@ -192,13 +194,14 @@ bool Item::Delete()
 bool Item::Commit()
 {
   std::stringstream postData;
-  postData << "uuid=" << m_Item->GetUuid() 
-    << "&parentid=" << m_Item->GetParentId()
-    << "&name=" << m_Item->GetName()
-    << "&description=" << m_Item->GetDescription();
+
+  postData << "uuid=" << m_Item->GetUuid()
+           << "&parentid=" << m_Item->GetParentId()
+           << "&name=" << m_Item->GetName()
+           << "&description=" << m_Item->GetDescription();
 
   return mws::WebAPI::Instance()->Execute("midas.item.create", NULL,
-    postData.str().c_str());
+                                          postData.str().c_str() );
 }
 
 } // end namespace

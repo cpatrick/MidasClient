@@ -14,14 +14,15 @@
 #include "mdoProxyInterface.h"
 #include "mdoObject.h"
 
-namespace mdo{
+namespace mdo
+{
 
 /** Constructor */
 Proxy::Proxy()
 {
   m_Object = 0;
 }
-  
+
 /** Destructor */
 Proxy::~Proxy()
 {
@@ -40,58 +41,60 @@ unsigned int Proxy::GetNumberOfInterfaces()
 {
   return m_Interfaces.size();
 }
-  
+
 /** Set Object*/
 void Proxy::SetObject(Object* object)
 {
   m_Object = object;
-  std::vector<ProxyInterface*>::iterator it =  m_Interfaces.begin();
-  while(it != m_Interfaces.end())
+  std::vector<ProxyInterface *>::iterator it =  m_Interfaces.begin();
+  while( it != m_Interfaces.end() )
     {
     (*it)->SetObject(m_Object);
     it++;
     }
 }
-  
+
 /** Load function. This function dispatch the load based on the interfaces. */
 bool Proxy::Load()
 {
-  if(m_Interfaces.size() == 0)
+  if( m_Interfaces.size() == 0 )
     {
     std::cerr << "Proxy::Load Interface not set" << std::endl;
     return false;
     }
-  
-  std::vector<ProxyInterface*>::iterator it = m_Interfaces.begin();
-  while(it != m_Interfaces.end())
+
+  std::vector<ProxyInterface *>::iterator it = m_Interfaces.begin();
+  while( it != m_Interfaces.end() )
     {
-    if((*it)->Fetch())
+    if( (*it)->Fetch() )
       {
       return true;
       }
-    it++;   
-    } 
+    it++;
+    }
+
   return false;
 }
 
 /** Load function. This function dispatch the load based on the interfaces. */
 bool Proxy::LoadTree()
 {
-  if(m_Interfaces.size() == 0)
+  if( m_Interfaces.size() == 0 )
     {
     std::cerr << "Proxy::Load Interface not set" << std::endl;
     return false;
     }
-    
-  std::vector<ProxyInterface*>::iterator it = m_Interfaces.begin();
-  while(it != m_Interfaces.end())
+
+  std::vector<ProxyInterface *>::iterator it = m_Interfaces.begin();
+  while( it != m_Interfaces.end() )
     {
-    if((*it)->FetchTree())
+    if( (*it)->FetchTree() )
       {
       return true;
       }
-    it++;  
-    } 
+    it++;
+    }
+
   return false;
 }
 

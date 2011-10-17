@@ -15,7 +15,8 @@
 
 #include <QString>
 
-namespace m3do{
+namespace m3do
+{
 
 Item::Item()
 {
@@ -24,7 +25,7 @@ Item::Item()
   m_ParentFolder = NULL;
 }
 
-//copy constructor
+// copy constructor
 Item::Item(Item* other)
 {
   m_Id = other->GetId();
@@ -37,8 +38,8 @@ Item::Item(Item* other)
 
 Item::~Item()
 {
-  std::vector<Bitstream*>::iterator i = m_Bitstreams.begin();
-  while(i != m_Bitstreams.end())
+  std::vector<Bitstream *>::iterator i = m_Bitstreams.begin();
+  while( i != m_Bitstreams.end() )
     {
     Bitstream* b = *i;
     ++i;
@@ -57,8 +58,8 @@ void Item::Clear()
 
 /** Load */
 bool Item::Load()
-{  
-  return m_Proxy->Load();   
+{
+  return m_Proxy->Load();
 }
 
 /** Fill the full tree with Folder and collection */
@@ -70,12 +71,13 @@ bool Item::LoadTree()
 bool Item::SetValue(std::string key, std::string value, bool append)
 {
   QString keyStr = key.c_str();
+
   keyStr = keyStr.toUpper();
   key = keyStr.toStdString();
 
-  if(key == "NAME")
+  if( key == "NAME" )
     {
-    if(append)
+    if( append )
       {
       m_Name += value;
       }
@@ -85,9 +87,9 @@ bool Item::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "DESCRIPTION")
+  if( key == "DESCRIPTION" )
     {
-    if(append)
+    if( append )
       {
       m_Description += value;
       }

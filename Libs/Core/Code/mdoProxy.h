@@ -15,7 +15,8 @@
 #include <string>
 #include <vector>
 
-namespace mdo{
+namespace mdo
+{
 
 class ProxyInterface;
 class Object;
@@ -30,25 +31,26 @@ public:
 
   /** Add a proxy interface */
   void AddInterface(ProxyInterface* interf);
- 
+
   /** Set Object*/
   void SetObject(Object* object);
-  
+
   /** Load function. This function dispatch the load based on the interfaces. */
   bool Load();
-  
-  /** LoadTree function. This function dispatch the load based on the interfaces. */
+
+  /** LoadTree function. This function dispatch the load based on the
+    interfaces. */
   bool LoadTree();
-  
+
   /** Return the number of attached interfaces */
   unsigned int GetNumberOfInterfaces();
-  
+
 protected:
-    
-  std::vector<ProxyInterface*> m_Interfaces;
-  Object*                      m_Object;
+
+  std::vector<ProxyInterface *> m_Interfaces;
+  Object*                       m_Object;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mdoProxy_h_
+#endif // _mdoProxy_h_

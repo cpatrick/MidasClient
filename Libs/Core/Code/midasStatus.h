@@ -19,25 +19,31 @@
  */
 class midasStatus
 {
-  public:
-    midasStatus(int id, std::string uuid, std::string name,
-      midasDirtyAction::Action action, midasResourceType::ResourceType type,
-      std::string path);
-    ~midasStatus();
+public:
+  midasStatus(int id, std::string uuid, std::string name, midasDirtyAction::Action action,
+              midasResourceType::ResourceType type,
+              std::string path);
+  ~midasStatus();
 
-    int GetId();
-    std::string GetName();
-    std::string GetUuid();
-    std::string GetPath();
-    midasDirtyAction::Action GetDirtyAction();
-    midasResourceType::ResourceType GetType();
-  protected:
-    int Id;
-    std::string Name;
-    std::string Uuid;
-    std::string Path;
-    midasDirtyAction::Action DirtyAction;
-    midasResourceType::ResourceType Type;
+  int GetId();
+
+  std::string GetName();
+
+  std::string GetUuid();
+
+  std::string GetPath();
+
+  midasDirtyAction::Action GetDirtyAction();
+
+  midasResourceType::ResourceType GetType();
+
+protected:
+  int                             Id;
+  std::string                     Name;
+  std::string                     Uuid;
+  std::string                     Path;
+  midasDirtyAction::Action        DirtyAction;
+  midasResourceType::ResourceType Type;
 };
 
 #endif

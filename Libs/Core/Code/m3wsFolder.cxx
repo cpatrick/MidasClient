@@ -17,60 +17,60 @@
 #include <QScriptEngine>
 #include <QScriptValueIterator>
 
-namespace m3ws{
-
+namespace m3ws
+{
 
 /** Custom Response parser for midas.community.list */
 class CommunityListResponseParser : public mws::RestResponseParser
 {
 public:
-   
+
   CommunityListResponseParser()
-    {
-    m_Folder = NULL; 
-    }
-    
-  virtual ~CommunityListResponseParser() 
-    {
-    }
+  {
+    m_Folder = NULL;
+  }
+
+  virtual ~CommunityListResponseParser()
+  {
+  }
 
   virtual bool Parse(const QString& response)
-    {
-    if(!RestResponseParser::Parse(response))
+  {
+    if( !RestResponseParser::Parse(response) )
       {
       return false;
       }
 
     QScriptEngine engine;
-    QScriptValue data = engine.evaluate(response).property("data");
-    if(data.isArray())
+    QScriptValue  data = engine.evaluate(response).property("data");
+    if( data.isArray() )
       {
       QScriptValueIterator comms(data);
-      while(comms.hasNext())
+      while( comms.hasNext() )
         {
         comms.next();
-        if(comms.value().property("community_id").toInt32() <= 0)
+        if( comms.value().property("community_id").toInt32() <= 0 )
           {
           break;
           }
         m3do::Community* comm = new m3do::Community();
-        comm->SetId(comms.value().property("community_id").toInt32());
-        comm->SetUuid(comms.value().property("uuid").toString().toStdString().c_str());
-        comm->SetName(comms.value().property("name").toString().toStdString().c_str());
-        comm->SetDescription(comms.value().property("description").toString().toStdString().c_str());
-        comm->SetFolderId(comms.value().property("folder_id").toInt32());
+        comm->SetId(comms.value().property("community_id").toInt32() );
+        comm->SetUuid(comms.value().property("uuid").toString().toStdString().c_str() );
+        comm->SetName(comms.value().property("name").toString().toStdString().c_str() );
+        comm->SetDescription(comms.value().property("description").toString().toStdString().c_str() );
+        comm->SetFolderId(comms.value().property("folder_id").toInt32() );
         m_Folder->AddFolder(comm);
         }
       }
     return true;
-    }
-  
+  }
+
   /** Set the Folder object */
-  void SetFolder(m3do::Folder* folder) 
-    {
+  void SetFolder(m3do::Folder* folder)
+  {
     m_Folder = folder;
-    }
-  
+  }
+
 protected:
   m3do::Folder* m_Folder;
 };
@@ -79,117 +79,119 @@ protected:
 class UserFoldersResponseParser : public CommunityListResponseParser
 {
   virtual bool Parse(const QString& response)
-    {
-    if(!RestResponseParser::Parse(response))
+  {
+    if( !RestResponseParser::Parse(response) )
       {
       return false;
       }
 
     QScriptEngine engine;
-    QScriptValue data = engine.evaluate(response).property("data");
-    if(data.isArray())
+    QScriptValue  data = engine.evaluate(response).property("data");
+    if( data.isArray() )
       {
       QScriptValueIterator comms(data);
-      while(comms.hasNext())
+      while( comms.hasNext() )
         {
         comms.next();
-        if(comms.value().property("folder_id").toInt32() <= 0)
+        if( comms.value().property("folder_id").toInt32() <= 0 )
           {
           break;
           }
         m3do::Folder* folder = new m3do::Folder();
-        folder->SetId(comms.value().property("folder_id").toInt32());
-        folder->SetUuid(comms.value().property("uuid").toString().toStdString().c_str());
-        folder->SetName(comms.value().property("name").toString().toStdString().c_str());
-        folder->SetDescription(comms.value().property("description").toString().toStdString().c_str());
+        folder->SetId(comms.value().property("folder_id").toInt32() );
+        folder->SetUuid(comms.value().property("uuid").toString().toStdString().c_str() );
+        folder->SetName(comms.value().property("name").toString().toStdString().c_str() );
+        folder->SetDescription(comms.value().property("description").toString().toStdString().c_str() );
         m_Folder->AddFolder(folder);
         }
       }
     return true;
-    }
+  }
+
 };
 
-/** Custom Response parser for midas.folder.children and midas.community.children */
+/** Custom Response parser for midas.folder.children and
+  midas.community.children */
 class FolderResponseParser : public mws::RestResponseParser
 {
 public:
   FolderResponseParser()
-    {
-    m_Folder = NULL; 
-    }
-    
-  ~FolderResponseParser() 
-    {
-    }
+  {
+    m_Folder = NULL;
+  }
+
+  ~FolderResponseParser()
+  {
+  }
 
   virtual bool Parse(const QString& response)
-    {
-    if(!RestResponseParser::Parse(response))
+  {
+    if( !RestResponseParser::Parse(response) )
       {
       return false;
       }
 
     QScriptEngine engine;
-    QScriptValue data = engine.evaluate(response).property("data");
-    QScriptValue folders = data.property("folders");
-    if(folders.isArray())
+    QScriptValue  data = engine.evaluate(response).property("data");
+    QScriptValue  folders = data.property("folders");
+    if( folders.isArray() )
       {
       QScriptValueIterator f(folders);
-      while(f.hasNext())
+      while( f.hasNext() )
         {
         f.next();
-        if(f.value().property("folder_id").toInt32() <= 0)
+        if( f.value().property("folder_id").toInt32() <= 0 )
           {
           break;
           }
         m3do::Folder* folder = new m3do::Folder();
-        folder->SetId(f.value().property("folder_id").toInt32());
-        folder->SetUuid(f.value().property("uuid").toString().toStdString().c_str());
-        folder->SetName(f.value().property("name").toString().toStdString().c_str());
-        folder->SetDescription(f.value().property("description").toString().toStdString().c_str());
+        folder->SetId(f.value().property("folder_id").toInt32() );
+        folder->SetUuid(f.value().property("uuid").toString().toStdString().c_str() );
+        folder->SetName(f.value().property("name").toString().toStdString().c_str() );
+        folder->SetDescription(f.value().property("description").toString().toStdString().c_str() );
         m_Folder->AddFolder(folder);
         }
       }
 
     QScriptValue items = data.property("items");
-    if(items.isArray())
+    if( items.isArray() )
       {
       QScriptValueIterator i(items);
-      while(i.hasNext())
+      while( i.hasNext() )
         {
         i.next();
-        if(i.value().property("item_id").toInt32() <= 0)
+        if( i.value().property("item_id").toInt32() <= 0 )
           {
           break;
           }
         m3do::Item* item = new m3do::Item();
-        item->SetId(i.value().property("item_id").toInt32());
-        item->SetUuid(i.value().property("uuid").toString().toStdString().c_str());
-        item->SetName(i.value().property("name").toString().toStdString().c_str());
-        item->SetDescription(i.value().property("description").toString().toStdString().c_str());
+        item->SetId(i.value().property("item_id").toInt32() );
+        item->SetUuid(i.value().property("uuid").toString().toStdString().c_str() );
+        item->SetName(i.value().property("name").toString().toStdString().c_str() );
+        item->SetDescription(i.value().property("description").toString().toStdString().c_str() );
         m_Folder->AddItem(item);
         }
       }
     return true;
-    }
+  }
 
   /** Set the Folder object */
-  void SetFolder(m3do::Folder* folder) 
-    {
+  void SetFolder(m3do::Folder* folder)
+  {
     m_Folder = folder;
-    }
+  }
 
 protected:
   m3do::Folder* m_Folder;
 };
-//------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 /** Constructor */
 Folder::Folder()
 {
   m_Folder = NULL;
 }
-  
+
 /** Destructor */
 Folder::~Folder()
 {
@@ -197,25 +199,25 @@ Folder::~Folder()
 
 // Add the object
 void Folder::SetObject(mdo::Object* object)
-{  
-  m_Folder = static_cast<m3do::Folder*>(object);
+{
+  m_Folder = static_cast<m3do::Folder *>(object);
 }
 
 /** Fetch */
 bool Folder::Fetch()
 {
-  if(!m_Folder)
+  if( !m_Folder )
     {
     std::cerr << "Folder::Fetch() : Folder not set" << std::endl;
     return false;
     }
 
-  if(m_Folder->IsFetched())
+  if( m_Folder->IsFetched() )
     {
     return true;
     }
 
-  if(!m_Folder->GetId())
+  if( !m_Folder->GetId() )
     {
     std::cerr << "Folder::Fetch() : Folder id not set" << std::endl;
     return false;
@@ -223,31 +225,31 @@ bool Folder::Fetch()
 
   mws::RestResponseParser parser;
   m_Folder->Clear();
-  parser.AddTag("name", m_Folder->GetName());
-  parser.AddTag("description", m_Folder->GetDescription());
-  parser.AddTag("uuid", m_Folder->GetUuid());
-  //parser.AddTag("hasAgreement", m_Folder->RefAgreement());
-  //parser.AddTag("size", m_Folder->GetSize());
+  parser.AddTag("name", m_Folder->GetName() );
+  parser.AddTag("description", m_Folder->GetDescription() );
+  parser.AddTag("uuid", m_Folder->GetUuid() );
+  // parser.AddTag("hasAgreement", m_Folder->RefAgreement());
+  // parser.AddTag("size", m_Folder->GetSize());
 
   std::stringstream url;
-  if(m_Folder->GetResourceType() == midas3ResourceType::COMMUNITY)
+  if( m_Folder->GetResourceType() == midas3ResourceType::COMMUNITY )
     {
     url << "midas.community.get&id=" << m_Folder->GetId();
-    if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser))
+    if( !mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser) )
       {
       return false;
       }
     }
   else
     {
-    parser.AddTag("parent_id", m_Folder->GetParentStr());
+    parser.AddTag("parent_id", m_Folder->GetParentStr() );
     url << "midas.folder.get&id=" << m_Folder->GetId();
-    if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser))
+    if( !mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser) )
       {
       return false;
       }
     }
-  
+
   m_Folder->SetFetched(true);
   return true;
 }
@@ -258,18 +260,18 @@ bool Folder::Fetch()
   */
 bool Folder::FetchTree()
 {
-  if(m_Folder->GetId() == 0)
+  if( m_Folder->GetId() == 0 )
     {
     CommunityListResponseParser commParser;
     commParser.SetFolder(m_Folder);
-    if(!mws::WebAPI::Instance()->Execute("midas.community.list", &commParser))
+    if( !mws::WebAPI::Instance()->Execute("midas.community.list", &commParser) )
       {
       return false;
       }
 
     UserFoldersResponseParser folderParser;
     folderParser.SetFolder(m_Folder);
-    if(!mws::WebAPI::Instance()->Execute("midas.user.folders", &folderParser))
+    if( !mws::WebAPI::Instance()->Execute("midas.user.folders", &folderParser) )
       {
       return false;
       }
@@ -279,9 +281,9 @@ bool Folder::FetchTree()
     FolderResponseParser parser;
     parser.SetFolder(m_Folder);
     std::stringstream url;
-    url << "midas." << m_Folder->GetTypeName() << ".children&id=" <<
-      m_Folder->GetId();
-    if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser))
+    url << "midas." << m_Folder->GetTypeName() << ".children&id="
+        << m_Folder->GetId();
+    if( !mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser) )
       {
       return false;
       }
@@ -292,11 +294,12 @@ bool Folder::FetchTree()
 bool Folder::FetchParent()
 {
   int id = m_Folder->GetParentId();
-  if(id)
+
+  if( id )
     {
     m3do::Folder* parent = new m3do::Folder;
     m_Folder->SetParentFolder(parent);
-    parent->SetId(m_Folder->GetParentId());
+    parent->SetId(m_Folder->GetParentId() );
 
     m3ws::Folder remote;
     remote.SetObject(parent);
@@ -307,13 +310,13 @@ bool Folder::FetchParent()
 
 bool Folder::Delete()
 {
-  if(!m_Folder)
+  if( !m_Folder )
     {
     std::cerr << "Folder::Delete() : Folder not set" << std::endl;
     return false;
     }
 
-  if(!m_Folder->GetId())
+  if( !m_Folder->GetId() )
     {
     std::cerr << "Folder::Delete() : Folder id not set" << std::endl;
     return false;
@@ -321,7 +324,7 @@ bool Folder::Delete()
 
   std::stringstream url;
   url << "midas.folder.delete&id=" << m_Folder->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
+  if( !mws::WebAPI::Instance()->Execute(url.str().c_str() ) )
     {
     return false;
     }
@@ -331,20 +334,21 @@ bool Folder::Delete()
 bool Folder::Commit()
 {
   std::stringstream postData;
-  postData << "uuid=" << m_Folder->GetUuid()
-    << "&name=" << m_Folder->GetName()
-    << "&description=" << m_Folder->GetDescription();
 
-  if(m_Folder->GetResourceType() == midas3ResourceType::COMMUNITY)
+  postData << "uuid=" << m_Folder->GetUuid()
+           << "&name=" << m_Folder->GetName()
+           << "&description=" << m_Folder->GetDescription();
+
+  if( m_Folder->GetResourceType() == midas3ResourceType::COMMUNITY )
     {
     return mws::WebAPI::Instance()->Execute("midas.community.create", NULL,
-      postData.str().c_str());
+                                            postData.str().c_str() );
     }
   else
     {
     postData << "&parentid=" << m_Folder->GetParentId();
     return mws::WebAPI::Instance()->Execute("midas.folder.create", NULL,
-      postData.str().c_str());
+                                            postData.str().c_str() );
     }
 }
 

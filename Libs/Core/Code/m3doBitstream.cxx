@@ -13,7 +13,8 @@
 
 #include <QString>
 
-namespace m3do{
+namespace m3do
+{
 
 Bitstream::Bitstream()
 {
@@ -22,7 +23,7 @@ Bitstream::Bitstream()
   m_ParentItem = NULL;
 }
 
-//copy constructor
+// copy constructor
 Bitstream::Bitstream(Bitstream* other)
 {
   m_Id = other->GetId();
@@ -48,8 +49,8 @@ void Bitstream::Clear()
 }
 
 bool Bitstream::Load()
-{  
-  return m_Proxy->Load();   
+{
+  return m_Proxy->Load();
 }
 
 bool Bitstream::LoadTree()

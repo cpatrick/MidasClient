@@ -14,7 +14,8 @@
 #include <sstream>
 #include <iostream>
 
-namespace mdo{
+namespace mdo
+{
 
 /** Constructor */
 Bitstream::Bitstream()
@@ -24,12 +25,12 @@ Bitstream::Bitstream()
   m_Size = "0";
   m_Name = "";
 }
-  
+
 /** Destructor */
 Bitstream::~Bitstream()
 {
-  for(std::vector<Assetstore*>::iterator i = m_Locations.begin();
-      i != m_Locations.end(); ++i)
+  for( std::vector<Assetstore *>::iterator i = m_Locations.begin();
+       i != m_Locations.end(); ++i )
     {
     delete *i;
     }

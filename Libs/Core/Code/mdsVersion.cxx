@@ -1,7 +1,8 @@
 #include "mdsVersion.h"
 #include "mdsDatabaseAPI.h"
 
-namespace mds {
+namespace mds
+{
 
 Version::Version()
 {
@@ -18,7 +19,7 @@ void Version::SetObject(mdo::Version object)
 
 bool Version::Commit()
 {
-  if(m_Version.Name == "")
+  if( m_Version.Name == "" )
     {
     return false;
     }
@@ -29,20 +30,20 @@ bool Version::Commit()
   std::stringstream query;
   query << "DELETE FROM version WHERE name='" << m_Version.Name << "'";
 
-  if(!db.Database->ExecuteQuery(query.str().c_str()))
+  if( !db.Database->ExecuteQuery(query.str().c_str() ) )
     {
     db.Database->ExecuteQuery("ROLLBACK");
     db.Close();
     return false;
     }
 
-  query.str(std::string());
-  
-  query << "INSERT INTO version (name, major, minor, patch) VALUES ('"
-    << m_Version.Name << "', '" << m_Version.Major << "', '"
-    << m_Version.Minor << "', '" << m_Version.Patch << "')";
+  query.str(std::string() );
 
-  if(!db.Database->ExecuteQuery(query.str().c_str()))
+  query << "INSERT INTO version (name, major, minor, patch) VALUES ('"
+        << m_Version.Name << "', '" << m_Version.Major << "', '"
+        << m_Version.Minor << "', '" << m_Version.Patch << "')";
+
+  if( !db.Database->ExecuteQuery(query.str().c_str() ) )
     {
     db.Database->ExecuteQuery("ROLLBACK");
     db.Close();
@@ -55,7 +56,7 @@ bool Version::Commit()
 
 bool Version::Fetch()
 {
-  if(m_Version.Name == "")
+  if( m_Version.Name == "" )
     {
     return false;
     }
@@ -65,15 +66,15 @@ bool Version::Fetch()
 
   std::stringstream query;
   query << "SELECT major, minor, patch FROM version WHERE name='"
-    << m_Version.Name << "'";
+        << m_Version.Name << "'";
 
-  if(!db.Database->ExecuteQuery(query.str().c_str()))
+  if( !db.Database->ExecuteQuery(query.str().c_str() ) )
     {
     db.Close();
     return false;
     }
 
-  if(db.Database->GetNextRow())
+  if( db.Database->GetNextRow() )
     {
     m_Version.Major = db.Database->GetValueAsInt(0);
     m_Version.Minor = db.Database->GetValueAsInt(1);

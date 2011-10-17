@@ -14,12 +14,14 @@
 
 #include "midasStandardIncludes.h"
 
-namespace mdo {
-  class Bitstream;
-  class Assetstore;
+namespace mdo
+{
+class Bitstream;
+class Assetstore;
 }
 
-namespace mws {
+namespace mws
+{
 /**
  * Abstract class which will receive a callback anytime a
  * bitstream about to be pulled is mirrored in multiple locations
@@ -27,8 +29,12 @@ namespace mws {
 class MirrorHandler
 {
 public:
-  MirrorHandler() {}
-  virtual ~MirrorHandler() {}
+  MirrorHandler()
+  {
+  }
+  virtual ~MirrorHandler()
+  {
+  }
 
   /**
    * This function takes a bitstream with multiple locations as an argument.
@@ -37,10 +43,10 @@ public:
    * 2) Automatically choose one for them, either randomly or intelligently.
    * It should return a pointer to the chosen location object.
    */
-  virtual mdo::Assetstore* HandleMirroredBitstream(
-    mdo::Bitstream* resource) = 0;
+  virtual mdo::Assetstore * HandleMirroredBitstream(mdo::Bitstream* resource) = 0;
+
 };
 
-} //end namespace
+} // end namespace
 
 #endif

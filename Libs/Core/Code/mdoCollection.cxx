@@ -14,7 +14,8 @@
 
 #include <QString>
 
-namespace mdo{
+namespace mdo
+{
 
 /** Constructor */
 Collection::Collection()
@@ -23,21 +24,22 @@ Collection::Collection()
   m_BitstreamCount = 0;
   m_ParentCommunity = NULL;
 }
-  
+
 /** Destructor */
 Collection::~Collection()
 {
   // Clean the items
-  std::vector<Item*>::iterator itItem = m_Items.begin();
-  while(itItem != m_Items.end())
+  std::vector<Item *>::iterator itItem = m_Items.begin();
+  while( itItem != m_Items.end() )
     {
     Item* item = *itItem;
     itItem++;
     delete item;
     }
+
   m_Items.clear();
 }
-  
+
 /** Load */
 bool Collection::Load()
 {
@@ -59,12 +61,13 @@ void Collection::Clear()
 bool Collection::SetValue(std::string key, std::string value, bool append)
 {
   QString keyStr = key.c_str();
+
   keyStr = keyStr.toUpper();
   key = keyStr.toStdString();
 
-  if(key == "NAME")
+  if( key == "NAME" )
     {
-    if(append)
+    if( append )
       {
       m_Name += value;
       }
@@ -74,9 +77,9 @@ bool Collection::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "COPYRIGHT")
+  if( key == "COPYRIGHT" )
     {
-    if(append)
+    if( append )
       {
       m_Copyright += value;
       }
@@ -86,9 +89,9 @@ bool Collection::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "DESCRIPTION")
+  if( key == "DESCRIPTION" )
     {
-    if(append)
+    if( append )
       {
       m_Description += value;
       }
@@ -98,9 +101,9 @@ bool Collection::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "INTRODUCTORY" || key == "INTRODUCTORYTEXT")
+  if( key == "INTRODUCTORY" || key == "INTRODUCTORYTEXT" )
     {
-    if(append)
+    if( append )
       {
       m_IntroductoryText += value;
       }

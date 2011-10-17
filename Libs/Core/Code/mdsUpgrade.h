@@ -15,7 +15,8 @@
 #include "midasStandardIncludes.h"
 #include "mdoVersion.h"
 
-namespace mds {
+namespace mds
+{
 
 class Upgrade
 {
@@ -24,7 +25,9 @@ public:
 
 protected:
   static bool Upgrade1_8_0();
+
   static bool Upgrade1_8_2();
+
 };
 
 } // end namespace mds

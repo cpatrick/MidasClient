@@ -14,11 +14,13 @@
 
 #include "mdsObject.h"
 
-namespace mdo{
-  class Collection;
+namespace mdo
+{
+class Collection;
 }
 
-namespace mds{
+namespace mds
+{
 
 class Collection : public Object
 {
@@ -28,17 +30,23 @@ public:
   ~Collection();
 
   bool Fetch();
+
   bool Commit();
+
   bool FetchTree();
+
   bool FetchSize();
+
   bool Delete(bool deleteOnDisk);
 
   void ParentPathChanged(std::string parentPath);
-  
+
   void SetObject(mdo::Object* object);
+
   void SetRecursive(bool recurse);
+
   void SetPath(std::string path);
-   
+
 protected:
   bool             m_Recurse;
   mdo::Collection* m_Collection;
@@ -46,6 +54,6 @@ protected:
 
 };
 
-} //end namespace
+} // end namespace
 
-#endif //__mdsCollection_h_
+#endif // __mdsCollection_h_

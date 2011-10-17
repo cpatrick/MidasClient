@@ -15,11 +15,12 @@
 #include "midasStandardIncludes.h"
 #include "midasLogAware.h"
 
-namespace mds {
+namespace mds
+{
 
 class ResourceUpdateHandler;
 
-/** 
+/**
  * This singleton class stores persistent info about the database
  * Typically these are used as defaults -- they can be overriden by a
  * specific database connection if needed
@@ -27,23 +28,26 @@ class ResourceUpdateHandler;
 class DatabaseInfo : public midasLogAware
 {
 public:
-  static DatabaseInfo* Instance(); //singleton
+  static DatabaseInfo * Instance(); // singleton
+
   ~DatabaseInfo();
 
   void SetPath(const std::string& path);
+
   std::string GetPath();
 
   void SetResourceUpdateHandler(mds::ResourceUpdateHandler* handler);
-  ResourceUpdateHandler* GetResourceUpdateHandler();
+
+  ResourceUpdateHandler * GetResourceUpdateHandler();
 
 protected:
   static DatabaseInfo* m_Instance;
-  DatabaseInfo(); //singleton: use Instance() to construct
+  DatabaseInfo(); // singleton: use Instance() to construct
 
   std::string            m_Path;
   ResourceUpdateHandler* m_ResourceUpdateHandler;
 };
 
-} //end namespace
+} // end namespace
 
 #endif

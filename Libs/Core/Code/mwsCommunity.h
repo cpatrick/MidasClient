@@ -17,13 +17,15 @@
 #include "mwsObject.h"
 #include "mwsCollection.h"
 
-namespace mdo{
-  class Community;
+namespace mdo
+{
+class Community;
 }
 
-namespace mws{
+namespace mws
+{
 
-/** This class represent an community on the MIDAS server. 
+/** This class represent an community on the MIDAS server.
  *  An community has many bitstreams. */
 class Community : public Object
 {
@@ -33,21 +35,26 @@ public:
   ~Community();
 
   bool Fetch();
+
   bool FetchTree();
+
   bool FetchParent();
+
   bool Commit();
+
   bool Delete();
 
   void SetObject(mdo::Object* object);
+
   void ResolveParents();
-     
+
 protected:
 
   friend class CommunityXMLParser;
 
-  mdo::Community*  m_Community;
+  mdo::Community* m_Community;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mwsCommunity_h_
+#endif // _mwsCommunity_h_

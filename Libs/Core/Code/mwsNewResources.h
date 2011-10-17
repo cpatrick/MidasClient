@@ -17,11 +17,13 @@
 #include "mwsObject.h"
 #include "mwsCollection.h"
 
-namespace mdo{
-  class Community;
+namespace mdo
+{
+class Community;
 }
 
-namespace mws{
+namespace mws
+{
 
 /** This class represent a list of modified resources on the server */
 class NewResources : public Object
@@ -33,28 +35,48 @@ public:
 
   // Fill the object
   bool Fetch();
+
   bool FetchTree();
+
   void SetObject(mdo::Object* object);
+
   bool Commit();
-  void ResolveParents() {} //do nothing (no parents)
 
-  std::vector<std::string> GetUuids() { return m_Uuids;}
-  void AddUuid(std::string uuid) { m_Uuids.push_back(uuid); }
+  void ResolveParents()
+  {
+  }                        // do nothing (no parents)
 
-  std::string GetSince() { return m_Since; }
-  void SetSince(std::string since) { m_Since = since; }
+  std::vector<std::string> GetUuids()
+  {
+    return m_Uuids;
+  }
+  void AddUuid(std::string uuid)
+  {
+    m_Uuids.push_back(uuid);
+  }
 
-  std::string & GetTimestamp() { return m_Timestamp; }
-     
+  std::string GetSince()
+  {
+    return m_Since;
+  }
+  void SetSince(std::string since)
+  {
+    m_Since = since;
+  }
+
+  std::string & GetTimestamp()
+  {
+    return m_Timestamp;
+  }
 protected:
 
   friend class NewResourcesXMLParser;
 
-  std::string m_Timestamp;
-  std::string m_Since;
+  std::string              m_Timestamp;
+  std::string              m_Since;
   std::vector<std::string> m_Uuids;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mwsNewResources_h_
+#endif // _mwsNewResources_h_

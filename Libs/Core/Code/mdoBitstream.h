@@ -15,7 +15,8 @@
 #include "mdoObject.h"
 #include <vector>
 
-namespace mdo{
+namespace mdo
+{
 
 class Item;
 class Assetstore;
@@ -31,34 +32,72 @@ public:
   void Clear();
 
   // Set/Get the name of bitstream
-  void SetName(const char* name) { m_Name = name; }
-  std::string & GetName() {return m_Name;}
+  void SetName(const char* name)
+  {
+    m_Name = name;
+  }
+  std::string & GetName()
+  {
+    return m_Name;
+  }
 
-  void SetLastModified(unsigned int time) { m_LastModified = time; }
-  long int GetLastModified() { return m_LastModified; }
+  void SetLastModified(unsigned int time)
+  {
+    m_LastModified = time;
+  }
+  long int GetLastModified()
+  {
+    return m_LastModified;
+  }
 
-  void SetPath(std::string path) { m_Path = path; }
-  std::string GetPath() { return m_Path; }
+  void SetPath(std::string path)
+  {
+    m_Path = path;
+  }
+  std::string GetPath()
+  {
+    return m_Path;
+  }
 
-  std::string GetTypeName() { return "Bitstream"; }
-  int GetResourceType() { return midasResourceType::BITSTREAM; }
+  std::string GetTypeName()
+  {
+    return "Bitstream";
+  }
+  int GetResourceType()
+  {
+    return midasResourceType::BITSTREAM;
+  }
 
-  void AddLocation(Assetstore* location) { m_Locations.push_back(location); }
-  void SetLocations(std::vector<Assetstore*> locations) { m_Locations = locations; }
-  std::vector<Assetstore*> & GetLocations() { return m_Locations; }
+  void AddLocation(Assetstore* location)
+  {
+    m_Locations.push_back(location);
+  }
+  void SetLocations(std::vector<Assetstore *> locations)
+  {
+    m_Locations = locations;
+  }
+  std::vector<Assetstore *> & GetLocations()
+  {
+    return m_Locations;
+  }
 
-  Item* GetParentItem() { return m_ParentItem; }
-  void SetParentItem(Item* item) { m_ParentItem = item; }
-
+  Item * GetParentItem()
+  {
+    return m_ParentItem;
+  }
+  void SetParentItem(Item* item)
+  {
+    m_ParentItem = item;
+  }
 protected:
 
-  std::string              m_Name;
-  std::string              m_Path;
-  std::vector<Assetstore*> m_Locations;
-  Item*                    m_ParentItem;
-  unsigned int             m_LastModified;
+  std::string               m_Name;
+  std::string               m_Path;
+  std::vector<Assetstore *> m_Locations;
+  Item*                     m_ParentItem;
+  unsigned int              m_LastModified;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mdoBitstream_h_
+#endif // _mdoBitstream_h_

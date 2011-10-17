@@ -18,7 +18,8 @@
 #include "mdoObject.h"
 #include "m3doFolder.h"
 
-namespace m3do{
+namespace m3do
+{
 
 /**
  * This class represent a MIDAS 3 community, which is just a top
@@ -33,19 +34,21 @@ public:
   ~Community();
 
   std::string GetTypeName();
+
   int GetResourceType();
 
   void SetParentFolder(Folder* folder);
 
   // The id is the community id, so we store the folder id separately
   void SetFolderId(int id);
-  int& GetFolderId();
-  
+
+  int & GetFolderId();
+
 protected:
   int m_FolderId;
-  
+
 };
 
-} //end namespace
+} // end namespace
 
 #endif

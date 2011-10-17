@@ -20,18 +20,19 @@
 #include <QMutexLocker>
 #include <QFileInfo>
 
-namespace mws {
+namespace mws
+{
 
 /** Singleton */
-WebAPI* WebAPI::m_Instance = NULL;
+WebAPI * WebAPI::m_Instance = NULL;
 
-WebAPI* WebAPI::Instance()
+WebAPI * WebAPI::Instance()
 {
-  if(m_Instance != NULL)
+  if( m_Instance != NULL )
     {
-    return m_Instance; 
+    return m_Instance;
     }
-  else 
+  else
     {
     m_Instance = new WebAPI();
     }
@@ -39,7 +40,7 @@ WebAPI* WebAPI::Instance()
 }
 
 WebAPI::WebAPI()
-: m_MirrorHandler(NULL), m_Authenticator(NULL), m_Progress(NULL), m_ServerVersion(NULL)
+  : m_MirrorHandler(NULL), m_Authenticator(NULL), m_Progress(NULL), m_ServerVersion(NULL)
 {
   m_RestAPI = new RestAPI();
   m_Mutex = new QMutex(QMutex::Recursive);
@@ -57,12 +58,12 @@ void WebAPI::SetServerUrl(const char* baseurl)
   m_RestAPI->SetServerUrl(baseurl);
 }
 
-const char* WebAPI::GetServerUrl()
+const char * WebAPI::GetServerUrl()
 {
   return m_RestAPI->GetServerUrl();
 }
 
-MirrorHandler* WebAPI::GetMirrorHandler()
+MirrorHandler * WebAPI::GetMirrorHandler()
 {
   return m_MirrorHandler;
 }
@@ -93,13 +94,14 @@ void WebAPI::Cancel()
   m_RestAPI->Cancel();
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::Execute(const char* url, RestResponseParser* parser,
                      const char* postData, bool retry, bool ignoreError)
 {
   QMutexLocker locker(m_Mutex);
-  bool defaultParser = parser == NULL;
-  if(defaultParser)
+  bool         defaultParser = parser == NULL;
+
+  if( defaultParser )
     {
     parser = new RestResponseParser;
     }
@@ -109,68 +111,69 @@ bool WebAPI::Execute(const char* url, RestResponseParser* parser,
 
   fullUrl << url << "&format=json";
 
-  if(!m_APIToken.empty())
+  if( !m_APIToken.empty() )
     {
     fullUrl << "&token=" << m_APIToken;
     }
   bool success = m_RestAPI->Execute(fullUrl.str().c_str(), parser, postData);
 
-  if(ignoreError)
+  if( ignoreError )
     {
     return success;
     }
 
-  if(retry && (!success || parser->GetErrorCode() != 0) && !m_APIToken.empty()
-     && m_Authenticator && !m_RestAPI->ShouldCancel())
+  if( retry && (!success || parser->GetErrorCode() != 0) && !m_APIToken.empty()
+      && m_Authenticator && !m_RestAPI->ShouldCancel() )
     {
     this->Log->Message(
       "Operation failed. Refreshing login token and retrying...");
 
-    if(!m_Authenticator->Login())
+    if( !m_Authenticator->Login() )
       {
       this->Log->Error("Attempt to get new tokens failed.");
-      if(defaultParser)
+      if( defaultParser )
         {
         delete parser;
         }
       return false;
       }
-    fullUrl.str(std::string());
+    fullUrl.str(std::string() );
     fullUrl << url << "&format=json&token=" << m_APIToken;
     success = m_RestAPI->Execute(fullUrl.str().c_str(), parser, postData);
     }
 
-  if(success && parser->GetErrorCode() == 0)
+  if( success && parser->GetErrorCode() == 0 )
     {
-    if(defaultParser)
+    if( defaultParser )
       {
       delete parser;
       }
     return true;
     }
   std::stringstream text;
-  text << "Web API call to \"" << url << "\" failed. Response: " <<
-    parser->GetErrorMessage() << std::endl;
-  this->Log->Error(text.str());
+  text << "Web API call to \"" << url << "\" failed. Response: "
+       << parser->GetErrorMessage() << std::endl;
+  this->Log->Error(text.str() );
 
-  if(defaultParser)
+  if( defaultParser )
     {
     delete parser;
     }
   return false;
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::DownloadFile(const char* url, const char* filename, int64 offset)
 {
-  QMutexLocker locker(m_Mutex);
+  QMutexLocker      locker(m_Mutex);
   std::stringstream fullUrl;
+
   fullUrl << url;
-  if(!m_APIToken.empty())
+  if( !m_APIToken.empty() )
     {
     fullUrl << "&token=" << m_APIToken;
     }
-  if(offset)
+  if( offset )
     {
     fullUrl << "&offset=" << offset;
     }
@@ -178,72 +181,74 @@ bool WebAPI::DownloadFile(const char* url, const char* filename, int64 offset)
 
   bool success = m_RestAPI->Download(filename, fullUrl.str(), offset);
 
-  if(!success && !m_APIToken.empty() && m_Authenticator
-     && !m_RestAPI->ShouldCancel())
+  if( !success && !m_APIToken.empty() && m_Authenticator
+      && !m_RestAPI->ShouldCancel() )
     {
     this->Log->Message("Operation failed. Refreshing login token and retrying...");
-    if(!m_Authenticator->Login())
+    if( !m_Authenticator->Login() )
       {
       this->Log->Error("Attempt to get new tokens failed.");
       return false;
       }
-    fullUrl.str(std::string());
+    fullUrl.str(std::string() );
     fullUrl << url;
     fullUrl << "&token=" << m_APIToken;
-    if(offset)
+    if( offset )
       {
       fullUrl << "&offset=" << offset;
       }
-    QFileInfo fileInfo(filename); //refresh size since it may have changed
+    QFileInfo fileInfo(filename); // refresh size since it may have changed
     // Try again with the new token
-    success = m_RestAPI->Download(filename, fullUrl.str(), fileInfo.size());
+    success = m_RestAPI->Download(filename, fullUrl.str(), fileInfo.size() );
     }
-  if(!success)
+  if( !success )
     {
     std::stringstream text;
     text << "Web API download from \"" << url << "\" failed.";
-    this->Log->Error(text.str());
+    this->Log->Error(text.str() );
     }
   return success;
 }
- 
-//-------------------------------------------------------------------
+
+// -------------------------------------------------------------------
 bool WebAPI::UploadFile(const char* url, const char* filename, int64 offset)
 {
   QMutexLocker locker(m_Mutex);
 
   RestResponseParser parser;
-  std::string fullUrl = url;
+  std::string        fullUrl = url;
+
   fullUrl += "&format=json";
   m_RestAPI->SetProgressReporter(m_Progress);
 
   bool success = m_RestAPI->Upload(filename, fullUrl, &parser, offset);
-  success &= std::string(parser.GetErrorMessage()) == "";
+  success &= std::string(parser.GetErrorMessage() ) == "";
   success &= parser.GetErrorCode() == 0;
 
-  if(!success)
+  if( !success )
     {
     std::stringstream text;
-    text << "Web API file upload to \"" << url << "\" failed. Response: " <<
-      parser.GetErrorMessage();
-    this->Log->Error(text.str());
+    text << "Web API file upload to \"" << url << "\" failed. Response: "
+         << parser.GetErrorMessage();
+    this->Log->Error(text.str() );
     }
   return success;
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::CheckConnection()
 {
-  std::string version;
+  std::string             version;
   mws::RestResponseParser parser;
+
   parser.AddTag("version", version);
 
   std::string url = "midas.info";
-  if(!this->Execute(url.c_str(), &parser, NULL, false))
+  if( !this->Execute(url.c_str(), &parser, NULL, false) )
     {
     return false;
     }
-  if(version == "")
+  if( version == "" )
     {
     return false;
     }
@@ -252,9 +257,9 @@ bool WebAPI::CheckConnection()
   return true;
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::Login(const char* appname,
-                   const char* email, 
+                   const char* email,
                    const char* apikey)
 {
   m_APIToken = "";
@@ -265,28 +270,29 @@ bool WebAPI::Login(const char* appname,
   url << "midas.login&email=" << email;
   url << "&apikey=" << apikey;
   url << "&appname=" << appname;
-  if(!this->Execute(url.str().c_str(), &parser, NULL, false))
+  if( !this->Execute(url.str().c_str(), &parser, NULL, false) )
     {
     return false;
     }
 
-  if(m_APIToken.size() < 40)
+  if( m_APIToken.size() < 40 )
     {
     return false;
     }
   return true;
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 void WebAPI::Logout()
 {
   m_APIToken = "";
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::GetIdByUuid(const std::string& uuid, std::string& id)
 {
   RestResponseParser parser;
+
   parser.AddTag("id", id);
 
   std::stringstream fields;
@@ -295,11 +301,12 @@ bool WebAPI::GetIdByUuid(const std::string& uuid, std::string& id)
   return this->Execute(fields.str().c_str(), &parser);
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::CountBitstreams(int type, int id, std::string& count,
                              std::string& size)
 {
   RestResponseParser parser;
+
   parser.AddTag("count", count);
   parser.AddTag("size", size);
 
@@ -309,11 +316,12 @@ bool WebAPI::CountBitstreams(int type, int id, std::string& count,
   return this->Execute(fields.str().c_str(), &parser);
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::GetIdFromPath(const std::string& path, std::string& type,
                            std::string& id, std::string& uuid)
 {
   RestResponseParser parser;
+
   parser.AddTag("type", type);
   parser.AddTag("id", id);
   parser.AddTag("uuid", uuid);
@@ -324,51 +332,54 @@ bool WebAPI::GetIdFromPath(const std::string& path, std::string& type,
   return this->Execute(fields.str().c_str(), &parser);
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::DeleteResource(const std::string& typeName, int id)
 {
-  QString lower(typeName.c_str());
+  QString           lower(typeName.c_str() );
   std::stringstream fields;
+
   fields << "midas." << lower.toLower().toStdString() << ".delete&id=" << id;
 
-  return this->Execute(fields.str().c_str());
+  return this->Execute(fields.str().c_str() );
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::CheckUserAgreement(int type, int id, std::string& hasAgreed)
 {
   RestResponseParser parser;
+
   parser.AddTag("hasAgreed", hasAgreed);
 
   std::stringstream fields;
   fields << "midas.check.user.agreement&id=" << id
-    << "&type=" << type;
+         << "&type=" << type;
 
   return this->Execute(fields.str().c_str(), &parser);
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::GetUploadOffset(const std::string& token, int64& offset)
 {
-  std::string offsetStr;
+  std::string        offsetStr;
   RestResponseParser parser;
+
   parser.AddTag("offset", offsetStr);
 
   std::stringstream fields;
   fields << "midas.upload.getoffset&uploadtoken=" << token;
-  
+
   bool success = this->Execute(fields.str().c_str(), &parser);
-  offset = QString(offsetStr.c_str()).toLongLong();
+  offset = QString(offsetStr.c_str() ).toLongLong();
 
   return success;
 }
 
-//-------------------------------------------------------------------
+// -------------------------------------------------------------------
 bool WebAPI::GetDefaultAPIKey(const std::string& email,
                               const std::string& password,
                               std::string& apiKey)
 {
-  if(!SERVER_IS_MIDAS3)
+  if( !SERVER_IS_MIDAS3 )
     {
     return false;
     }
@@ -380,10 +391,10 @@ bool WebAPI::GetDefaultAPIKey(const std::string& email,
   postData << "email=" << email << "&password=" << password;
 
   return this->Execute("midas.user.apikey.default", &parser,
-    postData.str().c_str(), false);
+                       postData.str().c_str(), false);
 }
 
-mdo::Version* WebAPI::GetServerVersion()
+mdo::Version * WebAPI::GetServerVersion()
 {
   return m_ServerVersion;
 }

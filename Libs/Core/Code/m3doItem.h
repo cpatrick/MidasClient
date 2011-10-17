@@ -17,7 +17,8 @@
 
 #include "mdoObject.h"
 
-namespace m3do{
+namespace m3do
+{
 
 class Folder;
 class Bitstream;
@@ -32,18 +33,34 @@ public:
   ~Item();
 
   bool Load();
+
   bool LoadTree();
 
   // Set/Get name
-  void SetName(const char* name) { m_Name = name; }
-  std::string& GetName() { return m_Name; }
+  void SetName(const char* name)
+  {
+    m_Name = name;
+  }
+  std::string & GetName()
+  {
+    return m_Name;
+  }
 
   // Set/Get description
-  void SetDescription(const char* description) { m_Description = description; }
-  std::string& GetDescription() { return m_Description; }
+  void SetDescription(const char* description)
+  {
+    m_Description = description;
+  }
+  std::string & GetDescription()
+  {
+    return m_Description;
+  }
 
   // Get the list of child bitstreams
-  std::vector<Bitstream*>& GetBitstreams() { return m_Bitstreams; }
+  std::vector<Bitstream *> & GetBitstreams()
+  {
+    return m_Bitstreams;
+  }
   // Add a bitstream
   void AddBitstream(Bitstream* bitstream);
 
@@ -52,18 +69,41 @@ public:
 
   void Clear();
 
-  std::string GetTypeName() { return "Item"; }
-  int GetResourceType() { return midas3ResourceType::ITEM; }
+  std::string GetTypeName()
+  {
+    return "Item";
+  }
+  int GetResourceType()
+  {
+    return midas3ResourceType::ITEM;
+  }
 
-  void SetBitstreamCount(unsigned int count) { m_BitstreamCount = count; }
-  unsigned int GetBitstreamCount() { return m_BitstreamCount; }
+  void SetBitstreamCount(unsigned int count)
+  {
+    m_BitstreamCount = count;
+  }
+  unsigned int GetBitstreamCount()
+  {
+    return m_BitstreamCount;
+  }
 
-  void SetParentFolder(Folder* folder) { m_ParentFolder = folder; }
-  Folder* GetParentFolder() { return m_ParentFolder; }
+  void SetParentFolder(Folder* folder)
+  {
+    m_ParentFolder = folder;
+  }
+  Folder * GetParentFolder()
+  {
+    return m_ParentFolder;
+  }
 
-  void SetPath(const std::string& path) { m_Path = path; }
-  std::string& GetPath() { return m_Path; }
-
+  void SetPath(const std::string& path)
+  {
+    m_Path = path;
+  }
+  std::string & GetPath()
+  {
+    return m_Path;
+  }
 protected:
 
   std::string  m_Name;
@@ -73,9 +113,9 @@ protected:
 
   Folder* m_ParentFolder;
 
-  std::vector<Bitstream*> m_Bitstreams;
+  std::vector<Bitstream *> m_Bitstreams;
 };
 
-} //end namespace
+} // end namespace
 
 #endif

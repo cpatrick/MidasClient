@@ -14,11 +14,13 @@
 
 #include "midasStandardIncludes.h"
 
-namespace mdo{
-  class Object;
+namespace mdo
+{
+class Object;
 }
 
-namespace mds{
+namespace mds
+{
 /**
  * Abstract class which will receive a callback anytime a
  * is inserted into the client database
@@ -26,15 +28,21 @@ namespace mds{
 class ResourceUpdateHandler
 {
 public:
-  ResourceUpdateHandler() {}
-  virtual ~ResourceUpdateHandler() {}
+  ResourceUpdateHandler()
+  {
+  }
+  virtual ~ResourceUpdateHandler()
+  {
+  }
 
   virtual void AddedResource(mdo::Object* resource) = 0;
+
   virtual void DeletedResource(mdo::Object* resource) = 0;
+
   virtual void UpdatedResource(mdo::Object* resource) = 0;
 
 };
 
-} //end namespace
+} // end namespace
 
 #endif

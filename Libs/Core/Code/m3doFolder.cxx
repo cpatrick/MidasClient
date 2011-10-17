@@ -14,7 +14,8 @@
 
 #include <QString>
 
-namespace m3do{
+namespace m3do
+{
 
 Folder::Folder()
 {
@@ -23,7 +24,7 @@ Folder::Folder()
   m_ParentFolder = NULL;
 }
 
-//copy constructor
+// copy constructor
 Folder::Folder(Folder* other)
 {
   m_Id = other->GetId();
@@ -39,16 +40,16 @@ Folder::Folder(Folder* other)
 Folder::~Folder()
 {
   // Delete the subtree
-  std::vector<Folder*>::iterator itF = m_Folders.begin();
-  while(itF != m_Folders.end())
+  std::vector<Folder *>::iterator itF = m_Folders.begin();
+  while( itF != m_Folders.end() )
     {
     Folder* f = *itF;
     itF++;
     delete f;
     }
 
-  std::vector<Item*>::iterator itI = m_Items.begin();
-  while(itI != m_Items.end())
+  std::vector<Item *>::iterator itI = m_Items.begin();
+  while( itI != m_Items.end() )
     {
     Item* i = *itI;
     itI++;
@@ -77,8 +78,8 @@ void Folder::Clear()
 
 /** Load */
 bool Folder::Load()
-{  
-  return m_Proxy->Load();   
+{
+  return m_Proxy->Load();
 }
 
 /** Fill the full tree with Folder and collection */
@@ -90,12 +91,13 @@ bool Folder::LoadTree()
 bool Folder::SetValue(std::string key, std::string value, bool append)
 {
   QString keyStr = key.c_str();
+
   keyStr = keyStr.toUpper();
   key = keyStr.toStdString();
 
-  if(key == "NAME")
+  if( key == "NAME" )
     {
-    if(append)
+    if( append )
       {
       m_Name += value;
       }
@@ -105,9 +107,9 @@ bool Folder::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "DESCRIPTION")
+  if( key == "DESCRIPTION" )
     {
-    if(append)
+    if( append )
       {
       m_Description += value;
       }

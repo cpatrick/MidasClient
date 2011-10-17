@@ -15,11 +15,13 @@
 #include "mwsObject.h"
 #include <vector>
 
-namespace mdo{
-  class Bitstream;
+namespace mdo
+{
+class Bitstream;
 }
 
-namespace mws{
+namespace mws
+{
 
 /** This class represent a bitstream on the MIDAS server. */
 class Bitstream : public Object
@@ -31,16 +33,22 @@ public:
 
   // Fill the item given the id
   bool Fetch();
+
   bool FetchParent();
+
   // Get all of the assetstore locations of the bitstream
   bool FetchLocations();
+
   bool Commit();
+
   bool Delete();
 
   // Download this bitstream
   bool Download();
+
   // Upload this bitstream to the server
   bool Upload();
+
   // Resume an upload (set offset prior to calling this)
   bool ResumeUpload(const std::string& token, int userId);
 
@@ -55,6 +63,6 @@ protected:
   int64           m_Offset;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mwsBitstream_h_
+#endif // _mwsBitstream_h_

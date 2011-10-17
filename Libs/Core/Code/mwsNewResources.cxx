@@ -15,53 +15,54 @@
 #include <QScriptEngine>
 #include <QScriptValueIterator>
 
-namespace mws{
+namespace mws
+{
 
 /** Custom Response parser */
 class NewResourcesResponseParser : public RestResponseParser
 {
 public:
-   
+
   NewResourcesResponseParser()
-    {
+  {
     m_NewResources = NULL;
-    }
-    
-  ~NewResourcesResponseParser() 
-    {
-    } 
+  }
+
+  ~NewResourcesResponseParser()
+  {
+  }
 
   virtual bool Parse(const QString& response)
-    {
-    if(!RestResponseParser::Parse(response))
+  {
+    if( !RestResponseParser::Parse(response) )
       {
       return false;
       }
 
     QScriptEngine engine;
-    QScriptValue data = engine.evaluate(response).property("data");
+    QScriptValue  data = engine.evaluate(response).property("data");
 
-    if(data.property("modified").isArray())
+    if( data.property("modified").isArray() )
       {
-      QScriptValueIterator resource(data.property("modified"));
-      while(resource.hasNext())
+      QScriptValueIterator resource(data.property("modified") );
+      while( resource.hasNext() )
         {
         resource.next();
-        m_NewResources->AddUuid(resource.value().toString().toStdString());
+        m_NewResources->AddUuid(resource.value().toString().toStdString() );
         }
       }
     return true;
-    }
+  }
 
-  void SetObject(mws::NewResources* nr) 
-    {
+  void SetObject(mws::NewResources* nr)
+  {
     m_NewResources = nr;
-    }
-  
+  }
+
 protected:
 
-  mws::NewResources*  m_NewResources;
-  std::string         m_CurrentValue;
+  mws::NewResources* m_NewResources;
+  std::string        m_CurrentValue;
 };
 
 NewResources::NewResources()
@@ -80,14 +81,15 @@ void NewResources::SetObject(mdo::Object* object)
 bool NewResources::Fetch()
 {
   NewResourcesResponseParser parser;
+
   parser.SetObject(this);
   this->m_Uuids.clear();
-  parser.AddTag("timestamp", this->GetTimestamp());
-  
+  parser.AddTag("timestamp", this->GetTimestamp() );
+
   std::stringstream url;
   url << "midas.newresources.get";
 
-  if(this->m_Since != "")
+  if( this->m_Since != "" )
     {
     url << "&since=" << m_Since;
     }

@@ -22,19 +22,22 @@
 
 class midasAuthenticator;
 
-namespace mdo {
-  class Version;
+namespace mdo
+{
+class Version;
 }
 
-namespace mds {
-  class PartialDownload;
-  class PartialUpload;
+namespace mds
+{
+class PartialDownload;
+class PartialUpload;
 }
 
-namespace m3ws {
-  class Folder;
-  class Item;
-  class Bitstream;
+namespace m3ws
+{
+class Folder;
+class Item;
+class Bitstream;
 }
 
 namespace mws
@@ -60,61 +63,63 @@ class WebAPI : public midasLogAware
   MWS_CONTROLLER_CLASS m3ws::Bitstream;
 public:
   // Singleton to be used in an application
-  static WebAPI* Instance();
+  static WebAPI * Instance();
 
   bool GetIdByUuid(const std::string& uuid, std::string& id);
-  bool CountBitstreams(int type, int id,
-                       std::string& count, std::string& size);
-  bool GetIdFromPath(const std::string& path, std::string& type,
-                     std::string& id, std::string& uuid);
+
+  bool CountBitstreams(int type, int id, std::string& count, std::string& size);
+
+  bool GetIdFromPath(const std::string& path, std::string& type, std::string& id, std::string& uuid);
+
   bool DeleteResource(const std::string& typeName, int id);
+
   bool CheckUserAgreement(int type, int id, std::string& hasAgreed);
+
   bool GetUploadOffset(const std::string& token, int64& offset);
-  bool GetDefaultAPIKey(const std::string& email, const std::string& password,
-                        std::string& apiKey);
+
+  bool GetDefaultAPIKey(const std::string& email, const std::string& password, std::string& apiKey);
 
   // Set the REST API URL
   void SetServerUrl(const char* baseurl);
-  const char* GetServerUrl();
+
+  const char * GetServerUrl();
 
   // Set the mirror handler
   void SetMirrorHandler(MirrorHandler* handler);
-  MirrorHandler* GetMirrorHandler();
+
+  MirrorHandler * GetMirrorHandler();
 
   // Set the authenticator
   void SetAuthenticator(midasAuthenticator* auth);
 
   // Set the default progress handler
   void SetProgressReporter(midasProgressReporter* reporter);
-  
+
   // After calling Login, use this to get the API token
   std::string GetAPIToken();
 
   // Login to MIDAS
-  bool Login(const char* applicationname,
-             const char* email,
-             const char* apikey);
+  bool Login(const char* applicationname, const char* email, const char* apikey);
 
   // Clears the API token
   void Logout();
- 
+
   // Check the connection to the MIDAS server
   bool CheckConnection();
 
-  mdo::Version* GetServerVersion();
+  mdo::Version * GetServerVersion();
 
   // Cancel the upload or download
   void Cancel();
 
 protected:
   // Execute a web API command
-  bool Execute(const char* url, RestResponseParser* parser = NULL,
-               const char* postData = NULL,
-               bool retry = true, bool ignoreError = false);
+  bool Execute(const char* url, RestResponseParser* parser = NULL, const char* postData = NULL, bool retry = true,
+               bool ignoreError = false);
 
   // Download a file
   bool DownloadFile(const char* url, const char* filename, int64 offset = 0);
-  
+
   // Upload a file
   bool UploadFile(const char* url, const char* filename, int64 offset = 0);
 
@@ -130,10 +135,10 @@ protected:
   WebAPI();
   ~WebAPI();
 private:
-  static WebAPI * m_Instance; 
+  static WebAPI * m_Instance;
 
 };
 
 } // end namespace
 
-#endif //__mwsRestAPI_H
+#endif // __mwsRestAPI_H

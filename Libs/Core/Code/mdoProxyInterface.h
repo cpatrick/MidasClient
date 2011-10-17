@@ -15,11 +15,13 @@
 #include <string>
 #include <vector>
 
-namespace mdo{
+namespace mdo
+{
 
 class Object;
 
-/** This class represent virtual class for interfaces such as WebAPI and database API. */
+/** This class represent virtual class for interfaces such as WebAPI and
+  database API. */
 class ProxyInterface
 {
 public:
@@ -29,33 +31,36 @@ public:
 
   /** Fetch data */
   virtual bool Fetch() = 0;
-  
+
   /** Fetch tree */
   virtual bool FetchTree();
-  
+
   /** Commit data */
   virtual bool Commit() = 0;
 
   /** Add an mdoObject */
   virtual void SetObject(Object* object) = 0;
-  
+
   /** Set/Get if this interface is acting as a cache */
   void SetIsCache(bool iscache);
+
   bool GetIsCache();
-  
+
   /** Set the name of the interface */
   void SetName(const char* name);
-  
+
   /** Get the name of the interface */
-  const char* GetName() {return m_Name.c_str();}
-  
+  const char * GetName()
+  {
+    return m_Name.c_str();
+  }
 protected:
-   
-  bool m_IsCache; // Does this interface acts as a default cache
-  std::string m_Name; // Name of the interface
-    
+
+  bool        m_IsCache; // Does this interface acts as a default cache
+  std::string m_Name;    // Name of the interface
+
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mdoProxy_h_
+#endif // _mdoProxy_h_

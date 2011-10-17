@@ -14,7 +14,8 @@
 
 #include <QString>
 
-namespace mdo{
+namespace mdo
+{
 
 /** Constructor */
 Item::Item()
@@ -23,12 +24,12 @@ Item::Item()
   m_BitstreamCount = 0;
   m_ParentCollection = NULL;
 }
-  
+
 /** Destructor */
 Item::~Item()
 {
 }
-  
+
 /** Load */
 bool Item::Load()
 {
@@ -52,12 +53,11 @@ void Item::Clear()
 std::string Item::GetAuthorsString()
 {
   std::string output;
-  bool first = true;
-
-  for(std::vector<std::string>::iterator i = m_Authors.begin();
-      i != m_Authors.end(); ++i)
+  bool        first = true;
+  for( std::vector<std::string>::iterator i = m_Authors.begin();
+       i != m_Authors.end(); ++i )
     {
-    if(!first)
+    if( !first )
       {
       output += " / ";
       }
@@ -74,12 +74,11 @@ std::string Item::GetAuthorsString()
 std::string Item::GetKeywordsString()
 {
   std::string output;
-  bool first = true;
-
-  for(std::vector<std::string>::iterator i = m_Keywords.begin();
-      i != m_Keywords.end(); ++i)
+  bool        first = true;
+  for( std::vector<std::string>::iterator i = m_Keywords.begin();
+       i != m_Keywords.end(); ++i )
     {
-    if(!first)
+    if( !first )
       {
       output += " / ";
       }
@@ -96,12 +95,13 @@ std::string Item::GetKeywordsString()
 bool Item::SetValue(std::string key, std::string value, bool append)
 {
   QString keyStr = key.c_str();
+
   keyStr = keyStr.toUpper();
   key = keyStr.toStdString();
 
-  if(key == "TITLE")
+  if( key == "TITLE" )
     {
-    if(append)
+    if( append )
       {
       m_Title += value;
       }
@@ -111,9 +111,9 @@ bool Item::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "ABSTRACT")
+  if( key == "ABSTRACT" )
     {
-    if(append)
+    if( append )
       {
       m_Abstract += value;
       }
@@ -123,9 +123,9 @@ bool Item::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "DESCRIPTION")
+  if( key == "DESCRIPTION" )
     {
-    if(append)
+    if( append )
       {
       m_Description += value;
       }
@@ -135,9 +135,9 @@ bool Item::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "AUTHORS")
+  if( key == "AUTHORS" )
     {
-    if(append)
+    if( append )
       {
       this->AddAuthor(value);
       }
@@ -147,9 +147,9 @@ bool Item::SetValue(std::string key, std::string value, bool append)
       }
     return true;
     }
-  if(key == "KEYWORDS")
+  if( key == "KEYWORDS" )
     {
-    if(append)
+    if( append )
       {
       this->AddKeyword(value);
       }

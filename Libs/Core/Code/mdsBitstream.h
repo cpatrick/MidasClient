@@ -14,11 +14,13 @@
 
 #include "mdsObject.h"
 
-namespace mdo{
-  class Bitstream;
+namespace mdo
+{
+class Bitstream;
 }
 
-namespace mds{
+namespace mds
+{
 
 class Bitstream : public Object
 {
@@ -28,12 +30,15 @@ public:
   ~Bitstream();
 
   bool Fetch();
+
   /**
    * Commits this bitstream object.
    * If the bitstream id is set to 0, it will commit a new record
    */
   bool Commit();
+
   bool FetchTree();
+
   bool Delete(bool deleteOnDisk);
 
   void ParentPathChanged(std::string parentPath);
@@ -45,6 +50,6 @@ protected:
 
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mdsBitstream_h_
+#endif // _mdsBitstream_h_

@@ -17,16 +17,17 @@
 #include <QScriptEngine>
 #include <QScriptValueIterator>
 
-namespace m3ws{
+namespace m3ws
+{
 
-//------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 /** Constructor */
 Bitstream::Bitstream()
 {
   m_Bitstream = NULL;
 }
-  
+
 /** Destructor */
 Bitstream::~Bitstream()
 {
@@ -34,8 +35,8 @@ Bitstream::~Bitstream()
 
 // Set the object
 void Bitstream::SetObject(mdo::Object* object)
-{  
-  m_Bitstream = static_cast<m3do::Bitstream*>(object);
+{
+  m_Bitstream = static_cast<m3do::Bitstream *>(object);
 }
 
 /** Fetch */
@@ -47,35 +48,35 @@ bool Bitstream::Fetch()
 
 bool Bitstream::FetchTree()
 {
-  if(!m_Bitstream)
+  if( !m_Bitstream )
     {
     std::cerr << "Bitstream::Fetch() : Bitstream not set" << std::endl;
     return false;
     }
 
-  if(m_Bitstream->IsFetched())
+  if( m_Bitstream->IsFetched() )
     {
     return true;
     }
 
-  if(!m_Bitstream->GetId())
+  if( !m_Bitstream->GetId() )
     {
     std::cerr << "Bitstream::Fetch() : Bitstream id not set" << std::endl;
     return false;
-    } 
-    
+    }
+
   mws::RestResponseParser parser;
   m_Bitstream->Clear();
-  parser.AddTag("name", m_Bitstream->GetName());
-  parser.AddTag("checksum", m_Bitstream->GetChecksum());
-  //parser.AddTag("uuid", m_Bitstream->GetUuid());
-  parser.AddTag("item_id", m_Bitstream->GetParentStr());
-  parser.AddTag("size", m_Bitstream->GetSize());
-  //parser.AddTag("hasAgreement", m_Item->RefAgreement());
-  
+  parser.AddTag("name", m_Bitstream->GetName() );
+  parser.AddTag("checksum", m_Bitstream->GetChecksum() );
+  // parser.AddTag("uuid", m_Bitstream->GetUuid());
+  parser.AddTag("item_id", m_Bitstream->GetParentStr() );
+  parser.AddTag("size", m_Bitstream->GetSize() );
+  // parser.AddTag("hasAgreement", m_Item->RefAgreement());
+
   std::stringstream url;
   url << "midas.bitstream.get&id=" << m_Bitstream->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser))
+  if( !mws::WebAPI::Instance()->Execute(url.str().c_str(), &parser) )
     {
     return false;
     }
@@ -86,7 +87,8 @@ bool Bitstream::FetchTree()
 bool Bitstream::FetchParent()
 {
   int id = m_Bitstream->GetParentId();
-  if(id)
+
+  if( id )
     {
     m3do::Item* parent = new m3do::Item;
     m_Bitstream->SetParentItem(parent);
@@ -101,13 +103,13 @@ bool Bitstream::FetchParent()
 
 bool Bitstream::Delete()
 {
-  if(!m_Bitstream)
+  if( !m_Bitstream )
     {
     std::cerr << "Bitstream::Delete() : Bitstream not set" << std::endl;
     return false;
     }
 
-  if(!m_Bitstream->GetId())
+  if( !m_Bitstream->GetId() )
     {
     std::cerr << "Bitstream::Delete() : Bitstream id not set" << std::endl;
     return false;
@@ -115,7 +117,7 @@ bool Bitstream::Delete()
 
   std::stringstream url;
   url << "midas.bitstream.delete&id=" << m_Bitstream->GetId();
-  if(!mws::WebAPI::Instance()->Execute(url.str().c_str()))
+  if( !mws::WebAPI::Instance()->Execute(url.str().c_str() ) )
     {
     return false;
     }
@@ -124,34 +126,42 @@ bool Bitstream::Delete()
 
 bool Bitstream::Commit()
 {
-  return true; //NOP
+  return true; // NOP
 }
 
 bool Bitstream::Download()
 {
   std::stringstream fields;
+
   fields << "midas.bitstream.download&id=" << m_Bitstream->GetId();
 
   return mws::WebAPI::Instance()->DownloadFile(fields.str().c_str(),
-    m_Bitstream->GetName().c_str(), 0); //TODO set partial download offset
+                                               m_Bitstream->GetName().c_str(), 0); //
+                                                                                   // TODO
+                                                                                   // set
+                                                                                   // partial
+                                                                                   // download
+                                                                                   // offset
 }
 
 bool Bitstream::Upload()
 {
-  std::string uploadToken;
+  std::string             uploadToken;
   mws::RestResponseParser parser;
+
   parser.AddTag("token", uploadToken);
 
   std::stringstream fields;
-  fields << "midas.upload.generatetoken&itemid=" <<
-    m_Bitstream->GetParentId()
-    << "&checksum=" << m_Bitstream->GetChecksum()
-    << "&filename=" << m_Bitstream->GetName();
-  if(!mws::WebAPI::Instance()->Execute(fields.str().c_str(), &parser))
+  fields << "midas.upload.generatetoken&itemid="
+         << m_Bitstream->GetParentId()
+         << "&checksum=" << m_Bitstream->GetChecksum()
+         << "&filename=" << m_Bitstream->GetName();
+  if( !mws::WebAPI::Instance()->Execute(fields.str().c_str(), &parser) )
     {
     return false;
     }
-  if(uploadToken == "") //server already has this file, upload is not necessary
+  if( uploadToken == "" ) // server already has this file, upload is not
+                          // necessary
     {
     return true;
     }
@@ -163,20 +173,20 @@ bool Bitstream::Upload()
   partial.SetParentItem(m_Bitstream->GetParentId());
   partial.Commit();*/
 
-  fields.str(std::string());
+  fields.str(std::string() );
   fields << "midas.upload.perform&mode=stream&revision=head"
-    "&itemid=" << m_Bitstream->GetParentId()
-    << "&filename=" << m_Bitstream->GetName()
-    << "&length=" << m_Bitstream->GetSize()
-    << "&uploadtoken=" << uploadToken;
+  "&itemid=" << m_Bitstream->GetParentId()
+         << "&filename=" << m_Bitstream->GetName()
+         << "&length=" << m_Bitstream->GetSize()
+         << "&uploadtoken=" << uploadToken;
 
-  if(!mws::WebAPI::Instance()->UploadFile(fields.str().c_str(),
-    m_Bitstream->GetPath().c_str()))
+  if( !mws::WebAPI::Instance()->UploadFile(fields.str().c_str(),
+                                           m_Bitstream->GetPath().c_str() ) )
     {
     return false;
     }
 
-  //partial.Remove();
+  // partial.Remove();
   return true;
 }
 

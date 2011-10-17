@@ -14,11 +14,13 @@
 
 #include "mdsObject.h"
 
-namespace m3do{
-  class Folder;
+namespace m3do
+{
+class Folder;
 }
 
-namespace m3ds{
+namespace m3ds
+{
 
 class Folder : public mds::Object
 {
@@ -28,16 +30,23 @@ public:
   ~Folder();
 
   bool Fetch();
+
   bool Commit();
+
   bool FetchTree();
+
   bool FetchSize();
+
   bool FetchParent();
+
   bool Delete(bool deleteOnDisk);
+
   bool Create();
 
   void ParentPathChanged(const std::string& parentPath);
 
   void SetObject(mdo::Object* object);
+
   void SetRecursive(bool recurse);
 
 protected:
@@ -46,6 +55,6 @@ protected:
   m3do::Folder* m_Folder;
 };
 
-} //end namespace
+} // end namespace
 
-#endif //__m3dsFolder_h_
+#endif // __m3dsFolder_h_

@@ -18,7 +18,8 @@
 #include "mdoProxyInterface.h"
 #include "mdsDatabaseAPI.h"
 
-namespace mds{
+namespace mds
+{
 
 /** This class represent an object in the local database */
 class Object : public mdo::ProxyInterface
@@ -26,22 +27,24 @@ class Object : public mdo::ProxyInterface
 public:
 
   Object()
-    {
+  {
     m_MarkDirty = false;
-    }
-    
-  ~Object(){};
+  }
+
+  ~Object()
+  {
+  };
 
   void MarkAsDirty()
-    {
+  {
     m_MarkDirty = true;
-    }
+  }
 
 protected:
   bool m_MarkDirty;
-  
+
 };
 
-} //end namespace
+} // end namespace
 
-#endif //_mdsObject_h_
+#endif // _mdsObject_h_

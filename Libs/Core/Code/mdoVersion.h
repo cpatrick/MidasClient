@@ -3,7 +3,8 @@
 
 #include "midasStandardIncludes.h"
 
-namespace mdo {
+namespace mdo
+{
 
 /**
  * Data structure for a version (major, minor, patch)
@@ -13,21 +14,26 @@ class Version
 public:
   Version();
   Version(int major, int minor, int patch, std::string name = "MIDASClient");
-  Version(const std::string& versionString);
+  Version(const std::string & versionString);
   ~Version();
 
   std::string VersionString();
 
-  friend bool operator> (Version& v1, Version& v2);
-  friend bool operator< (Version& v1, Version& v2);
-  friend bool operator>=(Version& v1, Version& v2);
-  friend bool operator<=(Version& v1, Version& v2);
-  friend bool operator==(Version& v1, Version& v2);
+  friend bool operator>(Version & v1, Version & v2);
+
+  friend bool operator<(Version & v1, Version & v2);
+
+  friend bool operator>=(Version & v1, Version & v2);
+
+  friend bool operator<=(Version & v1, Version & v2);
+
+  friend bool operator==(Version & v1, Version & v2);
+
   friend bool operator!=(Version& v1, Version& v2);
 
-  int Major;
-  int Minor;
-  int Patch;
+  int         Major;
+  int         Minor;
+  int         Patch;
   std::string Name;
 };
 

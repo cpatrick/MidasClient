@@ -19,8 +19,8 @@ PartialUpload::~PartialUpload()
 
 bool PartialUpload::Commit()
 {
-  if(this->BitstreamId <= 0 || this->Token == "" || this->UserId <= 0
-     || this->ParentItem <= 0)
+  if( this->BitstreamId <= 0 || this->Token == "" || this->UserId <= 0
+      || this->ParentItem <= 0 )
     {
     return false;
     }
@@ -29,12 +29,12 @@ bool PartialUpload::Commit()
 
   std::stringstream query;
   query << "INSERT INTO partial_upload (bitstream_id, uploadtoken, user_id, "
-    "item_id) VALUES ('" << this->BitstreamId << "', '"
-    << this->Token << "', '"
-    << this->UserId << "', '"
-    << this->ParentItem << "')";
+  "item_id) VALUES ('" << this->BitstreamId << "', '"
+        << this->Token << "', '"
+        << this->UserId << "', '"
+        << this->ParentItem << "')";
 
-  if(!db.Database->ExecuteQuery(query.str().c_str()))
+  if( !db.Database->ExecuteQuery(query.str().c_str() ) )
     {
     db.Close();
     return false;
@@ -45,7 +45,7 @@ bool PartialUpload::Commit()
 
 bool PartialUpload::Remove()
 {
-  if(this->BitstreamId <= 0)
+  if( this->BitstreamId <= 0 )
     {
     return false;
     }
@@ -53,10 +53,10 @@ bool PartialUpload::Remove()
   db.Open();
 
   std::stringstream query;
-  query << "DELETE FROM partial_upload WHERE bitstream_id='" <<
-    this->BitstreamId << "'";
+  query << "DELETE FROM partial_upload WHERE bitstream_id='"
+        << this->BitstreamId << "'";
 
-  if(!db.Database->ExecuteQuery(query.str().c_str()))
+  if( !db.Database->ExecuteQuery(query.str().c_str() ) )
     {
     db.Close();
     return false;
@@ -65,27 +65,29 @@ bool PartialUpload::Remove()
   return true;
 }
 
-bool PartialUpload::FetchAll(std::vector<mds::PartialUpload*>& list)
+bool PartialUpload::FetchAll(std::vector<mds::PartialUpload *>& list)
 {
   mds::DatabaseAPI db;
+
   db.Open();
 
-  if(!db.Database->ExecuteQuery("SELECT id, uploadtoken, bitstream_id, "
-                                "user_id, item_id FROM partial_upload"))
+  if( !db.Database->ExecuteQuery("SELECT id, uploadtoken, bitstream_id, "
+                                 "user_id, item_id FROM partial_upload") )
     {
     db.Close();
     return false;
     }
-  while(db.Database->GetNextRow())
+  while( db.Database->GetNextRow() )
     {
     mds::PartialUpload* ul = new mds::PartialUpload;
-    ul->SetId(db.Database->GetValueAsInt(0));
-    ul->SetToken(db.Database->GetValueAsString(1));
-    ul->SetBitstreamId(db.Database->GetValueAsInt(2));
-    ul->SetUserId(db.Database->GetValueAsInt(3));
-    ul->SetParentItem(db.Database->GetValueAsInt(4));
+    ul->SetId(db.Database->GetValueAsInt(0) );
+    ul->SetToken(db.Database->GetValueAsString(1) );
+    ul->SetBitstreamId(db.Database->GetValueAsInt(2) );
+    ul->SetUserId(db.Database->GetValueAsInt(3) );
+    ul->SetParentItem(db.Database->GetValueAsInt(4) );
     list.push_back(ul);
     }
+
   db.Close();
   return true;
 }
@@ -93,9 +95,10 @@ bool PartialUpload::FetchAll(std::vector<mds::PartialUpload*>& list)
 bool PartialUpload::RemoveAll()
 {
   mds::DatabaseAPI db;
+
   db.Open();
 
-  if(!db.Database->ExecuteQuery("DELETE FROM partial_upload"))
+  if( !db.Database->ExecuteQuery("DELETE FROM partial_upload") )
     {
     db.Close();
     return false;
