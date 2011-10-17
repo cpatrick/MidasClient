@@ -1,16 +1,12 @@
-project(CTKDataManagementMIDASClientWidgets)
-cmake_minimum_required(VERSION 2.6)
-
 include_directories(
-  ${CTKDataManagementMIDASClientCore_SOURCE_DIR}/Code
-  ${CTKDataManagementMIDASClientCore_BINARY_DIR}/Code
+  "${MIDASClient_SOURCE_DIR}/Libs/External/sqlite"
+  ${MIDASClient_SOURCE_DIR}/Libs/Core/Code
+  ${MIDASClient_BINARY_DIR}/Libs/Core/Code
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   GUI
   icons
 )
-
-include("${sqlite_USE_FILE}")
 
 set(MIDASWidgetsUI_SRCS
   GUI/SignInUI.cxx
@@ -158,10 +154,10 @@ QT4_WRAP_CPP(MIDASWidgetsUI_SRCS ${MIDASWidgetsUI_MOC_SRCS})
 QT4_WRAP_UI(MIDASWidgetsUI_UI_CXX ${MIDASWidgetsUI_UI_SRCS})
 QT4_ADD_RESOURCES(MIDASWidgetsUI_SRCS ${MIDASWidgetsUI_RCCS})
 
-add_library(CTKDataManagementMIDASClientWidgets ${MIDASWidgetsUI_SRCS} ${MIDASWidgetsUI_UI_CXX})
+add_library(MIDASClientWidgets ${MIDASWidgetsUI_SRCS} ${MIDASWidgetsUI_UI_CXX})
 
 if(WIN32)
-  target_link_libraries (CTKDataManagementMIDASClientWidgets
+  target_link_libraries (MIDASClientWidgets
     imm32.lib
     winmm.lib
     Snmpapi.lib
@@ -181,48 +177,48 @@ if(UNIX)
   find_library(CRYPT_LIBRARY crypt)
 
   if(NOT APPLE)
-    target_link_libraries(CTKDataManagementMIDASClientWidgets ${X11_LIBRARIES})
+    target_link_libraries(MIDASClientWidgets ${X11_LIBRARIES})
 
     if(XFT_LIBRARY)
-      target_link_libraries(CTKDataManagementMIDASClientWidgets ${XFT_LIBRARY})
+      target_link_libraries(MIDASClientWidgets ${XFT_LIBRARY})
     endif(XFT_LIBRARY)
 
     if(GLIB_LIBRARY)
-      target_link_libraries(CTKDataManagementMIDASClientWidgets ${GLIB_LIBRARY})
+      target_link_libraries(MIDASClientWidgets ${GLIB_LIBRARY})
     endif(GLIB_LIBRARY)
 
     if(GTHREAD_LIBRARY)
-      target_link_libraries(CTKDataManagementMIDASClientWidgets ${GTHREAD_LIBRARY})
+      target_link_libraries(MIDASClientWidgets ${GTHREAD_LIBRARY})
     endif(GTHREAD_LIBRARY)
 
     if(XT_LIBRARY)
-      target_link_libraries(CTKDataManagementMIDASClientWidgets ${XT_LIBRARY})
+      target_link_libraries(MIDASClientWidgets ${XT_LIBRARY})
     endif(XT_LIBRARY)
 
     if(XI_LIBRARY)
-      target_link_libraries(CTKDataManagementMIDASClientWidgets ${XI_LIBRARY})
+      target_link_libraries(MIDASClientWidgets ${XI_LIBRARY})
     endif(XI_LIBRARY)
 
     if(XINERAMA_LIBRARY)
-      target_link_libraries(CTKDataManagementMIDASClientWidgets ${XINERAMA_LIBRARY})
+      target_link_libraries(MIDASClientWidgets ${XINERAMA_LIBRARY})
     endif(XINERAMA_LIBRARY)
 
     if(XRANDR_LIBRARY)
-      target_link_libraries(CTKDataManagementMIDASClientWidgets ${XRANDR_LIBRARY})
+      target_link_libraries(MIDASClientWidgets ${XRANDR_LIBRARY})
     endif(XRANDR_LIBRARY)
 
     if(XCURSOR_LIBRARY)
-      target_link_libraries(CTKDataManagementMIDASClientWidgets ${XCURSOR_LIBRARY})
+      target_link_libraries(MIDASClientWidgets ${XCURSOR_LIBRARY})
     endif(XCURSOR_LIBRARY)
 
     if(CRYPT_LIBRARY)
-      target_link_libraries(CTKDataManagementMIDASClientWidgets ${CRYPT_LIBRARY})
+      target_link_libraries(MIDASClientWidgets ${CRYPT_LIBRARY})
     endif(CRYPT_LIBRARY)
   endif(NOT APPLE)
 endif(UNIX)
 
-target_link_libraries(CTKDataManagementMIDASClientWidgets
-  CTKDataManagementMIDASClientCore
+target_link_libraries(MIDASClientWidgets
+  MIDASClientCore
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTMAIN_LIBRARY}
