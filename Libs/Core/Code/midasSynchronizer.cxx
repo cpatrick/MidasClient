@@ -2580,7 +2580,7 @@ std::string midasSynchronizer::ResolveAddPath()
 //-------------------------------------------------------------------
 void midasSynchronizer::CountBitstreams()
 {
-  if(SERVER_IS_MIDAS3 || DB_IS_MIDAS3)
+  if(DB_IS_MIDAS3 || SERVER_IS_MIDAS3)
     {
     return; //no count bitstreams behavior in midas 3 yet
     }
