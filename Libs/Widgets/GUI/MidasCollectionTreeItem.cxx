@@ -67,7 +67,7 @@ void MidasCollectionTreeItem::Populate(QModelIndex parent)
     this->AppendChild(item);
 
     QModelIndex index = m_Model->index(row, 0, parent);
-    m_Model->registerResource( (*i)->GetUuid(), index);
+    m_Model->RegisterResource( (*i)->GetUuid(), index);
 
     item->Populate(index);
 
@@ -97,7 +97,7 @@ void MidasCollectionTreeItem::SetCollection(mdo::Collection* collection)
   m_Collection = collection;
 }
 
-mdo::Collection * MidasCollectionTreeItem::GetCollection() const
+mdo::Collection* MidasCollectionTreeItem::GetCollection() const
 {
   return m_Collection;
 }

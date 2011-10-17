@@ -76,7 +76,7 @@ void Midas3TreeModelServer::Populate()
     m_TopLevelFolders.append(folderItem);
 
     QModelIndex index = this->index(row, 0);
-    registerResource( (*itF)->GetUuid(), index);
+    this->RegisterResource( (*itF)->GetUuid(), index);
 
     folderItem->Populate(index);
     folderItem->SetTopLevelFolders(&m_TopLevelFolders);
@@ -84,7 +84,7 @@ void Midas3TreeModelServer::Populate()
     row++;
     }
   emit layoutChanged();
-  emit serverPolled();
+  emit ServerPolled();
 }
 
 /** Fetch more data */
@@ -94,25 +94,26 @@ void Midas3TreeModelServer::fetchMore(const QModelIndex& parent)
     {
     return;
     }
-  Midas3TreeItem*       item = const_cast<Midas3TreeItem *>(midasTreeItem(parent) );
+  Midas3TreeItem*       item = const_cast<Midas3TreeItem *>(
+    this->GetMidasTreeItem(parent) );
   Midas3FolderTreeItem* folderTreeItem = NULL;
   Midas3ItemTreeItem*   itemTreeItem = NULL;
 
   if( (folderTreeItem = dynamic_cast<Midas3FolderTreeItem *>(const_cast<Midas3TreeItem *>(item) ) ) != NULL )
     {
-    this->fetchFolder(folderTreeItem);
+    this->FetchFolder(folderTreeItem);
     }
   else if( (itemTreeItem = dynamic_cast<Midas3ItemTreeItem *>(const_cast<Midas3TreeItem *>(item) ) ) != NULL )
     {
-    this->fetchItem(itemTreeItem);
+    this->FetchItem(itemTreeItem);
     }
   item->SetFetchedChildren(true);
   emit layoutChanged();
-  emit fetchedMore();
+  emit FetchedMore();
 }
 
 // -------------------------------------------------------------------------
-void Midas3TreeModelServer::fetchFolder(Midas3FolderTreeItem* parent)
+void Midas3TreeModelServer::FetchFolder(Midas3FolderTreeItem* parent)
 {
   m3ws::Folder  remote;
   m3do::Folder* folder = parent->GetFolder();
@@ -126,7 +127,7 @@ void Midas3TreeModelServer::fetchFolder(Midas3FolderTreeItem* parent)
     return;
     }
 
-  QModelIndex parentIndex = getIndexByUuid(parent->GetUuid() );
+  QModelIndex parentIndex = this->GetIndexByUuid(parent->GetUuid() );
   int         row = 0;
   for( std::vector<m3do::Folder *>::const_iterator i = folder->GetFolders().begin();
        i != folder->GetFolders().end(); ++i )
@@ -140,7 +141,7 @@ void Midas3TreeModelServer::fetchFolder(Midas3FolderTreeItem* parent)
     parent->AppendChild(subfolder);
 
     QModelIndex index = this->index(row, 0, parentIndex);
-    registerResource( (*i)->GetUuid(), index);
+    this->RegisterResource( (*i)->GetUuid(), index);
     row++;
     }
   for( std::vector<m3do::Item *>::const_iterator i = folder->GetItems().begin();
@@ -155,14 +156,14 @@ void Midas3TreeModelServer::fetchFolder(Midas3FolderTreeItem* parent)
     parent->AppendChild(item);
 
     QModelIndex index = this->index(row, 0, parentIndex);
-    this->registerResource( (*i)->GetUuid(), index);
+    this->RegisterResource( (*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
 }
 
 // -------------------------------------------------------------------------
-void Midas3TreeModelServer::fetchItem(Midas3ItemTreeItem* parent)
+void Midas3TreeModelServer::FetchItem(Midas3ItemTreeItem* parent)
 {
   m3ws::Item  remote;
   m3do::Item* item = parent->GetItem();
@@ -176,7 +177,7 @@ void Midas3TreeModelServer::fetchItem(Midas3ItemTreeItem* parent)
     return;
     }
 
-  QModelIndex parentIndex = getIndexByUuid(parent->GetUuid() );
+  QModelIndex parentIndex = this->GetIndexByUuid(parent->GetUuid() );
   int         row = 0;
   for( std::vector<m3do::Bitstream *>::const_iterator i = item->GetBitstreams().begin();
        i != item->GetBitstreams().end(); ++i )
@@ -190,20 +191,20 @@ void Midas3TreeModelServer::fetchItem(Midas3ItemTreeItem* parent)
     std::stringstream uuid;
     uuid << (*i)->GetChecksum() << (*i)->GetId(); // bitstreams have no uuid, so
                                                   // we fudge one
-    registerResource(uuid.str(), index);
+    this->RegisterResource(uuid.str(), index);
     row++;
     }
   emit layoutChanged();
 }
 
 // -------------------------------------------------------------------------
-void Midas3TreeModelServer::itemExpanded(const QModelIndex& index)
+void Midas3TreeModelServer::ItemExpanded(const QModelIndex& index)
 {
-  Midas3TreeItem* item = const_cast<Midas3TreeItem *>(this->midasTreeItem(index) );
+  Midas3TreeItem* item = const_cast<Midas3TreeItem *>(this->GetMidasTreeItem(index) );
 
   item->SetDecorationRole(Midas3TreeItem::Expanded);
 
-  if( this->AlterList && item->GetType() == midas3ResourceType::COMMUNITY )
+  if( m_AlterList && item->GetType() == midas3ResourceType::COMMUNITY )
     {
     m_ExpandedList.insert(item->GetUuid() );
     }

@@ -36,25 +36,25 @@ public:
   MidasTreeViewServer(QWidget * parent = 0);
   ~MidasTreeViewServer();
 public slots:
-  void selectByUuid(std::string uuid, bool select = false);
+  void SelectByUuid(std::string uuid, bool select = false);
 
-  void alertFetchedMore();
+  void AlertFetchedMore();
 
-  void expansionDone();
+  void ExpansionDone();
 
-  void selectByIndex(const QModelIndex& index);
+  void SelectByIndex(const QModelIndex& index);
 
 signals:
-  void fetchedMore();
+  void FetchedMore();
 
-  void enableActions(bool);
+  void EnableActions(bool);
 
-  void startedExpandingTree();
+  void StartedExpandingTree();
 
-  void finishedExpandingTree();
+  void FinishedExpandingTree();
 
 protected:
-  void fetchItemData(MidasTreeItem* item);
+  void FetchItemData(MidasTreeItem* item);
 
   void dragMoveEvent(QDragMoveEvent* event);
 

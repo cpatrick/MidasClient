@@ -53,23 +53,19 @@ public:
 
   void fetchMore( const QModelIndex & parent );
 
-  void fetchCollection(MidasCollectionTreeItem* parent);
+  void FetchCollection(MidasCollectionTreeItem* parent);
 
-  void fetchItem(MidasItemTreeItem* parent);
+  void FetchItem(MidasItemTreeItem* parent);
 
 signals:
-  void serverPolled();
+  void ServerPolled();
 
-  void fetchedMore();
+  void FetchedMore();
 
 public slots:
 
-  void itemExpanded( const QModelIndex & index );
+  void ItemExpanded( const QModelIndex & index );
 
-  void emitLayoutChanged()
-  {
-    emit layoutChanged();
-  }
 };
 
 #endif // __MidasTreeModelServer_H

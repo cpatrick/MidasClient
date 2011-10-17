@@ -49,46 +49,46 @@ public:
 
   virtual void Initialize();
 
-  bool isModelIndexSelected() const;
+  bool IsModelIndexSelected() const;
 
-  const QModelIndex getSelectedModelIndex() const;
+  const QModelIndex GetSelectedModelIndex() const;
 
-  const MidasTreeItem * getSelectedMidasTreeItem() const;
+  const MidasTreeItem* GetSelectedMidasTreeItem() const;
 
 signals:
-  void midasTreeItemSelected(const MidasTreeItem* item);
+  void MidasTreeItemSelected(const MidasTreeItem* item);
 
-  void midasCommunityTreeItemSelected(const MidasCommunityTreeItem* item);
+  void MidasCommunityTreeItemSelected(const MidasCommunityTreeItem* item);
 
-  void midasCollectionTreeItemSelected(const MidasCollectionTreeItem* item);
+  void MidasCollectionTreeItemSelected(const MidasCollectionTreeItem* item);
 
-  void midasItemTreeItemSelected(const MidasItemTreeItem* item);
+  void MidasItemTreeItemSelected(const MidasItemTreeItem* item);
 
-  void midasBitstreamTreeItemSelected(const MidasBitstreamTreeItem* item);
+  void MidasBitstreamTreeItemSelected(const MidasBitstreamTreeItem* item);
 
-  void midasNoTreeItemSelected();
+  void MidasNoTreeItemSelected();
 
-  void midasTreeViewContextMenu(QContextMenuEvent* e);
+  void MidasTreeViewContextMenu(QContextMenuEvent* e);
 
-  void resourceDropped(int type, int id);
+  void ResourceDropped(int type, int id);
 
-  void fetchedSelectedResource();
+  void FetchedSelectedResource();
 
 public slots:
   virtual void Update();
 
-  virtual void updateSelection(const QItemSelection& selected, const QItemSelection& deselected);
+  virtual void UpdateSelection(const QItemSelection& selected, const QItemSelection& deselected);
 
-  virtual void decorateByUuid(std::string uuid);
+  virtual void DecorateByUuid(std::string uuid);
 
-  virtual void addResource(mdo::Object *);
+  virtual void AddResource(mdo::Object *);
 
-  virtual void updateResource(mdo::Object *);
+  virtual void UpdateResource(mdo::Object *);
 
-  virtual void deleteResource(mdo::Object *);
+  virtual void DeleteResource(mdo::Object *);
 
 protected:
-  virtual void fetchItemData(MidasTreeItem* item) = 0;
+  virtual void FetchItemData(MidasTreeItem* item) = 0;
 
   virtual void contextMenuEvent(QContextMenuEvent* event);
 

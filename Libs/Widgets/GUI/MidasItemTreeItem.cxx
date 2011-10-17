@@ -66,7 +66,7 @@ void MidasItemTreeItem::Populate(QModelIndex parent)
     bitstream->SetBitstream(*i);
     this->AppendChild(bitstream);
     QModelIndex index = m_Model->index(row, 0, parent);
-    m_Model->registerResource( (*i)->GetUuid(), index);
+    m_Model->RegisterResource( (*i)->GetUuid(), index);
 
     if( (*i)->IsDirty() )
       {

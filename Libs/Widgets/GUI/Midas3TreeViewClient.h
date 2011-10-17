@@ -32,19 +32,19 @@ public slots:
 
   void collapseAll();
 
-  void addResource(mdo::Object *);
+  void AddResource(mdo::Object *);
 
-  void updateResource(mdo::Object *);
+  void UpdateResource(mdo::Object *);
 
-  void deleteResource(mdo::Object *);
+  void DeleteResource(mdo::Object *);
 
 signals:
-  void bitstreamsDropped(const Midas3ItemTreeItem* parentItem, const QStringList& files);
+  void BitstreamsDropped(const Midas3ItemTreeItem* parentItem, const QStringList& files);
 
-  void bitstreamOpenRequest();
+  void BitstreamOpenRequest();
 
 protected:
-  void fetchItemData(Midas3TreeItem* item);
+  void FetchItemData(Midas3TreeItem* item);
 
   void dragMoveEvent(QDragMoveEvent* event);
 

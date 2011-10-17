@@ -77,12 +77,12 @@ Midas3TreeViewServer::~Midas3TreeViewServer()
   delete m_ExpandTreeThread;
 }
 
-void Midas3TreeViewServer::alertFetchedMore()
+void Midas3TreeViewServer::AlertFetchedMore()
 {
-  emit fetchedMore();
+  emit FetchedMore();
 }
 
-void Midas3TreeViewServer::selectByUuid(std::string uuid, bool select)
+void Midas3TreeViewServer::SelectByUuid(std::string uuid, bool select)
 {
   if( m_ExpandTreeThread )
     {
@@ -94,30 +94,30 @@ void Midas3TreeViewServer::selectByUuid(std::string uuid, bool select)
                                             reinterpret_cast<Midas3TreeModelServer *>(m_Model), uuid, select);
 
   connect(m_ExpandTreeThread, SIGNAL(finished() ),
-          this, SLOT(expansionDone() ) );
+          this, SLOT(ExpansionDone() ) );
   connect(m_ExpandTreeThread, SIGNAL(expand(const QModelIndex &) ),
           this, SLOT(expand(const QModelIndex &) ) );
   connect(m_ExpandTreeThread, SIGNAL(select(const QModelIndex &) ),
           this, SLOT(selectByIndex(const QModelIndex &) ) );
 
   m_ExpandTreeThread->start();
-  emit startedExpandingTree();
+  emit StartedExpandingTree();
 }
 
-void Midas3TreeViewServer::expansionDone()
+void Midas3TreeViewServer::ExpansionDone()
 {
-  emit finishedExpandingTree();
-  emit enableActions(true);
+  emit FinishedExpandingTree();
+  emit EnableActions(true);
 }
 
-void Midas3TreeViewServer::selectByIndex(const QModelIndex& index)
+void Midas3TreeViewServer::SelectByIndex(const QModelIndex& index)
 {
   selectionModel()->select(index,
                            QItemSelectionModel::Select | QItemSelectionModel::Clear);
-  scrollTo(index);
+  this->scrollTo(index);
 }
 
-void Midas3TreeViewServer::fetchItemData(Midas3TreeItem* item)
+void Midas3TreeViewServer::FetchItemData(Midas3TreeItem* item)
 {
   Midas3FolderTreeItem*    folderTreeItem = NULL;
   Midas3ItemTreeItem*      itemTreeItem = NULL;
@@ -131,16 +131,16 @@ void Midas3TreeViewServer::fetchItemData(Midas3TreeItem* item)
     remote.SetAuthenticator(m_Synch->GetAuthenticator() );
     remote.Fetch();
 
-    emit midas3FolderTreeItemSelected(folderTreeItem);
+    emit Midas3FolderTreeItemSelected(folderTreeItem);
     }
   else if( (itemTreeItem = dynamic_cast<Midas3ItemTreeItem *>(item) ) != NULL )
     {
     // TODO fetch?
-    emit midas3ItemTreeItemSelected(itemTreeItem);
+    emit Midas3ItemTreeItemSelected(itemTreeItem);
     }
   else if( (bitstreamTreeItem = dynamic_cast<Midas3BitstreamTreeItem *>(item) ) != NULL )
     {
-    emit midas3BitstreamTreeItemSelected(bitstreamTreeItem);
+    emit Midas3BitstreamTreeItemSelected(bitstreamTreeItem);
     }
 }
 
@@ -171,7 +171,7 @@ void Midas3TreeViewServer::dropEvent(QDropEvent* event)
 
     int  type = atoi( tokens[0].c_str() );
     int  id   = atoi( tokens[1].c_str() );
-    emit resourceDropped(type, id);
+    emit ResourceDropped(type, id);
     event->acceptProposedAction();
     }
 }

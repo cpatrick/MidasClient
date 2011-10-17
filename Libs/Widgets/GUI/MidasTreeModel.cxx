@@ -22,7 +22,7 @@
 MidasTreeModel::MidasTreeModel(QObject *parent)
   : QAbstractItemModel(parent), m_Synch(NULL)
 {
-  this->AlterList = true;
+  m_AlterList = true;
 }
 
 MidasTreeModel::~MidasTreeModel()
@@ -35,7 +35,7 @@ void MidasTreeModel::SetSynchronizer(midasSynchronizer* synch)
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModel::clear()
+void MidasTreeModel::Clear()
 {
   this->beginResetModel();
   for( QList<MidasCommunityTreeItem *>::iterator i = m_TopLevelCommunities.begin();
@@ -51,18 +51,18 @@ void MidasTreeModel::clear()
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModel::registerResource(std::string uuid, QModelIndex index)
+void MidasTreeModel::RegisterResource(const std::string& uuid, QModelIndex index)
 {
   m_IndexMap[uuid] = index;
 }
 
-void MidasTreeModel::unregisterResource(std::string uuid)
+void MidasTreeModel::UnregisterResource(const std::string& uuid)
 {
   m_IndexMap.erase(uuid);
 }
 
 // -------------------------------------------------------------------------
-QModelIndex MidasTreeModel::getIndexByUuid(std::string uuid)
+QModelIndex MidasTreeModel::GetIndexByUuid(const std::string& uuid)
 {
   if( m_IndexMap.find(uuid) != m_IndexMap.end() )
     {
@@ -79,17 +79,17 @@ QModelIndex MidasTreeModel::index(int row,
                                   int column, const
                                   QModelIndex & parent) const
 {
-  if( !hasIndex(row, column, parent) )
+  if( !this->hasIndex(row, column, parent) )
     {
     return QModelIndex();
     }
 
   if( !parent.isValid() )
     {
-    return createIndex(row, column, m_TopLevelCommunities[row]);
+    return this->createIndex(row, column, m_TopLevelCommunities[row]);
     }
 
-  MidasTreeItem* parentItem = static_cast<MidasTreeItem *>(parent.internalPointer() );
+  MidasTreeItem* parentItem = static_cast<MidasTreeItem*>(parent.internalPointer() );
   MidasTreeItem* childItem = parentItem->GetChild(row);
   if( childItem )
     {
@@ -102,19 +102,19 @@ QModelIndex MidasTreeModel::index(int row,
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModel::restoreExpandedState()
+void MidasTreeModel::RestoreExpandedState()
 {
   // copy list so we can remove while iterating
   std::set<std::string> copy = m_ExpandedList;
   for( std::set<std::string>::iterator i = copy.begin();
        i != copy.end(); ++i )
     {
-    QModelIndex index = this->getIndexByUuid(*i);
+    QModelIndex index = this->GetIndexByUuid(*i);
     if( index.isValid() )
       {
-      this->AlterList = false;
-      emit expand(index);
-      this->AlterList = true;
+      m_AlterList = false;
+      emit Expand(index);
+      m_AlterList = true;
       }
     else
       {
@@ -194,8 +194,8 @@ QModelIndex MidasTreeModel::parent(const QModelIndex & index) const
     return QModelIndex();
     }
 
-  MidasTreeItem *childItem = static_cast<MidasTreeItem *>(index.internalPointer() );
-  MidasTreeItem *parentItem = childItem->GetParent();
+  MidasTreeItem* childItem = static_cast<MidasTreeItem *>(index.internalPointer() );
+  MidasTreeItem* parentItem = childItem->GetParent();
 
   if( parentItem == NULL )
     {
@@ -210,7 +210,7 @@ bool MidasTreeModel::hasChildren( const QModelIndex & parent ) const
     {
     return true;
     }
-  const MidasTreeItem* item = midasTreeItem(parent);
+  const MidasTreeItem* item = this->GetMidasTreeItem(parent);
   if( item->IsFetchedChildren() )
     {
     return item->ChildCount() > 0;
@@ -244,7 +244,7 @@ bool MidasTreeModel::canFetchMore( const QModelIndex & parent ) const
     {
     return false;
     }
-  const MidasTreeItem* item = (this->midasTreeItem(parent) );
+  const MidasTreeItem* item = this->GetMidasTreeItem(parent);
   return !item->IsFetchedChildren();
 }
 
@@ -255,13 +255,13 @@ void MidasTreeModel::fetchMore( const QModelIndex & parent )
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModel::clearExpandedList()
+void MidasTreeModel::ClearExpandedList()
 {
   m_ExpandedList.clear();
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModel::expandAllResources()
+void MidasTreeModel::ExpandAllResources()
 {
   m_ExpandedList.clear();
   for( std::map<std::string, QModelIndex>::iterator i = m_IndexMap.begin();
@@ -272,22 +272,22 @@ void MidasTreeModel::expandAllResources()
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModel::itemExpanded( const QModelIndex & index )
+void MidasTreeModel::ItemExpanded( const QModelIndex & index )
 {
-  MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index) );
+  MidasTreeItem* item = const_cast<MidasTreeItem *>(this->GetMidasTreeItem(index) );
 
   item->SetDecorationRole(MidasTreeItem::Expanded);
 
-  if( this->AlterList )
+  if( m_AlterList )
     {
     m_ExpandedList.insert(item->GetUuid() );
     }
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModel::itemCollapsed( const QModelIndex & index )
+void MidasTreeModel::ItemCollapsed( const QModelIndex & index )
 {
-  MidasTreeItem* item = const_cast<MidasTreeItem *>(this->midasTreeItem(index) );
+  MidasTreeItem* item = const_cast<MidasTreeItem *>(this->GetMidasTreeItem(index) );
 
   item->SetDecorationRole(MidasTreeItem::Collapsed);
 
@@ -295,18 +295,18 @@ void MidasTreeModel::itemCollapsed( const QModelIndex & index )
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModel::decorateByUuid(std::string uuid)
+void MidasTreeModel::DecorateByUuid(const std::string& uuid)
 {
-  QModelIndex index = getIndexByUuid(uuid);
+  QModelIndex index = this->GetIndexByUuid(uuid);
 
   if( index.isValid() )
     {
     MidasTreeItem* node = const_cast<MidasTreeItem *>(
-        this->midasTreeItem(index) );
+        this->GetMidasTreeItem(index) );
     node->SetDecorationRole(MidasTreeItem::Dirty);
 
     MidasTreeItem* item =
-      const_cast<MidasTreeItem *>(this->midasTreeItem(index) );
+      const_cast<MidasTreeItem *>(this->GetMidasTreeItem(index) );
     item->UpdateDisplayName();
 
     emit dataChanged(index, index);

@@ -37,17 +37,17 @@ public:
 
   void Populate();
 
-  void addResource(mdo::Object *);
+  void AddResource(mdo::Object *);
 
-  void updateResource(mdo::Object *);
+  void UpdateResource(mdo::Object *);
 
-  void deleteResource(mdo::Object *);
+  void DeleteResource(mdo::Object *);
 
   void fetchMore(const QModelIndex& parent);
 
-  void fetchFolder(Midas3FolderTreeItem* parent);
+  void FetchFolder(Midas3FolderTreeItem* parent);
 
-  void fetchItem(Midas3ItemTreeItem* parent);
+  void FetchItem(Midas3ItemTreeItem* parent);
 
 };
 

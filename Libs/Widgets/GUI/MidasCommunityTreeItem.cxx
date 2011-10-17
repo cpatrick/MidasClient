@@ -76,7 +76,7 @@ void MidasCommunityTreeItem::Populate(QModelIndex parent)
 
     this->AppendChild(collection);
     QModelIndex index = m_Model->index(row, 0, parent);
-    m_Model->registerResource( (*itCol)->GetUuid(), index);
+    m_Model->RegisterResource( (*itCol)->GetUuid(), index);
 
     if( this->IsDynamicFetch() )
       {
@@ -108,7 +108,7 @@ void MidasCommunityTreeItem::Populate(QModelIndex parent)
 
     this->AppendChild(community);
     QModelIndex index = m_Model->index(row, 0, parent);
-    m_Model->registerResource( (*itCom)->GetUuid(), index);
+    m_Model->RegisterResource( (*itCom)->GetUuid(), index);
 
     if( this->IsDynamicFetch() )
       {

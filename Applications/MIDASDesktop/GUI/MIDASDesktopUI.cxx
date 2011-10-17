@@ -1601,7 +1601,7 @@ void MIDASDesktopUI::DisplayClientResourceContextMenu(QContextMenuEvent* e)
     if( index.isValid() )
       {
       Midas3TreeItem* item = const_cast<Midas3TreeItem *>(
-          dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+          dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
 
       m_TreeViewClient->selectionModel()->select(index, QItemSelectionModel::SelectCurrent);
 
@@ -1636,7 +1636,7 @@ void MIDASDesktopUI::DisplayClientResourceContextMenu(QContextMenuEvent* e)
     if( index.isValid() )
       {
       MidasTreeItem* item =
-        const_cast<MidasTreeItem *>(dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+        const_cast<MidasTreeItem *>(dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
 
       m_TreeViewClient->selectionModel()->select(index, QItemSelectionModel::SelectCurrent);
 
@@ -1690,7 +1690,7 @@ void MIDASDesktopUI::DisplayServerResourceContextMenu(QContextMenuEvent* e)
 
     if( index.isValid() )
       {
-      MidasTreeItem* item = const_cast<MidasTreeItem *>(treeView->getSelectedMidasTreeItem() );
+      MidasTreeItem* item = const_cast<MidasTreeItem *>(treeView->GetSelectedMidasTreeItem() );
 
       if( !item->ResourceIsFetched() )
         {
@@ -1733,7 +1733,7 @@ void MIDASDesktopUI::AddSubcommunity()
 {
   m_CreateMidasResourceUI->SetType(CreateMidasResourceUI::SubCommunity);
   m_CreateMidasResourceUI->SetParentResource(
-    dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+    dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
   m_CreateMidasResourceUI->exec();
 }
 
@@ -1741,7 +1741,7 @@ void MIDASDesktopUI::AddCollection()
 {
   m_CreateMidasResourceUI->SetType(CreateMidasResourceUI::Collection);
   m_CreateMidasResourceUI->SetParentResource(
-    dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+    dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
   m_CreateMidasResourceUI->exec();
 }
 
@@ -1749,7 +1749,7 @@ void MIDASDesktopUI::AddItem()
 {
   m_CreateMidasResourceUI->SetType(CreateMidasResourceUI::Item);
   m_CreateMidasResourceUI->SetParentResource(
-    dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+    dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
   m_CreateMidasResourceUI->exec();
 }
 
@@ -1771,7 +1771,7 @@ void MIDASDesktopUI::AddSubfolder()
 {
   m_CreateMidasResourceUI->SetType(CreateMidasResourceUI::SubFolder);
   m_CreateMidasResourceUI->SetParentResource3(
-    dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+    dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
   m_CreateMidasResourceUI->exec();
 }
 
@@ -1779,7 +1779,7 @@ void MIDASDesktopUI::AddItem3()
 {
   m_CreateMidasResourceUI->SetType(CreateMidasResourceUI::Item3);
   m_CreateMidasResourceUI->SetParentResource3(
-    dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+    dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
   m_CreateMidasResourceUI->exec();
 }
 
@@ -1796,13 +1796,13 @@ void MIDASDesktopUI::AddBitstream()
       {
       this->AddBitstreams(reinterpret_cast<Midas3ItemTreeItem *>(
                       const_cast<Midas3TreeItem *>(dynamic_cast<Midas3TreeViewClient *>(
-                                                     m_TreeViewClient)->getSelectedMidasTreeItem() ) ), files);
+                                                     m_TreeViewClient)->GetSelectedMidasTreeItem() ) ), files);
       }
     else
       {
       this->AddBitstreams(reinterpret_cast<MidasItemTreeItem *>(
                       const_cast<MidasTreeItem *>(
-                        dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() ) ), files);
+                        dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() ) ), files);
       }
     }
 }
@@ -1880,7 +1880,7 @@ void MIDASDesktopUI::ViewDirectory()
   if( DB_IS_MIDAS3 )
     {
     Midas3TreeItem* resource = const_cast<Midas3TreeItem *>(
-        dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+        dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
     if( resource->GetType() == midas3ResourceType::BITSTREAM )
       {
       QFileInfo fileInfo(resource->GetPath().c_str() );
@@ -1894,7 +1894,7 @@ void MIDASDesktopUI::ViewDirectory()
   else
     {
     MidasTreeItem* resource = const_cast<MidasTreeItem *>(
-        dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+        dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
     mds::DatabaseAPI    db;
     midasResourceRecord record = db.GetRecordByUuid(resource->GetUuid() );
 
@@ -1922,13 +1922,13 @@ void MIDASDesktopUI::OpenBitstream()
     {
     path = dynamic_cast<Midas3BitstreamTreeItem *>(const_cast<Midas3TreeItem *>(
                                                      dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->
-                                                     getSelectedMidasTreeItem() ) )
+                                                     GetSelectedMidasTreeItem() ) )
       ->GetBitstream()->GetPath();
     }
   else
     {
     MidasTreeItem* resource = const_cast<MidasTreeItem *>(
-        dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+        dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
     mds::DatabaseAPI db;
     path = db.GetRecordByUuid(resource->GetUuid() ).Path;
     }
@@ -1961,7 +1961,7 @@ void MIDASDesktopUI::ViewInBrowser()
     MidasTreeItem* resource = const_cast<MidasTreeItem *>(
         dynamic_cast<MidasTreeViewServer *>(
           m_TreeViewServer)
-        ->getSelectedMidasTreeItem() );
+        ->GetSelectedMidasTreeItem() );
     MidasCommunityTreeItem*  comm = NULL;
     MidasCollectionTreeItem* coll = NULL;
     MidasItemTreeItem*       item = NULL;
@@ -2342,13 +2342,13 @@ void MIDASDesktopUI::PushResources()
   if( DB_IS_MIDAS3 )
     {
     const Midas3TreeItem* resource =
-      dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem();
+      dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem();
     m_PushUI->setObject(resource ? resource->GetObject() : NULL);
     }
   else
     {
     const MidasTreeItem* resource =
-      dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem();
+      dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem();
     m_PushUI->setObject(resource ? resource->GetObject() : NULL);
     }
   m_PushUI->exec();
@@ -2423,7 +2423,7 @@ void MIDASDesktopUI::SearchItemClicked(QListWidgetItemMidasItem* listItem)
 {
   // TODO MIDAS3ify
   dynamic_cast<MidasTreeViewServer *>(m_TreeViewServer)
-  ->selectByUuid(listItem->getObject()->GetUuid(), true);
+  ->SelectByUuid(listItem->getObject()->GetUuid(), true);
 }
 
 void MIDASDesktopUI::SearchItemContextMenu(QContextMenuEvent* e)
@@ -2483,7 +2483,7 @@ void MIDASDesktopUI::DecorateServerTree()
       this->EnableActions(false);
       connect(m_TreeViewServer, SIGNAL(FinishedExpandingTree() ),
               this, SLOT(DecorateCallback() ) );
-      dynamic_cast<MidasTreeViewServer *>(m_TreeViewServer)->selectByUuid(m_DirtyUuids[0]);
+      dynamic_cast<MidasTreeViewServer *>(m_TreeViewServer)->SelectByUuid(m_DirtyUuids[0]);
       }
     }
 }
@@ -2492,11 +2492,11 @@ void MIDASDesktopUI::DecorateCallback()
 {
   if( SERVER_IS_MIDAS3 )
     {
-    dynamic_cast<Midas3TreeViewServer *>(m_TreeViewServer)->decorateByUuid(m_DirtyUuids[0]);
+    dynamic_cast<Midas3TreeViewServer *>(m_TreeViewServer)->DecorateByUuid(m_DirtyUuids[0]);
     }
   else
     {
-    dynamic_cast<MidasTreeViewServer *>(m_TreeViewServer)->decorateByUuid(m_DirtyUuids[0]);
+    dynamic_cast<MidasTreeViewServer *>(m_TreeViewServer)->DecorateByUuid(m_DirtyUuids[0]);
     }
   m_DirtyUuids.erase(m_DirtyUuids.begin() );
   disconnect(m_TreeViewServer, SIGNAL(FinishedExpandingTree() ),
@@ -2546,12 +2546,12 @@ void MIDASDesktopUI::DeleteLocalResource(bool deleteFiles)
 
   if( DB_IS_MIDAS3 )
     {
-    const Midas3TreeItem* treeItem = dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem();
+    const Midas3TreeItem* treeItem = dynamic_cast<Midas3TreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem();
     m_DeleteThread->SetResource3(const_cast<Midas3TreeItem *>(treeItem) );
     }
   else
     {
-    const MidasTreeItem* treeItem = dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem();
+    const MidasTreeItem* treeItem = dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem();
     m_DeleteThread->SetResource(const_cast<MidasTreeItem *>(treeItem) );
     }
 
@@ -2569,7 +2569,7 @@ void MIDASDesktopUI::DeleteServerResource(bool val)
     }
   else
     {
-    const MidasTreeItem* resource = dynamic_cast<MidasTreeViewServer *>(m_TreeViewServer)->getSelectedMidasTreeItem();
+    const MidasTreeItem* resource = dynamic_cast<MidasTreeViewServer *>(m_TreeViewServer)->GetSelectedMidasTreeItem();
     int                  id = resource->GetId();
     std::string          typeName = QString(midasUtils::GetTypeName(resource->GetType() ).c_str() ).toStdString();
 
@@ -2678,7 +2678,7 @@ void MIDASDesktopUI::EnableResourceEditing(bool val)
 void MIDASDesktopUI::EditInfo()
 {
   MidasTreeItem* node = const_cast<MidasTreeItem *>(
-      dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->getSelectedMidasTreeItem() );
+      dynamic_cast<MidasTreeViewClient *>(m_TreeViewClient)->GetSelectedMidasTreeItem() );
 
   MidasCommunityTreeItem*  comm = NULL;
   MidasCollectionTreeItem* coll = NULL;

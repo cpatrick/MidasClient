@@ -33,15 +33,15 @@ public:
   Midas3TreeModel(QObject *parent);
   ~Midas3TreeModel();
 
-  void registerResource(std::string uuid, QModelIndex index);
+  void RegisterResource(const std::string& uuid, QModelIndex index);
 
-  void unregisterResource(std::string uuid);
+  void UnregisterResource(const std::string& uuid);
 
-  QModelIndex getIndexByUuid(std::string uuid);
+  QModelIndex GetIndexByUuid(const std::string& uuid);
 
-  void clearExpandedList();
+  void ClearExpandedList();
 
-  void expandAllResources();
+  void ExpandAllResources();
 
   virtual void SetSynchronizer(midasSynchronizer* synch);
 
@@ -67,40 +67,37 @@ public:
 
   virtual void fetchMore(const QModelIndex& parent);
 
-  virtual void clear();
+  virtual void Clear();
 
-  virtual void restoreExpandedState();
+  virtual void RestoreExpandedState();
 
-  const inline Midas3TreeItem * midasTreeItem(const QModelIndex& index) const
+  const inline Midas3TreeItem* GetMidasTreeItem(const QModelIndex& index) const
   {
     return index.isValid() ? reinterpret_cast<const Midas3TreeItem *>(index.internalPointer() ) : NULL;
   }
 
 signals:
-  void expand(const QModelIndex &);
+  void Expand(const QModelIndex &);
 
 public slots:
-  virtual void itemExpanded(const QModelIndex& index);
+  virtual void ItemExpanded(const QModelIndex& index);
 
-  virtual void itemCollapsed(const QModelIndex& index);
+  virtual void ItemCollapsed(const QModelIndex& index);
 
-  virtual void decorateByUuid(std::string uuid);
+  virtual void DecorateByUuid(std::string uuid);
 
-  virtual void addResource(mdo::Object *)
-  {
-  }
-  virtual void updateResource(mdo::Object *)
-  {
-  }
-  virtual void deleteResource(mdo::Object *)
-  {
-  }
+  virtual void AddResource(mdo::Object *) {}
+
+  virtual void UpdateResource(mdo::Object *) {}
+
+  virtual void DeleteResource(mdo::Object *) {}
+
 protected:
   std::map<std::string, QModelIndex> m_IndexMap;
   std::set<std::string>              m_ExpandedList;
   QList<Midas3FolderTreeItem *>      m_TopLevelFolders;
   midasSynchronizer*                 m_Synch;
-  bool                               AlterList;
+  bool                               m_AlterList;
 };
 
 #endif

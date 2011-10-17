@@ -48,44 +48,44 @@ public:
 
   virtual void Initialize();
 
-  bool isModelIndexSelected() const;
+  bool IsModelIndexSelected() const;
 
-  const QModelIndex getSelectedModelIndex() const;
+  const QModelIndex GetSelectedModelIndex() const;
 
-  const Midas3TreeItem * getSelectedMidasTreeItem() const;
+  const Midas3TreeItem* GetSelectedMidasTreeItem() const;
 
 signals:
-  void midasTreeItemSelected(const Midas3TreeItem* item);
+  void MidasTreeItemSelected(const Midas3TreeItem* item);
 
-  void midas3FolderTreeItemSelected(const Midas3FolderTreeItem* item);
+  void Midas3FolderTreeItemSelected(const Midas3FolderTreeItem* item);
 
-  void midas3ItemTreeItemSelected(const Midas3ItemTreeItem* item);
+  void Midas3ItemTreeItemSelected(const Midas3ItemTreeItem* item);
 
-  void midas3BitstreamTreeItemSelected(const Midas3BitstreamTreeItem* item);
+  void Midas3BitstreamTreeItemSelected(const Midas3BitstreamTreeItem* item);
 
-  void midasNoTreeItemSelected();
+  void MidasNoTreeItemSelected();
 
-  void midasTreeViewContextMenu(QContextMenuEvent* e);
+  void MidasTreeViewContextMenu(QContextMenuEvent* e);
 
-  void resourceDropped(int type, int id);
+  void ResourceDropped(int type, int id);
 
-  void fetchedSelectedResource();
+  void FetchedSelectedResource();
 
 public slots:
   virtual void Update();
 
-  virtual void updateSelection(const QItemSelection& selected, const QItemSelection& deselected);
+  virtual void UpdateSelection(const QItemSelection& selected, const QItemSelection& deselected);
 
-  virtual void decorateByUuid(std::string uuid);
+  virtual void DecorateByUuid(const std::string& uuid);
 
-  virtual void addResource(mdo::Object *);
+  virtual void AddResource(mdo::Object *);
 
-  virtual void updateResource(mdo::Object *);
+  virtual void UpdateResource(mdo::Object *);
 
-  virtual void deleteResource(mdo::Object *);
+  virtual void DeleteResource(mdo::Object *);
 
 protected:
-  virtual void fetchItemData(Midas3TreeItem* item) = 0;
+  virtual void FetchItemData(Midas3TreeItem* item) = 0;
 
   virtual void contextMenuEvent(QContextMenuEvent* event);
 

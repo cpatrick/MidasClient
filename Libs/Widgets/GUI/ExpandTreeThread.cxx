@@ -61,7 +61,7 @@ void ExpandTreeThread::run()
     for( std::vector<std::string>::iterator i = path.begin();
          i != path.end(); ++i )
       {
-      QModelIndex index = m_ParentModel->getIndexByUuid(*i);
+      QModelIndex index = m_ParentModel->GetIndexByUuid(*i);
       m_ParentModel->fetchMore(index);
 
       emit expand(index);
@@ -69,7 +69,7 @@ void ExpandTreeThread::run()
 
     if( m_Select )
       {
-      QModelIndex index = m_ParentModel->getIndexByUuid(m_Uuid);
+      QModelIndex index = m_ParentModel->GetIndexByUuid(m_Uuid);
       if( index.isValid() )
         {
         emit select(index);

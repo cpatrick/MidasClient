@@ -38,19 +38,19 @@ public:
 
   void Populate();
 
-  void addResource(mdo::Object *);
+  void AddResource(mdo::Object *);
 
-  void updateResource(mdo::Object *);
+  void UpdateResource(mdo::Object *);
 
-  void deleteResource(mdo::Object *);
+  void DeleteResource(mdo::Object *);
 
   void fetchMore(const QModelIndex & parent);
 
-  void fetchCommunity(MidasCommunityTreeItem* parent);
+  void FetchCommunity(MidasCommunityTreeItem* parent);
 
-  void fetchCollection(MidasCollectionTreeItem* parent);
+  void FetchCollection(MidasCollectionTreeItem* parent);
 
-  void fetchItem(MidasItemTreeItem* parent);
+  void FetchItem(MidasItemTreeItem* parent);
 
 };
 

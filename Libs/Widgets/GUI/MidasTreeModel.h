@@ -30,18 +30,18 @@ class MidasTreeModel : public QAbstractItemModel
 {
   Q_OBJECT
 public:
-  MidasTreeModel(QObject *parent);
+  MidasTreeModel(QObject* parent);
   ~MidasTreeModel();
 
-  void registerResource(std::string uuid, QModelIndex index);
+  void RegisterResource(const std::string& uuid, QModelIndex index);
 
-  void unregisterResource(std::string uuid);
+  void UnregisterResource(const std::string& uuid);
 
-  QModelIndex getIndexByUuid(std::string uuid);
+  QModelIndex GetIndexByUuid(const std::string& uuid);
 
-  void clearExpandedList();
+  void ClearExpandedList();
 
-  void expandAllResources();
+  void ExpandAllResources();
 
   virtual void SetSynchronizer(midasSynchronizer* synch);
 
@@ -67,40 +67,37 @@ public:
 
   virtual void fetchMore( const QModelIndex & parent );
 
-  virtual void clear();
+  virtual void Clear();
 
-  virtual void restoreExpandedState();
+  virtual void RestoreExpandedState();
 
-  const inline MidasTreeItem * midasTreeItem(const QModelIndex & index) const
+  const inline MidasTreeItem* GetMidasTreeItem(const QModelIndex & index) const
   {
     return index.isValid() ? reinterpret_cast<const MidasTreeItem *>(index.internalPointer() ) : NULL;
   }
 
 signals:
-  void expand(const QModelIndex &);
+  void Expand(const QModelIndex &);
 
 public slots:
-  virtual void itemExpanded( const QModelIndex & index );
+  virtual void ItemExpanded( const QModelIndex & index );
 
-  virtual void itemCollapsed( const QModelIndex & index );
+  virtual void ItemCollapsed( const QModelIndex & index );
 
-  virtual void decorateByUuid( std::string uuid );
+  virtual void DecorateByUuid( const std::string & uuid );
 
-  virtual void addResource(mdo::Object *)
-  {
-  }
-  virtual void updateResource(mdo::Object *)
-  {
-  }
-  virtual void deleteResource(mdo::Object *)
-  {
-  }
+  virtual void AddResource(mdo::Object *) {}
+
+  virtual void UpdateResource(mdo::Object *) {}
+
+  virtual void DeleteResource(mdo::Object *) {}
+
 protected:
   std::map<std::string, QModelIndex> m_IndexMap;
   std::set<std::string>              m_ExpandedList;
   QList<MidasCommunityTreeItem *>    m_TopLevelCommunities;
   midasSynchronizer*                 m_Synch;
-  bool                               AlterList;
+  bool                               m_AlterList;
 };
 
 #endif

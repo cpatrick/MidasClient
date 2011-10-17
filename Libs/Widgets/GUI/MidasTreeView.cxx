@@ -27,7 +27,7 @@
 #include <QtGui>
 
 MidasTreeView::MidasTreeView(QWidget* parent)
-  : MidasTreeViewBase(parent), m_Synch(NULL)
+: MidasTreeViewBase(parent), m_Synch(NULL)
 {
 }
 
@@ -41,32 +41,33 @@ void MidasTreeView::SetSynchronizer(midasSynchronizer* synch)
   m_Model->SetSynchronizer(synch);
 }
 
-void MidasTreeView::updateSelection(const QItemSelection & selected,
+void MidasTreeView::UpdateSelection(const QItemSelection & selected,
                                     const QItemSelection & deselected)
 {
   (void)deselected;
   QModelIndexList items = selected.indexes();
   if( items.size() > 0 && items.first().isValid() )
     {
-    MidasTreeItem* item = const_cast<MidasTreeItem *>(m_Model->midasTreeItem(items.first() ) );
-    fetchItemData(item);
-    emit midasTreeItemSelected(item);
+    MidasTreeItem* item = const_cast<MidasTreeItem *>(
+      m_Model->GetMidasTreeItem(items.first() ) );
+    this->FetchItemData(item);
+    emit MidasTreeItemSelected(item);
     }
   else
     {
-    emit midasNoTreeItemSelected();
+    emit MidasNoTreeItemSelected();
     }
-  emit fetchedSelectedResource();
+  emit FetchedSelectedResource();
 }
 
-bool MidasTreeView::isModelIndexSelected() const
+bool MidasTreeView::IsModelIndexSelected() const
 {
   QItemSelectionModel* selectionModel = this->selectionModel();
 
   return selectionModel->selectedIndexes().size() > 0;
 }
 
-const QModelIndex MidasTreeView::getSelectedModelIndex() const
+const QModelIndex MidasTreeView::GetSelectedModelIndex() const
 {
   QModelIndexList selectedIndexes = selectionModel()->selectedIndexes();
 
@@ -80,9 +81,9 @@ const QModelIndex MidasTreeView::getSelectedModelIndex() const
     }
 }
 
-const MidasTreeItem * MidasTreeView::getSelectedMidasTreeItem() const
+const MidasTreeItem* MidasTreeView::GetSelectedMidasTreeItem() const
 {
-  return m_Model->midasTreeItem(this->getSelectedModelIndex() );
+  return m_Model->GetMidasTreeItem(this->GetSelectedModelIndex() );
 }
 
 void MidasTreeView::Update()
@@ -94,24 +95,24 @@ void MidasTreeView::Update()
 void MidasTreeView::Clear()
 {
   disconnect(this);
-  this->m_Model->clear();
+  m_Model->Clear();
   this->reset();
 }
 
 void MidasTreeView::Initialize()
 {
   m_Model->Populate();
-  m_Model->restoreExpandedState();
+  m_Model->RestoreExpandedState();
 }
 
-void MidasTreeView::decorateByUuid(std::string uuid)
+void MidasTreeView::DecorateByUuid(std::string uuid)
 {
-  m_Model->decorateByUuid(uuid);
+  m_Model->DecorateByUuid(uuid);
 }
 
 void MidasTreeView::contextMenuEvent(QContextMenuEvent* event)
 {
-  emit midasTreeViewContextMenu(event);
+  emit MidasTreeViewContextMenu(event);
 
   event->accept();
 }
@@ -173,7 +174,7 @@ void MidasTreeView::mouseMoveEvent(QMouseEvent* event)
     }
 
   MidasTreeItem* resource =
-    const_cast<MidasTreeItem *>(m_Model->midasTreeItem(index) );
+    const_cast<MidasTreeItem *>(m_Model->GetMidasTreeItem(index) );
 
   QDrag*            drag = new QDrag(this);
   QMimeData*        mimeData = new QMimeData;
@@ -186,15 +187,15 @@ void MidasTreeView::mouseMoveEvent(QMouseEvent* event)
   drag->start();
 }
 
-void MidasTreeView::addResource(mdo::Object *)
+void MidasTreeView::AddResource(mdo::Object *)
 {
 }
 
-void MidasTreeView::updateResource(mdo::Object *)
+void MidasTreeView::UpdateResource(mdo::Object *)
 {
 }
 
-void MidasTreeView::deleteResource(mdo::Object *)
+void MidasTreeView::DeleteResource(mdo::Object *)
 {
 }
 

@@ -86,7 +86,7 @@ void Midas3FolderTreeItem::Populate(QModelIndex parent)
 
     this->AppendChild(folder);
     QModelIndex index = m_Model->index(row, 0, parent);
-    m_Model->registerResource( (*f)->GetUuid(), index);
+    m_Model->RegisterResource( (*f)->GetUuid(), index);
 
     if( this->IsDynamicFetch() )
       {
@@ -118,7 +118,7 @@ void Midas3FolderTreeItem::Populate(QModelIndex parent)
 
     this->AppendChild(item);
     QModelIndex index = m_Model->index(row, 0, parent);
-    m_Model->registerResource( (*f)->GetUuid(), index);
+    m_Model->RegisterResource( (*f)->GetUuid(), index);
 
     if( this->IsDynamicFetch() )
       {

@@ -73,11 +73,11 @@ void MidasTreeViewClient::mouseDoubleClickEvent(QMouseEvent* event)
 {
   MidasBitstreamTreeItem* bitstream = NULL;
   MidasTreeItem*          node = const_cast<MidasTreeItem *>(
-      m_Model->midasTreeItem(this->indexAt(event->pos() ) ) );
+      m_Model->GetMidasTreeItem(this->indexAt(event->pos() ) ) );
 
   if( (bitstream = dynamic_cast<MidasBitstreamTreeItem *>(node) ) != NULL )
     {
-    emit bitstreamOpenRequest();
+    emit BitstreamOpenRequest();
     }
   else
     {
@@ -94,7 +94,7 @@ void MidasTreeViewClient::dragMoveEvent(QDragMoveEvent* event)
     {
     MidasItemTreeItem* item = NULL;
     MidasTreeItem*     node = const_cast<MidasTreeItem *>(
-        m_Model->midasTreeItem(this->indexAt(event->pos() ) ) );
+        m_Model->GetMidasTreeItem(this->indexAt(event->pos() ) ) );
 
     if( (item = dynamic_cast<MidasItemTreeItem *>(node) ) != NULL )
       {
@@ -123,7 +123,7 @@ void MidasTreeViewClient::dropEvent(QDropEvent* event)
     {
     MidasItemTreeItem* item = NULL;
     MidasTreeItem*     node = const_cast<MidasTreeItem *>(
-        m_Model->midasTreeItem(this->indexAt(event->pos() ) ) );
+        m_Model->GetMidasTreeItem(this->indexAt(event->pos() ) ) );
 
     if( (item = dynamic_cast<MidasItemTreeItem *>(node) ) != NULL )
       {
@@ -137,7 +137,7 @@ void MidasTreeViewClient::dropEvent(QDropEvent* event)
           files << url.toLocalFile();
           }
         }
-      emit bitstreamsDropped( item, files );
+      emit BitstreamsDropped( item, files );
       event->acceptProposedAction();
       }
     }
@@ -149,24 +149,24 @@ void MidasTreeViewClient::dropEvent(QDropEvent* event)
 
     int  type = atoi( tokens[0].c_str() );
     int  id   = atoi( tokens[1].c_str() );
-    emit resourceDropped(type, id);
+    emit ResourceDropped(type, id);
     event->acceptProposedAction();
     }
 }
 
 void MidasTreeViewClient::expandAll()
 {
-  m_Model->expandAllResources();
+  m_Model->ExpandAllResources();
   MidasTreeView::expandAll();
 }
 
 void MidasTreeViewClient::collapseAll()
 {
-  m_Model->clearExpandedList();
+  m_Model->ClearExpandedList();
   MidasTreeView::collapseAll();
 }
 
-void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
+void MidasTreeViewClient::FetchItemData(MidasTreeItem* item)
 {
   MidasCommunityTreeItem*  communityTreeItem = NULL;
   MidasCollectionTreeItem* collectionTreeItem = NULL;
@@ -179,7 +179,7 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
     mdsComm.SetObject(communityTreeItem->GetCommunity() );
     mdsComm.Fetch();
 
-    emit midasCommunityTreeItemSelected(communityTreeItem);
+    emit MidasCommunityTreeItemSelected(communityTreeItem);
     }
   else if( (collectionTreeItem = dynamic_cast<MidasCollectionTreeItem *>(item) ) != NULL )
     {
@@ -187,7 +187,7 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
     mdsColl.SetObject(collectionTreeItem->GetCollection() );
     mdsColl.Fetch();
 
-    emit midasCollectionTreeItemSelected(collectionTreeItem);
+    emit MidasCollectionTreeItemSelected(collectionTreeItem);
     }
   else if( (itemTreeItem = dynamic_cast<MidasItemTreeItem *>(item) ) != NULL )
     {
@@ -195,7 +195,7 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
     mdsItem.SetObject(itemTreeItem->GetItem() );
     mdsItem.Fetch();
 
-    emit midasItemTreeItemSelected(itemTreeItem);
+    emit MidasItemTreeItemSelected(itemTreeItem);
     }
   else if( (bitstreamTreeItem = dynamic_cast<MidasBitstreamTreeItem *>(item) ) != NULL )
     {
@@ -203,21 +203,21 @@ void MidasTreeViewClient::fetchItemData(MidasTreeItem* item)
     mdsBitstream.SetObject(bitstreamTreeItem->GetBitstream() );
     mdsBitstream.Fetch();
 
-    emit midasBitstreamTreeItemSelected(bitstreamTreeItem);
+    emit MidasBitstreamTreeItemSelected(bitstreamTreeItem);
     }
 }
 
-void MidasTreeViewClient::addResource(mdo::Object* object)
+void MidasTreeViewClient::AddResource(mdo::Object* object)
 {
-  this->m_Model->addResource(object);
+  this->m_Model->AddResource(object);
 }
 
-void MidasTreeViewClient::updateResource(mdo::Object *)
+void MidasTreeViewClient::UpdateResource(mdo::Object *)
 {
 }
 
-void MidasTreeViewClient::deleteResource(mdo::Object* object)
+void MidasTreeViewClient::DeleteResource(mdo::Object* object)
 {
-  this->m_Model->deleteResource(object);
+  this->m_Model->DeleteResource(object);
 }
 

@@ -37,7 +37,7 @@
 Midas3TreeModelClient::Midas3TreeModelClient(QObject *parent)
   : Midas3TreeModel(parent)
 {
-  this->AlterList = true;
+  m_AlterList = true;
 }
 
 Midas3TreeModelClient::~Midas3TreeModelClient()
@@ -67,7 +67,7 @@ void Midas3TreeModelClient::Populate()
     m_TopLevelFolders.append(folderItem);
 
     QModelIndex index = this->index(row, 0);
-    registerResource( (*i)->GetUuid(), index);
+    this->RegisterResource( (*i)->GetUuid(), index);
 
     folderItem->Populate(index);
     folderItem->SetTopLevelFolders(&m_TopLevelFolders);
@@ -81,7 +81,7 @@ void Midas3TreeModelClient::Populate()
   emit layoutChanged();
 }
 
-void Midas3TreeModelClient::addResource(mdo::Object* object)
+void Midas3TreeModelClient::AddResource(mdo::Object* object)
 {
   m3do::Folder*    folderPtr = NULL;
   m3do::Item*      itemPtr = NULL;
@@ -112,13 +112,14 @@ void Midas3TreeModelClient::addResource(mdo::Object* object)
       }
     else
       {
-      QModelIndex parentIndex = this->getIndexByUuid(folder->GetParentFolder()->GetUuid() );
+      QModelIndex parentIndex = this->GetIndexByUuid(folder->GetParentFolder()->GetUuid() );
       if( !parentIndex.isValid() )
         {
         return;
         }
       Midas3FolderTreeItem* parent =
-        dynamic_cast<Midas3FolderTreeItem *>(const_cast<Midas3TreeItem *>(this->midasTreeItem(parentIndex) ) );
+        dynamic_cast<Midas3FolderTreeItem *>(const_cast<Midas3TreeItem *>(
+        this->GetMidasTreeItem(parentIndex) ) );
       folderItem = new Midas3FolderTreeItem(columnData, this, parent);
       folderItem->SetFolder(folder);
 
@@ -130,7 +131,7 @@ void Midas3TreeModelClient::addResource(mdo::Object* object)
       }
     folderItem->SetClientResource(true);
 
-    this->registerResource(object->GetUuid(), index);
+    this->RegisterResource(object->GetUuid(), index);
     }
   else if( (itemPtr = dynamic_cast<m3do::Item *>(object) ) != NULL )
     {
@@ -139,13 +140,14 @@ void Midas3TreeModelClient::addResource(mdo::Object* object)
     QList<QVariant> columnData;
     columnData << item->GetName().c_str();
 
-    QModelIndex parentIndex = this->getIndexByUuid(item->GetParentFolder()->GetUuid() );
+    QModelIndex parentIndex = this->GetIndexByUuid(item->GetParentFolder()->GetUuid() );
     if( !parentIndex.isValid() )
       {
       return;
       }
     Midas3FolderTreeItem* parent =
-      dynamic_cast<Midas3FolderTreeItem *>(const_cast<Midas3TreeItem *>(this->midasTreeItem(parentIndex) ) );
+      dynamic_cast<Midas3FolderTreeItem *>(const_cast<Midas3TreeItem *>(
+      this->GetMidasTreeItem(parentIndex) ) );
     Midas3ItemTreeItem* itemTreeItem = new Midas3ItemTreeItem(columnData, this, parent);
     this->beginInsertRows(parentIndex, parent->ChildCount(), parent->ChildCount() );
     parent->AppendChild(itemTreeItem);
@@ -154,7 +156,7 @@ void Midas3TreeModelClient::addResource(mdo::Object* object)
 
     itemTreeItem->SetClientResource(true);
     itemTreeItem->SetItem(item);
-    this->registerResource(object->GetUuid(), index);
+    this->RegisterResource(object->GetUuid(), index);
     }
   else if( (bitstreamPtr = dynamic_cast<m3do::Bitstream *>(object) ) != NULL )
     {
@@ -162,13 +164,13 @@ void Midas3TreeModelClient::addResource(mdo::Object* object)
     QList<QVariant>  columnData;
     columnData << bitstream->GetName().c_str();
 
-    QModelIndex parentIndex = this->getIndexByUuid(bitstream->GetParentItem()->GetUuid() );
+    QModelIndex parentIndex = this->GetIndexByUuid(bitstream->GetParentItem()->GetUuid() );
     if( !parentIndex.isValid() )
       {
       return;
       }
     Midas3ItemTreeItem* parent =
-      dynamic_cast<Midas3ItemTreeItem *>(const_cast<Midas3TreeItem *>(this->midasTreeItem(parentIndex) ) );
+      dynamic_cast<Midas3ItemTreeItem *>(const_cast<Midas3TreeItem *>(this->GetMidasTreeItem(parentIndex) ) );
     Midas3BitstreamTreeItem* bitstreamTreeItem = new Midas3BitstreamTreeItem(columnData, this, parent);
     this->beginInsertRows(parentIndex, parent->ChildCount(), parent->ChildCount() );
     parent->AppendChild(bitstreamTreeItem);
@@ -179,7 +181,7 @@ void Midas3TreeModelClient::addResource(mdo::Object* object)
     bitstreamTreeItem->SetBitstream(bitstream);
     std::stringstream uuid;
     uuid << bitstream->GetChecksum() << bitstream->GetId();
-    this->registerResource(uuid.str(), index);
+    this->RegisterResource(uuid.str(), index);
     }
   else
     {
@@ -189,13 +191,13 @@ void Midas3TreeModelClient::addResource(mdo::Object* object)
   emit layoutChanged();
 }
 
-void Midas3TreeModelClient::updateResource(mdo::Object* object)
+void Midas3TreeModelClient::UpdateResource(mdo::Object* object)
 {
   // TODO
   (void)object;
 }
 
-void Midas3TreeModelClient::deleteResource(mdo::Object* object)
+void Midas3TreeModelClient::DeleteResource(mdo::Object* object)
 {
   /*QModelIndex index = this->getIndexByUuid(object->GetUuid());
   MidasTreeItem* treeItem = const_cast<MidasTreeItem*>(this->midasTreeItem(index));
@@ -210,24 +212,24 @@ void Midas3TreeModelClient::fetchMore(const QModelIndex& parent)
     {
     return;
     }
-  Midas3TreeItem*       item = const_cast<Midas3TreeItem *>(midasTreeItem(parent) );
+  Midas3TreeItem*       item = const_cast<Midas3TreeItem *>(this->GetMidasTreeItem(parent) );
   Midas3FolderTreeItem* folderTreeItem = NULL;
   Midas3ItemTreeItem*   itemTreeItem = NULL;
 
   if( (folderTreeItem = dynamic_cast<Midas3FolderTreeItem *>(const_cast<Midas3TreeItem *>(item) ) ) != NULL )
     {
-    this->fetchFolder(folderTreeItem);
+    this->FetchFolder(folderTreeItem);
     }
   else if( (itemTreeItem = dynamic_cast<Midas3ItemTreeItem *>(const_cast<Midas3TreeItem *>(item) ) ) != NULL )
     {
-    this->fetchItem(itemTreeItem);
+    this->FetchItem(itemTreeItem);
     }
   item->SetFetchedChildren(true);
   emit layoutChanged();
 }
 
 // -------------------------------------------------------------------------
-void Midas3TreeModelClient::fetchFolder(Midas3FolderTreeItem* parent)
+void Midas3TreeModelClient::FetchFolder(Midas3FolderTreeItem* parent)
 {
   m3ds::Folder  mdsFolder;
   m3do::Folder* folder = parent->GetFolder();
@@ -257,8 +259,8 @@ void Midas3TreeModelClient::fetchFolder(Midas3FolderTreeItem* parent)
       }
     parent->AppendChild(item);
 
-    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid() ) );
-    this->registerResource( (*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, this->GetIndexByUuid(parent->GetUuid() ) );
+    this->RegisterResource( (*i)->GetUuid(), index);
     row++;
     }
   for( std::vector<m3do::Item *>::const_iterator i = folder->GetItems().begin();
@@ -276,15 +278,15 @@ void Midas3TreeModelClient::fetchFolder(Midas3FolderTreeItem* parent)
       }
     parent->AppendChild(item);
 
-    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid() ) );
-    this->registerResource( (*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, this->GetIndexByUuid(parent->GetUuid() ) );
+    this->RegisterResource( (*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
 }
 
 // -------------------------------------------------------------------------
-void Midas3TreeModelClient::fetchItem(Midas3ItemTreeItem* parent)
+void Midas3TreeModelClient::FetchItem(Midas3ItemTreeItem* parent)
 {
   m3ds::Item  mdsItem;
   m3do::Item* item = parent->GetItem();
@@ -313,13 +315,12 @@ void Midas3TreeModelClient::fetchItem(Midas3ItemTreeItem* parent)
       }
     parent->AppendChild(bitstream);
 
-    QModelIndex       index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid() ) );
+    QModelIndex       index = this->index(row, 0, this->GetIndexByUuid(parent->GetUuid() ) );
     std::stringstream uuid;
     uuid << (*i)->GetChecksum() << (*i)->GetId(); // bitstreams have no uuid, so
                                                   // we fudge one
-    registerResource(uuid.str(), index);
+    this->RegisterResource(uuid.str(), index);
     row++;
     }
   emit layoutChanged();
 }
-

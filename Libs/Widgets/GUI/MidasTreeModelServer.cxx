@@ -76,7 +76,7 @@ void MidasTreeModelServer::Populate()
     m_TopLevelCommunities.append(communityItem);
 
     QModelIndex index = this->index(row, 0);
-    this->registerResource( (*itCom)->GetUuid(), index);
+    this->RegisterResource( (*itCom)->GetUuid(), index);
 
     communityItem->Populate(index);
     communityItem->SetTopLevelCommunities(&m_TopLevelCommunities);
@@ -84,7 +84,7 @@ void MidasTreeModelServer::Populate()
     row++;
     }
   emit layoutChanged();
-  emit serverPolled();
+  emit ServerPolled();
 }
 
 /** Fetch more data */
@@ -94,25 +94,25 @@ void MidasTreeModelServer::fetchMore( const QModelIndex & parent )
     {
     return;
     }
-  MidasTreeItem *           item = const_cast<MidasTreeItem *>(midasTreeItem(parent) );
+  MidasTreeItem *           item = const_cast<MidasTreeItem *>(this->GetMidasTreeItem(parent) );
   MidasCollectionTreeItem * collectionTreeItem = NULL;
   MidasItemTreeItem *       itemTreeItem = NULL;
 
   if( (collectionTreeItem = dynamic_cast<MidasCollectionTreeItem *>( const_cast<MidasTreeItem *>( item ) ) ) != NULL )
     {
-    this->fetchCollection(collectionTreeItem);
+    this->FetchCollection(collectionTreeItem);
     }
   else if( (itemTreeItem = dynamic_cast<MidasItemTreeItem *>( const_cast<MidasTreeItem *>( item ) ) ) != NULL )
     {
-    this->fetchItem(itemTreeItem);
+    this->FetchItem(itemTreeItem);
     }
   item->SetFetchedChildren(true);
   emit layoutChanged();
-  emit fetchedMore();
+  emit FetchedMore();
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
+void MidasTreeModelServer::FetchCollection(MidasCollectionTreeItem* parent)
 {
   mws::Collection  remote;
   mdo::Collection* collection = parent->GetCollection();
@@ -138,15 +138,15 @@ void MidasTreeModelServer::fetchCollection(MidasCollectionTreeItem* parent)
     item->SetFetchedChildren(false);
     parent->AppendChild(item);
 
-    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid() ) );
-    this->registerResource( (*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, this->GetIndexByUuid(parent->GetUuid() ) );
+    this->RegisterResource( (*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
+void MidasTreeModelServer::FetchItem(MidasItemTreeItem* parent)
 {
   mws::Item  remote;
   mdo::Item* item = parent->GetItem();
@@ -169,23 +169,22 @@ void MidasTreeModelServer::fetchItem(MidasItemTreeItem* parent)
     MidasBitstreamTreeItem* bitstream = new MidasBitstreamTreeItem(name, this, parent);
     bitstream->SetBitstream(*i);
     parent->AppendChild(bitstream);
-    QModelIndex index = this->index(row, 0, this->getIndexByUuid(parent->GetUuid() ) );
-    this->registerResource( (*i)->GetUuid(), index);
+    QModelIndex index = this->index(row, 0, this->GetIndexByUuid(parent->GetUuid() ) );
+    this->RegisterResource( (*i)->GetUuid(), index);
     row++;
     }
   emit layoutChanged();
 }
 
 // -------------------------------------------------------------------------
-void MidasTreeModelServer::itemExpanded( const QModelIndex & index )
+void MidasTreeModelServer::ItemExpanded( const QModelIndex & index )
 {
-  MidasTreeItem * item = const_cast<MidasTreeItem *>(this->midasTreeItem(index) );
+  MidasTreeItem* item = const_cast<MidasTreeItem *>(this->GetMidasTreeItem(index) );
 
   item->SetDecorationRole(MidasTreeItem::Expanded);
 
-  if( this->AlterList && item->GetType() == midasResourceType::COMMUNITY )
+  if( m_AlterList && item->GetType() == midasResourceType::COMMUNITY )
     {
     m_ExpandedList.insert(item->GetUuid() );
     }
 }
-
